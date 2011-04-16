@@ -1,0 +1,1383 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     44603,       1374]
+NotebookOptionsPosition[     37157,       1156]
+NotebookOutlinePosition[     37494,       1171]
+CellTagsIndexPosition[     37451,       1168]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Loding", " ", "the", " ", "Packages"}], " ", "*)"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"<<", "SARAH.m"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"SARAH 3.0.beta5b\"\>"], "Print",
+ CellChangeTimes->{3.511915206933244*^9}],
+
+Cell[BoxData["\<\"by Florian Staub, 2010\"\>"], "Print",
+ CellChangeTimes->{3.511915206964441*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915207386285*^9}],
+
+Cell[BoxData["\<\"Begin evaluation of Model with:       Start[\\\"Name of \
+Model\\\"]\"\>"], "Print",
+ CellChangeTimes->{3.511915207771887*^9}],
+
+Cell[BoxData["\<\"e.g. Start[\\\"MSSM\\\"] or \
+Start[\\\"NMSSM\\\",\\\"CKM\\\"]\"\>"], "Print",
+ CellChangeTimes->{3.511915208206579*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", "-"}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Initializing", " ", "the", " ", "Model"}], "   ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", "-"}]}]}]}]}]}]}]}]}]}]}]}], " ", 
+   "*)"}]}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Start", "[", "\"\<SM\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.51191532760159*^9, 3.511915328083422*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Initialization\"\>"], "Print",
+ CellChangeTimes->{3.511915329149615*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.51191532955091*^9}],
+
+Cell[BoxData["\<\"Model file for the SM loaded\"\>"], "Print",
+ CellChangeTimes->{3.511915329600389*^9}],
+
+Cell[BoxData["\<\"Generate all Superfields\"\>"], "Print",
+ CellChangeTimes->{3.511915329627952*^9}],
+
+Cell[BoxData["\<\"Checking Model Files ...\"\>"], "Print",
+ CellChangeTimes->{3.511915329663907*^9}],
+
+Cell[BoxData["\<\"    Model File is okay\"\>"], "Print",
+ CellChangeTimes->{3.511915329701663*^9}],
+
+Cell[BoxData["\<\"    Particle File is okay\"\>"], "Print",
+ CellChangeTimes->{3.51191532974276*^9}],
+
+Cell[BoxData["\<\"    Parameter File is okay\"\>"], "Print",
+ CellChangeTimes->{3.511915329773068*^9}],
+
+Cell[BoxData["\<\"Create all component Fields\"\>"], "Print",
+ CellChangeTimes->{3.511915329814765*^9}],
+
+Cell[BoxData["\<\"Generate Parameter Dependences\"\>"], "Print",
+ CellChangeTimes->{3.511915330354293*^9}],
+
+Cell[BoxData["\<\"Set Information for Rotations\"\>"], "Print",
+ CellChangeTimes->{3.511915331220387*^9}],
+
+Cell[BoxData["\<\"Calc Superpotential\"\>"], "Print",
+ CellChangeTimes->{3.511915332139915*^9}],
+
+Cell[BoxData["\<\"Calc F-Terms\"\>"], "Print",
+ CellChangeTimes->{3.511915333233222*^9}],
+
+Cell[BoxData["\<\"Calc Fermion-Scalar\"\>"], "Print",
+ CellChangeTimes->{3.511915334126281*^9}],
+
+Cell[BoxData["\<\"Calc Soft Breaking\"\>"], "Print",
+ CellChangeTimes->{3.511915334951291*^9}],
+
+Cell[BoxData["\<\"Calc Kinetic Terms\"\>"], "Print",
+ CellChangeTimes->{3.511915335786238*^9}],
+
+Cell[BoxData["\<\"Calc D-Terms\"\>"], "Print",
+ CellChangeTimes->{3.511915336659596*^9}],
+
+Cell[BoxData["\<\"Calc Gaugino Interactions\"\>"], "Print",
+ CellChangeTimes->{3.511915337530882*^9}],
+
+Cell[BoxData["\<\"Calculate Vector Boson Self Interactions\"\>"], "Print",
+ CellChangeTimes->{3.511915338402559*^9}],
+
+Cell[BoxData["\<\"Calculate Vector Boson - Gaugino - Interactions\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915339248706*^9}],
+
+Cell[BoxData["\<\"Calc Gauge Transformations\"\>"], "Print",
+ CellChangeTimes->{3.511915340137573*^9}],
+
+Cell[BoxData["\<\"Calc Complete Lagrangian\"\>"], "Print",
+ CellChangeTimes->{3.511915341031209*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915341839309*^9}],
+
+Cell[BoxData["\<\"-----------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.51191534258954*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Evolve States: \"\>", "\[InvisibleSpace]", "\<\"GaugeES\"\>"}],
+  
+  SequenceForm["Evolve States: ", "GaugeES"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915343452696*^9}],
+
+Cell[BoxData["\<\"-----------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915344316532*^9}],
+
+Cell[BoxData["\<\"Calc Mixings of Matter Fields\"\>"], "Print",
+ CellChangeTimes->{3.511915345157284*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Integrate out Particles after Symmetry Breaking: \"\>", 
+   "\[InvisibleSpace]", "\<\"GaugeES\"\>"}],
+  SequenceForm["Integrate out Particles after Symmetry Breaking: ", "GaugeES"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915345984069*^9}],
+
+Cell[BoxData["\<\"Calc Ghost Interactions\"\>"], "Print",
+ CellChangeTimes->{3.511915346786112*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Save Model Information: \"\>", "\[InvisibleSpace]", "GaugeES"}],
+  SequenceForm["Save Model Information: ", SARAH`GaugeES],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915347627274*^9}],
+
+Cell[BoxData["\<\"      TadpoleEquations\"\>"], "Print",
+ CellChangeTimes->{3.511915348467586*^9}],
+
+Cell[BoxData["\<\"      Interactions\"\>"], "Print",
+ CellChangeTimes->{3.511915349314733*^9}],
+
+Cell[BoxData["\<\"      Split Lagrangian\"\>"], "Print",
+ CellChangeTimes->{3.511915350126649*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915350967063*^9}],
+
+Cell[BoxData["\<\"-----------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915351844802*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Evolve States: \"\>", "\[InvisibleSpace]", "\<\"EWSB\"\>"}],
+  SequenceForm["Evolve States: ", "EWSB"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915352651711*^9}],
+
+Cell[BoxData["\<\"-----------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915353491903*^9}],
+
+Cell[BoxData["\<\"Parametrize Higgs Sector\"\>"], "Print",
+ CellChangeTimes->{3.511915354400414*^9}],
+
+Cell[BoxData["\<\"Calc Mixings Gauge Sector\"\>"], "Print",
+ CellChangeTimes->{3.511915355256438*^9}],
+
+Cell[BoxData["\<\"Calc Mixings of Matter Fields\"\>"], "Print",
+ CellChangeTimes->{3.511915356094574*^9}],
+
+Cell[BoxData["\<\"Calculate Tadpole Equations\"\>"], "Print",
+ CellChangeTimes->{3.511915356963034*^9}],
+
+Cell[BoxData["\<\"Calc Ghost Interactions\"\>"], "Print",
+ CellChangeTimes->{3.511915357875787*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Save Model Information: \"\>", "\[InvisibleSpace]", "EWSB"}],
+  SequenceForm["Save Model Information: ", SARAH`EWSB],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915358745194*^9}],
+
+Cell[BoxData["\<\"      TadpoleEquations\"\>"], "Print",
+ CellChangeTimes->{3.511915359634847*^9}],
+
+Cell[BoxData["\<\"      Interactions\"\>"], "Print",
+ CellChangeTimes->{3.511915360384226*^9}],
+
+Cell[BoxData["\<\"      Split Lagrangian\"\>"], "Print",
+ CellChangeTimes->{3.511915360874705*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915361376367*^9}],
+
+Cell[BoxData["\<\"-----------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.51191536186602*^9}],
+
+Cell[BoxData["\<\"Finishing\"\>"], "Print",
+ CellChangeTimes->{3.511915362360424*^9}],
+
+Cell[BoxData["\<\"-----------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915362844075*^9}],
+
+Cell[BoxData["\<\"Calculate final Lagrangian\"\>"], "Print",
+ CellChangeTimes->{3.511915363330532*^9}],
+
+Cell[BoxData["\<\"Add Matrix Products\"\>"], "Print",
+ CellChangeTimes->{3.511915363816884*^9}],
+
+Cell[BoxData["\<\"Checking for massless particles\"\>"], "Print",
+ CellChangeTimes->{3.511915364333987*^9}],
+
+Cell[BoxData["\<\"Calculating Tree Level Masses\"\>"], "Print",
+ CellChangeTimes->{3.511915364821965*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"     For \"\>", "\[InvisibleSpace]", "GaugeES"}],
+  SequenceForm["     For ", SARAH`GaugeES],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915365342196*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"     For \"\>", "\[InvisibleSpace]", "EWSB"}],
+  SequenceForm["     For ", SARAH`EWSB],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915365834425*^9}],
+
+Cell[BoxData["\<\"Simplify Mass Matrices\"\>"], "Print",
+ CellChangeTimes->{3.511915366325654*^9}],
+
+Cell[BoxData["\<\"Checking for Spectrum File\"\>"], "Print",
+ CellChangeTimes->{3.511915366820361*^9}],
+
+Cell[BoxData["\<\"     No Spectrum File defined\"\>"], "Print",
+ CellChangeTimes->{3.511915367300992*^9}],
+
+Cell[BoxData["\<\"Reading Parameter Values and Dependences\"\>"], "Print",
+ CellChangeTimes->{3.511915367783105*^9}],
+
+Cell[BoxData["\<\"Calculate Mixing Matrices\"\>"], "Print",
+ CellChangeTimes->{3.511915368246536*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915368715662*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"All Done... \"\>", "\[InvisibleSpace]", "\<\"SM\"\>", 
+   "\[InvisibleSpace]", "\<\" is ready!\"\>"}],
+  SequenceForm["All Done... ", "SM", " is ready!"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915369208448*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Calculating", " ", "all", " ", "Vertices"}], " ", "*)"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ModelOutput", "[", 
+  RowBox[{"EWSB", ",", " ", 
+   RowBox[{"VerticesForLoops", "\[Rule]", "True"}]}], "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Generate Directories\"\>"], "Print",
+ CellChangeTimes->{3.511915483329572*^9}],
+
+Cell[BoxData["\<\"Building Particle List\"\>"], "Print",
+ CellChangeTimes->{3.511915483762257*^9}],
+
+Cell[BoxData["\<\"-----------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915484210471*^9}],
+
+Cell[BoxData["\<\"Calculate All Vertices\"\>"], "Print",
+ CellChangeTimes->{3.511915484673079*^9}],
+
+Cell[BoxData["\<\"-----------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915485152962*^9}],
+
+Cell[BoxData["\<\"      Three Scalar Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915485635607*^9}],
+
+Cell[BoxData["\<\"      Four Scalar Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915486106575*^9}],
+
+Cell[BoxData["\<\"      Two Scalar - One Vector Boson - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915486590929*^9}],
+
+Cell[BoxData["\<\"      One Scalar - Two Vector Boson - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915493721358*^9}],
+
+Cell[BoxData["\<\"      Two Scalar - Two Vector Boson - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915502825228*^9}],
+
+Cell[BoxData["\<\"      Three Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915519526482*^9}],
+
+Cell[BoxData["\<\"      Two Fermion - One Scalar - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915526219545*^9}],
+
+Cell[BoxData["\<\"      Two Fermion - One Vector Boson - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915529600463*^9}],
+
+Cell[BoxData["\<\"      Four Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915537750236*^9}],
+
+Cell[BoxData["\<\"      Two Ghost - One Vector Boson - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915560415778*^9}],
+
+Cell[BoxData["\<\"      Two Ghost - One Scalar - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915565308234*^9}],
+
+Cell[BoxData["\<\"      Two Scalar - One Auxiliary - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915568336103*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915569202722*^9}],
+
+Cell[BoxData["\<\"Simplify Vertices\"\>"], "Print",
+ CellChangeTimes->{3.511915570022257*^9}],
+
+Cell[BoxData["\<\"Writing vertices to files\"\>"], "Print",
+ CellChangeTimes->{3.511915573228589*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Done... all vertices are saved in \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+Vertices/\"\>"}],
+  SequenceForm[
+  "Done... all vertices are saved in ", 
+   "/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+Vertices/"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915573913641*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Make", " ", 
+   RowBox[{"CalcHep", "/", "CompHep"}], " ", "File"}], " ", "*)"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MakeCHep", "[", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"--------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915615496448*^9}],
+
+Cell[BoxData["\<\" Creating CalcHep/CompHep Model File  \"\>"], "Print",
+ CellChangeTimes->{3.511915615695106*^9}],
+
+Cell[BoxData["\<\"--------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915616211213*^9}],
+
+Cell[BoxData["\<\"Sort parameters\"\>"], "Print",
+ CellChangeTimes->{3.511915617014794*^9}],
+
+Cell[BoxData["\<\"Create C Form\"\>"], "Print",
+ CellChangeTimes->{3.511915617812179*^9}],
+
+Cell[BoxData["\<\"Writing Particle List\"\>"], "Print",
+ CellChangeTimes->{3.51191561860699*^9}],
+
+Cell[BoxData["\<\"   Scalars\"\>"], "Print",
+ CellChangeTimes->{3.511915619647541*^9}],
+
+Cell[BoxData["\<\"   Vector Bosons\"\>"], "Print",
+ CellChangeTimes->{3.511915620554532*^9}],
+
+Cell[BoxData["\<\"   Fermions\"\>"], "Print",
+ CellChangeTimes->{3.511915621413581*^9}],
+
+Cell[BoxData["\<\"   Auxiliary Fields\"\>"], "Print",
+ CellChangeTimes->{3.511915622251094*^9}],
+
+Cell[BoxData["\<\"   Ghost Fields\"\>"], "Print",
+ CellChangeTimes->{3.511915623054851*^9}],
+
+Cell[BoxData["\<\"Writing Variables\"\>"], "Print",
+ CellChangeTimes->{3.51191562381208*^9}],
+
+Cell[BoxData["\<\"Writing Lagrangian and Functions\"\>"], "Print",
+ CellChangeTimes->{3.51191562448612*^9}],
+
+Cell[BoxData["\<\"Writing additional functions\"\>"], "Print",
+ CellChangeTimes->{3.511915624947104*^9}],
+
+Cell[BoxData["\<\"  Three Scalar Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915625382554*^9}],
+
+Cell[BoxData["\<\"  Two Scalar - One Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915625823256*^9}],
+
+Cell[BoxData["\<\"  One Scalar - Two Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915626281191*^9}],
+
+Cell[BoxData["\<\"  Two Ghost - One Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915626778786*^9}],
+
+Cell[BoxData["\<\"  Two Ghost - One Scalar - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915627277889*^9}],
+
+Cell[BoxData["\<\"  Two Fermion - One Scalar - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915627739891*^9}],
+
+Cell[BoxData["\<\"  Two Fermion - One Vector Boson - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915628208646*^9}],
+
+Cell[BoxData["\<\"  Four Scalar - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.51191562866323*^9}],
+
+Cell[BoxData["\<\"  Two Scalar - One Auxiliary Field - Interaction\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915629150012*^9}],
+
+Cell[BoxData["\<\"  Three Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915629589419*^9}],
+
+Cell[BoxData["\<\"  Two Scalar - Two Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915630029164*^9}],
+
+Cell[BoxData["\<\"  Four Vector Boson - Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915630467617*^9}],
+
+Cell[BoxData["\<\"  One Scalar - One Vector Boson - One Auxiliary Field - \
+Interaction\"\>"], "Print",
+ CellChangeTimes->{3.511915630887981*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915631324007*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Done. Output is in \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+CHep/\"\>"}],
+  SequenceForm[
+  "Done. Output is in ", 
+   "/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+CHep/"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915631752582*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Make", " ", "FeynArts", " ", "File"}], " ", "*)"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["MakeFeynArts"], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915927489011*^9}],
+
+Cell[BoxData["\<\" Creating FeynArts Model File \"\>"], "Print",
+ CellChangeTimes->{3.511915927535237*^9}],
+
+Cell[BoxData["\<\"------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915927597526*^9}],
+
+Cell[BoxData["\<\"Initialize Output\"\>"], "Print",
+ CellChangeTimes->{3.511915927647921*^9}],
+
+Cell[BoxData["\<\"Create Class Output\"\>"], "Print",
+ CellChangeTimes->{3.511915927685056*^9}],
+
+Cell[BoxData["\<\"Create Coupling Output\"\>"], "Print",
+ CellChangeTimes->{3.511915927723268*^9}],
+
+Cell[BoxData["\<\"Write Model-File\"\>"], "Print",
+ CellChangeTimes->{3.511915927764867*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915928298931*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Done. Output is in \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+FeynArts/\"\>"}],
+  SequenceForm[
+  "Done. Output is in ", 
+   "/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+FeynArts/"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915928673308*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"LOOP", " ", "CORRECTIONS"}], "  ", "*)"}], "\[IndentingNewLine]", 
+  
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}]}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CalcLoopCorrections", "[", "EWSB", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Generate interaction list\"\>"], "Print",
+ CellChangeTimes->{3.511915942137786*^9}],
+
+Cell[BoxData["\<\"------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915944972507*^9}],
+
+Cell[BoxData["\<\"Calculate Loop Corrections\"\>"], "Print",
+ CellChangeTimes->{3.511915945660423*^9}],
+
+Cell[BoxData["\<\"------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915946400676*^9}],
+
+Cell[BoxData["\<\"     For Rotated Fields\"\>"], "Print",
+ CellChangeTimes->{3.511915947116558*^9}],
+
+Cell[BoxData["\<\"------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915947860701*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915949630048*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915950284163*^9}],
+
+Cell[BoxData["\<\"     For Tadpoles\"\>"], "Print",
+ CellChangeTimes->{3.51191595099943*^9}],
+
+Cell[BoxData["\<\"------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.511915951660857*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915953826879*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915955375023*^9}],
+
+Cell[BoxData["\<\"     For Gauge Eigenstates\"\>"], "Print",
+ CellChangeTimes->{3.511915956879944*^9}],
+
+Cell[BoxData["\<\"------------------------------------\"\>"], "Print",
+ CellChangeTimes->{3.51191595832128*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "Fd"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`Fd],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915959813589*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "Fu"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`Fu],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915961414629*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "Fe"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`Fe],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.51191596270037*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "SHm"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`SHm],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.51191596391513*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "Ah"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`Ah],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915964831505*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "hh"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`hh],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.51191596544294*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "VWm"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`VWm],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915966057087*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"    Calculate One Loop Self Energy of \"\>", 
+   "\[InvisibleSpace]", "VZ"}],
+  SequenceForm["    Calculate One Loop Self Energy of ", $CellContext`VZ],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915966649429*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"LaTeX", " ", "OUTPUT"}], "  ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"--", 
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"--", 
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", 
+              RowBox[{"--", 
+               RowBox[{"--", 
+                RowBox[{"--", 
+                 RowBox[{"--", 
+                  RowBox[{"--", 
+                   RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{"--", 
+                    RowBox[{
+                    "--", "-"}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}\
+]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}], " ", "*)"}]}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MakeTeX", "[", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Writing Superfields and Superpotential to TeX-File\"\>"], \
+"Print",
+ CellChangeTimes->{3.511915989949015*^9}],
+
+Cell[BoxData["\<\"Writing Particle Content to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915991025877*^9}],
+
+Cell[BoxData["\<\"Write VEVs to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915991388001*^9}],
+
+Cell[BoxData["\<\"Write Flavor Decomposition to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915991488332*^9}],
+
+Cell[BoxData["\<\"Writing Mass Matrices to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915991509933*^9}],
+
+Cell[BoxData["\<\"Writing Tadpole Equations to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915991609168*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"TeXOutput", "::", "\<\"NoRGEs\"\>"}], 
+  RowBox[{
+  ":", " "}], "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"\\\\\\\\n RGEs not \
+calculated so far. Skipping this parts.\\\\\\\\n\\\\\\\\n    Use CalcRGEs[] \
+to calculated RGEs and start MakeTeX again to include them in the output.\\\\\
+\\\"\\\", \\\"MT\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.511915991835552*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Writing One Loop Tadpoles to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915992808787*^9}],
+
+Cell[BoxData["\<\"Writing One Loop Self Energy to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.51191599328603*^9}],
+
+Cell[BoxData["\<\"Writing Vertices to TeX-File\"\>"], "Print",
+ CellChangeTimes->{3.511915997026563*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.511915997113569*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Done. Output is in \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+TeX/\"\>"}],
+  SequenceForm[
+  "Done. Output is in ", 
+   "/home/restrepo/.Mathematica/Applications/sarah-3.0.beta5b/Output/SM/EWSB/\
+TeX/"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.511915997124623*^9}],
+
+Cell[BoxData["\<\"Use Script MakePDF.sh (Linux) or MakePDF.bat (Windows) to \
+generate pdf file.\"\>"], "Print",
+ CellChangeTimes->{3.5119159971954*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{982, 712},
+WindowMargins->{{Automatic, 137}, {0, Automatic}},
+FrontEndVersion->"7.0 for Linux x86 (32-bit) (November 10, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[545, 20, 108, 2, 32, "Input"],
+Cell[CellGroupData[{
+Cell[678, 26, 51, 1, 32, "Input"],
+Cell[CellGroupData[{
+Cell[754, 31, 92, 1, 24, "Print"],
+Cell[849, 34, 98, 1, 24, "Print"],
+Cell[950, 37, 76, 1, 24, "Print"],
+Cell[1029, 40, 144, 2, 24, "Print"],
+Cell[1176, 44, 138, 2, 24, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[1341, 50, 888, 32, 99, "Input"],
+Cell[CellGroupData[{
+Cell[2254, 86, 132, 2, 32, "Input"],
+Cell[CellGroupData[{
+Cell[2411, 92, 90, 1, 24, "Print"],
+Cell[2504, 95, 75, 1, 24, "Print"],
+Cell[2582, 98, 104, 1, 24, "Print"],
+Cell[2689, 101, 100, 1, 24, "Print"],
+Cell[2792, 104, 100, 1, 24, "Print"],
+Cell[2895, 107, 98, 1, 24, "Print"],
+Cell[2996, 110, 100, 1, 24, "Print"],
+Cell[3099, 113, 102, 1, 24, "Print"],
+Cell[3204, 116, 103, 1, 24, "Print"],
+Cell[3310, 119, 106, 1, 24, "Print"],
+Cell[3419, 122, 105, 1, 24, "Print"],
+Cell[3527, 125, 95, 1, 24, "Print"],
+Cell[3625, 128, 88, 1, 24, "Print"],
+Cell[3716, 131, 95, 1, 24, "Print"],
+Cell[3814, 134, 94, 1, 24, "Print"],
+Cell[3911, 137, 94, 1, 24, "Print"],
+Cell[4008, 140, 88, 1, 24, "Print"],
+Cell[4099, 143, 101, 1, 24, "Print"],
+Cell[4203, 146, 116, 1, 24, "Print"],
+Cell[4322, 149, 125, 2, 24, "Print"],
+Cell[4450, 153, 102, 1, 24, "Print"],
+Cell[4555, 156, 100, 1, 24, "Print"],
+Cell[4658, 159, 76, 1, 24, "Print"],
+Cell[4737, 162, 110, 1, 24, "Print"],
+Cell[4850, 165, 233, 6, 24, "Print"],
+Cell[5086, 173, 111, 1, 24, "Print"],
+Cell[5200, 176, 105, 1, 24, "Print"],
+Cell[5308, 179, 302, 6, 24, "Print"],
+Cell[5613, 187, 99, 1, 24, "Print"],
+Cell[5715, 190, 244, 5, 24, "Print"],
+Cell[5962, 197, 98, 1, 24, "Print"],
+Cell[6063, 200, 94, 1, 24, "Print"],
+Cell[6160, 203, 98, 1, 24, "Print"],
+Cell[6261, 206, 76, 1, 24, "Print"],
+Cell[6340, 209, 111, 1, 24, "Print"],
+Cell[6454, 212, 224, 5, 24, "Print"],
+Cell[6681, 219, 111, 1, 24, "Print"],
+Cell[6795, 222, 100, 1, 24, "Print"],
+Cell[6898, 225, 101, 1, 24, "Print"],
+Cell[7002, 228, 105, 1, 24, "Print"],
+Cell[7110, 231, 103, 1, 24, "Print"],
+Cell[7216, 234, 99, 1, 24, "Print"],
+Cell[7318, 237, 238, 5, 24, "Print"],
+Cell[7559, 244, 98, 1, 24, "Print"],
+Cell[7660, 247, 94, 1, 24, "Print"],
+Cell[7757, 250, 98, 1, 24, "Print"],
+Cell[7858, 253, 76, 1, 24, "Print"],
+Cell[7937, 256, 110, 1, 24, "Print"],
+Cell[8050, 259, 85, 1, 24, "Print"],
+Cell[8138, 262, 111, 1, 24, "Print"],
+Cell[8252, 265, 102, 1, 24, "Print"],
+Cell[8357, 268, 95, 1, 24, "Print"],
+Cell[8455, 271, 107, 1, 24, "Print"],
+Cell[8565, 274, 105, 1, 24, "Print"],
+Cell[8673, 277, 214, 5, 24, "Print"],
+Cell[8890, 284, 208, 5, 24, "Print"],
+Cell[9101, 291, 98, 1, 24, "Print"],
+Cell[9202, 294, 102, 1, 24, "Print"],
+Cell[9307, 297, 105, 1, 24, "Print"],
+Cell[9415, 300, 116, 1, 24, "Print"],
+Cell[9534, 303, 101, 1, 24, "Print"],
+Cell[9638, 306, 76, 1, 24, "Print"],
+Cell[9717, 309, 275, 6, 24, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[10019, 319, 113, 2, 32, "Input"],
+Cell[CellGroupData[{
+Cell[10157, 325, 143, 3, 32, "Input"],
+Cell[CellGroupData[{
+Cell[10325, 332, 96, 1, 24, "Print"],
+Cell[10424, 335, 98, 1, 24, "Print"],
+Cell[10525, 338, 99, 1, 24, "Print"],
+Cell[10627, 341, 98, 1, 24, "Print"],
+Cell[10728, 344, 99, 1, 24, "Print"],
+Cell[10830, 347, 106, 1, 24, "Print"],
+Cell[10939, 350, 105, 1, 24, "Print"],
+Cell[11047, 353, 127, 2, 24, "Print"],
+Cell[11177, 357, 127, 2, 24, "Print"],
+Cell[11307, 361, 127, 2, 24, "Print"],
+Cell[11437, 365, 114, 1, 24, "Print"],
+Cell[11554, 368, 120, 1, 24, "Print"],
+Cell[11677, 371, 128, 2, 24, "Print"],
+Cell[11808, 375, 113, 1, 24, "Print"],
+Cell[11924, 378, 126, 2, 24, "Print"],
+Cell[12053, 382, 118, 1, 24, "Print"],
+Cell[12174, 385, 124, 2, 24, "Print"],
+Cell[12301, 389, 76, 1, 24, "Print"],
+Cell[12380, 392, 93, 1, 24, "Print"],
+Cell[12476, 395, 101, 1, 24, "Print"],
+Cell[12580, 398, 435, 11, 45, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[13042, 413, 136, 3, 32, "Input"],
+Cell[CellGroupData[{
+Cell[13203, 420, 56, 1, 32, "Input"],
+Cell[CellGroupData[{
+Cell[13284, 425, 114, 1, 24, "Print"],
+Cell[13401, 428, 114, 1, 24, "Print"],
+Cell[13518, 431, 114, 1, 24, "Print"],
+Cell[13635, 434, 91, 1, 24, "Print"],
+Cell[13729, 437, 89, 1, 24, "Print"],
+Cell[13821, 440, 96, 1, 24, "Print"],
+Cell[13920, 443, 86, 1, 24, "Print"],
+Cell[14009, 446, 92, 1, 24, "Print"],
+Cell[14104, 449, 87, 1, 24, "Print"],
+Cell[14194, 452, 95, 1, 24, "Print"],
+Cell[14292, 455, 91, 1, 24, "Print"],
+Cell[14386, 458, 92, 1, 24, "Print"],
+Cell[14481, 461, 107, 1, 24, "Print"],
+Cell[14591, 464, 104, 1, 24, "Print"],
+Cell[14698, 467, 102, 1, 24, "Print"],
+Cell[14803, 470, 121, 1, 24, "Print"],
+Cell[14927, 473, 121, 1, 24, "Print"],
+Cell[15051, 476, 120, 1, 24, "Print"],
+Cell[15174, 479, 114, 1, 24, "Print"],
+Cell[15291, 482, 116, 1, 24, "Print"],
+Cell[15410, 485, 124, 2, 24, "Print"],
+Cell[15537, 489, 102, 1, 24, "Print"],
+Cell[15642, 492, 126, 2, 24, "Print"],
+Cell[15771, 496, 110, 1, 24, "Print"],
+Cell[15884, 499, 121, 1, 24, "Print"],
+Cell[16008, 502, 109, 1, 24, "Print"],
+Cell[16120, 505, 145, 2, 24, "Print"],
+Cell[16268, 509, 76, 1, 24, "Print"],
+Cell[16347, 512, 397, 11, 24, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[16771, 527, 107, 2, 32, "Input"],
+Cell[CellGroupData[{
+Cell[16903, 533, 38, 0, 32, "Input"],
+Cell[CellGroupData[{
+Cell[16966, 537, 106, 1, 24, "Print"],
+Cell[17075, 540, 106, 1, 24, "Print"],
+Cell[17184, 543, 106, 1, 24, "Print"],
+Cell[17293, 546, 93, 1, 24, "Print"],
+Cell[17389, 549, 95, 1, 24, "Print"],
+Cell[17487, 552, 98, 1, 24, "Print"],
+Cell[17588, 555, 92, 1, 24, "Print"],
+Cell[17683, 558, 76, 1, 24, "Print"],
+Cell[17762, 561, 405, 11, 24, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[18194, 576, 6487, 196, 121, "Input"],
+Cell[CellGroupData[{
+Cell[24706, 776, 75, 1, 32, "Input"],
+Cell[CellGroupData[{
+Cell[24806, 781, 101, 1, 24, "Print"],
+Cell[24910, 784, 112, 1, 24, "Print"],
+Cell[25025, 787, 102, 1, 24, "Print"],
+Cell[25130, 790, 112, 1, 24, "Print"],
+Cell[25245, 793, 99, 1, 24, "Print"],
+Cell[25347, 796, 112, 1, 24, "Print"],
+Cell[25462, 799, 76, 1, 24, "Print"],
+Cell[25541, 802, 76, 1, 24, "Print"],
+Cell[25620, 805, 92, 1, 24, "Print"],
+Cell[25715, 808, 112, 1, 24, "Print"],
+Cell[25830, 811, 76, 1, 24, "Print"],
+Cell[25909, 814, 76, 1, 24, "Print"],
+Cell[25988, 817, 102, 1, 24, "Print"],
+Cell[26093, 820, 111, 1, 24, "Print"],
+Cell[26207, 823, 273, 6, 24, "Print"],
+Cell[26483, 831, 273, 6, 24, "Print"],
+Cell[26759, 839, 272, 6, 24, "Print"],
+Cell[27034, 847, 274, 6, 24, "Print"],
+Cell[27311, 855, 273, 6, 24, "Print"],
+Cell[27587, 863, 272, 6, 24, "Print"],
+Cell[27862, 871, 275, 6, 24, "Print"],
+Cell[28140, 879, 273, 6, 24, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[28440, 889, 6480, 195, 121, "Input"],
+Cell[CellGroupData[{
+Cell[34945, 1088, 55, 1, 32, "Input"],
+Cell[CellGroupData[{
+Cell[35025, 1093, 128, 2, 24, "Print"],
+Cell[35156, 1097, 112, 1, 24, "Print"],
+Cell[35271, 1100, 98, 1, 24, "Print"],
+Cell[35372, 1103, 114, 1, 24, "Print"],
+Cell[35489, 1106, 109, 1, 24, "Print"],
+Cell[35601, 1109, 113, 1, 24, "Print"]
+}, Open  ]],
+Cell[35729, 1113, 405, 8, 85, "Message"],
+Cell[CellGroupData[{
+Cell[36159, 1125, 113, 1, 24, "Print"],
+Cell[36275, 1128, 115, 1, 24, "Print"],
+Cell[36393, 1131, 104, 1, 24, "Print"],
+Cell[36500, 1134, 76, 1, 24, "Print"],
+Cell[36579, 1137, 395, 11, 24, "Print"],
+Cell[36977, 1150, 152, 2, 24, "Print"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
