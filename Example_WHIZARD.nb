@@ -1,0 +1,1525 @@
+(************** Content-type: application/mathematica **************
+                     CreatedBy='Mathematica 5.2'
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     32055,       1179]*)
+(*NotebookOutlinePosition[     32684,       1201]*)
+(*  CellTagsIndexPosition[     32640,       1197]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+    \(<< SARAH.m\)], "Input"],
+
+Cell[BoxData[
+    \("SARAH 3.0.beta2"\)], "Print"],
+
+Cell[BoxData[
+    \("by Florian Staub, 2010"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("Begin evaluation of Model with:       Start[\"Name of Model\"]"\)], \
+"Print"],
+
+Cell[BoxData[
+    \("e.g. Start[\"MSSM\"] or Start[\"NMSSM\",\"CKM\"]"\)], "Print"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ 
+      Loading\ the\ model; \ \[IndentingNewLine]\ \ We\ use\ here\ for\ \
+demonstration\ purposes\ the\ MSSM\ without\ flavor\ violation . \ 
+            The\ WHIZARD\ output\ of\ the\ full\ MSSM\ takes\ some\ more\ \
+time ... \ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(\(Start["\<MSSM\>", "\<NoFV\>"];\)\)], "Input"],
+
+Cell[BoxData[
+    \("Initialization"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("Model file for the MSSM loaded"\)], "Print"],
+
+Cell[BoxData[
+    \("Generate all Superfields"\)], "Print"],
+
+Cell[BoxData[
+    \("Create all component Fields"\)], "Print"],
+
+Cell[BoxData[
+    \("Generate Parameter Dependences"\)], "Print"],
+
+Cell[BoxData[
+    \("Set Information for Rotations"\)], "Print"],
+
+Cell[BoxData[
+    \("Check Anomalies"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No ("\[InvisibleSpace]hypercharge\
+\[InvisibleSpace]")^3 Gauge Anomaly"\),
+      SequenceForm[ "     No (", hypercharge, ")^3 Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("     No Witten Anomaly"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No ("\[InvisibleSpace]hypercharge\
+\[InvisibleSpace]")x("\[InvisibleSpace]left\[InvisibleSpace]")^2  Gauge \
+Anomaly"\),
+      SequenceForm[ 
+      "     No (", hypercharge, ")x(", left, ")^2  Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No \
+("\[InvisibleSpace]color\[InvisibleSpace]")^3 Gauge Anomaly"\),
+      SequenceForm[ "     No (", color, ")^3 Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No ("\[InvisibleSpace]hypercharge\
+\[InvisibleSpace]")x("\[InvisibleSpace]color\[InvisibleSpace]")^2  Gauge \
+Anomaly"\),
+      SequenceForm[ 
+      "     No (", hypercharge, ")x(", color, ")^2  Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Calc Superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking charge conservation of superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("     No violation of charge conservation in superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc F-Terms"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Fermion-Scalar"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Soft Breaking"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Kinetic Terms"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc D-Terms"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Gaugino Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Vector Boson Self Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Vector Boson - Gaugino - Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Gauge Transformations"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Complete Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Evolve States: "\[InvisibleSpace]"GaugeES"\),
+      SequenceForm[ "Evolve States: ", "GaugeES"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mixings of Matter Fields"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Ghost Interactions"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Save Model Information: "\[InvisibleSpace]GaugeES\),
+      SequenceForm[ "Save Model Information: ", GaugeES],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("      TadpoleEquations"\)], "Print"],
+
+Cell[BoxData[
+    \("      Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("      Split Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Evolve States: "\[InvisibleSpace]"EWSB"\),
+      SequenceForm[ "Evolve States: ", "EWSB"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Parametrize Higgs Sector"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mixings Gauge Sector"\)], "Print"],
+
+Cell[BoxData[
+    \("Split Flavors"\)], "Print"],
+
+Cell[BoxData[
+    \("Add Phases"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mixings of Matter Fields"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mass Matrices"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SdL, SdR}\),
+      SequenceForm[ "    For ", {SdL, SdR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SuL, SuR}\),
+      SequenceForm[ "    For ", {SuL, SuR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SeL, SeR}\),
+      SequenceForm[ "    For ", {SeL, SeR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SmL, SmR}\),
+      SequenceForm[ "    For ", {SmL, SmR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{StauL, StauR}\),
+      SequenceForm[ "    For ", {StauL, StauR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SsL, SsR}\),
+      SequenceForm[ "    For ", {SsL, SsR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{ScL, ScR}\),
+      SequenceForm[ "    For ", {ScL, ScR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SbL, SbR}\),
+      SequenceForm[ "    For ", {SbL, SbR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{StL, StR}\),
+      SequenceForm[ "    For ", {StL, StR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{phid, phiu}\),
+      SequenceForm[ "    For ", {phid, phiu}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{sigmad, sigmau}\),
+      SequenceForm[ "    For ", {sigmad, sigmau}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SHdm, conj[SHup]}\),
+      SequenceForm[ "    For ", {SHdm, 
+        conj[ SHup]}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{fB, fW0, FHd0, FHu0}\),
+      SequenceForm[ "    For ", {fB, fW0, FHd0, FHu0}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{fWm, 
+          FHdm}\[InvisibleSpace]{fWp, FHup}\),
+      SequenceForm[ "    For ", {fWm, FHdm}, {fWp, FHup}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Calculate Tadpole Equations"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Ghost Interactions"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Save Model Information: "\[InvisibleSpace]EWSB\),
+      SequenceForm[ "Save Model Information: ", EWSB],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("      TadpoleEquations"\)], "Print"],
+
+Cell[BoxData[
+    \("      Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("      Split Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Finishing"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate final Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \("Add Matrix Products"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking for massless particles"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculating Tree Level Masses"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     For "\[InvisibleSpace]GaugeES\),
+      SequenceForm[ "     For ", GaugeES],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     For "\[InvisibleSpace]EWSB\),
+      SequenceForm[ "     For ", EWSB],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Simplify Mass Matrices"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking for Spectrum File"\)], "Print"],
+
+Cell[BoxData[
+    \("     No Spectrum File defined"\)], "Print"],
+
+Cell[BoxData[
+    \("Reading Parameter Values and Dependences"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Mixing Matrices"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("All Done... \
+"\[InvisibleSpace]"MSSM"\[InvisibleSpace]" is ready!"\),
+      SequenceForm[ "All Done... ", "MSSM", " is ready!"],
+      Editable->False]], "Print"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ Calculating\ all\ vertices\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(ModelOutput[EWSB]\)], "Input"],
+
+Cell[BoxData[
+    \("Generate Directories"\)], "Print"],
+
+Cell[BoxData[
+    \("Building Particle List"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate All Vertices"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("      Three Scalar Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Four Scalar Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Scalar - One Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      One Scalar - Two Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Scalar - Two Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Three Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Fermion - One Scalar - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Fermion - One Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Four Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Ghost - One Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Ghost - One Scalar - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Scalar - One Auxiliary - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("Simplify Vertices"\)], "Print"],
+
+Cell[BoxData[
+    \("Writing vertices to files"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Done... all vertices are saved in \
+"\[InvisibleSpace]"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/\
+MSSM-NoFV/EWSB/Vertices/"\),
+      SequenceForm[ 
+      "Done... all vertices are saved in ", 
+        "/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/\
+EWSB/Vertices/"],
+      Editable->False]], "Print"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ Writing\ the\ Model\ files\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(MakeWHIZARD[]\)], "Input"],
+
+Cell[BoxData[
+    \("-------------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \(" Creating WHIZARD/Omega Model Files  "\)], "Print"],
+
+Cell[BoxData[
+    \("-------------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Create C Form"\)], "Print"],
+
+Cell[BoxData[
+    \("Creating particle List"\)], "Print"],
+
+Cell[BoxData[
+    \("Creating parameter List"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Expanding Vertices (Number of Vertices: "\
+\[InvisibleSpace]349\[InvisibleSpace]")"\),
+      SequenceForm[ "Expanding Vertices (Number of Vertices: ", 349, ")"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]10\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 10, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]20\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 20, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]30\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 30, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]40\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 40, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]50\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 50, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]60\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 60, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]70\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 70, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]80\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 80, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]90\[InvisibleSpace]" \
+finished"\),
+      SequenceForm[ "...", 90, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]100\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 100, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]110\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 110, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]120\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 120, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]130\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 130, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]140\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 140, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]150\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 150, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]160\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 160, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]170\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 170, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]180\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 180, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]190\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 190, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]200\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 200, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]210\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 210, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]220\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 220, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]230\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 230, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]240\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 240, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]250\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 250, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]260\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 260, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]270\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 270, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]280\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 280, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]290\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 290, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]300\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 300, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]310\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 310, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]320\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 320, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]330\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 330, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("..."\[InvisibleSpace]340\[InvisibleSpace]" finished"\
+\),
+      SequenceForm[ "...", 340, " finished"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("finished... number of expanded vertices: "\
+\[InvisibleSpace]1116\),
+      SequenceForm[ "finished... number of expanded vertices: ", 1116],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \(" - - - SARAH interface to WHIZARD/O'Mega - - -"\)], "Print"],
+
+Cell[BoxData[
+    \(" - - - Authors:  C. Speckner, F.Staub - - -"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("Short model name is \"mssmnofv_sarah\""\)], "Print"],
+
+Cell[BoxData[
+    \("Gauge: Unitarity"\)], "Print"],
+
+Cell[BoxData[
+    \("Generating code for WHIZARD / O'Mega version 2.0.3"\)], "Print"],
+
+Cell[BoxData[
+    \("Maximum number of couplings per FORTRAN module: 500"\)], "Print"],
+
+Cell[BoxData[
+    \("Extensive lorentz structure checks disabled."\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Writing files to \
+"\[InvisibleSpace]"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/\
+MSSM-NoFV/EWSB/WHIZARD_Omega"\[InvisibleSpace]"\n"\),
+      SequenceForm[ 
+      "Writing files to ", 
+        "/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/\
+EWSB/WHIZARD_Omega", "\n"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Writing O'Mega module signature to \
+/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/omega/mssmnofv_sarah_mdl.mli ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing O'Mega module to \
+/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/omega/mssmnofv_sarah_mdl.ml ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Hello WOrld!"\)], "Print"],
+
+Cell[BoxData[
+    \("   10 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   20 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   30 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   40 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   50 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   60 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   70 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   80 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   90 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   100 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   110 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   120 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   130 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   140 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   150 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   160 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   170 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   180 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   190 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   200 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   210 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   220 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   230 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   240 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   250 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   260 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   270 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   280 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   290 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   300 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   310 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   320 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   330 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   340 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   350 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   360 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   370 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   380 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   390 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   400 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   410 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   420 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   430 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   440 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   450 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   460 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   470 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   480 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   490 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   500 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   510 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   520 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   530 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   540 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   550 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   560 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   570 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   580 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   590 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   600 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   610 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   620 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   630 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   640 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   650 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   660 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   670 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   680 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   690 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   700 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   710 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   720 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   730 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   740 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   750 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   760 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   770 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   780 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   790 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   800 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   810 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   820 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   830 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   840 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   850 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   860 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   870 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   880 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   890 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   900 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   910 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   920 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   930 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   940 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   950 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   960 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   970 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   980 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   990 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1000 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1010 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1020 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1030 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1040 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1050 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1060 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1070 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1080 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1090 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1100 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("   1110 of 1116 vertices processed..."\)], "Print"],
+
+Cell[BoxData[
+    \("processed a total of 1116 vertices, kept 1116 of them and threw away \
+0, 0 of which contained ghosts or goldstone bosons."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing O'Mega binary driver to \
+/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/omega/omega_mssmnofv_sarah.ml ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing WHIZARD model file to \
+/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/mssmnofv_sarah.mdl ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing WHIZARD FORTRAN glue..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing \
+\"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/parameters.mssmnofv_sarah.global.f90\"..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing \
+\"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/parameters.mssmnofv_sarah.cpl1.f90\"..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing \
+\"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/parameters.mssmnofv_sarah.cpl2.f90\"..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing \
+\"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/parameters.mssmnofv_sarah.cpl3.f90\"..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing \
+\"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/parameters.mssmnofv_sarah.local.f90\"..."\)], "Print"],
+
+Cell[BoxData[
+    \("Writing \
+\"/home/fnstaub/Documents/Uni/SARAH/sarah-3.0.beta4/Output/MSSM-NoFV/EWSB/\
+WHIZARD_Omega/whizard/parameters.mssmnofv_sarah.f90\"..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying configure.ac ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying configure ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying install-sh ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying Makefile.in ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying Makefile.omega.in ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying Makefile.whizard.in ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Copying INSTALL ..."\)], "Print"],
+
+Cell[BoxData[
+    \("Done!"\)], "Print"],
+
+Cell[BoxData[
+    \("You should now use the configure script which has been copied to the \
+output directory to configure the build system (use the variable WO_CONFIG \
+and consult \"configure --help\" if WHIZARD is not installed in the system \
+search path). Afterwards, the model files can be compiled and installed via \
+\"make install\"."\)], "Print"]
+}, Open  ]]
+},
+FrontEndVersion->"5.2 for X",
+ScreenRectangle->{{0, 1280}, {0, 800}},
+WindowSize->{1278, 720},
+WindowMargins->{{0, Automatic}, {Automatic, 24}}
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[1776, 53, 43, 1, 27, "Input"],
+Cell[1822, 56, 50, 1, 23, "Print"],
+Cell[1875, 59, 57, 1, 23, "Print"],
+Cell[1935, 62, 45, 1, 23, "Print"],
+Cell[1983, 65, 99, 2, 23, "Print"],
+Cell[2085, 69, 83, 1, 23, "Print"]
+}, Open  ]],
+Cell[2183, 73, 271, 5, 43, "Input"],
+
+Cell[CellGroupData[{
+Cell[2479, 82, 67, 1, 27, "Input"],
+Cell[2549, 85, 49, 1, 23, "Print"],
+Cell[2601, 88, 45, 1, 23, "Print"],
+Cell[2649, 91, 65, 1, 23, "Print"],
+Cell[2717, 94, 59, 1, 23, "Print"],
+Cell[2779, 97, 62, 1, 23, "Print"],
+Cell[2844, 100, 65, 1, 23, "Print"],
+Cell[2912, 103, 64, 1, 23, "Print"],
+Cell[2979, 106, 50, 1, 23, "Print"],
+Cell[3032, 109, 220, 4, 23, "Print"],
+Cell[3255, 115, 57, 1, 23, "Print"],
+Cell[3315, 118, 287, 6, 23, "Print"],
+Cell[3605, 126, 208, 4, 23, "Print"],
+Cell[3816, 132, 289, 6, 23, "Print"],
+Cell[4108, 140, 54, 1, 23, "Print"],
+Cell[4165, 143, 81, 1, 23, "Print"],
+Cell[4249, 146, 93, 1, 23, "Print"],
+Cell[4345, 149, 47, 1, 23, "Print"],
+Cell[4395, 152, 54, 1, 23, "Print"],
+Cell[4452, 155, 53, 1, 23, "Print"],
+Cell[4508, 158, 53, 1, 23, "Print"],
+Cell[4564, 161, 47, 1, 23, "Print"],
+Cell[4614, 164, 60, 1, 23, "Print"],
+Cell[4677, 167, 75, 1, 23, "Print"],
+Cell[4755, 170, 82, 1, 23, "Print"],
+Cell[4840, 173, 61, 1, 23, "Print"],
+Cell[4904, 176, 59, 1, 23, "Print"],
+Cell[4966, 179, 45, 1, 23, "Print"],
+Cell[5014, 182, 70, 1, 23, "Print"],
+Cell[5087, 185, 169, 3, 23, "Print"],
+Cell[5259, 190, 70, 1, 23, "Print"],
+Cell[5332, 193, 64, 1, 23, "Print"],
+Cell[5399, 196, 58, 1, 23, "Print"],
+Cell[5460, 199, 183, 3, 23, "Print"],
+Cell[5646, 204, 57, 1, 23, "Print"],
+Cell[5706, 207, 53, 1, 23, "Print"],
+Cell[5762, 210, 57, 1, 23, "Print"],
+Cell[5822, 213, 45, 1, 23, "Print"],
+Cell[5870, 216, 70, 1, 23, "Print"],
+Cell[5943, 219, 163, 3, 23, "Print"],
+Cell[6109, 224, 70, 1, 23, "Print"],
+Cell[6182, 227, 59, 1, 23, "Print"],
+Cell[6244, 230, 60, 1, 23, "Print"],
+Cell[6307, 233, 48, 1, 23, "Print"],
+Cell[6358, 236, 45, 1, 23, "Print"],
+Cell[6406, 239, 64, 1, 23, "Print"],
+Cell[6473, 242, 53, 1, 23, "Print"],
+Cell[6529, 245, 157, 3, 23, "Print"],
+Cell[6689, 250, 157, 3, 23, "Print"],
+Cell[6849, 255, 157, 3, 23, "Print"],
+Cell[7009, 260, 157, 3, 23, "Print"],
+Cell[7169, 265, 165, 3, 23, "Print"],
+Cell[7337, 270, 157, 3, 23, "Print"],
+Cell[7497, 275, 157, 3, 23, "Print"],
+Cell[7657, 280, 157, 3, 23, "Print"],
+Cell[7817, 285, 157, 3, 23, "Print"],
+Cell[7977, 290, 161, 3, 23, "Print"],
+Cell[8141, 295, 169, 3, 23, "Print"],
+Cell[8313, 300, 183, 4, 23, "Print"],
+Cell[8499, 306, 179, 3, 23, "Print"],
+Cell[8681, 311, 211, 4, 23, "Print"],
+Cell[8895, 317, 62, 1, 23, "Print"],
+Cell[8960, 320, 58, 1, 23, "Print"],
+Cell[9021, 323, 177, 3, 23, "Print"],
+Cell[9201, 328, 57, 1, 23, "Print"],
+Cell[9261, 331, 53, 1, 23, "Print"],
+Cell[9317, 334, 57, 1, 23, "Print"],
+Cell[9377, 337, 45, 1, 23, "Print"],
+Cell[9425, 340, 70, 1, 23, "Print"],
+Cell[9498, 343, 44, 1, 23, "Print"],
+Cell[9545, 346, 70, 1, 23, "Print"],
+Cell[9618, 349, 61, 1, 23, "Print"],
+Cell[9682, 352, 54, 1, 23, "Print"],
+Cell[9739, 355, 66, 1, 23, "Print"],
+Cell[9808, 358, 64, 1, 23, "Print"],
+Cell[9875, 361, 153, 3, 23, "Print"],
+Cell[10031, 366, 147, 3, 23, "Print"],
+Cell[10181, 371, 57, 1, 23, "Print"],
+Cell[10241, 374, 61, 1, 23, "Print"],
+Cell[10305, 377, 64, 1, 23, "Print"],
+Cell[10372, 380, 75, 1, 23, "Print"],
+Cell[10450, 383, 60, 1, 23, "Print"],
+Cell[10513, 386, 45, 1, 23, "Print"],
+Cell[10561, 389, 202, 4, 23, "Print"]
+}, Open  ]],
+Cell[10778, 396, 69, 1, 27, "Input"],
+
+Cell[CellGroupData[{
+Cell[10872, 401, 50, 1, 27, "Input"],
+Cell[10925, 404, 55, 1, 23, "Print"],
+Cell[10983, 407, 57, 1, 23, "Print"],
+Cell[11043, 410, 58, 1, 23, "Print"],
+Cell[11104, 413, 57, 1, 23, "Print"],
+Cell[11164, 416, 58, 1, 23, "Print"],
+Cell[11225, 419, 65, 1, 23, "Print"],
+Cell[11293, 422, 64, 1, 23, "Print"],
+Cell[11360, 425, 84, 1, 23, "Print"],
+Cell[11447, 428, 84, 1, 23, "Print"],
+Cell[11534, 431, 84, 1, 23, "Print"],
+Cell[11621, 434, 73, 1, 23, "Print"],
+Cell[11697, 437, 79, 1, 23, "Print"],
+Cell[11779, 440, 85, 1, 23, "Print"],
+Cell[11867, 443, 72, 1, 23, "Print"],
+Cell[11942, 446, 83, 1, 23, "Print"],
+Cell[12028, 449, 77, 1, 23, "Print"],
+Cell[12108, 452, 81, 1, 23, "Print"],
+Cell[12192, 455, 45, 1, 23, "Print"],
+Cell[12240, 458, 52, 1, 23, "Print"],
+Cell[12295, 461, 60, 1, 23, "Print"],
+Cell[12358, 464, 377, 8, 23, "Print"]
+}, Open  ]],
+Cell[12750, 475, 69, 1, 27, "Input"],
+
+Cell[CellGroupData[{
+Cell[12844, 480, 46, 1, 27, "Input"],
+Cell[12893, 483, 72, 1, 23, "Print"],
+Cell[12968, 486, 72, 1, 23, "Print"],
+Cell[13043, 489, 72, 1, 23, "Print"],
+Cell[13118, 492, 48, 1, 23, "Print"],
+Cell[13169, 495, 57, 1, 23, "Print"],
+Cell[13229, 498, 58, 1, 23, "Print"],
+Cell[13290, 501, 234, 4, 23, "Print"],
+Cell[13527, 507, 174, 4, 23, "Print"],
+Cell[13704, 513, 174, 4, 23, "Print"],
+Cell[13881, 519, 174, 4, 23, "Print"],
+Cell[14058, 525, 174, 4, 23, "Print"],
+Cell[14235, 531, 174, 4, 23, "Print"],
+Cell[14412, 537, 174, 4, 23, "Print"],
+Cell[14589, 543, 174, 4, 23, "Print"],
+Cell[14766, 549, 174, 4, 23, "Print"],
+Cell[14943, 555, 174, 4, 23, "Print"],
+Cell[15120, 561, 176, 4, 23, "Print"],
+Cell[15299, 567, 176, 4, 23, "Print"],
+Cell[15478, 573, 176, 4, 23, "Print"],
+Cell[15657, 579, 176, 4, 23, "Print"],
+Cell[15836, 585, 176, 4, 23, "Print"],
+Cell[16015, 591, 176, 4, 23, "Print"],
+Cell[16194, 597, 176, 4, 23, "Print"],
+Cell[16373, 603, 176, 4, 23, "Print"],
+Cell[16552, 609, 176, 4, 23, "Print"],
+Cell[16731, 615, 176, 4, 23, "Print"],
+Cell[16910, 621, 176, 4, 23, "Print"],
+Cell[17089, 627, 176, 4, 23, "Print"],
+Cell[17268, 633, 176, 4, 23, "Print"],
+Cell[17447, 639, 176, 4, 23, "Print"],
+Cell[17626, 645, 176, 4, 23, "Print"],
+Cell[17805, 651, 176, 4, 23, "Print"],
+Cell[17984, 657, 176, 4, 23, "Print"],
+Cell[18163, 663, 176, 4, 23, "Print"],
+Cell[18342, 669, 176, 4, 23, "Print"],
+Cell[18521, 675, 176, 4, 23, "Print"],
+Cell[18700, 681, 176, 4, 23, "Print"],
+Cell[18879, 687, 176, 4, 23, "Print"],
+Cell[19058, 693, 176, 4, 23, "Print"],
+Cell[19237, 699, 176, 4, 23, "Print"],
+Cell[19416, 705, 176, 4, 23, "Print"],
+Cell[19595, 711, 213, 4, 23, "Print"],
+Cell[19811, 717, 45, 1, 23, "Print"],
+Cell[19859, 720, 81, 1, 23, "Print"],
+Cell[19943, 723, 78, 1, 23, "Print"],
+Cell[20024, 726, 45, 1, 23, "Print"],
+Cell[20072, 729, 73, 1, 23, "Print"],
+Cell[20148, 732, 51, 1, 23, "Print"],
+Cell[20202, 735, 85, 1, 23, "Print"],
+Cell[20290, 738, 86, 1, 23, "Print"],
+Cell[20379, 741, 79, 1, 23, "Print"],
+Cell[20461, 744, 378, 8, 39, "Print"],
+Cell[20842, 754, 192, 3, 23, "Print"],
+Cell[21037, 759, 181, 3, 23, "Print"],
+Cell[21221, 764, 47, 1, 23, "Print"],
+Cell[21271, 767, 70, 1, 23, "Print"],
+Cell[21344, 770, 70, 1, 23, "Print"],
+Cell[21417, 773, 70, 1, 23, "Print"],
+Cell[21490, 776, 70, 1, 23, "Print"],
+Cell[21563, 779, 70, 1, 23, "Print"],
+Cell[21636, 782, 70, 1, 23, "Print"],
+Cell[21709, 785, 70, 1, 23, "Print"],
+Cell[21782, 788, 70, 1, 23, "Print"],
+Cell[21855, 791, 70, 1, 23, "Print"],
+Cell[21928, 794, 71, 1, 23, "Print"],
+Cell[22002, 797, 71, 1, 23, "Print"],
+Cell[22076, 800, 71, 1, 23, "Print"],
+Cell[22150, 803, 71, 1, 23, "Print"],
+Cell[22224, 806, 71, 1, 23, "Print"],
+Cell[22298, 809, 71, 1, 23, "Print"],
+Cell[22372, 812, 71, 1, 23, "Print"],
+Cell[22446, 815, 71, 1, 23, "Print"],
+Cell[22520, 818, 71, 1, 23, "Print"],
+Cell[22594, 821, 71, 1, 23, "Print"],
+Cell[22668, 824, 71, 1, 23, "Print"],
+Cell[22742, 827, 71, 1, 23, "Print"],
+Cell[22816, 830, 71, 1, 23, "Print"],
+Cell[22890, 833, 71, 1, 23, "Print"],
+Cell[22964, 836, 71, 1, 23, "Print"],
+Cell[23038, 839, 71, 1, 23, "Print"],
+Cell[23112, 842, 71, 1, 23, "Print"],
+Cell[23186, 845, 71, 1, 23, "Print"],
+Cell[23260, 848, 71, 1, 23, "Print"],
+Cell[23334, 851, 71, 1, 23, "Print"],
+Cell[23408, 854, 71, 1, 23, "Print"],
+Cell[23482, 857, 71, 1, 23, "Print"],
+Cell[23556, 860, 71, 1, 23, "Print"],
+Cell[23630, 863, 71, 1, 23, "Print"],
+Cell[23704, 866, 71, 1, 23, "Print"],
+Cell[23778, 869, 71, 1, 23, "Print"],
+Cell[23852, 872, 71, 1, 23, "Print"],
+Cell[23926, 875, 71, 1, 23, "Print"],
+Cell[24000, 878, 71, 1, 23, "Print"],
+Cell[24074, 881, 71, 1, 23, "Print"],
+Cell[24148, 884, 71, 1, 23, "Print"],
+Cell[24222, 887, 71, 1, 23, "Print"],
+Cell[24296, 890, 71, 1, 23, "Print"],
+Cell[24370, 893, 71, 1, 23, "Print"],
+Cell[24444, 896, 71, 1, 23, "Print"],
+Cell[24518, 899, 71, 1, 23, "Print"],
+Cell[24592, 902, 71, 1, 23, "Print"],
+Cell[24666, 905, 71, 1, 23, "Print"],
+Cell[24740, 908, 71, 1, 23, "Print"],
+Cell[24814, 911, 71, 1, 23, "Print"],
+Cell[24888, 914, 71, 1, 23, "Print"],
+Cell[24962, 917, 71, 1, 23, "Print"],
+Cell[25036, 920, 71, 1, 23, "Print"],
+Cell[25110, 923, 71, 1, 23, "Print"],
+Cell[25184, 926, 71, 1, 23, "Print"],
+Cell[25258, 929, 71, 1, 23, "Print"],
+Cell[25332, 932, 71, 1, 23, "Print"],
+Cell[25406, 935, 71, 1, 23, "Print"],
+Cell[25480, 938, 71, 1, 23, "Print"],
+Cell[25554, 941, 71, 1, 23, "Print"],
+Cell[25628, 944, 71, 1, 23, "Print"],
+Cell[25702, 947, 71, 1, 23, "Print"],
+Cell[25776, 950, 71, 1, 23, "Print"],
+Cell[25850, 953, 71, 1, 23, "Print"],
+Cell[25924, 956, 71, 1, 23, "Print"],
+Cell[25998, 959, 71, 1, 23, "Print"],
+Cell[26072, 962, 71, 1, 23, "Print"],
+Cell[26146, 965, 71, 1, 23, "Print"],
+Cell[26220, 968, 71, 1, 23, "Print"],
+Cell[26294, 971, 71, 1, 23, "Print"],
+Cell[26368, 974, 71, 1, 23, "Print"],
+Cell[26442, 977, 71, 1, 23, "Print"],
+Cell[26516, 980, 71, 1, 23, "Print"],
+Cell[26590, 983, 71, 1, 23, "Print"],
+Cell[26664, 986, 71, 1, 23, "Print"],
+Cell[26738, 989, 71, 1, 23, "Print"],
+Cell[26812, 992, 71, 1, 23, "Print"],
+Cell[26886, 995, 71, 1, 23, "Print"],
+Cell[26960, 998, 71, 1, 23, "Print"],
+Cell[27034, 1001, 71, 1, 23, "Print"],
+Cell[27108, 1004, 71, 1, 23, "Print"],
+Cell[27182, 1007, 71, 1, 23, "Print"],
+Cell[27256, 1010, 71, 1, 23, "Print"],
+Cell[27330, 1013, 71, 1, 23, "Print"],
+Cell[27404, 1016, 71, 1, 23, "Print"],
+Cell[27478, 1019, 71, 1, 23, "Print"],
+Cell[27552, 1022, 71, 1, 23, "Print"],
+Cell[27626, 1025, 71, 1, 23, "Print"],
+Cell[27700, 1028, 71, 1, 23, "Print"],
+Cell[27774, 1031, 71, 1, 23, "Print"],
+Cell[27848, 1034, 71, 1, 23, "Print"],
+Cell[27922, 1037, 71, 1, 23, "Print"],
+Cell[27996, 1040, 71, 1, 23, "Print"],
+Cell[28070, 1043, 71, 1, 23, "Print"],
+Cell[28144, 1046, 71, 1, 23, "Print"],
+Cell[28218, 1049, 71, 1, 23, "Print"],
+Cell[28292, 1052, 71, 1, 23, "Print"],
+Cell[28366, 1055, 71, 1, 23, "Print"],
+Cell[28440, 1058, 71, 1, 23, "Print"],
+Cell[28514, 1061, 71, 1, 23, "Print"],
+Cell[28588, 1064, 72, 1, 23, "Print"],
+Cell[28663, 1067, 72, 1, 23, "Print"],
+Cell[28738, 1070, 72, 1, 23, "Print"],
+Cell[28813, 1073, 72, 1, 23, "Print"],
+Cell[28888, 1076, 72, 1, 23, "Print"],
+Cell[28963, 1079, 72, 1, 23, "Print"],
+Cell[29038, 1082, 72, 1, 23, "Print"],
+Cell[29113, 1085, 72, 1, 23, "Print"],
+Cell[29188, 1088, 72, 1, 23, "Print"],
+Cell[29263, 1091, 72, 1, 23, "Print"],
+Cell[29338, 1094, 72, 1, 23, "Print"],
+Cell[29413, 1097, 72, 1, 23, "Print"],
+Cell[29488, 1100, 157, 2, 23, "Print"],
+Cell[29648, 1104, 190, 3, 23, "Print"],
+Cell[29841, 1109, 185, 3, 23, "Print"],
+Cell[30029, 1114, 66, 1, 23, "Print"],
+Cell[30098, 1117, 184, 3, 23, "Print"],
+Cell[30285, 1122, 182, 3, 23, "Print"],
+Cell[30470, 1127, 182, 3, 23, "Print"],
+Cell[30655, 1132, 182, 3, 23, "Print"],
+Cell[30840, 1137, 183, 3, 23, "Print"],
+Cell[31026, 1142, 177, 3, 23, "Print"],
+Cell[31206, 1147, 59, 1, 23, "Print"],
+Cell[31268, 1150, 56, 1, 23, "Print"],
+Cell[31327, 1153, 57, 1, 23, "Print"],
+Cell[31387, 1156, 58, 1, 23, "Print"],
+Cell[31448, 1159, 64, 1, 23, "Print"],
+Cell[31515, 1162, 66, 1, 23, "Print"],
+Cell[31584, 1165, 54, 1, 23, "Print"],
+Cell[31641, 1168, 40, 1, 23, "Print"],
+Cell[31684, 1171, 355, 5, 39, "Print"]
+}, Open  ]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+

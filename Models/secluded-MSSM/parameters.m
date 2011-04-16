@@ -1,0 +1,137 @@
+ParameterDefinitions = { 
+
+{g1,        { Description -> "Hypercharge-Coupling"}},
+{g2,        { Description -> "Left-Coupling"}},
+{g3,        { Description -> "Strong-Coupling"}},    
+
+{e,         { Description -> "electric charge"}}, 
+
+{Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
+{Yd,        { Description -> "Down-Yukawa-Coupling"}},
+{Ye,        { Description -> "Lepton-Yukawa-Coupling"}}, 
+
+{T[Ye],     { Description -> "Trilinear-Lepton-Coupling"}},
+{T[Yd],     { Description -> "Trilinear-Down-Coupling"}}, 
+{T[Yu],     { Description -> "Trilinear-Up-Coupling"}}, 
+
+{\[Mu],     { Description -> "Mu-parameter"}}, 
+{B[\[Mu]],  { Description -> "Bmu-parameter"}},        
+
+{mq2,       { Description -> "Softbreaking left Squark Mass"}},
+{me2,       { Description -> "Softbreaking right Slepton Mass"}},
+{ml2,       { Description -> "Softbreaking left Slepton Mass"}},
+{mu2,       { Description -> "Softbreaking right Up-Squark Mass"}},
+{md2,       { Description -> "Softbreaking right Down-Squark Mass"}},
+{mHd2,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
+{mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
+
+{MassB,     { Description -> "Bino Mass parameter"}},
+{MassWB,    { Description -> "Wino Mass parameter"}},
+{MassG,     { Description -> "Gluino Mass parameter"}},
+                           
+{vd,        { Description -> "Down-VEV"}}, 
+{vu,        { Description -> "Up-VEV"}},       
+{v,         { Description -> "EW-VEV"}},
+             
+{\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }},             
+{TanBeta,   { Description -> "Tan Beta" }},              
+{\[Alpha],  { Description -> "Scalar mixing angle" }},                          
+             
+    
+{ZD,        { Description -> "Down-Squark-Mixing-Matrix" }},             
+{ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
+{ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
+{ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
+{ZH,        { Description->"Scalar-Mixing-Matrix", 
+              Real -> False,
+				  Dependence->None,
+  				  DependenceOptional->None,
+  				  DependenceNum->None,
+              LesHouches -> NMHMIX      }},
+{ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix", 
+               Real ->False,
+				  Dependence->None,
+  				  DependenceOptional->None,
+  				  DependenceNum->None,
+               LesHouches -> NMAMIX     }},
+{ZP,        { Description->"Charged-Mixing-Matrix"}},                      
+                                          
+ 
+{ZN,        { Description->"Neutralino Mixing-Matrix",
+              LesHouches -> NMNMIX   }}, 
+
+{UP,        { Description->"Chargino-plus Mixing-Matrix"}}, 
+{UM,        { Description->"Chargino-minus Mixing-Matrix"}}, 
+
+{ZEL,       { Description ->"Left-Lepton-Mixing-Matrix"}},
+{ZER,       { Description ->"Right-Lepton-Mixing-Matrix" }},                          
+{ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
+{ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
+{ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
+{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
+              
+{ThetaW,    { Description -> "Weinberg-Angle"}},                 
+{ThetaWp,  { Description -> "Theta'",
+			 Dependence -> None,
+ 			 DependenceNum -> None  }},
+                        
+{PhaseGlu,  { Description -> "Gluino-Phase" }},   
+                                                                      
+{\[Kappa],   {Description -> "Singlet Self-Interaction"}},                               
+{T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 
+{\[Lambda],   { Description -> "Singlet-Higgs-Interaction"   }},                               
+{T[\[Lambda]],  {Description -> "Softbreaking Singlet-Higgs-Interaction"}},        
+             
+{ms2,       { Description -> "Softbreaking Singlet Mass" }},
+{vS,        { Description -> "Singlet-VEV"}},
+
+
+{gp,       {Description -> "U(1)' Gauge Coupling"}},
+
+
+{Qp,        { LaTeX -> "Q_p",
+              Real -> True,
+			  LesHouches -> {XCharge,1}}},             
+{Ql,        { LaTeX -> "Q_l",
+              Real -> True,
+			  LesHouches -> {XCharge,2}}},
+{QHu,        { LaTeX -> "Q_{H_u}",
+              Real -> True,
+			  LesHouches -> {XCharge,3}}},
+{QHd,        { LaTeX -> "Q_{H_d}",
+              Real -> True,
+			  LesHouches -> {XCharge,4}}},
+{Qd,        { LaTeX -> "Q_d",
+              Real -> True,
+			  LesHouches -> {XCharge,5}}},
+{Qu,        { LaTeX -> "Q_u",
+              Real -> True,
+			  LesHouches -> {XCharge,6}}},             
+{Qe,        { LaTeX -> "Q_e",
+              Real -> True,
+			  LesHouches -> {XCharge,7}}},
+{Qs,        { LaTeX -> "Q_s",
+              Real -> True,
+			  LesHouches -> {XCharge,8}}},
+{Qs1,     {LaTeX -> "Q_1",
+                 Real ->True,
+			  LesHouches -> {XCharge,9} }},
+{Qs2,     {LaTeX -> "Q_2",
+                 Real ->True,
+			  LesHouches -> {XCharge,10} }},
+{Qs3,     {LaTeX -> "Q_3",
+                 Real ->True,
+			  LesHouches -> {XCharge,11} }},
+                 
+{MassU,        { LaTeX -> "M_U",
+                 LesHouches -> {MSOFT,4} }},
+{ThetaZ,    { LaTeX -> "\\Theta_Z"}},
+
+{vev1,      { LaTeX -> "v_1"}},
+{vev2,      { LaTeX -> "v_2"}},
+{vev3,      { LaTeX -> "v_3"}}
+
+ }; 
+ 
+
+
