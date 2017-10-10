@@ -41,4 +41,4 @@ ListDecayParticles = {Fu,Fe,Fd,hh,Ah,Hm};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 
-DefaultInputValues ={Lambda1Input -> 0.1, Lambda2Input -> 0.27, Lambda3Input -> 1.1, Lambda4Input ->-0.5, Lambda5Input ->0.5,  M12input -> -200, TanBeta->50};
+DefaultInputValues ={Lambda1Input -> 0.1, Lambda2Input -> 0.13, Lambda3Input -> 1.1, Lambda4Input ->-0.5, Lambda5Input ->0.5,  M12input -> 40000, TanBeta->50};

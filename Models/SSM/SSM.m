@@ -3,12 +3,13 @@ Off[General::spell]
 Model`Name = "SSM";
 Model`NameLaTeX ="Singlet Extended Standard Model";
 Model`Authors = "F.Staub";
-Model`Date = "2015-11-16";
+Model`Date = "2016-02-29";
 
 (* 2013-01-24: changed normalization of lambda term to convention of hep-ph/0207271 *)
 (* 2013-06-24: using new name conventions (without inital "S" and "F" for scalar and matter fields) *)
 (* 2014-11-06: Changed sign in Lagrangian *)
 (* 2015-11-16: changed SPheno.m *)
+(* 2016-02-29: Added s^3 term *)
 
 
 (*-------------------------------------------*)
@@ -53,7 +54,7 @@ DEFINITION[GaugeES][Additional]= {
 	{LagNoHC,{ AddHC->False}}
 };
 
-LagNoHC = -(mu2 conj[H].H +  1/2 MS s.s + K1 conj[H].H.s + 1/2 K2 conj[H].H.s.s + LambdaS/2 s.s.s.s + 1/2 \[Lambda] conj[H].H.conj[H].H);
+LagNoHC = -(mu2 conj[H].H +  1/2 MS s.s + K1 conj[H].H.s + 1/2 K2 conj[H].H.s.s + \[Kappa]/3 s.s.s + LambdaS/2 s.s.s.s + 1/2 \[Lambda] conj[H].H.conj[H].H);
 
 LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
 			  		  

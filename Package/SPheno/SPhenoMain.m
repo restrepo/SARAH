@@ -346,6 +346,10 @@ MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs,listAllParamete
 If[getGen[HiggsBoson]>1,
 MakeCall["HiggsCrossSections",{},{SPhenoForm[SPhenoMass[HiggsBoson]],"ratioGG", "ratioPP","rHB_S_"<>SPhenoForm[VectorW],"rHB_S_"<>SPhenoForm[VectorZ],"rHB_S_S_"<>SPhenoForm[TopQuark]<>"(:,3)","CS_Higgs_LHC","kont"},{},spheno];
 ];
+
+If[(getGen[PseudoScalar]-getGenSPhenoStart[PseudoScalar]+1)>0 && (getGen[PseudoScalar]<99),
+MakeCall["HiggsCrossSections",{},{SPhenoForm[SPhenoMass[PseudoScalar]],"ratioPGG", "ratioPPP","0._dp*rHB_S_"<>SPhenoForm[VectorW],"0._dp*rHB_S_"<>SPhenoForm[VectorZ],"rHB_P_S_"<>SPhenoForm[TopQuark]<>"(:,3)","CS_PHiggs_LHC","kont"},{},spheno];
+];
 ];
 
 WriteString[spheno,"End If \n \n "];
@@ -907,10 +911,6 @@ WriteString[spheno," mf_l2_MZ = "<>ToString[SPhenoMass[Electron]] <>"(1:3)**2 \n
 MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},spheno];
 
 
-If[IncludeOldObservables===True,
-(* 1 Lepton \[Rule] 3 Leptons *)
-WriteString[spheno,"\n! *****  l -> 3 l' ***** \n\n"];
-
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
 WriteString[spheno,"Mhh_s = "<>SPhenoForm[SPhenoMass[HiggsBoson]]<>" \n"];
 WriteString[spheno,"Mhh2_s  = "<>SPhenoForm[SPhenoMassSq[HiggsBoson]]<>"   \n"];
@@ -918,7 +918,6 @@ WriteString[spheno,"Mhh2_s  = "<>SPhenoForm[SPhenoMassSq[HiggsBoson]]<>"   \n"];
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
 WriteString[spheno,"MAh_s = "<>SPhenoForm[SPhenoMass[PseudoScalar]]<>" \n"];
 WriteString[spheno,"MAh2_s  = "<>SPhenoForm[SPhenoMassSq[PseudoScalar]]<>"   \n"];
-];
 ];
 
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,

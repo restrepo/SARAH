@@ -100,43 +100,10 @@ For[i=1,i<=Length[NewNumericalDependences],
 WriteString[sphenoBR, SPhenoForm[NewNumericalDependences[[i,1]]] <> " = " <> SPhenoForm[NewNumericalDependences[[i,2]]] <> "\n"];
 i++;];
 
-(*
-MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},sphenoBR];
-
-If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False && FreeQ[ParticleDefinitions[Eigenstates],"Pseudo-Scalar Higgs"]===False,
-If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]\[Equal]False,
-WriteString[sphenoBR,"CPL_A_H_Z = Transpose("<>ToString[SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]<>")**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
-If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]\[Equal]False,
-WriteString[sphenoBR,"CPL_A_H_Z = "<>ToString[SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
-WriteString[sphenoBR,"CPL_A_H_Z = 0 \n"];
-];
-];
-];
-
-
-If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False ,
-If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,HiggsBoson,VectorZ]]]\[Equal]False,
-WriteString[sphenoBR,"CPL_H_H_Z = "<>ToString[SPhenoCoupling[CS[HiggsBoson,HiggsBoson,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
-WriteString[sphenoBR,"CPL_H_H_Z = 0._dp \n"];
-];
-];
-
-If[FreeQ[ParticleDefinitions[Eigenstates],"Pseudo-Scalar Higgs"]===False,
-If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]\[Equal]False,
-WriteString[sphenoBR,"CPL_A_A_Z = "<>ToString[SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
-WriteString[sphenoBR,"CPL_A_A_Z = 0._dp \n"];
-];
-];
-*)
 
 WriteString[sphenoBR,ToString[SPhenoWidth[VectorW]]<>" = gamW \n"];
 WriteString[sphenoBR,ToString[SPhenoWidth[VectorZ]]<>" = gamZ \n"];
 
-(*
-If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False,
-GenerateHiggsCouplingRatios[Eigenstates];
-];
-*)
 
 For[i=1,i<=Length[savedDecayInfos],
 WriteString[sphenoBR,"gP"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
@@ -144,10 +111,6 @@ WriteString[sphenoBR,"gT"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
 WriteString[sphenoBR,"BR"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
 
 If[FreeQ[Transpose[ListDecayParticles3B][[1]],savedDecayInfos[[i,1]]]==True || FreeQ[BR2and3,savedDecayInfos[[i,1]]]==True,
-(*
-MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{savedDecayInfos[[i,2]],savedDecayInfos[[i,3]]}],{"-1"},{"gP"<>ToString[savedDecayInfos[[i,1]]],"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]},sphenoBR]; 
-
-MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{listAllParametersAndVEVs,savedDecayInfos[[i,3]]}],{"-1","DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]],"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]},sphenoBR]; *)
 
 MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1","DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]],"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]},sphenoBR]; 
 
@@ -170,16 +133,86 @@ length2B = "(:,1:"<>ToString[Extract[BR2and3,pos][[2]]]<>")";
 length3B = "(:,"<>ToString[Extract[BR2and3,pos][[2]]+1] <>":"<>ToString[Extract[BR2and3,pos][[3]]] <>")";
 
 
-WriteString[sphenoBR,"If (.Not.CTBD) Then \n"];
-
-(*
-MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{savedDecayInfos[[i,2]],savedDecayInfos[[i,3]]}],{"-1"},{"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B,"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]<>length2B},sphenoBR]; 
-
-MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{listAllParametersAndVEVs,savedDecayInfos[[i,3]]}],{"-1", "DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B,"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]<>length2B},sphenoBR]; *)
-
+(* WriteString[sphenoBR,"If (.Not.CTBD) Then \n"]; *)
 
 MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1", "DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B,"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]<>length2B},sphenoBR];
 
+
+(*
+If[getType[savedDecayInfos[[i,1]]]===F,
+WriteString[sphenoBR,"If (Enable3BDecaysF) Then \n"];,
+WriteString[sphenoBR,"If (Enable3BDecaysS) Then \n"];
+];
+If[getGenSPheno[savedDecayInfos[[i,1]]]>1,
+WriteString[sphenoBR,"If (MaxVal(gT"<>ToString[savedDecayInfos[[i,1]]]<>").Lt.MaxVal(fac3*Abs("<>ToString[SPhenoMass[savedDecayInfos[[i,1]]]]<>"))) Then \n"];,
+WriteString[sphenoBR,"If (gT"<>ToString[savedDecayInfos[[i,1]]]<>".Lt.fac3*Abs("<>ToString[SPhenoMass[savedDecayInfos[[i,1]]]]<>")) Then \n"];
+];
+
+pos=Position[Transpose[ListDecayParticles3B][[1]],savedDecayInfos[[i,1]]][[1,1]];
+
+MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs,savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR];
+
+
+WriteString[sphenoBR,"Else \n"];
+
+MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs,savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".True.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR];
+
+WriteString[sphenoBR,"End If \n \n"];
+WriteString[sphenoBR,"End If \n"];
+
+WriteString[sphenoBR,"Else \n"];
+
+
+MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs,savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; 
+
+WriteString[sphenoBR,"End If \n"];
+*)
+
+WriteString[sphenoBR,"Do i1=1,"<>ToString[getGenSPheno[savedDecayInfos[[i,1]]]] <>"\n"];
+WriteString[sphenoBR,SPhenoWidth[savedDecayInfos[[i,1]],i1]<>" =Sum("<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]]<>"(i1,:)) \n"];
+WriteString[sphenoBR,"If ("<>SPhenoWidth[savedDecayInfos[[i,1]],i1]<>".Gt.0._dp) "<>ToString[SPhenoBR[savedDecayInfos[[i,1]]]]<>"(i1,: ) ="<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]] <>"(i1,:)/"<> ToString[SPhenoWidth[savedDecayInfos[[i,1]],i1]]<>" \n"];
+WriteString[sphenoBR,"End Do \n \n\n"];
+
+
+];
+i++;];
+
+
+For[i=1,i<=Length[savedDecayInfos],
+(*
+WriteString[sphenoBR,"gP"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
+WriteString[sphenoBR,"gT"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
+WriteString[sphenoBR,"BR"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
+*)
+If[FreeQ[Transpose[ListDecayParticles3B][[1]],savedDecayInfos[[i,1]]]==True || FreeQ[BR2and3,savedDecayInfos[[i,1]]]==True,
+WriteString[sphenoBR,"! No 3-body decays for "<>SPhenoForm[savedDecayInfos[[i,1]]]<>"  \n"];
+(*
+MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1","DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]],"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]},sphenoBR]; 
+
+If[FreeQ[GoldstoneGhost,savedDecayInfos[[i,1]]]\[Equal]False,
+WriteString[sphenoBR,"! Set Goldstone Widhts \n"];
+pos = Position[GoldstoneGhost,savedDecayInfos[[i,1]]];
+For[k=1,k\[LessEqual]Length[pos],
+If[FreeQ[ListDecayParticles,GoldstoneGhost[[pos[[k,1]],2]]/. A_[{b__}]\[Rule]A]\[Equal]False,
+If[Head[GoldstoneGhost[[pos[[k,1]],2]]]===Symbol,
+WriteString[sphenoBR,SPhenoWidth[GoldstoneGhost[[pos[[k,1]],2]],1]<>"="<>SPhenoWidth[GoldstoneGhost[[pos[[k,1]],1]],i] <>"\n" ];,
+WriteString[sphenoBR,SPhenoWidth[GoldstoneGhost[[pos[[k,1]],2,0]],GoldstoneGhost[[pos[[k,1]],2,1,1]]]<>"="<>SPhenoWidth[GoldstoneGhost[[pos[[k,1]],1]],i] <>"\n" ];
+];
+];
+k++;];
+WriteString[sphenoBR,"\n\n"];
+]; *),
+
+pos=Position[BR2and3,savedDecayInfos[[i,1]]][[1,1]];
+length2B = "(:,1:"<>ToString[Extract[BR2and3,pos][[2]]]<>")";
+length3B = "(:,"<>ToString[Extract[BR2and3,pos][[2]]+1] <>":"<>ToString[Extract[BR2and3,pos][[3]]] <>")";
+
+
+WriteString[sphenoBR,"If (.Not.CTBD) Then \n"];
+
+(*
+MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1", "DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B,"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]<>length2B},sphenoBR];
+*)
 
 If[getType[savedDecayInfos[[i,1]]]===F,
 WriteString[sphenoBR,"If (Enable3BDecaysF) Then \n"];,
@@ -192,20 +225,10 @@ WriteString[sphenoBR,"If (gT"<>ToString[savedDecayInfos[[i,1]]]<>".Lt.fac3*Abs("
 
 pos=Position[Transpose[ListDecayParticles3B][[1]],savedDecayInfos[[i,1]]][[1,1]];
 
-(*
-MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{savedDecayInfos3Body[[pos,2]],savedDecayInfos3Body[[pos,3]],savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; 
-
-MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{listAllParametersAndVEVs,savedDecayInfos3Body[[pos,2]],savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; *)
-
 MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs,savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR];
 
 
 WriteString[sphenoBR,"Else \n"];
-(*
-MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{savedDecayInfos3Body[[pos,2]],savedDecayInfos3Body[[pos,3]],savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".True.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; 
-
-MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{listAllParametersAndVEVs,savedDecayInfos3Body[[pos,2]],savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".True.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; *)
-
 
 MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs,savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".True.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR];
 
@@ -213,11 +236,6 @@ WriteString[sphenoBR,"End If \n \n"];
 WriteString[sphenoBR,"End If \n"];
 
 WriteString[sphenoBR,"Else \n"];
-
-(*
-MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{savedDecayInfos3Body[[pos,2]],savedDecayInfos3Body[[pos,3]],savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; 
-
-MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{listAllParametersAndVEVs,savedDecayInfos3Body[[pos,2]],savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; *)
 
 
 MakeCall[ToString[savedDecayInfos3Body[[pos,1]]]<>"ThreeBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs,savedDecayInfos3Body[[pos,4]],savedDecayInfos3Body[[pos,5]]}],{"-1"},{"epsI", "deltaM",".False.","gT"<>ToString[savedDecayInfos3Body[[pos,1]]],"gP"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B,"BR"<>ToString[savedDecayInfos3Body[[pos,1]]]<>length3B},sphenoBR]; 

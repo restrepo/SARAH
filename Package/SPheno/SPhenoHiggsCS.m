@@ -51,20 +51,23 @@ genHS=ToString[genH];
 MakeSubroutineTitle["HiggsCrossSections",{},{"mh","ratGG","ratPP","ratWW","ratZZ","ratTT","CS","kont"},{},sphenoCS];
 
 WriteString[sphenoCS,"Implicit None \n"];
-WriteString[sphenoCS,"Real(dp), Intent(in) :: mh("<>genHS<>")  \n"];
-WriteString[sphenoCS,"Complex(dp), Intent(in) :: ratPP("<>genHS<>"), ratGG("<>genHS<>")  \n"];
-WriteString[sphenoCS,"Real(dp), Intent(in) :: ratZZ("<>genHS<>"), ratWW("<>genHS<>"), ratTT("<>genHS<>")  \n"];
-WriteString[sphenoCS,"Real(dp), Intent(Out) :: CS(2,"<>genHS<>",5)  \n"];
+WriteString[sphenoCS,"Real(dp), Intent(in) :: mh(:)  \n"];
+WriteString[sphenoCS,"Complex(dp), Intent(in) :: ratPP(:), ratGG(:)  \n"];
+WriteString[sphenoCS,"Real(dp), Intent(in) :: ratZZ(:), ratWW(:), ratTT(:)  \n"];
+WriteString[sphenoCS,"Real(dp), Intent(Out) :: CS(:,:,:)  \n"];
 WriteString[sphenoCS,"Integer, Intent(inout) :: kont \n"];
 WriteString[sphenoCS, "Real(dp) :: x, res \n"];
 WriteString[sphenoCS, "Integer :: i1 \n"];
+WriteString[sphenoCS, "Integer :: nG \n"];
+
+WriteString[sphenoCS, "nG = Size(mh) \n"];
 
 WriteString[sphenoCS,"!-------------------- \n"];
 WriteString[sphenoCS,"! LHC 7 \n"];
 WriteString[sphenoCS,"!-------------------- \n"];
 
 
-WriteString[sphenoCS, "Do i1=1,"<>genHS<>" \n"];
+WriteString[sphenoCS, "Do i1=1, nG \n"];
 WriteString[sphenoCS, "x = mh(i1) \n"];
 
 WriteString[sphenoCS,"! Gluon fusion \n"];
@@ -128,7 +131,7 @@ WriteString[sphenoCS,"!-------------------- \n"];
 WriteString[sphenoCS,"! LHC 8 \n"];
 WriteString[sphenoCS,"!-------------------- \n"];
 
-WriteString[sphenoCS, "Do i1=1,"<>genHS<>" \n"];
+WriteString[sphenoCS, "Do i1=1,nG \n"];
 WriteString[sphenoCS, "x = mh(i1) \n"];
 
 WriteString[sphenoCS,"! Gluon fusion \n"];
@@ -181,6 +184,72 @@ WriteString[sphenoCS, "res = - 1._dp \n"];
 WriteString[sphenoCS, "End if \n"];
 WriteString[sphenoCS, "CS(2,i1,5) = res \n"];
 WriteString[sphenoCS,"End Do \n"];
+
+
+WriteString[sphenoCS,"!-------------------- \n"];
+WriteString[sphenoCS,"! LHC 13 \n"];
+WriteString[sphenoCS,"!-------------------- \n"];
+
+WriteString[sphenoCS, "Do i1=1,nG \n"];
+WriteString[sphenoCS, "x = mh(i1) \n"];
+WriteString[sphenoCS,"! Gluon fusion \n"];
+WriteString[sphenoCS, "If ((x.gt.50._dp).AND.(x.lt.400._dp)) Then \n"];
+WriteString[sphenoCS, "res = (11616.77702766903 + 700.9534922253372*x + 0.6550151443825573*x**2 - 0.0010432868789482976*x**3 + 1.208231269118169e-6*x**4 - 6.502604577273565e-10*x**5 &\n&  - 5555.016263186344*Log(x) - 66.97248427992604*x*Log(x) - 33.486242139963004*x*Log(x**2))*ratGG(i1) \n"];
+WriteString[sphenoCS, "Else If ((x.gt.400._dp).AND.(x.lt.1000._dp)) Then \n"];
+WriteString[sphenoCS, "res = (-37568.9089823239 - 544.6657590030997*x - 0.11932971667208431*x**2 + 0.000055460517739423844*x**3 - 1.909418438981979e-8*x**4 + 3.1219539385171897e-12*x**5 &\n& + 11611.750198662685*Log(x) + 42.11680032656563*x*Log(x) + 21.058400163282815*x*Log(x**2))*ratGG(i1) \n"];
+WriteString[sphenoCS, "Else \n"];
+WriteString[sphenoCS, "res = - 1._dp \n"];
+WriteString[sphenoCS, "End if \n"];
+WriteString[sphenoCS, "CS(3,i1,1) = res \n"];
+WriteString[sphenoCS, "CS(3,i1,2) = -1._dp \n"];
+WriteString[sphenoCS, "CS(3,i1,3) = -1._dp \n"];
+WriteString[sphenoCS, "CS(3,i1,4) = -1._dp \n"];
+WriteString[sphenoCS, "CS(3,i1,5) = -1._dp \n"];
+WriteString[sphenoCS,"End Do \n"];
+
+WriteString[sphenoCS,"!-------------------- \n"];
+WriteString[sphenoCS,"! LHC 14 \n"];
+WriteString[sphenoCS,"!-------------------- \n"];
+
+WriteString[sphenoCS, "Do i1=1,nG \n"];
+WriteString[sphenoCS, "x = mh(i1) \n"];
+WriteString[sphenoCS,"! Gluon fusion \n"];
+WriteString[sphenoCS, "If ((x.gt.50._dp).AND.(x.lt.400._dp)) Then \n"];
+WriteString[sphenoCS, "res = (12627.037286907853 + 761.7561325918041*x + 0.7127313611572541*x**2 - 0.001136747682670838*x**3 + 1.3186088702471044e-6*x**4 - 7.109649199986356e-10*x**5 - &\n& 6035.831412165335*Log(x) - 72.79453235633025*x*Log(x) - 36.39726617816514*x*Log(x**2))*ratGG(i1) \n"];
+WriteString[sphenoCS, "Else If ((x.gt.400._dp).AND.(x.lt.1000._dp)) Then \n"];
+WriteString[sphenoCS, "res = (-44114.027394060526 - 638.1870701097589*x - 0.1396008932035218*x**2 + 0.00006481592980613609*x**3 - 2.229740732085902e-8*x**4 + 3.643396291746081e-12*x**5 & \n & + 13626.22975496127*Log(x) + 49.33683580242861*x*Log(x) + 24.66841790121431*x*Log(x**2))*ratGG(i1) \n"];
+WriteString[sphenoCS, "Else \n"];
+WriteString[sphenoCS, "res = - 1._dp \n"];
+WriteString[sphenoCS, "End if \n"];
+WriteString[sphenoCS, "CS(4,i1,1) = res \n"];
+WriteString[sphenoCS, "CS(4,i1,2) = -1._dp \n"];
+WriteString[sphenoCS, "CS(4,i1,3) = -1._dp \n"];
+WriteString[sphenoCS, "CS(4,i1,4) = -1._dp \n"];
+WriteString[sphenoCS, "CS(4,i1,5) = -1._dp \n"];
+WriteString[sphenoCS,"End Do \n"];
+
+WriteString[sphenoCS,"!-------------------- \n"];
+WriteString[sphenoCS,"! FCC 100 \n"];
+WriteString[sphenoCS,"!-------------------- \n"];
+
+WriteString[sphenoCS, "Do i1=1,nG \n"];
+WriteString[sphenoCS, "x = mh(i1) \n"];
+WriteString[sphenoCS,"! Gluon fusion \n"];
+WriteString[sphenoCS, "If ((x.gt.50._dp).AND.(x.lt.400._dp)) Then \n"];
+WriteString[sphenoCS, "res = (91563.13847371943 + 5841.145237134141*x + 5.929645328153345*x**2 - 0.010165009857023455*x**3 + 0.000012703573375868591*x**4 - 7.36545750406916e-9*x**5 - &\n & 44361.1760451764*Log(x) - 565.3597702677172*x*Log(x) - 282.6798851338586*x*Log(x**2))*ratGG(i1) \n"];
+WriteString[sphenoCS, "Else If ((x.gt.400._dp).AND.(x.lt.1000._dp)) Then \n"];
+WriteString[sphenoCS, "res = (-1.2460207772054581e6 - 17442.734204568525*x - 3.72429466661745*x**2 + 0.0017023146911045368*x**3 - 5.785813311932391e-7*x**4 + 9.364790456487542e-11*x**5 &\n& + 381260.0641650691*Log(x) + 1343.5646363825153*x*Log(x) + 671.7823181912577*x*Log(x**2))*ratGG(i1) \n"];
+WriteString[sphenoCS, "Else \n"];
+WriteString[sphenoCS, "res = - 1._dp \n"];
+WriteString[sphenoCS, "End if \n"];
+WriteString[sphenoCS, "CS(5,i1,1) = res \n"];
+WriteString[sphenoCS, "CS(5,i1,2) = -1._dp \n"];
+WriteString[sphenoCS, "CS(5,i1,3) = -1._dp \n"];
+WriteString[sphenoCS, "CS(5,i1,4) = -1._dp \n"];
+WriteString[sphenoCS, "CS(5,i1,5) = -1._dp \n"];
+WriteString[sphenoCS,"End Do \n"];
+
+
 
 
 WriteString[sphenoCS,"End Subroutine HiggsCrossSections \n"];

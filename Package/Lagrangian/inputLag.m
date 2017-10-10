@@ -166,9 +166,11 @@ temp=entry[[1]]/. subFieldsOne;
 coup = genTest[entry[[2]],fields,False]^entry[[4]];
 
 If[SupersymmetricModel===False,
-
 GenerateCGCsForBrokenGroups[temp,fields,particles,invFields,withHead]; 
-IndStructure=MakeIndexStructureRGEnonSUSY[withHead] /.subCGCBroken;
+If[Head[ContractionRGE[entry[[2]]]]===ContractionRGE,
+IndStructure=MakeIndexStructureRGEnonSUSY[withHead] /.subCGCBroken;,
+IndStructure=ContractionRGE[coup]
+];
 ExtractSymmetryOfParametersNS[entry[[2]],withHead,IndStructure];
 (*
 IndStructure=temp*GetNormalizationFactors[invFields];
@@ -177,15 +179,15 @@ IndStructure=temp*GetNormalizationFactors[invFields];
 (* adapted sign *)
 Switch[Plus@@(getPartCode[getBlank[#]&/@fields]),
 2100,
-SA`FFSlist=Join[SA`FFSlist,{{List@@(particles /. sum[a__]->1 /.A_[b_Integer]->A),-coup  IndStructure entry[[1]]}}];,
+SA`FFSlist=Join[SA`FFSlist,{{List@@(particles /. sum[a__]->1 /.A_[b_Integer]->A),-coup  IndStructure entry[[1]],False}}];,
 2000,
-SA`FFlist=Join[SA`FFlist,{{List@@(particles /. sum[a__]->1/.A_[b_Integer]->A),-coup  IndStructure entry[[1]]}}];,
+SA`FFlist=Join[SA`FFlist,{{List@@(particles /. sum[a__]->1/.A_[b_Integer]->A),-coup  IndStructure entry[[1]],False}}];,
 200,
-SA`SSlist=Join[SA`SSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure entry[[1]]}}];,
+SA`SSlist=Join[SA`SSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure (entry[[1]]/. {Delta[a__]->1,epsTensor[__]->1}),LagInputIncludeHC}}];,
 300,
-SA`SSSlist=Join[SA`SSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure entry[[1]]}}];,
+SA`SSSlist=Join[SA`SSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure (entry[[1]]/. {Delta[a__]->1,epsTensor[__]->1}),LagInputIncludeHC}}];,
 400,
-SA`SSSSlist=Join[SA`SSSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure entry[[1]]}}];
+SA`SSSSlist=Join[SA`SSSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure (entry[[1]]/. {Delta[a__]->1,epsTensor[__]->1}),LagInputIncludeHC}}];
 ];
 ];
 

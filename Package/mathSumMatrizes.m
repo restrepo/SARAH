@@ -122,10 +122,12 @@ Sigma={{{0,1},{1,0}},{{0,-I},{I,0}},{{1,0},{0,-1}}};
 
 Sig[a_Integer,b_Integer,c_Integer]:=Sigma[[a,b,c]];
 
+(*
 conj[Sig[a_,2,1]]:=Sig[a,1,2];
 conj[Sig[a_,1,2]]:=Sig[a,2,1];
 conj[Sig[a_,b_,b_]]:=Sig[a,b,b];
-
+*)
+conj[Sig[a_,b_,c_]]:=Sig[a,c,b]; 
 SigmaProd[gen4_Integer,gen3_Integer][a_Integer,b_Integer] := Sig[gen4,a,b]*Sig[gen3,a,b]; 
 
 

@@ -261,7 +261,7 @@ i++;];
 CreateMatterFields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
 PrintDebug["   matter fields: "];
 DynamicInitFields="matter fields";
-
+RealScalarsMul={};
 For[i=1, i<= AnzahlChiral,
 temp= GenerateAllIndizes[i];
 indizes=temp[[1]];
@@ -303,7 +303,14 @@ name=ToString[name];
 ]; *)
 If[Last[Fields[[i]]]===S,
 scalar=ToExpression[name];
-If[FreeQ[RealScalars,Fields[[i,3]]]==False && FreeQ[Fields[[i,1]],conj[scalar]],realVar=Join[realVar,{scalar}];];,
+If[FreeQ[RealScalars,Fields[[i,3]]]==False && FreeQ[Fields[[i,1]],conj[scalar]],
+realVar=Join[realVar,{scalar}];
+RealScalarsMul=Join[RealScalarsMul,{Fields[[i,3]]}];
+];
+If[FreeQ[RealScalars,scalar]==False,
+realVar=Join[realVar,{scalar}];
+RealScalarsMul=Join[RealScalarsMul,{Fields[[i,3]]}];
+];,
 scalar=0;];
 If[Last[Fields[[i]]]===F,fermion=ToExpression[name];,fermion=0;];
 

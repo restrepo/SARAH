@@ -190,7 +190,8 @@ temp=InsFields[{{C[AntiField[x],AntiField[FieldToInsert[1]],FieldToInsert[2]],C[
 temp2=Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1][{Index[1]}],AntiField[Internal[1][{Index[2]}]],Internal[2][{Index[3]}]]/.temp[[i,2]],VType[getType[Internal[1]/.temp[[i,2]]],getType[Internal[2]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]]],CalculateColorFactor[External[1]/.temp[[i,2]],AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]]],CalculateSymmetryFactor[Internal[1]/.temp[[i,2]],Internal[2]/.temp[[i,2]]]},{i,1,Length[temp]}];
 temp3={};
 For[i=1,i<=Length[temp2],
-If[FreeQ[temp3 /. a_[{b__}]->a /. Cp->C,(AntiField/@temp2[[i,3]])/. a_[{b__}]->a /. Cp->C],temp3=Join[temp3,{temp2[[i]]}];];
+If[FreeQ[temp3 /. a_[{b__Symbol}]->a /. Cp->C,(AntiField/@temp2[[i,3]])/. a_[{b__Symbol}]->a /. Cp->C],
+temp3=Join[temp3,{temp2[[i]]}];];
 i++;];
 Return[temp3 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
 ];

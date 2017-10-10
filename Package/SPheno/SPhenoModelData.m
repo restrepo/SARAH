@@ -227,7 +227,8 @@ WriteString[ModelData,"Logical,save::Write_WHIZARD= .False.\n"];
 WriteString[ModelData,"Integer,save::BoundaryCondition=1 \n"];
 WriteString[ModelData,"Logical,Save::MZ_input= .False. \n \n"];
 
-If[getGen[HiggsBoson]>1,WriteString[ModelData,"Real(dp) :: CS_Higgs_LHC(2,"<>ToString[getGen[HiggsBoson]]<>",5) \n \n"];];
+If[(getGen[HiggsBoson])>0,WriteString[ModelData,"Real(dp) :: CS_Higgs_LHC(5,"<>ToString[getGen[HiggsBoson]]<>",5) \n \n"];];
+If[(getGen[PseudoScalar]-getGenSPhenoStart[PseudoScalar]+1)>0,WriteString[ModelData,"Real(dp) :: CS_PHiggs_LHC(5,"<>ToString[getGen[PseudoScalar]]<>",5) \n \n"];];
 
 If[getGen[HiggsBoson]>1,
 WriteString[ModelData, "Real (dp) :: MhhL("<>ToString[getGen[HiggsBoson]]<>"), Mhh2L("<>ToString[getGen[HiggsBoson]]<>") \n"];

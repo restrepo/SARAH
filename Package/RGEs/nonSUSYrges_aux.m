@@ -20,6 +20,8 @@
 
 
 Conj[Conj[x_]]:=x;
+Conj[sum]:=sum;
+Conj[sumRGE]:=sumRGE;
 
 (*------------------------------------------------ *)
 (* ---------- long list of Abbreviations --------- *)
@@ -32,12 +34,11 @@ Y2Ffunc[a_,b_]:=Conj[Yijk[a,pA,pB]] Yijk[pA,b,pB];
 Y2FCfunc[a_,b_]:=Yijk[a,pA,pB] Conj[Yijk[pA,b,pB]];
 Y2Sfunc[a_,b_]:=1/2(Conj[Yijk[pA,pB,a]] Yijk[pB,pA,b]+Conj[Yijk[pA,pB,b]] Yijk[pB,pA,a]);
 
+
+
 (* for 2-loop gauge couplings, eq. (31) *)
 Y4F[g_]:=gc[g] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]] SA`CasimirRGE[pL,g]/(dimAdj[g]);
 
-(*
-Y4F[g_,h_]:=Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,g]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,h]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]];
-*)
 Y4F[g_,h_]:=Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,g]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,h]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]];
 
 
@@ -51,15 +52,15 @@ Ha2t[a_,f1_,f2_,nr_]:=sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]]
 
 
 (* for 1-loop  scalar quartic, eq. (39)  - (43) *)
-Lam2func[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])*Plus@@((Lijkl[#[[1]],#[[2]],pA,pB] Lijkl[pA,pB,#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}])/8;
+Lam2func[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])*Plus@@((ExpandTermNS[Lijkl[#[[1]],#[[2]],pA,pB] Lijkl[pA,pB,#[[3]],#[[4]]]])&/@Permutations[{a,b,c,d}])/8;
 
-Y4abcdfunc[a_,b_,c_,d_]:=YcYYcY[pO,pO,a,b,c,d];
-YC4abcdfunc[a_,b_,c_,d_]:=cYYcYY[pO,pO,a,b,c,d];
-Habcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])(Plus@@((Y4abcd[#[[1]],#[[2]],#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}]))/4;
+Y4abcdfunc[a_,b_,c_,d_]:=YcYY[pI,pA3,a,b,c] Conj[Yijk[pA3,pI,d]]; 
 
-LamY2func[a_,b_,c_,d_]:=Lijkl[a,b,c,pA]*YcY[pB,pB,pA,d];
+Habcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])(Plus@@((YcYYcY4[#[[1]],#[[2]],#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}]))/4;
 
-LamYfunc[a_,b_,c_,d_]:=Lijkl[a,b,c,pA]YcY[pB,pB,pA,d]+Lijkl[a,pA,c,d]YcY[pB,pB,pA,b]+Lijkl[a,b,pA,d]YcY[pB,pB,pA,c]+Lijkl[pA,b,c,d]YcY[pB,pB,pA,a];
+(* LamY2func[a_,b_,c_,d_]:=Lijkl[a,b,c,pA]*YcY[pB,pB,pA,d]; *)
+
+LamYfunc[a_,b_,c_,d_]:=ExpandTermNS[Lijkl[a,b,c,pA]YcY[pB,pB,pA,d]+Lijkl[a,pA,c,d]YcY[pB,pB,pA,b]+Lijkl[a,b,pA,d]YcY[pB,pB,pA,c]+Lijkl[pA,b,c,d]YcY[pB,pB,pA,a]];
 
 LamSfunc[a_,b_,c_,d_]:=Sum[ (SA`CasimirRGE[a,nr]+SA`CasimirRGE[b,nr]+SA`CasimirRGE[c,nr]+SA`CasimirRGE[d,nr]),{nr,1,Length[Gauge]}]*Lijkl[a,b,c,d];
 LamABCDfunc[a_,b_,c_,d_,nr_,vecB_]:=ThS[nr,a,c,vecB] ThS[nr,b,d,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]];
@@ -76,50 +77,53 @@ Aabcd[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])*Plus@@((LamABCDsq1SUM[#
 
 
 (* ----- for 2-loop scalar quartic, eq. (45) - (61) ----- *)
-LamBar3func[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Lijkl[#[[1]],#[[2]],pA,pB] Lijkl[#[[3]],pA,pC,pD] Lijkl[#[[4]],pB,pC,pD])&/@Permutations[{a,b,c,d}])/4;
-LamBar2Yfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Y2S[pF,pG] Lijkl[#[[1]],#[[2]],pE,pF] Lijkl[#[[3]],#[[4]],pE,pG])&/@Permutations[{a,b,c,d}])/8;
+(* LamBar3func[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Lijkl[#[[1]],#[[2]],pA,pB] Lijkl[#[[3]],pA,pC,pD] Lijkl[#[[4]],pB,pC,pD])&/@Permutations[{a,b,c,d}])/4; *)
+LamBar3func[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@(((ExpandTermNS[Lijkl[#[[1]],#[[2]],pA,pB] Lijkl[#[[3]],pA,pC,pD] Lijkl[#[[4]],pB,pC,pD]])&/@(Permutations[{b,a,c,d}]//.{l1___,{a1_,b1_,c1_,d1_},l2___,{b1_,a1_,c1_,d1_},l3___}:>{l1,l2,l3,{b1,a1,c1,d1}}//.{l1___,{a1_,b1_,c1_,d1_},l2___,{a1_,b1_,d1_,c1_},l3___}:>{l1,l2,l3,{a1,b1,c1,d1}})));
 
-HbarLamfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Lijkl[#[[1]],#[[2]],pE,pF] (Y4abcd[#[[3]],pE,#[[4]],pF]+YC4abcd[#[[3]],pE,#[[4]],pF]))&/@Permutations[{a,b,c,d}])/8;
+LamBar2Yfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((ExpandTermNS[Y2S[pF,pG] Lijkl[#[[1]],#[[2]],pE,pF] Lijkl[#[[3]],#[[4]],pE,pG]])&/@Permutations[{a,b,c,d}])/8;
 
- Y24abcdfunc[a_,b_,c_,d_]:=Y2F[pO,pP] cYYcYY[pP,pO,a,b,c,d]; 
+HbarLamfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((ExpandTermNS[Lijkl[#[[1]],#[[2]],pE,pF] (Y4abcd[#[[3]],pE,#[[4]],pF]+YC4abcd[#[[3]],pE,#[[4]],pF])])&/@Permutations[{a,b,c,d}])/8;
+
+ (* Y24abcdfunc[a_,b_,c_,d_]:=Y2F[pO,pP] cYYcYY[pP,pO,a,b,c,d]; *)
+Y24abcdfunc[a_,b_,c_,d_]:=Y2F[pO,pP] YcYY[pO,pR,a,b,c] Conj[Yijk[pR,pP,d]];
 HYfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Y24abcd[#[[1]],#[[2]],#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}]);
 
-Y6abcdfunc[a_,b_,c_,d_]:=Yijk[pO,pP,pE] Conj[Yijk[pP,pQ,a]] YcYYcY[pQ,pO,pE,b,c,d];
+(* Y6abcdfunc[a_,b_,c_,d_]:=Yijk[pO,pP,pE] Conj[Yijk[pP,pQ,a]] YcYYcY[pQ,pO,pE,b,c,d]; *)
+Y6abcdfunc[a_,b_,c_,d_]:=Yijk[pZ,pA3,pQ] Conj[Yijk[pA3,pR,a]] Yijk[pR,pI,pQ] cYYcY[pI,pZ,b,c,d];
 YC6abcdfunc[a_,b_,c_,d_]:=Conj[Yijk[pO,pP,pE]] Yijk[pP,pQ,a] cYYcYY[pQ,pO,pE,b,c,d]; 
 HbarYfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Y6abcd[#[[1]],#[[2]],#[[3]],#[[4]]]+YC6abcd[#[[1]],#[[2]],#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}])/2;
 
- Y6abcd2func[a_,b_,c_,d_]:=Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]]  YcYYcY[pQ,pO,pE,c,d,pE]; 
+(* Y6abcd2func[a_,b_,c_,d_]:=Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]]  YcYYcY[pQ,pO,pE,c,d,pE];  *)
+Y6abcd2func[a_,b_,c_,d_]:=YcY2S[pQ,pO,c,d] Yijk[pO,pA,a] Conj[Yijk[pA,pQ,b]];
 H3func[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((Y6abcd2[#[[1]],#[[2]],#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}])/2;
 
 LamBar2SAuxfunc[a_,b_,c_,d_]:=Sum[(SA`CasimirRGE[pF,nr] Lijkl[a,b,pE,pF] Lijkl[c,d,pE,pF]),{nr,1,Length[Gauge]}];
 LamBar2S[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@(LamBar2SAux[#[[1]],#[[2]],#[[3]],#[[4]]]&/@Permutations[{a,b,c,d}])/8;
 
 LamTTfunc[a_,b_,c_,d_]:= Sum[Lijkl[a,b,pE,pF] Lijkl[c,d,pG,pH]*(ThS[nr,pE,pG,vecB]*ThS[nr,pF,pH,vecB])*sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}];
+(*
 Lam2gfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@(LamTT[#[[1]],#[[2]],#[[3]],#[[4]]]&/@Permutations[{a,b,c,d}])/8;
-
+*)
+Lam2gfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@(LamTT[#[[1]],#[[2]],#[[3]],#[[4]]]&/@(Permutations[{b,a,c,d}]//.{l1___,{a1_,b1_,c1_,d1_},l2___,{b1_,a1_,c1_,d1_},l3___}:>{l1,l2,l3,{b1,a1,c1,d1}}//.{l1___,{a1_,b1_,c1_,d1_},l2___,{a1_,b1_,d1_,c1_},l3___}:>{l1,l2,l3,{a1,b1,c1,d1}}))/2;
 HSabcdfunc[a_,b_,c_,d_]:=Sum[(SA`CasimirRGE[a,nr]+SA`CasimirRGE[b,nr]+SA`CasimirRGE[c,nr]+SA`CasimirRGE[d,nr]) Habcd[a,b,c,d],{nr,1,Length[Gauge]}];
 
-HFabcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Sum[Plus@@(( (SA`CasimirRGE[pA,nr]+SA`CasimirRGE[pB,nr])(Yijk[pA,pB,#[[1]]] cYYcY[pB,pA,#[[2]],#[[3]],#[[4]]]))&/@Permutations[{a,b,c,d}]),{nr,1,Length[Gauge]}];
+(*
+HFabcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Sum[Plus@@((ExpandTermNS[(SA`CasimirRGE[pA,nr]+SA`CasimirRGE[pB,nr])(Yijk[pA,pB,#[[1]]] cYYcY[pB,pA,#[[2]],#[[3]],#[[4]]])])&/@Permutations[{a,b,c,d}]),{nr,1,Length[Gauge]}];
+*)
+HFabcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]]) Plus@@(ExpandTermNS/@((Sum[SA`CasimirRGE[pA,nr]+SA`CasimirRGE[pB,nr],{nr,1,Length[Gauge]}]) (Yijk[pA,pB,#[[1]]] cYYcY[pB,pA,#[[2]],#[[3]],#[[4]]])&/@Permutations[{a,b,c,d}]));
 
 LamSSfunc[a_,b_,c_,d_]:=
 Lijkl[a,b,c,d]*Sum[Sum[(SA`CasimirRGE[a,nr]SA`CasimirRGE[a,nr2]+SA`CasimirRGE[b,nr]SA`CasimirRGE[b,nr2]+SA`CasimirRGE[c,nr]SA`CasimirRGE[c,nr2]+SA`CasimirRGE[d,nr]SA`CasimirRGE[d,nr2]),{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
 
 
-AbarLabcd[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@(( Lijkl[#[[1]],#[[2]],pQ,pR] (LamABCDsq1SUM[#[[4]],pQ,#[[3]],pR]+ LamABCDsq2SUM[#[[4]],pQ,#[[3]],pR]))&/@Permutations[{a,b,c,d}])/2;
-ALabcd[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@(( Lijkl[#[[1]],#[[2]],pQ,pR] (LamABCDsq1SUM[#[[3]],#[[4]],pQ,pR]+ LamABCDsq2SUM[#[[3]],#[[4]],pQ,pR]))&/@Permutations[{a,b,c,d}])/2;
+AbarLabcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((ExpandTermNS[ Lijkl[#[[1]],#[[2]],pQ,pR] (LamABCDsq1SUM[#[[4]],pQ,#[[3]],pR]+ LamABCDsq2SUM[#[[4]],pQ,#[[3]],pR])])&/@Permutations[{a,b,c,d}])/2;
+ALabcdfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])Plus@@((ExpandTermNS[ Lijkl[#[[1]],#[[2]],pQ,pR] (LamABCDsq1SUM[#[[3]],#[[4]],pQ,pR]+ LamABCDsq2SUM[#[[3]],#[[4]],pQ,pR])])&/@Permutations[{a,b,c,d}])/2;
 
 
 ThThfunc[a_,b_,nr1_,nr2_]:=(ThS[nr1,a,pA,vecB1] ThS[nr2,pA,b,vecB2]);
 
 TaTaYY1func[c_,d_,nr1_,nr2_]:=conj[tA[nr1,pP,pO,vecB1]] conj[tA[nr2,pO,pQ,vecB2]] Yijk[pQ,pR,c] Conj[Yijk[pR,pP,d]]; TaTaYY2func[c_,d_,nr1_,nr2_]:= Yijk[pO,pP,c] tA[nr1,pP,pQ,vecB1]  tA[nr2,pQ,pR,vecB2] Conj[Yijk[pR,pO,d]]; 
 TaTaYY3func[c_,d_,nr1_,nr2_]:=conj[tA[nr1,pO,pP,vecB1]] Yijk[pP,pR,c] tA[nr2,pR,pQ,vecB2] Conj[Yijk[pQ,pO,d]]; 
-
-
-
-(*
-TaTaYY1func[c_,d_,nr1_,nr2_]:=conj[tA[nr1,pP,pP,vecB1]] conj[tA[nr2,pP,pP,vecB2]] Yijk[pP,pR,c] Conj[Yijk[pR,pP,d]]; TaTaYY2func[c_,d_,nr1_,nr2_]:= Yijk[pO,pP,c] tA[nr1,pP,pP,vecB1]  tA[nr2,pP,pP,vecB2] Conj[Yijk[pP,pO,d]]; 
-TaTaYY3func[c_,d_,nr1_,nr2_]:=conj[tA[nr1,pO,pO,vecB1]] Yijk[pO,pR,c] tA[nr2,pR,pR,vecB2] Conj[Yijk[pR,pO,d]]; 
-*)
 
 ThThTaTaYY1func[a_,b_,c_,d_]:=
 Sum[Sum[(ThTh[a,b,nr1,nr2]+ThTh[b,a,nr1,nr2])*(TaTaYY1[c,d,nr1,nr2]+TaTaYY2[c,d,nr1,nr2])sum[vecB1,1,If[Gauge[[nr1,2]]===U[1],1,Gauge[[nr1,2,1]]^2-1]]sum[vecB2,1,If[Gauge[[nr2,2]]===U[1],1,Gauge[[nr2,2,1]]^2-1]],{nr1,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
@@ -133,8 +137,8 @@ BYbarfunc[a_,b_,c_,d_]:=(24/Length[Permutations[{a,b,c,d}]])(Plus@@(( ThThTaTaYY
 
 ASabcd[a_,b_,c_,d_]:=Sum[ (SA`CasimirRGE[a,nr3]+SA`CasimirRGE[b,nr3]+SA`CasimirRGE[c,nr3]+SA`CasimirRGE[d,nr3]) ,{nr3,1,Length[Gauge]}]Aabcd[a,b,c,d];
 
-FFThThThThfunc[a_,b_,c_,d_]:=Sum[If[Gauge[[nr,2]]===U[1],0,gc[nr]^2 Sum[Sum[Sum[Sum[Sum[FST[Gauge[[nr,2]]][vecA,vecC,vecE] FST[Gauge[[nr,2]]][vecB,vecD,vecE]  ((ThTh[a,b,nr,nr]+ThTh[b,a,nr,nr])/.{vecB1:>vecA,vecB2:>vecB})((ThTh[c,d,nr,nr]
-+ThTh[d,c,nr,nr])/.{vecB1:>vecC,vecB2:>vecD}),{vecA,1,Gauge[[nr,2,1]]^2-1}],{vecB,1,Gauge[[nr,2,1]]^2-1}],{vecC,1,Gauge[[nr,2,1]]^2-1}],{vecD,1,Gauge[[nr,2,1]]^2-1}],{vecE,1,Gauge[[nr,2,1]]^2-1}]],{nr,1,Length[Gauge]}];
+FFThThThThfunc[a_,b_,c_,d_]:=Sum[If[Gauge[[nr,2]]===U[1],0,gc[nr]^2 sum[vecA,1,Gauge[[nr,2,1]]^2-1]sum[vecB,1,Gauge[[nr,2,1]]^2-1]sum[vecC,1,Gauge[[nr,2,1]]^2-1]sum[vecD,1,Gauge[[nr,2,1]]^2-1] sum[vecE,1,Gauge[[nr,2,1]]^2-1]  FST[Gauge[[nr,2]]][vecA,vecC,vecE] FST[Gauge[[nr,2]]][vecB,vecD,vecE]  (((ThTh[a,b,nr,nr]+ThTh[b,a,nr,nr]) /.(subIndFinalX[6,7,"i"]/.subIndFinalX[6,6,"i"]))/.{vecB1:>vecA,vecB2:>vecB})((ThTh[c,d,nr,nr]
++ThTh[d,c,nr,nr])/.{vecB1:>vecC,vecB2:>vecD} )],{nr,1,Length[Gauge]}];
 
 
 
@@ -207,10 +211,6 @@ Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]] Yijk[pS,pT,c]
 Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]] Yijk[pQ,pR,pE] Conj[Yijk[pR,pS,c]]Muij[pS,pT] Conj[Yijk[pT,pO,pE]];
 H3func[a_,b_,c_]:=(6 /Length[Permutations[{a,b,c}]])Plus@@((H3Aux[#[[1]],#[[2]],#[[3]]])&/@Permutations[{a,b,c}])/2;
 
-(*
-LamBar2SAuxfunc[a_,b_,c_]:=Sum[(ThS[nr,pF,pH,vecB]*ThS[nr,pH,pG,vecB] Aijk[a,pE,pF] Lijkl[b,c,pE,pG])*sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}];
-LamBar2S[a_,b_,c_]:=(6/Length[Permutations[{a,b,c}]])Plus@@(LamBar2SAux[#[[1]],#[[2]],#[[3]]]&/@Permutations[{a,b,c}])/2;
-*)
 
 
 LamBar2SAuxfunc[a_,b_,c_]:=Sum[(SA`CasimirRGE[pF,nr] Aijk[a,pE,pF] Lijkl[b,c,pE,pF]),{nr,1,Length[Gauge]}];
@@ -254,63 +254,104 @@ BYfunc[a_,b_,c_]:=(6/Length[Permutations[{a,b,c}]])(Plus@@(( ThThTaTaYM1[#[[1]],
 BYbarfunc[a_,b_,c_]:=(6/Length[Permutations[{a,b,c}]])(Plus@@(( ThThTaTaYM2[#[[1]],#[[2]],#[[3]]])&/@Permutations[{a,b,c}])/4);
 
 
-(*
-BY[a_,b_,c_]:=(Plus@@(( ThThTaTaYM1[#[[1]],#[[2]],#[[3]]])&/@Permutations[{a,b,c}])/4) ;
-BYbar[a_,b_,c_]:=(Plus@@(( ThThTaTaYM2[#[[1]],#[[2]],#[[3]]])&/@Permutations[{a,b,c}])/2);
-*)
 
 (* for 1-loop scalar mass, eq. (87) -  (89) *)
 Habfunc[a_,b_]:=((Yijk[pA,pB,a]Conj[Yijk[pB,pC,b]]+Yijk[pA,pB,b]Conj[Yijk[pB,pC,a]])Muij[pC,pD]Conj[Muij[pD,pA]]+(Conj[Yijk[pA,pB,a]]Yijk[pB,pC,b]+Conj[Yijk[pA,pB,b]]Yijk[pB,pC,a])Conj[Muij[pC,pD]]Muij[pD,pA]+Yijk[pA,pB,a] Conj[Muij[pB,pC]]Yijk[pC,pD,b] Conj[Muij[pD,pA]]+Muij[pA,pB]Conj[Yijk[pB,pC,a]]Muij[pC,pD] Conj[Yijk[pD,pA,b]] ); 
 
-(*
-Habfunc[a_,b_]:= (YcY[pA,pC,a,b]+YcY[pA,pC,b,a]) McM[pC,pA]+(cYY[pA,pC,a,b]+YcY[pA,pC,b,a])cMM[pC,pA]+YcM[pA,pC,a] YcM[pC,pA,b]+McY[pA,pC,a] McY[pC,pA,b];
-*)
+
 
 LamSfunc[a_,b_]:=Sum[ (SA`CasimirRGE[a,nr]Bij[a,b]+SA`CasimirRGE[b,nr]Bij[a,b]),{nr,1,Length[Gauge]}];
+(* LamYfunc[a_,b_]:=1/2(Yijk[pA,pB,a] Conj[Yijk[pB,pA,pC]]+Conj[Yijk[pA,pB,a]]Yijk[pB,pA,pC])Bij[pC,b]+1/2(Yijk[pA,pB,b] Conj[Yijk[pB,pA,pC]]+Conj[Yijk[pA,pB,b]] Yijk[pB,pA,pC])Bij[pC,a]; *)
 LamYfunc[a_,b_]:=(Yijk[pA,pB,a] Conj[Yijk[pB,pA,pC]]Bij[pC,b]+Yijk[pA,pB,b] Conj[Yijk[pB,pA,pC]]Bij[pC,a]);
+
+(* LamYfunc[a_,b_]:=(Y2S[a,pC]Bij[pC,b]+ Y2S[b,pC]Bij[pC,a]); *)
+
 
 (* for 2-loop scalar mass, eq. (91) -  (105) *)
 LamBar3func[a_,b_]:=Lijkl[a,b,pE,pF] Aijk[pE,pG,pL] Aijk[pF,pG,pL] + 2 Bij[pE,pF] Lijkl[a,pE,pG,pL] Lijkl[b,pF,pG,pL] + 2 Aijk[a,pE,pF] Aijk[pF,pG,pL] Lijkl[pB,pE,pG,pL] + 2 Aijk[b,pE,pF] Aijk[pF,pG,pL] Lijkl[a,pE,pG,pL];
 LamBar2Yfunc[a_,b_]:=Y2S[pF,pG](Bij[pE,pG] Lijkl[a,b,pE,pF]+ Aijk[a,pE,pF] Aijk[b,pE,pG]);
 
-(*
-HbarLamfunc[a_,b_]:=1/2 Lijkl[a,b,pE,pF] (McY[pO,pQ,pE] McY[pQ,pO,pF]+cMY[pO,pQ,pE]cMY[pQ,pO,pF])+Bij[pE,pF](YcYYcY[pO,pO,a,pE,b,pF]+cYYcYY[pO,pO,a,pE,b,pF])+ Aijk[a,pE,pF] (YcY[pO,pQ,b,pE]  McY[pQ,pO,pF]+cYY[pO,pQ,b,pE]  cMY[pQ,pO,pF])+Aijk[b,pE,pF](YcY[pO,pQ,a,pE] McY[pQ,pO,pF]+cYY[pO,pQ,a,pE] cMY[pQ,pO,pF]);
-*)
-HbarLamfunc[a_,b_]:=1/2 Lijkl[a,b,pE,pF] (Muij[pO,pX]Conj[Yijk[pX,pQ,pE] ] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Muij[pO,pX]]Yijk[pX,pQ,pE]  Conj[Muij[pQ,pY]] Yijk[pY,pO,pF])+Bij[pE,pF](YcYYcY[pO,pO,a,pE,b,pF]+cYYcYY[pO,pO,a,pE,b,pF])+ Aijk[a,pE,pF] (Yijk[pO,pX,b] Conj[Yijk[pX,pQ,pE]] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Yijk[pO,pX,b]] Yijk[pX,pQ,pE] Conj[Muij[pQ,pY]] Yijk[pY,pO,pF])+Aijk[b,pE,pF](Yijk[pO,pX,a] Conj[Yijk[pX,pQ,pE]] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Yijk[pO,pX,a]] Yijk[pX,pQ,pE] Conj[Muij[pQ,pY]] Yijk[pY,pO,pF]);
+HbarLamfunc[a_,b_]:=1/2 Lijkl[a,b,pE,pF] (Muij[pO,pX]Conj[Yijk[pX,pQ,pE]] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Muij[pO,pX]]Yijk[pX,pQ,pE] Conj[Muij[pQ,pY]] Yijk[pY,pO,pF])+Bij[pE,pF](YcYYcY4[a,pE,b,pF]+cYYcYY4[a,pE,b,pF])+ Aijk[a,pE,pF]  (Yijk[pO,pX,b] Conj[Yijk[pX,pQ,pE]] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Yijk[pO,pX,b]] Yijk[pX,pQ,pE] Conj[Muij[pQ,pY]] Yijk[pY,pO,pF])+Aijk[b,pE,pF](Yijk[pO,pX,a] Conj[Yijk[pX,pQ,pE]] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Yijk[pO,pX,a]] Yijk[pX,pQ,pE] Conj[Muij[pQ,pY]] Yijk[pY,pO,pF]);
+
 
 (*
-HYfunc[a_,b_]:=2 (Y2F[pO,pP] cMM[pP,pR]+cMM[pO,pP] Y2F[pP,pR])(cYY[pR,pO,a,b] + cYY[pR,pO,b,a])+2(Y2F[pO,pP] cYM[pP,pR,a](cYM[pR,pO,b]+  cMY[pR,pO,b])+Y2F[pO,pP]  cMY[pP,pR,a](cYM[pR,pO,b]  +cMY[pR,pO,b])+ Y2F[pO,pP] cYM[pP,pR,b](cYM[pR,pO,a]+  cMY[pR,pO,a])+Y2F[pO,pP]  cMY[pP,pR,b](cYM[pR,pO,a]+  cMY[pR,pO,a]));
-*)
 HYfunc[a_,b_]:=2(Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Muij[pP,pQ]]Muij[pQ,pR]+Conj[Muij[pO,pQ]]Muij[pQ,pP]Conj[Yijk[pP,pX,pY]] Yijk[pX,pR,pY])(Conj[Yijk[pR,pA1,a]] Yijk[pA1,pO,b]+Conj[Yijk[pR,pA1,b]] Yijk[pA1,pO,a])+
 2( Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Yijk[pP,pA1,a]] Muij[pA1,pR] (Conj[Yijk[pR,pX,b]]Muij[pX,pO]+Conj[Muij[pR,pX]] Yijk[pX,pO,b])+
 Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Muij[pP,pA1]] Yijk[pA1,pR,a](Conj[Yijk[pR,pX,b]]Muij[pX,pO]+Conj[Muij[pR,pX]] Yijk[pX,pO,b])+
 Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Yijk[pP,pA1,b]] Muij[pA1,pR] (Conj[Yijk[pR,pX,a]]Muij[pX,pO]+Conj[Muij[pR,pX]] Yijk[pX,pO,a])+
 Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Muij[pP,pA1]] Yijk[pA1,pR,b](Conj[Yijk[pR,pX,a]]Muij[pX,pO]+Conj[Muij[pR,pX]] Yijk[pX,pO,a]));
+*)
 
+(*
+HYfunc[a_,b_]:=(Y2F[pO,pP] cMM[pP,pR]+cMM[pO,pP] Y2F[pP,pR])(Conj[Yijk[pR,pA1,a]] Yijk[pA1,pO,b]+Conj[Yijk[pR,pA1,b]]+Conj[Yijk[pR,pA1,b]] Yijk[pA1,pO,a])+
+2(Y2F[pO,pP] cYM[pP,pR,a](cYM[pR,pO,b]+cMY[pR,pO,b])+Y2F[pO,pP] cMY[pP,pR,a](cYM[pR,pO,b]+cMY[pR,pO,b]));
+*)
+HYfunc[a_,b_]:=(Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Muij[pP,pQ]]Muij[pQ,pR]+Conj[Muij[pO,pQ]]Muij[pQ,pP]Conj[Yijk[pP,pX,pY]] Yijk[pX,pR,pY])(Conj[Yijk[pR,pA1,a]] Yijk[pA1,pO,b]+Conj[Yijk[pR,pA1,b]] Yijk[pA1,pO,a])+
+2( Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Yijk[pP,pA1,a]] Muij[pA1,pR] (Conj[Yijk[pR,pX,b]]Muij[pX,pO]+Conj[Muij[pR,pX]] Yijk[pX,pO,b])+
+Conj[Yijk[pO,pA,pB]] Yijk[pA,pP,pB] Conj[Muij[pP,pA1]] Yijk[pA1,pR,a](Conj[Yijk[pR,pX,b]]Muij[pX,pO]+Conj[Muij[pR,pX]] Yijk[pX,pO,b]));
+(*
 HYbarfunc[a_,b_]:=Block[{temp},
 temp=(Yijk[pO,pP,pE] Conj[Yijk[pP,pR,a]] Yijk[pR,pS,pE] Conj[Yijk[pS,pQ,b]]+Yijk[pO,pP,pE] Conj[Yijk[pP,pR,b]] Yijk[pR,pS,pE] Conj[Yijk[pS,pQ,a]])Muij[pQ,pX]Conj[Muij[pX,pO]]+Yijk[pO,pP,pE] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]](Yijk[pS,pT,a] Conj[Yijk[pT,pO,b]]+Yijk[pS,pT,b] Conj[Yijk[pT,pO,a]])+Yijk[pO,pP,pE] Conj[Yijk[pP,pQ,a]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]](Yijk[pS,pT,b] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,b]])+
 Yijk[pO,pP,pE] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE] Conj[Yijk[pR,pS,a]](Yijk[pS,pT,b] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,b]])+
 Yijk[pO,pP,pE] Conj[Yijk[pP,pQ,b]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]](Yijk[pS,pT,a] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,a]])+
 Yijk[pO,pP,pE] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE] Conj[Yijk[pR,pS,b]](Yijk[pS,pT,a] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,a]]);
-Return[temp+Conj[temp/.{a->b,b->a}]];
+Return[temp+Conj[temp/.{a\[Rule]b,b\[Rule]a}]];
 ]; 
+*)
+(*
+HYbarfunc[a_,b_]:=(YcY[pO,pR,pE,a] YcY[pR,pQ,pE,b]+YcY[pO,pR,pE,b] YcY[pR,pQ,pE,a])Muij[pQ,pX]Conj[Muij[pX,pO]]+
+YcM[pO,pQ,pE]YcM[pQ,pS,pE](YcY[pS,pO,a,b]+YcY[pS,pO,b,a])+
+YcY[pO,pQ,pE,a]YcM[pQ,pS,pE](YcM[pS,pO,b]+McY[pS,pO,b])+
+YcM[pO,pQ,pE]YcY[pQ,pS,pE,a](YcM[pS,pO,b]+McY[pS,pO,b])+
+YcY[pO,pQ,pE,b]YcM[pQ,pS,pE](YcM[pS,pO,a]+McY[pS,pO,a])+
+YcM[pO,pQ,pE]YcY[pQ,pS,pE,b](YcM[pS,pO,a]+McY[pS,pO,a]);
+*)
+HYbarfunc[a_,b_]:=(Yijk[pO,pP,pE] Conj[Yijk[pP,pR,a]] Yijk[pR,pS,pE] Conj[Yijk[pS,pQ,b]]+Yijk[pO,pP,pE] Conj[Yijk[pP,pR,b]] Yijk[pR,pS,pE] Conj[Yijk[pS,pQ,a]])Muij[pQ,pX]Conj[Muij[pX,pO]]+Yijk[pO,pP,pE] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]](Yijk[pS,pT,a] Conj[Yijk[pT,pO,b]]+Yijk[pS,pT,b] Conj[Yijk[pT,pO,a]])+Yijk[pO,pP,pE] Conj[Yijk[pP,pQ,a]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]](Yijk[pS,pT,b] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,b]])+
+Yijk[pO,pP,pE] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE] Conj[Yijk[pR,pS,a]](Yijk[pS,pT,b] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,b]])+
+Yijk[pO,pP,pE] Conj[Yijk[pP,pQ,b]] Yijk[pQ,pR,pE] Conj[Muij[pR,pS]](Yijk[pS,pT,a] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,a]])+
+Yijk[pO,pP,pE] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE] Conj[Yijk[pR,pS,b]](Yijk[pS,pT,a] Conj[Muij[pT,pO]]+Muij[pS,pT] Conj[Yijk[pT,pO,a]]); 
 
+
+(*
 H3abfunc[a_,b_]:=(Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]]+Yijk[pO,pP,b]Conj[Yijk[pP,pQ,a]])Yijk[pQ,pR,pE] Conj[Muij[pR,pS]] Muij[pS,pT] Conj[Yijk[pT,pO,pE]]+
 Muij[pT,pO] Conj[Muij[pO,pP]] Yijk[pP,pQ,pE](Conj[Yijk[pQ,pR,a]] Yijk[pR,pS,b]+Conj[Yijk[pQ,pR,b]] Yijk[pR,pS,a])Conj[Yijk[pS,pT,pE]]+
 Yijk[pO,pP,a] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE](Conj[Yijk[pR,pS,b]]Muij[pS,pT]+Conj[Muij[pR,pS]] Yijk[pS,pT,b])Conj[Yijk[pT,pO,pE]]+
 Muij[pO,pP] Conj[Yijk[pP,pQ,a]] Yijk[pQ,pR,pE](Conj[Yijk[pR,pS,b]]Muij[pS,pT]+Conj[Muij[pR,pS]] Yijk[pS,pT,b])Conj[Yijk[pT,pO,pE]]+
 Yijk[pO,pP,b] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE](Conj[Yijk[pR,pS,a]]Muij[pS,pT]+Conj[Muij[pR,pS]] Yijk[pS,pT,a])Conj[Yijk[pT,pO,pE]]+
 Muij[pO,pP] Conj[Yijk[pP,pQ,b]] Yijk[pQ,pR,pE](Conj[Yijk[pR,pS,a]]Muij[pS,pT]+Conj[Muij[pR,pS]] Yijk[pS,pT,a])Conj[Yijk[pT,pO,pE]];
+*)
+(*
+H3abfunc[a_,b_]:=YcY[pO,pQ,a,b]YcM[pQ,pS,pE] McY[pS,pO,pE]+
+cYM[pS,pO,pE] cMY[pO,pQ,pE]cYY[pQ,pS,a,b]+
+cYY[pT,pP,pE,a]cMY[pP,pR,pE](cYM[pR,pT,b]+cMY[pR,pT,b])+
+cYM[pT,pP,pE]cYY[pP,pR,a,pE](cYM[pR,pT,b]+cMY[pR,pT,b]);
+*)
+H3abfunc[a_,b_]:=(Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]])Yijk[pQ,pR,pE] Conj[Muij[pR,pS]] Muij[pS,pT] Conj[Yijk[pT,pO,pE]]+
+Muij[pT,pO] Conj[Muij[pO,pP]] Yijk[pP,pQ,pE](Conj[Yijk[pQ,pR,a]] Yijk[pR,pS,b])Conj[Yijk[pS,pT,pE]]+
+Yijk[pO,pP,a] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pE](Conj[Yijk[pR,pS,b]]Muij[pS,pT]+Conj[Muij[pR,pS]] Yijk[pS,pT,b])Conj[Yijk[pT,pO,pE]]+
+Muij[pO,pP] Conj[Yijk[pP,pQ,a]] Yijk[pQ,pR,pE](Conj[Yijk[pR,pS,b]]Muij[pS,pT]+Conj[Muij[pR,pS]] Yijk[pS,pT,b])Conj[Yijk[pT,pO,pE]];
+
+
 LamBar2Sfunc[a_,b_]:=Sum[(SA`CasimirRGE[pF,nr] Lijkl[a,b,pE,pF] Bij[pE,pF] + SA`CasimirRGE[pF,nr] Aijk[a,pE,pF] Aijk[b,pE,pF]),{nr,1,Length[Gauge]}];
 Lam2gfunc[a_,b_]:=Sum[(Lijkl[a,b,pE,pF] Bij[pG,pL]+ Aijk[a,pE,pF] Aijk[b,pG,pL]) ThS[nr,pE,pG,vec1B] ThS[nr,pF,pL,vec1B]sum[vec1B,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}];
 HSabfunc[a_,b_]:=Sum[(SA`CasimirRGE[a,nr]+SA`CasimirRGE[b,nr])Hab[a,b],{nr,1,Length[Gauge]}];
+(*
 HFabfunc[a_,b_]:=2 Sum[ ((SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr]) Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]] Muij[pQ,pR] Conj[Muij[pR,pO]]+ (SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr]) Yijk[pO,pP,b] Conj[Yijk[pP,pQ,a]] Muij[pQ,pR] Conj[Muij[pR,pO]]+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP] Conj[Muij[pP,pR]](Yijk[pR,pQ,a] Conj[Yijk[pQ,pO,b]]+Yijk[pR,pQ,b] Conj[Yijk[pQ,pO,a]])+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Yijk[pO,pP,a] Conj[Muij[pP,pQ]](Yijk[pQ,pR,b]Conj[Muij[pR,pO]]+Muij[pQ,pR] Conj[Yijk[pR,pO,b]])+
 (SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP]Conj[Yijk[pP,pQ,a]](Yijk[pQ,pR,b] Conj[Muij[pR,pO]]+Muij[pQ,pR] Conj[Yijk[pR,pO,b]])+
 (SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Yijk[pO,pP,b] Conj[Muij[pP,pQ]](Yijk[pQ,pR,a]Conj[Muij[pR,pO]]+Muij[pQ,pR] Conj[Yijk[pR,pO,a]])+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP]Conj[Yijk[pP,pQ,b]](Yijk[pQ,pR,a] Conj[Muij[pR,pO]]+Muij[pQ,pR] Conj[Yijk[pR,pO,a]])),{nr,1,Length[Gauge]}];
+*)
+(*
+HFabfunc[a_,b_]:=2 Sum[ 
+((SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr]) Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]] McM[pQ,pO]+ 
+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP] Conj[Muij[pP,pR]]YcY[pR,pO,a,b]+
+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Yijk[pO,pP,a] Conj[Muij[pP,pQ]](YcM[pQ,pO,b]+McY[pQ,pO,b])+
+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP]Conj[Yijk[pP,pQ,a]](YcM[pQ,pO,b]+McY[pQ,pO,b])),{nr,1,Length[Gauge]}];
+*)
+HFabfunc[a_,b_]:=2 Sum[ ((SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr]) Yijk[pO,pP,a] Conj[Yijk[pP,pQ,b]] Muij[pQ,pR] Conj[Muij[pR,pO]]+ (SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP] Conj[Muij[pP,pR]](Yijk[pR,pQ,a] Conj[Yijk[pQ,pO,b]])+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Yijk[pO,pP,a] Conj[Muij[pP,pQ]](Yijk[pQ,pR,b]Conj[Muij[pR,pO]]+Muij[pQ,pR] Conj[Yijk[pR,pO,b]])+
+(SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Muij[pO,pP]Conj[Yijk[pP,pQ,a]](Yijk[pQ,pR,b] Conj[Muij[pR,pO]]+Muij[pQ,pR] Conj[Yijk[pR,pO,b]])),{nr,1,Length[Gauge]}];
 
 LamSSfunc[a_,b_]:=Sum[Sum[(SA`CasimirRGE[a,nr]*SA`CasimirRGE[a,nr2]+SA`CasimirRGE[b,nr]*SA`CasimirRGE[b,nr2])Bij[a,b],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
 
-(* AlamBarfunc[a_,b_]:= 2Bij[pR,pQ](LamABCDsq1SUM[pQ,b,a,pR]+ LamABCDsq2SUM[pQ,b,a,pR]); *)
 AlamBarfunc[a_,b_]:= 2Bij[pR,pQ](LamABCDsq1SUM[b,pQ,a,pR]+ LamABCDsq2SUM[b,pQ,a,pR]);
 Alamfunc[a_,b_]:=2Bij[pR,pQ](LamABCDsq1SUM[a,b,pR,pQ]+ LamABCDsq2SUM[a,b,pR,pQ]);
 
@@ -327,12 +368,13 @@ YcMfunc[f1_,f2_,s1_]:=Yijk[f1,pA1,s1] Conj[Muij[pA1,f2]];
 cYMfunc[f1_,f2_,s1_]:=Conj[Yijk[f1,pA1,s1]] Muij[pA1,f2];
 McYfunc[f1_,f2_,s1_]:=Muij[f1,pA1] Conj[Yijk[pA1,f2,s1]];
 cMYfunc[f1_,f2_,s1_]:=Conj[Muij[f1,pA1]] Yijk[pA1,f2,s1];
-YcYfunc[f1_,f2_,s1_,s2_]:=Yijk[f1,pA1,s1] Conj[Yijk[pA1,f2,s2]];
-cYYfunc[f1_,f2_,s1_,s2_]:=Conj[Yijk[f1,pA1,s1]] Yijk[pA1,f2,s2];
-YcYYfunc[f1_,f2_,s1_,s2_,s3_]:=YcY[f1,pA2,s1,s2] Yijk[pA2,f2,s3];
-cYYcYfunc[f1_,f2_,s1_,s2_,s3_]:=cYY[f1,pA2,s1,s2] Conj[Yijk[pA2,f2,s3]];
+YcYfunc[f1_,f2_,s1_,s2_]:=1/2(Yijk[f1,pA1,s1] Conj[Yijk[pA1,f2,s2]]+Conj[Yijk[f1,pA1,s1]] Yijk[pA1,f2,s2]);
+YcY2Sfunc[f1_,f2_,s1_,s2_]:=Yijk[f1,pA1,pA2] Conj[Yijk[pA1,pA3,s1]] Yijk[pA3,pI,s2]Conj[Yijk[pI,f2,pA2]]  ;
+
+(* YcYYfunc[f1_,f2_,s1_,s2_,s3_]:=YcY[f1,pA2,s1,s2] Yijk[pA2,f2,s3]; *)
+YcYYfunc[f1_,f2_,s1_,s2_,s3_]:=Yijk[f1,pA1,s1] Conj[Yijk[pA1,pA2,s2]] Yijk[pA2,f2,s3];
 YcYYcYfunc[f1_,f2_,s1_,s2_,s3_,s4_]:=YcYY[f1,pA3,s1,s2,s3] Conj[Yijk[pA3,f2,s4]];
-cYYcYYfunc[f1_,f2_,s1_,s2_,s3_,s4_]:=cYYcY[f1,pA3,s1,s2,s3] Yijk[pA3,f2,s4];
+YcYYcY4func[s1_,s2_,s3_,s4_]:=YcYY[pQ,pA3,s1,s2,s3] Conj[Yijk[pA3,pQ,s4]];
 
 
 
@@ -350,54 +392,136 @@ For[i1=1,i1<=Length[PART[S]],
 For[i2=1,i2<=Length[PART[S]],
 For[i3=1,i3<=Length[PART[S]],
 For[i4=1,i4<=Length[PART[S]],
-If[(Lijkl[getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4]] /. Lijkl[a__]->0)  ===FALSE,
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4]]=0;
-il++;];
-For[il=1,il<=Length[list1NE],
-list1NE[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4]]=0;
-il++;];
-For[il=1,il<=Length[list2b],
-list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],a_]=0;
-il++;];
-(*
-For[il=1,il\[LessEqual]Length[list4b],
-list4b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],a_, vecB_]=0;
-il++;]; *)
-For[k=1,k<=Length[Gauge],
-For[il=1,il<=Length[list4b],
-list4b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k, vecB_]=(ExpandTermNS[list4b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k,vecB]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
-il++;];
-k++;];
-For[il=1,il<=Length[list3b],
-list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],a_, b_]=0;
-il++;];,
-
-For[il=1,il<=Length[list1b],
-list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4]]=(ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4] ]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4]]=CalcDelta[(ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4] ]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
 il++;];
 For[il=1,il<=Length[list1NE],
 list1NE[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4]]=(list1NE[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4]]);
 il++;];
 For[k=1,k<=Length[Gauge],
 For[il=1,il<=Length[list2b],
-list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k]=(ExpandTermNS[list2b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k ]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) /. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k]=CalcDelta[(ExpandTermNS[list2b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k ]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
 il++;];
 For[il=1,il<=Length[list4b],
-list4b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k, vecB_]=(ExpandTermNS[list4b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k,vecB]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+list4b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k, vecB_]=CalcDelta[(ExpandTermNS[list4b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k,vecB]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
 il++;];
 For[k2=1,k2<=Length[Gauge],
 For[il=1,il<=Length[list3b],
-list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k, k2]=(ExpandTermNS[list3b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],k, k2]=CalcDelta[(ExpandTermNS[list3b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],getFullNS[PART[S][[i4]]]/. subGC[4],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
 il++;];
 k2++;];
 k++;];
-];
 i4++;];
 i3++;];
 i2++;];
 i1++;];
+]; 
+
+
+
+Init4ScalarFunctionsFinal[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,listP},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
+
+listP=Intersection[Table[getBlank/@lA4oneNewFlat[[i,1]],{i,1,Length[lA4oneNewFlat]}]];
+
+For[i1=1,i1<=Length[listP],For[il=1,il<=Length[list1b],list1b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],getFullNS[listP[[i1,4]]]/.subGCRule[4]]=(list1b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],getFullNS[listP[[i1,4]]]/.subGC[4]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+For[il=1,il<=Length[list1NE],list1NE[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],getFullNS[listP[[i1,4]]]/.subGCRule[4]]=(list1NE[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],getFullNS[listP[[i1,4]]]/.subGC[4]]);
+il++;];
+For[k=1,k<=Length[Gauge],
+For[il=1,il<=Length[list2b],
+list2b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],getFullNS[listP[[i1,4]]]/.subGCRule[4],k]=(ExpandTermNS[list2b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],getFullNS[listP[[i1,4]]]/.subGC[4],k]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+For[il=1,il<=Length[list4b],list4b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],getFullNS[listP[[i1,4]]]/.subGCRule[4],k,vecB_]=(ExpandTermNS[list4b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],getFullNS[listP[[i1,4]]]/.subGC[4],k,vecB]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+For[k2=1,k2<=Length[Gauge],For[il=1,il<=Length[list3b],list3b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],getFullNS[listP[[i1,4]]]/.subGCRule[4],k,k2]=(ExpandTermNS[list3b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],getFullNS[listP[[i1,4]]]/.subGC[4],k,k2]](*//.sum[a_,b_,c_] d_\[RuleDelayed]Sum[d,{a,b,c}]*)/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+k2++;];
+k++;];
+i1++;];
+]; 
+
+(*
+For[i1=1,i1\[LessEqual]Length[per],
+For[i2=i1,i2\[LessEqual]Length[per],
+LamTT[getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i2,1]]]/. subGCRule[3],getFullNS[per[[i2,2]]]/. subGCRule[4]]=(ExpandTermNS[LamTTfunc[getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i2,1]]]/. subGC[3],getFullNS[per[[i2,2]]]/. subGC[4] ]]/. {Yijk[a__]\[Rule]0,Aijk[a__]\[Rule]0, Muij[a__]\[Rule]0, Bij[a__]\[Rule]0, LSi\[Rule]0 /. Li\[Rule]0});
+i2++;];
+i1++;];
+*)
+Init4ScalarFunctionsSymm[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
+per=Intersection[Sort/@Permutations[Join[PART[S],PART[S]],{2}]];
+For[i1=1,i1<=Length[per],
+For[i2=i1,i2<=Length[per],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i2,1]]]/. subGCRule[3],getFullNS[per[[i2,2]]]/. subGCRule[4]]=CalcDelta[(ExpandTermNS[list1b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i2,1]]]/. subGC[3],getFullNS[per[[i2,2]]]/. subGC[4] ]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+i2++;];
+i1++;];
+]; 
+
+Init4ScalarFunctionsPermutated[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
+per=Intersection[Flatten[Permutations/@Intersection[Sort/@Table[getBlank[lA4oneNewFlat[[i,1]]],{i,1,Length[lA4oneNewFlat]}]],1]]; 
+For[i1=1,i1<=Length[per],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],getFullNS[per[[i1,4]]]/. subGCRule[4]]=CalcDelta[(ExpandTermNS[list1b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],getFullNS[per[[i1,4]]]/. subGC[4] ]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+For[il=1,il<=Length[list1NE],
+list1NE[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],getFullNS[per[[i1,4]]]/. subGCRule[4]]=(list1NE[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],getFullNS[per[[i1,4]]]/. subGC[4] ]);
+il++;];
+
+For[k=1,k<=Length[Gauge],
+For[k2=1,k2<=Length[Gauge],
+For[il=1,il<=Length[list3b],
+list3b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],getFullNS[per[[i1,4]]]/. subGCRule[4],k, k2]=CalcDelta[(ExpandTermNS[list3b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],getFullNS[per[[i1,4]]]/. subGC[4],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+k2++;];
+k++;];
+
+i1++;];
 ];
+Init4ScalarFunctionsPermutatedAll[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
+(* per=Intersection[Flatten[Permutations/@Intersection[Sort/@Table[getBlank[lA4oneNewFlat[[i,1]]],{i,1,Length[lA4oneNewFlat]}]],1]]; *)
+per=Intersection[Flatten[Permutations/@Intersection[Sort/@Table[getBlank[lA4[[i,1]]],{i,1,Length[lA4]}]],1]];
+For[i1=1,i1<=Length[per],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],getFullNS[per[[i1,4]]]/. subGCRule[4]]=CalcDelta[(ExpandTermNS[list1b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],getFullNS[per[[i1,4]]]/. subGC[4] ]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+For[il=1,il<=Length[list1NE],
+list1NE[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],getFullNS[per[[i1,4]]]/. subGCRule[4]]=(list1NE[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],getFullNS[per[[i1,4]]]/. subGC[4] ]);
+il++;];
+
+For[k=1,k<=Length[Gauge],
+For[k2=1,k2<=Length[Gauge],
+For[il=1,il<=Length[list3b],
+list3b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],getFullNS[per[[i1,4]]]/. subGCRule[4],k, k2]=CalcDelta[(ExpandTermNS[list3b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],getFullNS[per[[i1,4]]]/. subGC[4],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+k2++;];
+k++;];
+
+i1++;];
+];
+
+
+
 Init3ScalarFunctions[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i},
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
@@ -428,21 +552,21 @@ il++;];
 k2++;];
 k++;];,
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3]]=ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3]]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
+list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3]]=ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3]]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
 il++;];
 For[il=1,il<=Length[list1NE],
 list1NE[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3]]=list1NE[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3]];
 il++;];
 For[k=1,k<=Length[Gauge],
 For[il=1,il<=Length[list2b],
-list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],k]=ExpandTermNS[list2b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],k ]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
+list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],k]=ExpandTermNS[list2b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],k ]](* //. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
 il++;];
 For[il=1,il<=Length[list4b],
-list4b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],k, vecB_]=ExpandTermNS[list4b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],k,vecB]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
+list4b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],k, vecB_]=ExpandTermNS[list4b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],k,vecB]](*//.  sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
 il++;];
 For[k2=1,k2<=Length[Gauge],
 For[il=1,il<=Length[list3b],
-list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],k, k2]=ExpandTermNS[list3b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],k,k2]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}] /. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
+list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],k, k2]=ExpandTermNS[list3b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],getFullNS[PART[S][[i3]]]/. subGC[3],k,k2]](* //. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *) /. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0};
 il++;];
 k2++;];
 k++;];
@@ -451,6 +575,61 @@ i3++;];
 i2++;];
 i1++;];
 ];
+
+Init3ScalarFunctionsFinal[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,listP},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
+
+listP=Intersection[Table[getBlank/@lA3one[[i,1]],{i,1,Length[lA3one]}]];
+
+For[i1=1,i1<=Length[listP],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3]]=ExpandTermNS[list1b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3]]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0};
+il++;];
+For[il=1,il<=Length[list1NE],list1NE[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3]]=(list1NE[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3]]);
+il++;];
+For[k=1,k<=Length[Gauge],
+For[il=1,il<=Length[list2b],
+list2b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],k]=(ExpandTermNS[list2b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],k]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+For[il=1,il<=Length[list4b],list4b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],k,vecB_]=(ExpandTermNS[list4b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],k,vecB]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+For[k2=1,k2<=Length[Gauge],For[il=1,il<=Length[list3b],list3b[[il,1]][getFullNS[listP[[i1,1]]]/.subGCRule[1],getFullNS[listP[[i1,2]]]/.subGCRule[2],getFullNS[listP[[i1,3]]]/.subGCRule[3],k,k2]=(ExpandTermNS[list3b[[il,2]][getFullNS[listP[[i1,1]]]/.subGC[1],getFullNS[listP[[i1,2]]]/.subGC[2],getFullNS[listP[[i1,3]]]/.subGC[3],k,k2]](*//.sum[a_,b_,c_] d_\[RuleDelayed]Sum[d,{a,b,c}]*)/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+il++;];
+k2++;];
+k++;];
+i1++;];
+]; 
+
+Init3ScalarFunctionsPermutated[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
+per=Intersection[Flatten[Permutations/@Intersection[Sort/@Table[getBlank[lA3one[[i,1]]],{i,1,Length[lA3one]}]],1]];
+For[i1=1,i1<=Length[per],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3]]=CalcDelta[(ExpandTermNS[list1b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3] ]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+For[il=1,il<=Length[list1NE],
+list1NE[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3]]=(list1NE[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3] ]);
+il++;];
+
+For[k=1,k<=Length[Gauge],
+For[k2=1,k2<=Length[Gauge],
+For[il=1,il<=Length[list3b],
+list3b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. subGCRule[2],getFullNS[per[[i1,3]]]/. subGCRule[3],k, k2]=CalcDelta[(ExpandTermNS[list3b[[il,2]][getFullNS[per[[i1,1]]]/. subGC[1],getFullNS[per[[i1,2]]]/. subGC[2],getFullNS[per[[i1,3]]]/. subGC[3],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0})];
+il++;];
+k2++;];
+k++;];
+
+i1++;];
+];
+
 Init1ScalarFunctions[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G},
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
@@ -481,6 +660,7 @@ i1++;];
 ];
 
 SA`sub2Scalar={};
+
 Init2ScalarFunctions[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G},
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
@@ -489,28 +669,8 @@ list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Le
 list2G=Table[{list2Gin[[i]],ToExpression[ToString[list2Gin[[i]]]<>"func"]},{i,1,Length[list2Gin]}];
 For[i1=1,i1<=Length[PART[S]],
 For[i2=1,i2<=Length[PART[S]],
-If[(Bij[getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2]] /. Bij[a__]->0)===FALSE &&  i1=!=i2,
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=0;
-il++;];
-For[il=1,il<=Length[list1bNE],
-list1bNE[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=0;
-il++;];
-For[k=1,k<=Length[Gauge],
-For[il=1,il<=Length[list2b],
-list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k]=0;
-il++;];
-For[il=1,il<=Length[list3b],
-SA`sub2Scalar=Join[SA`sub2Scalar,{list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, vecB_]->0}];
-il++;];
-For[k2=1,k2<=Length[Gauge],
-For[il=1,il<=Length[list2G],
-list2G[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, k2]=0;
-il++;];
-k2++;];
-k++;];,
-For[il=1,il<=Length[list1b],
-list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=(ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2]]](*//. (sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );
+list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=(ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2]]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );
 il++;];
 For[il=1,il<=Length[list1bNE],
 list1bNE[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=(list1bNE[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2]]);
@@ -520,18 +680,70 @@ For[il=1,il<=Length[list2b],
 list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k]=(ExpandTermNS[list2b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k ]]//.  sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}] /. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
 il++;];
 For[il=1,il<=Length[list3b],
-list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, vecB_]=(ExpandTermNS[list3[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k,vecB]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, vecB_]=(ExpandTermNS[list3[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k,vecB]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}] /. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
 il++;];
 For[k2=1,k2<=Length[Gauge],
 For[il=1,il<=Length[list2G],
-list2G[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, k2]=(ExpandTermNS[list2G[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k,k2]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );
+If[SA`Casimir[PART[S][[i1]],k]=!=0 && SA`Casimir[PART[S][[i2]],k]=!=0 && SA`Casimir[PART[S][[i1]],k]2=!=0 && SA`Casimir[PART[S][[i2]],k2]=!=0, 
+list2G[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, k2]=(ExpandTermNS[list2G[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );,
+list2G[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, k2]=0;
+];
 il++;];
 k2++;];
 k++;];
-];
 i2++;];
 i1++;];
 ];
+
+Init2ScalarFunctionsSymm[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list2G=Table[{list2Gin[[i]],ToExpression[ToString[list2Gin[[i]]]<>"func"]},{i,1,Length[list2Gin]}];
+For[i1=1,i1<=Length[PART[S]],
+For[i2=i1,i2<=Length[PART[S]],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=(ExpandTermNS[list1b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2]]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );
+il++;];
+For[il=1,il<=Length[list1bNE],
+list1bNE[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2]]=(list1bNE[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2]]);
+il++;];
+For[k=1,k<=Length[Gauge],
+For[il=1,il<=Length[list2b],
+list2b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k]=(ExpandTermNS[list2b[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k ]]//.  sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}] /. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+il++;];
+For[il=1,il<=Length[list3b],
+list3b[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, vecB_]=(ExpandTermNS[list3[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k,vecB]]//. sum[a_,b_,c_] d_ :>Sum[d,{a,b,c}] /. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0});
+il++;];
+For[k2=1,k2<=Length[Gauge],
+For[il=1,il<=Length[list2G],
+If[SA`Casimir[PART[S][[i1]],k]=!=0 && SA`Casimir[PART[S][[i2]],k]=!=0 && SA`Casimir[PART[S][[i1]],k]2=!=0 && SA`Casimir[PART[S][[i2]],k2]=!=0, 
+list2G[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, k2]=(ExpandTermNS[list2G[[il,2]][getFullNS[PART[S][[i1]]]/. subGC[1],getFullNS[PART[S][[i2]]]/. subGC[2],k,k2]](*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );,
+list2G[[il,1]][getFullNS[PART[S][[i1]]]/. subGCRule[1],getFullNS[PART[S][[i2]]]/. subGCRule[2],k, k2]=0;
+];
+il++;];
+k2++;];
+k++;];
+i2++;];
+i1++;];
+];
+
+Init2ScalarFunctionsFinal[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G,listP},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
+list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
+list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
+list2G=Table[{list2Gin[[i]],ToExpression[ToString[list2Gin[[i]]]<>"func"]},{i,1,Length[list2Gin]}];
+
+listP=Sort/@Intersection[Table[getBlank/@lA2one[[i,1]],{i,1,Length[lA2one]}]];
+For[i1=1,i1<=Length[listP],
+For[il=1,il<=Length[list1b],
+list1b[[il,1]][getFullNS[listP[[i1,1]]]/. subGCRule[1],getFullNS[listP[[i1,2]]]/. subGCRule[2]]=(ExpandTermNS[list1b[[il,2]][getFullNS[listP[[i1,1]]]/. subGC[1],getFullNS[listP[[i1,2]]]/. subGC[2]]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );
+il++;];
+i1++;];
+];
+
 Init2FermionFunctions[list1in_,list2in_,list3in_]:=Block[{i1,i2,i3,i4,il,k,list1b,list2b,list3b},
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -559,7 +771,7 @@ For[i1=1,i1<=Length[PARTALL[F]],
 For[i2=1,i2<=Length[PARTALL[F]],
 For[i3=1,i3<=Length[PART[S]],
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],PART[S][[i3]]/. subGCRule[3]]=ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) ;
+list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],PART[S][[i3]]/. subGCRule[3]]=CalcDelta[ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) ];
 il++;];
 i3++;];
 i2++;];
@@ -572,39 +784,61 @@ For[i2=1,i2<=Length[PARTALL[F]],
 For[i3=1,i3<=Length[PART[S]],
 For[i4=1,i4<=Length[PART[S]],
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],PART[S][[i3]]/. subGCRule[3],PART[S][[i4]]/. subGCRule[4]]=ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3],PART[S][[i4]]/. subGC[4]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*);
+list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],PART[S][[i3]]/. subGCRule[3],PART[S][[i4]]/. subGCRule[4]]=CalcDelta[ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3],PART[S][[i4]]/. subGC[4]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*)];
 il++;];
 i4++;];
 i3++;];
 i2++;];
 i1++;];
 ];
-Init2Fermion3ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b},
+Init2Fermion3ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b,per},
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+ per=Intersection[Flatten[Permutations[#,{3}]&/@Intersection[Sort/@Table[getBlank[lA4[[i,1]]],{i,1,Length[lA4]}]],1]];
+For[i3=1,i3<=Length[per],
 For[i1=1,i1<=Length[PARTALL[F]],
 For[i2=1,i2<=Length[PARTALL[F]],
-For[i3=1,i3<=Length[PART[S]],
-For[i4=1,i4<=Length[PART[S]],
-For[i5=1,i5<=Length[PART[S]],
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],PART[S][[i3]]/. subGCRule[3],PART[S][[i4]]/. subGCRule[4],PART[S][[i5]]/. subGCRule[5]]=ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3],PART[S][[i4]]/. subGC[4],PART[S][[i5]]/. subGC[5]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) ;
+ list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],getFullNS[per[[i3,1]]]/. subGCRule[3],getFullNS[per[[i3,2]]]/. subGCRule[4],getFullNS[per[[i3,3]]]/. subGCRule[5]]=CalcDelta[ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],getFullNS[per[[i3,1]]]/.subGC[3],getFullNS[per[[i3,2]]]/.subGC[4],getFullNS[per[[i3,3]]]/. subGC[5]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) ]; 
 il++;];
-i5++;];
-i4++;];
-i3++;];
 i2++;];
 i1++;];
+ i3++;]; 
 ];
+
+(*
+Init2Fermion3ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b,per},
+list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+(* per=Intersection[Flatten[Permutations[#,{3}]&/@Intersection[Sort/@Table[getBlank[lA4[[i,1]]],{i,1,Length[lA4oneNewFlat]}]],1]];
+For[i3=1,i3\[LessEqual]Length[per], *)
+For[i1=1,i1\[LessEqual]Length[PARTALL[F]],
+For[i2=1,i2\[LessEqual]Length[PARTALL[F]],
+ For[i3=1,i3\[LessEqual]Length[PART[S]],
+For[i4=1,i4\[LessEqual]Length[PART[S]],
+For[i5=1,i5\[LessEqual]Length[PART[S]], 
+For[il=1,il\[LessEqual]Length[list1b],
+(* list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],per[[i3,1]]/. subGCRule[3],per[[i3,2]]/. subGCRule[4],per[[i3,3]]/. subGCRule[5]]=CalcDelta[ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],per[[i3,1]]/.subGC[3],per[[i3,2]]/.subGC[4],per[[i3,3]]/. subGC[5]]]/. {Yijk[a__]\[Rule]0,Aijk[a__]\[Rule]0,m2ij[a__]\[Rule]0, Muij[a__]\[Rule]0, Bij[a__]\[Rule]0, LSi\[Rule]0 /. Li\[Rule]0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) ]; *)
+list1b[[il,1]][PARTALL[F][[i1]]/.subGCRule[1],PARTALL[F][[i2]]/.subGCRule[2],PART[S][[i3]]/.subGCRule[3],PART[S][[i4]]/.subGCRule[4],PART[S][[i5]]/.subGCRule[5]]=ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/.subGC[1],PARTALL[F][[i2]]/.subGC[2],PART[S][[i3]]/.subGC[3],PART[S][[i4]]/.subGC[4],PART[S][[i5]]/.subGC[5]]]/.{Yijk[a__]\[Rule]0,Aijk[a__]\[Rule]0,m2ij[a__]\[Rule]0,Muij[a__]\[Rule]0,Bij[a__]\[Rule]0,LSi\[Rule]0/.Li\[Rule]0}(*//.sum[a_,b_,c_] d_\[RuleDelayed]Sum[d,{a,b,c}]*);
+
+il++;];
+ i5++;];
+i4++;];
+i3++;]; 
+i2++;];
+i1++;];
+(* i3++;]; *)
+];
+*)
 Init2Fermion4ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b},
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
+
 For[i1=1,i1<=Length[PARTALL[F]],
-For[i2=1,i2<=Length[PARTALL[F]],
+For[i2=i1,i2<=Length[PARTALL[F]],
 For[i3=1,i3<=Length[PART[S]],
 For[i4=1,i4<=Length[PART[S]],
 For[i5=1,i5<=Length[PART[S]],
 For[i6=1,i6<=Length[PART[S]],
 For[il=1,il<=Length[list1b],
-list1b[[il,1]][getFullNS[PARTALL[F][[i1]]]/. subGCRule[1],getFullNS[PARTALL[F][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],getFullNS[PART[S][[i5]]]/. subGCRule[5],getFullNS[PART[S][[i6]]]/. subGCRule[6]]=ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3],PART[S][[i4]]/. subGC[4],PART[S][[i5]]/. subGC[5],PART[S][[i6]]/. subGC[6]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *);
+list1b[[il,1]][getFullNS[PARTALL[F][[i1]]]/. subGCRule[1],getFullNS[PARTALL[F][[i2]]]/. subGCRule[2],getFullNS[PART[S][[i3]]]/. subGCRule[3],getFullNS[PART[S][[i4]]]/. subGCRule[4],getFullNS[PART[S][[i5]]]/. subGCRule[5],getFullNS[PART[S][[i6]]]/. subGCRule[6]]=CalcDelta[ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],PART[S][[i3]]/. subGC[3],PART[S][[i4]]/. subGC[4],PART[S][[i5]]/. subGC[5],PART[S][[i6]]/. subGC[6]]]/. {Yijk[a__]->0,Aijk[a__]->0,m2ij[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}] *)];
 il++;];
 i6++;];
 i5++;];
@@ -615,7 +849,7 @@ i1++;];
 ];
 
 
-InitializeInvariants[TwoLoop_]:=Block[{i,j,k, i1,i2,i3,i4,temp},
+InitializeInvariants[TwoLoop_]:=Block[{i,j,k,k2, i1,i2,i3,i4,temp},
 
 (* What has to be zero for sure ... *)
 For[i=1,i<=Length[PARTALL[F]],
@@ -625,10 +859,14 @@ LamY[a___,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],b___]=0;
 LamS[a___,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],b___]=0;
 LamABCD[a___,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],b___]=0;
 Aabcd[a___,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],b___]=0;
-YcM[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d_]=0;
-cYM[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d_]=0;
-McY[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d_]=0;
-cMY[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d_]=0;
+YcM[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1]]=0;
+cYM[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1]]=0;
+McY[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1]]=0;
+McM[a_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1]]=0;
+cMM[a_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1]]=0;
+McM[getFullNS[PARTALL[F][[i]]]/. subGCRule[1],a_]=0;
+cMM[getFullNS[PARTALL[F][[i]]]/. subGCRule[1],a_]=0;
+cMY[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1]]=0;
 YcY[a_,b_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d___]=0;
 cYY[a_,b_,c_,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d___]=0;
 YcYY[a_,b_,c___,getFullNS[PARTALL[F][[i]]]/. subGCRule[1],d___]=0;
@@ -665,243 +903,232 @@ cMY[getFullNS[PART[S][[i]]]/. subGCRule[1],d___]=0;
 cMY[a_,getFullNS[PART[S][[i]]]/. subGCRule[1],d___]=0;
 i++;];
 
-If[MemorySaveMode=!=True,
-PrintAll["  fermion bilinears"];
+(* If[MemorySaveMode=!=True, *)
+Print[StyleForm["Fermion bilinear","Section",FontSize->12]];
 listInit={Y2F,Y2FC,McM,cMM};
 listInitGauge={}; listInitGaugeAux={};
 Init2FermionFunctions[listInit,listInitGauge,listInitGaugeAux];
-
+Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 (* fermion chains *)
-PrintAll["  fermion chains"];
-PrintAll["     ... 1-loop"];
+Print[StyleForm["Fermion chains","Section",FontSize->12]];
+(* PrintAll["     ... 1-loop"]; *)
 Init2Fermion1ScalarFunctions[{YcM,cYM,McY,cMY}];
-Init2Fermion2ScalarFunctions[{YcY,cYY}];
-If[TwoLoop==True,
-PrintAll["     ... 2-loop"];
-Init2Fermion3ScalarFunctions[{YcYY,cYYcY}];
-Init2Fermion4ScalarFunctions[{YcYYY,cYYcYY}];
+Init2Fermion2ScalarFunctions[{YcY,YcY2S}];
+(* Init2Fermion2ScalarFunctions[{cYY}]; *)
+Init2Fermion3ScalarFunctions[{YcYY}];
+(*  YcYY[f1_,f2_,a_,b_,c_]:=YcYY[f2,f1,c,b,a]/;OrderedQ[{f1,f2}]\[Equal]False;  *)
+(* Init2Fermion3ScalarFunctions[{cYYcY}]; *)
+
+(*
+If[TwoLoop\[Equal]True,
+ Init2Fermion4ScalarFunctions[{YcYYcY}]; 
+(* Init2Fermion4ScalarFunctions[{cYYcYY}]; *)
+YcYYcY[f1_,f2_,a_,b_,c_,d_]:=Conj[YcYYcY[f2,f1,d,c,b,a]]/;OrderedQ[{f1,f2}]\[Equal]False;
 ];
+*)
+
+cYYcYY[a__]:=Conj[YcYYcY[a]];
+cYYcY[a__]:=Conj[YcYY[a]];
+cYY[a__]:=Conj[YcY[a]];
+cYY2S[a__]:=Conj[YcY2S[a]];
+Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 
 (* scalar bilinears *)
-PrintAll["  scalar bilinears"];
+Print[StyleForm["Scalar bilinear","Section",FontSize->12]];
 PrintAll["     ... 1-loop"];
-listInit={Y2S,Lam2S,H2ab,Hbar2,Hab,LamY};
-listInitGauge={Y2FS};listInitGauge2={}; listInitGaugeAux={};
-listInitNotExpaned={LamS};
-Init2ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
+listInit={Y2S,Lam2S,LamY};
+listInitGauge={Y2FS};listInitNotExpaned={LamS};
+Init2ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,{},{}];
+listInit={Y2S,Lam2S,LamY};
+Init2ScalarFunctionsSymm[{H2ab,Hbar2,Hab},{},{},{},{}];
+
+Y2S[a_,b_]:=Y2S@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Lam2S[a_,b_]:=Lam2S@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+H2ab[a_,b_]:=H2ab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Hbar2[a_,b_]:=Hbar2@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Hab[a_,b_]:=Hab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamY[a_,b_]:=LamY@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamS[a_,b_]:=LamS@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Y2FS[a_,b_,f_]:=Y2FS@@Join[Sort[{a,b}],{f}]/;OrderedQ[{a,b}]==False;
+(* Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"]; *)
 
 If[TwoLoop==True,
 PrintAll["     ... 2-loop"];
-listInit={LamBar3,LamBar2Y,HbarLam,HYab,HY, HYbar,H3ab,Alam,AlamBar};
+listInit={LamBar3,LamBar2Y,Alam,AlamBar};
 listInitNotExpaned={LamSC2G,LamSS};
-listInitGauge={}; listInitGaugeAux={}; listInitGauge2={};  listInitGauge2={ThTh,TaTaYY1,TaTaYY2,TaTaYY3}; 
-Init2ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
+Init2ScalarFunctionsSymm[listInit,listInitNotExpaned,{},{},{}];
+
+listInit={HbarLam,HYab,HY, HYbar,H3ab};
+Init2ScalarFunctionsFinal[listInit,{},{},{},{}];
+
+LamBar3[a_,b_]:=LamBar3@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamBar2Y[a_,b_]:=LamBar2Y@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+HbarLam[a_,b_]:=HbarLam@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+HYab[a_,b_]:=HYab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+HY[a_,b_]:=HY@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+HYbar[a_,b_]:=HYbar@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+H3ab[a_,b_]:=H3ab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Alam[a_,b_]:=Alam@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+AlamBar[a_,b_]:=AlamBar@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamSC2G[a_,b_]:=LamSC2G@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamSS[a_,b_]:=LamSS@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+
+
+Init2ScalarFunctionsSymm[{},{},{},{ThTh,TaTaYY1,TaTaYY2,TaTaYY3},{}];
+ThTh[a_,b_,f_,g_]:=ThTh@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
+TaTaYY1[a_,b_,f_,g_]:=TaTaYY1@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
+TaTaYY2[a_,b_,f_,g_]:=TaTaYY2@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
+TaTaYY3[a_,b_,f_,g_]:=TaTaYY3@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
+
+
 listInit={BY,BYbar,LamBar2S,Lam2g,HFab};
-listInitGauge={}; listInitGaugeAux={}; listInitGauge2={};  listInitGauge2={}; 
 listInitNotExpaned={HSab};
-Init2ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
+Init2ScalarFunctions[listInit,listInitNotExpaned,{},{},{}];
+BY[a_,b_]:=BY@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+BYbar[a_,b_]:=BYbar@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamBar2S[a_,b_]:=LamBar2S@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Lam2g[a_,b_]:=Lam2g@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+HFab[a_,b_]:=HFab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+HSab[a_,b_]:=HSab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 ];
 
 (* -------- scalar quartic --------- *)
-Print["  scalar quartics"];
+Print[StyleForm["Scalar quartic","Section",FontSize->12]];
 Print["     ... 1-loop"];
 (* first,  some functions needed for the others *)
-listInit={Y4abcd,YC4abcd, LamY2};listInitGauge={};listInitGauge2={}; listInitGaugeAux={};  listInitGaugeAux={LamABCD}; 
-Init4ScalarFunctions[listInit,{},listInitGauge,listInitGauge2,listInitGaugeAux];
+
+Init4ScalarFunctionsPermutatedAll[{YcYYcY4},{},{},{},{}];
+cYYcYY4[a__]:=Conj[YcYYcY4[a]];
 
 
-listInit={};listInitGauge={}; listInitGauge2={};  listInitGauge2= {LamABCDsq1,LamABCDsq2}; listInitGaugeAux={};
-Init4ScalarFunctions[listInit,{},listInitGauge,listInitGauge2,listInitGaugeAux];
+listInitGaugeAux={LamABCD}; 
+Init4ScalarFunctions[{},{},{},{},listInitGaugeAux];
+YC4abcd[a___]=Conj[Y4abcd[a]];
 
-(*  Now, the one loop functions *)
-listInit={Lam2,Habcd,LamY,LamS,LamBar3}; listInitGauge={}; listInitGauge={};  listInitGauge2={}; listInitGaugeAux={};
-listInitNotExpaned= {(*ASabcd,*)LamABCDsq1SUM,LamABCDsq2SUM};
-Init4ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
-listInit={}; listInitGauge={}; listInitGauge={};  listInitGauge2={}; listInitGaugeAux={};
-listInitNotExpaned= {(*Aabcd*)};
-Init4ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
-Init2Fermion4ScalarFunctions[{YcYYcY}];
-Init2Fermion3ScalarFunctions[{YcYY,cYYcY}];
+(*
+For[i1=1,i1\[LessEqual]Length[PART[S]],
+For[i2=i1,i2\[LessEqual]Length[PART[S]],
+For[i3=i2,i3\[LessEqual]Length[PART[S]],
+For[i4=1,i4\[LessEqual]Length[PART[S]],
+LamY2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i2]]]/.subGCRule[2],getFullNS[PART[S][[i3]]]/.subGCRule[3],getFullNS[PART[S][[i4]]]/.subGCRule[4]]=(ExpandTermNS[LamY2func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i2]]]/.subGC[2],getFullNS[PART[S][[i3]]]/.subGC[3],getFullNS[PART[S][[i4]]]/.subGC[4]]]/.{Yijk[a__]\[Rule]0,Aijk[a__]\[Rule]0,Muij[a__]\[Rule]0,Bij[a__]\[Rule]0,LSi\[Rule]0/.Li\[Rule]0});
+i4++;];
+i3++;];
+i2++;];
+i1++;];
+LamY2[a_,b_,c_,d_]:=LamY2[b,a,c,d] /;OrderedQ[{a,b}]\[Equal]False;
+LamY2[a_,b_,c_,d_]:=LamY2[a,c,b,d] /;OrderedQ[{b,c}]\[Equal]False;
+*)
+
+For[i1=1,i1<=Length[PART[S]],
+For[i2=i1,i2<=Length[PART[S]],
+For[k=1,k<=Length[Gauge],
+For[k2=k,k2<=Length[Gauge],
+If[SA`Casimir[PART[S][[i1]],k]=!=0 && SA`Casimir[PART[S][[i2]],k]=!=0 && SA`Casimir[PART[S][[i1]],k]2=!=0 && SA`Casimir[PART[S][[i2]],k2]=!=0, 
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq1func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq2func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq1func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq2func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq1func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq2func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq1func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=(ExpandTermNS[LamABCDsq2func[getFullNS[PART[S][[i1]]]/.subGC[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGC[2],getFullNS[PART[S][[i2]]]/.subGC[3],getFullNS[PART[S][[i2]]]/.subGC[4],k,k2]]/.{Yijk[a__]->0,Aijk[a__]->0,Muij[a__]->0,Bij[a__]->0,LSi->0/.Li->0});,
+
+
+
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=0;
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=0;
+
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=0;
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=0;
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=0;
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]/.subExchangeScalarRI]/.subGCRule[4],k,k2]=0;
+LamABCDsq1[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=0;
+LamABCDsq2[getFullNS[PART[S][[i1]]]/.subGCRule[1],getFullNS[PART[S][[i1]]/.subExchangeScalarRI]/.subGCRule[2],getFullNS[PART[S][[i2]]]/.subGCRule[3],getFullNS[PART[S][[i2]]]/.subGCRule[4],k,k2]=0;
+];
+k2++;];
+k++;];
+i2++;];
+i1++;];
+
+LamABCDsq1[a_,b_,c_,d_,k1_,k2_]:=LamABCDsq1[c,d,a,b,k1,k2]/;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
+LamABCDsq2[a_,b_,c_,d_,k1_,k2_]:=LamABCDsq2[c,d,a,b,k1,k2]/;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
+LamABCDsq1[a_,b_,c_,d_,k1_,k2_]:=LamABCDsq1[a,b,c,d,k2,k1]/;(k1>k2);
+LamABCDsq2[a_,b_,c_,d_,k1_,k2_]:=LamABCDsq2[a,b,c,d,k2,k1]/;(k1>k2);
+
+LamABCDsq1[a_,b_,c_,d_,k1_,k2_]:=0/;(((getBlank[a]=!=getBlank[b])&& (getBlank[a]=!=(getBlank[b]/.subExchangeScalarRI)))||((getBlank[c]=!=getBlank[d])&&(getBlank[c]=!=(getBlank[d]/.subExchangeScalarRI))) );
+LamABCDsq2[a_,b_,c_,d_,k1_,k2_]:=0/;(((getBlank[a]=!=getBlank[b])&& (getBlank[a]=!=(getBlank[b]/.subExchangeScalarRI)))||((getBlank[c]=!=getBlank[d])&&(getBlank[c]=!=(getBlank[d]/.subExchangeScalarRI))) );
+
+Init4ScalarFunctions[{},{LamABCDsq1SUM,LamABCDsq2SUM},{},{},{}]; 
+Init4ScalarFunctionsFinal[{Lam2,Habcd,LamY,LamS,LamBar3,AbarLabcd,ALabcd},{},{},{},{}];
+
+
+
+(* Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"]; *)
+
 (*  Now, two-loop functions *)
 If[TwoLoop==True,
 Print["     ... 2-loop"];
-listInit={Y24abcd,Y6abcd,YC6abcd,Y6abcd2,LamTT}; listInitGauge={}; listInitGauge={};  listInitGauge2={}; listInitGaugeAux={};
-Init4ScalarFunctions[listInit,{},listInitGauge,listInitGauge2,listInitGaugeAux];
-listInit={};
+ Init4ScalarFunctions[{Y4abcd},{},{},{},{}]; 
+
+
+Init4ScalarFunctionsPermutated[{Y24abcd,Y6abcd,(*YC6abcd,*)Y6abcd2},{},{},{},{}];
+YC6abcd[a__]:=Conj[Y6abcd[a]];
+
+Init4ScalarFunctionsSymm[{LamTT},{},{},{},{}];
+LamTT[a_,b_,c_,d_]:=LamTT[b,a,c,d] /;OrderedQ[{a,b}]==False;
+LamTT[a_,b_,c_,d_]:=LamTT[a,b,d,c] /;OrderedQ[{c,d}]==False;
+LamTT[a_,b_,c_,d_]:=LamTT[c,d,a,b] /;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
+
+
 listInitNotExpaned= {DSLLabcd,DFLLabcd,CGLLabcd,ThThTaTaYY1,ThThTaTaYY2};
-listInitGauge={}; listInitGaugeAux={};listInitGauge2={};  listInitGauge2={}; 
-Init4ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
-listInitNotExpaned={Lam2g,HSabcd,H3,HY,HbarY,FFThThThTh, AabcdDynkinS,AabcdDynkinF,AabcdC2G, LamSS,LamSC2G,LamSS2F,LamSS2S};
-listInit={LamBar,LamBar2Y,HbarLam,HFabcd,LamBar2SAux};
-listInitGauge={}; listInitGaugeAux={}; listInitGauge2={};  listInitGaugeAux={};  
-Init4ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
+Init4ScalarFunctions[{},listInitNotExpaned,{},{},{}];
 
- listInit={};
-listInitNotExpaned={ BY, BYbar};
-listInitGauge={};  listInitGauge2={};  listInitGaugeAux={};   listInitGauge2={};  
-Init4ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux]; 
-];
-
-(* -------- cubic quartic --------- *)
-Print["  scalar cubic"];
-Print["     ... 1-loop"];
-listInit={Lam2,Habc,LamY,LamS};listInitGauge={};listInitGauge2={}; listInitGaugeAux={};  listInitGaugeAux={}; 
-Init3ScalarFunctions[listInit,{},listInitGauge,listInitGauge2,listInitGaugeAux];
-If[TwoLoop==True,
-Print["     ... 2-loop"];
-listInit={};listInitGauge={};listInitGauge2={TaTaYM1,TaTaYM2,TaTaYM3,TaTaYM4,TaTaYM5,TaTaYM6}; listInitGaugeAux={};  listInitGaugeAux={}; 
-Init1ScalarFunctions[listInit,{},listInitGauge,listInitGauge2,listInitGaugeAux];
-listInit={LamSC2G, LamSS2F,LamSS2S,LamBar3,LamBar2Y,HbarLamMAux,HbarHAux,HYAux,HYbarAux,H3Aux,LamBar2SAux,LamTT,HSabc,HFabcAux,LamSS,AbarLabc,ALabc};listInitGauge={};listInitGauge2={}; listInitGaugeAux={};  listInitGaugeAux={}; 
-Init3ScalarFunctions[listInit,{ThThTaTaYM1,ThThTaTaYM2},listInitGauge,listInitGauge2,listInitGaugeAux];
-listInit={BY,BYbar,HbarLamM,HbarH,HY,HYbar,H3,LamBar2SAux,Lam2g,HFabc};listInitGauge={};listInitGauge2={}; listInitGaugeAux={};  listInitGaugeAux={}; 
-Init3ScalarFunctions[listInit,{ (* BY,BYbar*)},listInitGauge,listInitGauge2,listInitGaugeAux];
-
-];,
-
-Y2F[a_,b_]:=Y2Ffunc[a,b];
-Y2FC[a_,b_]:=Y2FCfunc[a,b];
-McM[a_,b_]:=McMfunc[a,b];
-cMM[a_,b_]:=cMMfunc[a,b];
-
-YcM[a__]:=YcMfunc[a];
-cYM[a__]:=cYMfunc[a];
-McY[a__]:=McYfunc[a];
-cMY[a__]:=cMYfunc[a];
-YcY[a__]:=YcYfunc[a];
-cYY[a__]:=cYYfunc[a];
-
-If[TwoLoop==True,
-YcYY[a__]:=YcYYfunc[a];
-cYYcY[a__]:=cYYcYfunc[a];
-YcYYY[a__]:=YcYYYfunc[a];
-cYYcYY[a__]:=cYYcYYfunc[a];
-];
-
-Y2S[a__]=Y2Sfunc[a];
-Lam2S[a__]=Lam2Sfunc[a];
-H2ab[a__]=H2abfunc[a];
-Hbar2[a__]=Hbar2func[a];
-Hab[a__]=Habfunc[a];
-LamY[a__]=LamYfunc[a];
-Y2FS[a__]=Y2FSfunc[a];
-LamS[a__]=LamSfunc[a];
-Y4abcd[a__]=Y4abcdfunc[a];
-YC4abcd[a__]=YC4abcdfunc[a];
-LamY2[a__]=LamY2func[a];
-LamABCDsq1[a__]=LamABCDsq1func[a];
-LamABCDsq2[a__]=LamABCDsq2func[a];
-LamABCD[a__]=LamABCDfunc[a];
-Lam2[a__]=Lam2func[a];
-Habcd[a__]=Habcdfunc[a];
-LamY[a__]=LamYfunc[a];
-LamS[a__]=LamSfunc[a];
-LamBar3[a__]=LamBar3func[a];
-LamABCDsq1SUM[a__]=LamABCDsq1SUMfunc[a];
-LamABCDsq2SUM[a__]=LamABCDsq2SUMfunc[a];
-YcYYcY[a__]=YcYYcYfunc[a];
-YcYY[a__]=YcYYfunc[a];
-cYYcY[a__]=cYYcYfunc[a];
-Lam2[a__]=Lam2func[a];
-Habc[a__]=Habcfunc[a];
-LamY[a__]=LamYfunc[a];
-LamS[a__]=LamSfunc[a];
-
-If[TwoLoop==True,
-Init2ScalarFunctions[{},{},{},{ThTh,TaTaYY1,TaTaYY2,TaTaYY3},{}];
 
 Init4ScalarFunctions[{},{FFThThThTh},{},{},{}];
 
+listInitNotExpaned={Lam2g,HSabcd,H3,HY,HbarY, AabcdDynkinS,AabcdDynkinF,AabcdC2G, LamSS,LamSC2G,LamSS2F,LamSS2S};
+listInit={(*LamBar, *)LamBar2Y,HbarLam,HFabcd};
+Init4ScalarFunctionsFinal[listInit,listInitNotExpaned,{},{},{}];
 
-LamBar3[a__]=LamBar3func[a];
-LamBar2Y[a__]=LamBar2Yfunc[a];
-HbarLam[a__]=HbarLamfunc[a];
-HYab[a__]=HYabfunc[a];
-HY[a__]=HYfunc[a];
-HYbar[a__]=HYbarfunc[a];
-H3ab[a__]=H3abfunc[a];
-Alam[a__]=Alamfunc[a];
-AlamBar[a__]=AlamBarfunc[a];
-LamSC2G[a__]=LamSC2Gfunc[a];
-LamSS[a__]=LamSSfunc[a];
-ThTh[a__]=ThThfunc[a];
-TaTaYY1[a__]=TaTaYY1func[a];
-TaTaYY2[a__]=TaTaYY2func[a];
-TaTaYY3[a__]=TaTaYY3func[a];
-BY[a__]=BYfunc[a];
-BYbar[a__]=BYbarfunc[a];
-LamBar2S[a__]=LamBar2Sfunc[a];
-Lam2g[a__]=Lam2gfunc[a];
-HFab[a__]=HFabfunc[a];
-HSab[a__]=HSabfunc[a];
-Y24abcd[a__]=Y24abcdfunc[a];
-Y6abcd[a__]=Y6abcdfunc[a];
-YC6abcd[a__]=YC6abcdfunc[a];
-Y6abcd2[a__]=Y6abcd2func[a];
-LamTT[a__]=LamTTfunc[a];
-DSLLabcd[a__]=DSLLabcdfunc[a];
-DFLLabcd[a__]=DFLLabcdfunc[a];
-CGLLabcd[a__]=CGLLabcdfunc[a];
-ThThTaTaYY1[a__]=ThThTaTaYY1func[a];
-ThThTaTaYY2[a__]=ThThTaTaYY2func[a];
-Lam2g[a__]=Lam2gfunc[a];
-HSabcd[a__]=HSabcdfunc[a];
-H3[a__]=H3func[a];
-HY[a__]=HYfunc[a];
-HbarY[a__]=HbarYfunc[a];
-(* FFThThThTh[a__]=FFThThThThfunc[a]; *)
-AabcdDynkinS[a__]=AabcdDynkinSfunc[a];
-AabcdDynkinF[a__]=AabcdDynkinFfunc[a];
-AabcdC2G[a__]=AabcdC2Gfunc[a];
-LamSS[a__]=LamSSfunc[a];
-LamSC2G[a__]=LamSC2Gfunc[a];
-LamSS2F[a__]=LamSS2Ffunc[a];
-LamSS2S[a__]=LamSS2Sfunc[a];
-LamBar[a__]=LamBarfunc[a];
-LamBar2Y[a__]=LamBar2Yfunc[a];
-HbarLam[a__]=HbarLamfunc[a];
-HFabcd[a__]=HFabcdfunc[a];
-LamBar2SAux[a__]=LamBar2SAuxfunc[a];
-BY[a__]=BYfunc[a];
-BYbar[a__]=BYbarfunc[a];
-TaTaYM1[a__]=TaTaYM1func[a];
-TaTaYM2[a__]=TaTaYM2func[a];
-TaTaYM3[a__]=TaTaYM3func[a];
-TaTaYM4[a__]=TaTaYM4func[a];
-TaTaYM5[a__]=TaTaYM5func[a];
-TaTaYM6[a__]=TaTaYM6func[a];
-LamSC2G[a__]=LamSC2Gfunc[a];
-LamSS2F[a__]=LamSS2Ffunc[a];
-LamSS2S[a__]=LamSS2Sfunc[a];
-LamBar3[a__]=LamBar3func[a];
-LamBar2Y[a__]=LamBar2Yfunc[a];
-HbarLamMAux[a__]=HbarLamMAuxfunc[a];
-HbarHAux[a__]=HbarHAuxfunc[a];
-HYAux[a__]=HYAuxfunc[a];
-HYbarAux[a__]=HYbarAuxfunc[a];
-H3Aux[a__]=H3Auxfunc[a];
-LamBar2SAux[a__]=LamBar2SAuxfunc[a];
-LamTT[a__]=LamTTfunc[a];
-HSabc[a__]=HSabcfunc[a];
-HFabcAux[a__]=HFabcAuxfunc[a];
-LamSS[a__]=LamSSfunc[a];
-AbarLabc[a__]=AbarLabcfunc[a];
-ALabc[a__]=ALabcfunc[a];
-ThThTaTaYM1[a__]=ThThTaTaYM1func[a];
-ThThTaTaYM2[a__]=ThThTaTaYM2func[a];
-BY[a__]=BYfunc[a];
-BYbar[a__]=BYbarfunc[a];
-HbarLamM[a__]=HbarLamMfunc[a];
-HbarH[a__]=HbarHfunc[a];
-HY[a__]=HYfunc[a];
-HYbar[a__]=HYbarfunc[a];
-H3[a__]=H3func[a];
-LamBar2SAux[a__]=LamBar2SAuxfunc[a];
-Lam2g[a__]=Lam2gfunc[a];
-HFabc[a__]=HFabcfunc[a];
+Init4ScalarFunctionsSymm[{LamBar2SAux},{},{},{},{}];
+
+LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[b,a,c,d] /;OrderedQ[{a,b}]==False;
+LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[a,b,d,c] /;OrderedQ[{c,d}]==False;
+LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[c,d,a,b] /;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
+LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[b,a,c,d] /;OrderedQ[{a,b}]==False;
+LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[a,b,d,c] /;OrderedQ[{c,d}]==False;
+LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[c,d,a,b] /;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
+
+
+listInitNotExpaned={ BY, BYbar};
+Init4ScalarFunctionsFinal[{},listInitNotExpaned,{},{},{}]; 
+
+Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 ];
 
+(* -------- cubic quartic --------- *)
+Print[StyleForm["Scalar cubic","Section",FontSize->12]];
+If[Length[SA`SSSlist]>0,
+Print["     ... 1-loop"];
+Init3ScalarFunctionsFinal[{Lam2,Habc,LamY,LamS},{},{},{},{}];
+(* Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"]; *)
+If[TwoLoop==True,
+Print["     ... 2-loop"];
+Init1ScalarFunctions[{},{},{},{TaTaYM1,TaTaYM2,TaTaYM3,TaTaYM4,TaTaYM5,TaTaYM6},{}];
+Init3ScalarFunctionsPermutated[{LamBar2SAux},{},{},{},{}];
+Init3ScalarFunctionsPermutated[{HFabcAux,LamTT,HbarLamMAux,HbarHAux,HYAux,HYbarAux,H3Aux},{},{},{},{}];
+Init3ScalarFunctionsPermutated[{},{ThThTaTaYM1,ThThTaTaYM2},{},{},{}];
+Init3ScalarFunctionsFinal[{AbarLabc,ALabc,BY,BYbar,HbarLamM,HbarH,HSabc,HY,HYbar,H3,Lam2g,HFabc,LamSS,LamSC2G, LamSS2F,LamSS2S,LamBar3,LamBar2Y},{},{},{},{}];
+Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
+];,
+Print["     ... 1-loop"];
+Print["     ... 2-loop"];
+Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 ];
-
-
-Print["done with that ... "];
+Print["All necessary invariants are ready (Time needed: ",TimeUsed[]-TimeStartedRGEs,"s)"];
+Print[""];
 ];

@@ -32,14 +32,14 @@ Print["Calculate non-supersymmetric RGEs   "];
 Print["------------------------------------"];*)
 
 Print[StyleForm["Calculate non-supersymmetric RGEs","Section",FontSize->12]];
-
+TimeStartedRGEs=TimeUsed[];
 $sarahCurrentRGEDir=ToFileName[{$sarahCurrentOutputMainDir,"RGEs"}];
 If[FileExistsQ[$sarahCurrentOutputMainDir]=!=True,    CreateDirectory[$sarahCurrentOutputMainDir];];
 If[FileExistsQ[$sarahCurrentRGEDir]=!=True,        CreateDirectory[$sarahCurrentRGEDir];     ];
       
 If[ReadLists==False,
 SA`SubIgnore2L=Table[IgnoreAt2L[[i]]->0,{i,1,Length[IgnoreAt2L]}];
-If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
+If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True; sumRGE[a_,b_,c_]=sumRGE[a];];
 
 ParticlesBefore=Particles[RGEs];
 
@@ -47,17 +47,17 @@ PARTsave[S]=PART[S];
 PARTsave[F]=PART[F];
 
 
-PART[F]=DeleteCases[FFields,0,3]/. conj[x_]->x;
+PART[F]=Sort[DeleteCases[FFields,0,3]/. conj[x_]->x];
 PART[S]=SplitComplexScalars[DeleteCases[SFields,0,3]];
 PART[Sc]=PART[S][[1]];
 PART[Sr]=PART[S][[2]];
-PART[S]=Join[PART[S][[1]],PART[S][[2]]];
+PART[S]=getFullNS/@Sort[getBlank/@Join[PART[Sr],PART[Sc]]];
 
 subRGE=subRGEDelta;
 (* MakeMatrixMul=True; *)
 
 LPName = Flatten[{PART[F],PART[S]}] /.A_[{b__}][{c__}]->A /. A_[{b__}]->A /. conj[x_]->x;
-PARTALL[F]=PART[F]/. conj[x_]->x;
+PARTALL[F]=Sort[PART[F]/. conj[x_]->x];
 
 (*  LP=Join[PART[F],PART[S]]/. conj[x_]\[Rule]x; *)
 LP=LPName;
@@ -68,12 +68,14 @@ GenerateCouplingLists;
 GenerateCouplingVariables[NoMatMul,Force];
 InitGaugeGroupInfo[VarGens];
 
+CheckForNecessarySuperpositions;
+
 InitializeInvariants[TwoLoop];
 
 SA`sub4Scalar  = Dispatch[SA`sub4Scalar];
 SA`sub2Scalar = Dispatch[SA`sub2Scalar];
 
-Print["Starting calculation ... "];
+Print["Calculation of beta functions... "];
 
 CalculateAllRGEsNonSUSY[TwoLoop,Simp];
 
@@ -90,7 +92,9 @@ If[WriteRunning,
 CreateFileForRunning;
 ];
 RGEsCalculated = True;
-
+Print[""];
+Print["Finished with the calculation of the RGEs. Time needed: ",TimeUsed []-TimeStartedRGEs,"s"];
+Print["The results are saved in ",StyleForm[ToString[$sarahCurrentRGEDir],"Section",FontSize->10]];
 ];
 
 ReadBetaFunctionsNS:=Block[{},
@@ -125,10 +129,11 @@ SplitComplexScalars[list_]:=Block[{i,j,temp,name,real,im,tempR},
 subComplexScalarsSum={};
 subComplexScalarsList={};
 SFieldsSplitted={};
+subExchangeScalarRI={};
 temp={};
 tempR={};
 For[i=1,i<=Length[list],
-If[FreeQ[realVar,(list[[i]] /. A_[{b__}][{c__}]->A /. A_[{b__}]->A)],
+If[FreeQ[RealScalarsMul,(list[[i]] /. A_[{b__}][{c__}]->A /. A_[{b__}]->A)],
 name = list[[i]] /. A_[{b__}][{c__}]->A /. A_[{b__}]->A;
 real=ToExpression["r"<>ToString[name]];
 im=ToExpression["i"<>ToString[name]];
@@ -161,7 +166,8 @@ j++;];
 SFieldsSplitted=Join[SFieldsSplitted,{list[[i]]/.name->real,list[[i]]/.name->im}];
 temp=Join[temp,{list[[i]] /. name->real, list[[i]]/.name->im}];
 subComplexScalarsSum = Join[subComplexScalarsSum,{name[a__][b__]-> 1/Sqrt[2](real[a][b] + I im[a][b]),name[a__]-> 1/Sqrt[2]( real[a] + I im[a]),name-> 1/Sqrt[2]( real + I im)}];
-subComplexScalarsList = Join[subComplexScalarsList,{name[a__][b__]->{ real[a][b],  im[a][b]},name[a__]->{ real[a],  im[a]},name->{ real,  im}}];,
+subComplexScalarsList = Join[subComplexScalarsList,{name[a__][b__]->{ real[a][b],  im[a][b]},name[a__]->{ real[a],  im[a]},name->{ real,  im}}];
+subExchangeScalarRI=Join[subExchangeScalarRI,{real->im,im->real}];,
 tempR=Join[tempR,{list[[i]]}];
 SFieldsSplitted=Join[SFieldsSplitted,{list[[i]]}];
 ];
@@ -177,12 +183,13 @@ added=True;
 ];
 term=Expand[Times@@(list[[i,1]] /. subComplexScalarsSum /. conj[x_]->x)*list[[i,2]]];
 
-If[Length[list[[i,1]]]===4,
-If[(conj[Times@@list[[i,1]]] /. A_[{b__}][{c__}]->A /. A_[{b__}]->A) =!=(Times@@list[[i,1]] /. A_[{b__}][{c__}]->A /. A_[{b__}]->A),
+(* If[Length[list[[i,1]]]===4, *)
+If[list[[i,3]]===True,
+(* If[(conj[Times@@list[[i,1]]] /. A_[{b__}][{c__}]\[Rule]A /. A_[{b__}]\[Rule]A) =!=(Times@@list[[i,1]] /. A_[{b__}][{c__}]\[Rule]A /. A_[{b__}]\[Rule]A), *)
 term=term+Expand[Times@@((conj/@list[[i,1]]) /. subComplexScalarsSum /. conj[x_]->x)*list[[i,2]]];
+If[OnlyDummy=!=True,Print["Note, the following parameter is treated as real in RGEs: ",If[Head[Expand[list[[i,2]]]]===Plus,Expand[list[[i,2]]][[1]],list[[i,2]]]/. {Delta[a__]->1,epsTensor[__]->1,x_?NumericQ->1}];];
+(* ]; *)
 ];
-];
-
 invfields={};
 For[j=1,j<=Length[list[[i,1]]],
 invfields=Join[invfields,{list[[i,1,j]] /. subComplexScalarsList /. A_[{b__}][{c__}]->A /. A_[{b__}]->A}];
@@ -224,7 +231,7 @@ CalcBetaFunctionsNonSUSY[GSij,Table[{{PART[S][[i]]/.subGC[1],PART[S][[i]]/.subGC
 CalcBetaFunctionsNonSUSY[GSijHat,Table[{{PART[S][[i]]/.subGC[1],PART[S][[i]]/.subGC[2]},{makeDeltaNS[PART[S][[i]],{}],1}},{i,1,Length[PART[S]]}] /.subindnames,"GammaijHat","Gammaij3IHat",TwoLoop,Simp];
 CalcBetaFunctionsNonSUSY[YIJK,lW3one /.subindnames ,"BetaYijk","BetaYijk3I",TwoLoop,Simp];
 CalcBetaFunctionsNonSUSY[MFIJ,lW2one /.subindnames ,"BetaMuij","BetaMuij3I",TwoLoop,Simp];
-CalcBetaFunctionsNonSUSY[LIJKL,lA4one /.subindnames,"BetaLijkl","BetaLijkl3I",TwoLoop,Simp];
+CalcBetaFunctionsNonSUSY[LIJKL,lA4oneBeta /.subindnames,"BetaLijkl","BetaLijkl3I",TwoLoop,Simp];
 CalcBetaFunctionsNonSUSY[TIJK,lA3one /.subindnames ,"BetaTijk","BetaTijk3I",TwoLoop,Simp];
 CalcBetaFunctionsNonSUSY[MSIJ,lA2one /.subindnames,"BetaBij","BetaBij3I",TwoLoop,Simp];
 CalcBetaFunctionsNonSUSY[VEVI,SA`ListVEVi  /.subGC[1]/.subindnames,"BetaVEV","BetaVEV3I",TwoLoop,Simp];
@@ -832,24 +839,30 @@ k++;];
 
 
 
-CalcBetaFunctionsNonSUSY[type_,fields_,filename_,filename3I_,twoloop_,Simp_]:=Block[{i,factor,res,subNonZero,coup,SaveArray={},SaveArray3I={}},
-
+CalcBetaFunctionsNonSUSY[type_,fields_,filename_,filename3I_,twoloop_,Simp_]:=Block[{i,ii,factor,res,subNonZero,coup,SaveArray={},SaveArray3I={},bfcalculated={}},
+Clear[bF1L,bF2L];
 kF=1/2; 
 
 Switch[type,
-LIJKL, Print["Calculate Beta Functions for scalar 4-point interactions"];,
-YIJK, Print["Calculate Beta Functions for Yukawa-like interactions"];,
-MFIJ,Print["Calculate Beta Functions for bilinear Fermion interactions"];,
-TIJK,Print["Calculate Beta Functions for scalar 3-point interactions"];,
-MSIJ,Print["Calculate Beta Functions for bilinear scalar interactions"];,
-GAUGE,Print["Calculate Beta Functions for Gauge Couplings"];,
-VEVI,Print["Calculate Beta Functions for VEVs"];,
-GSij,Print["Calculate anomalous dimensions of scalars"];,
-GSijHat,Print["Calculate hat(gamma) for running VEVs"];
+LIJKL,  Print[StyleForm["Calculate Beta Functions for scalar 4-point interactions","Section",FontSize->12]];,
+YIJK,  Print[StyleForm["Calculate Beta Functions for Yukawa-like interactions","Section",FontSize->12]];,
+MFIJ, Print[StyleForm["Calculate Beta Functions for bilinear Fermion interactions","Section",FontSize->12]];,
+TIJK, Print[StyleForm["Calculate Beta Functions for scalar 3-point interactions","Section",FontSize->12]];,
+MSIJ, Print[StyleForm["Calculate Beta Functions for bilinear scalar interactions","Section",FontSize->12]];,
+GAUGE, Print[StyleForm["Calculate Beta Functions for Gauge Couplings","Section",FontSize->12]];,
+VEVI, Print[StyleForm["Calculate Beta Functions for VEVs","Section",FontSize->12]];,
+GSij, Print[StyleForm["Calculate anomalous dimensions of scalars","Section",FontSize->12]];,
+GSijHat, Print[StyleForm["Calculate hat(gamma) for running VEVs","Section",FontSize->12]];
 ];
 
+If[Length[fields]>0,
+DynamicProgressRGE[type]=0;
+Print["   Calculating ",Dynamic[DynamicProgressRGE[type]],"/",Length[fields],".(",Dynamic[DynamicCoupProgess[type]],")"];,
+Print["   Nothing to do."];
+];
 
 For[i=1,i<=Length[fields],
+DynamicProgressRGE[type]=i;
 (*
 If[Head[Expand[fields[[i,2,1]]]]===Plus,
 res=GetNonZeroEntriesNS[Expand[fields[[i,2,1]]][[1]] /. Delta[gen1,a_]\[Rule]1 /. Delta[a___,gen2,b___]\[Rule]1,fields[[i,1]]];,
@@ -857,33 +870,53 @@ res=GetNonZeroEntriesNS[fields[[i,2,1]] /. Delta[gen1,a_]\[Rule]1 /. Delta[a___,
 ];
 *)
 
+If[FreeQ[fields[[i,1]],Rule],
 res=GetNonZeroEntriesNS[fields[[i,2]], type,fields[[i,1]]];
+subNonZero=res[[1]];,
+subNonZero={};
+];
 
-subNonZero=res[[1]];
+
 
 SuperpositionNeeded=False;
 
 UseSymmASymm=True;
 Switch[type,
 LIJKL,
-	coup=fields[[i,2,1]]*fields[[i,2,2]];
-	
-	If[(subNonZero[[-1]]=!=PLUS && subNonZero[[-1]]=!=MINUS),
-	betaFunction=BetaFunctionLijkl1LnonSUSY[fields[[i,1]]/. subNonZero ];
-	If[twoloop,betaFunction2L=BetaFunctionLijkl2LnonSUSY[fields[[i,1]]/. subNonZero ];,betaFunction2L=0];,
-	coup=res[[2]];
-	betaFunctionA=BetaFunctionLijkl1LnonSUSY[fields[[i,1]]/. subNonZero[[1]] ];
-	If[twoloop,betaFunction2LA=BetaFunctionLijkl2LnonSUSY[fields[[i,1]]/. subNonZero[[1]] ];,betaFunction2LA=0];
-betaFunctionB=BetaFunctionLijkl1LnonSUSY[{fields[[i,1,1]],fields[[i,1,2]],fields[[i,1,3]]/.SA`subImagToReal,fields[[i,1,4]]/.SA`subImagToReal}/. subNonZero[[2]] ];
-If[twoloop,betaFunction2LB=BetaFunctionLijkl2LnonSUSY[{fields[[i,1,1]],fields[[i,1,2]],fields[[i,1,3]]/.SA`subImagToReal,fields[[i,1,4]]/.SA`subImagToReal}/. subNonZero[[2]] ];,betaFunction2LB=0];
-	SuperpositionNeeded=True;
-	If[subNonZero[[-1]]===PLUS,
-	betaFunction=betaFunctionA+betaFunctionB;
-	betaFunction2L=betaFunction2LA+betaFunction2LB;,
-	betaFunction=betaFunctionA-betaFunctionB;
-	betaFunction2L=betaFunction2LA-betaFunction2LB;
-	];
+	If[FreeQ[fields[[i,1]],Rule],
+	coup=fields[[i,2,1]]*fields[[i,2,2]] /. conj[x_]->x;
+	If[FreeQ[bfcalculated,getBlank/@fields[[i,1]]],
+	betaFunction=BetaFunctionLijkl1LnonSUSY[fields[[i,1]](*/. subNonZero *)];
+	If[twoloop,betaFunction2L=BetaFunctionLijkl2LnonSUSY[fields[[i,1]](*/. subNonZero *) ];,betaFunction2L=0]; 
+	bF1L[getBlank/@fields[[i,1]]]=betaFunction;
+	bF2L[getBlank/@fields[[i,1]]]=betaFunction2L;
+	betaFunction=betaFunction/.subNonZero;
+	betaFunction2L=betaFunction2L/.subNonZero;
+	bfcalculated=Join[bfcalculated,{getBlank/@fields[[i,1]]}];,
+	betaFunction=bF1L[getBlank/@fields[[i,1]]]/. subNonZero;
+	betaFunction2L=bF2L[getBlank/@fields[[i,1]]]/. subNonZero;
 	];,
+	SuperpositionNeeded=True;
+	coup=fields[[i,2,1]]/. conj[x_]->x;
+	For[ii=1,ii<=(Length[fields[[i,1]]]-1)/2,
+	If[FreeQ[bfcalculated,getBlank/@fields[[i,1,1+2(ii-1)]]],
+	betaFunctionS[ii]=BetaFunctionLijkl1LnonSUSY[fields[[i,1,1+2(ii-1)]](*/. (fields[[i,1,2*ii]]/.subindnames)*) ];
+	If[twoloop,betaFunction2LS[ii]=BetaFunctionLijkl2LnonSUSY[fields[[i,1,1+2(ii-1)]](*/. (fields[[i,1,2*ii]]/.subindnames)*) ];,betaFunction2LS[ii]=0]; 
+	bF1L[getBlank/@fields[[i,1,1+2(ii-1)]]]=betaFunctionS[ii];
+	bF2L[getBlank/@fields[[i,1,1+2(ii-1)]]]=betaFunction2LS[ii];
+	betaFunctionS[ii]=betaFunctionS[ii]/. (fields[[i,1,2*ii]]/.subindnames);
+	betaFunction2LS[ii]=betaFunction2LS[ii]/. (fields[[i,1,2*ii]]/.subindnames);,
+	betaFunctionS[ii]=bF1L[getBlank/@fields[[i,1,1+2(ii-1)]]]/. (fields[[i,1,2*ii]]/.subindnames);
+	betaFunction2LS[ii]=bF2L[getBlank/@fields[[i,1,1+2(ii-1)]]]/. (fields[[i,1,2*ii]]/.subindnames);
+	];
+	ii++;];
+	If[fields[[i,1,-1]]===P,
+	betaFunction=Sum[betaFunctionS[ii],{ii,1,Length[fields[[i,1]]-1]/2}];
+	betaFunction2L=Sum[betaFunction2LS[ii],{ii,1,Length[fields[[i,1]]-1]/2}];,
+	betaFunction=betaFunctionS[1]-betaFunctionS[2];
+	betaFunction2L=betaFunction2LS[1]-betaFunction2LS[2];
+	];
+	]; ,
 YIJK,
 	coup=Yijk[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2],fields[[i,1,3]]/.subGC[3]];
 	betaFunction=BetaFunctionYijk1LnonSUSY[fields[[i,1]]/. subNonZero ];
@@ -897,7 +930,7 @@ TIJK,
 	betaFunction=BetaFunctionTijk1LnonSUSY[fields[[i,1]]/. subNonZero ];
 	If[twoloop,betaFunction2L=BetaFunctionTijk2LnonSUSY[fields[[i,1]]/. subNonZero ];,betaFunction2L=0];,
 MSIJ,
-	coup=Bij[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2]];
+	coup=Bij[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2]]/. conj[x_]->x;
 	betaFunction=BetaFunctionMSij1LnonSUSY[fields[[i,1]]/. subNonZero ];
 	If[twoloop,betaFunction2L=BetaFunctionMSij2LnonSUSY[fields[[i,1]]/. subNonZero ];,betaFunction2L=0];,
 GAUGE,
@@ -917,20 +950,14 @@ GSijHat,
 	betaFunction=GammaSijHat1L[fields[[i,1,1]],fields[[i,1,2]]];
 	If[twoloop,betaFunction2L=GammaSijHat2L[fields[[i,1,1]],fields[[i,1,2]]];,betaFunction2L=0];
  ];
-
-
-(*
-factor=DeleteCases[DeleteCases[fakeFac coup /. subNonZero,_?(MemberQ[{gt1,gt2,gt3,gt4},#]&),10] /. A_[]\[Rule]1 /. Conj[x_]\[Rule]x,_?(MemberQ[Transpose[parameters][[1]],#]&),10] /. fakeFac \[Rule]1;
-*)
-(* If[(subNonZero[[-1]]=!=PLUS && subNonZero[[-1]]=!=MINUS),*)
-If[SuperpositionNeeded=!=True,
 factor=DeleteCases[DeleteCases[fakeFac coup /. CGCBroken[{a___}]:>CGCBroken[{a}/. Conj->conj]/. subNonZero,_?(MemberQ[{gen1,gen2,gen3,gen4},#]&),10] /. A_[{}]->1 /. A_[]->1 /. Conj[x_]->x,_?(MemberQ[Transpose[parameters][[1]],#]&),10] /. fakeFac ->1;
-betaFunction =Expand[1/factor* CalcRGEValue[betaFunction /. subNonZero /. SA`gCoup[a__]->0 ,False]];
-betaFunction2L = Expand[1/factor* CalcRGEValue[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0 /. subNonZero,False]];,
-
-factor=coup[[1]]/. CGCBroken[{a___}]:>CGCBroken[{a}/. Conj->conj];
-betaFunction =Expand[1/factor* CalcRGEValue[betaFunction /. SA`gCoup[a__]->0 ,False]];
-betaFunction2L = Expand[1/factor* CalcRGEValue[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0 ,False]];
+DynamicCoupProgess[type]=1/factor*CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] ;
+If[SuperpositionNeeded=!=True,
+betaFunction =Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction /. subNonZero /. SA`gCoup[a__]->0] ,False]];
+betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0 /. subNonZero],False]];,
+(* factor=coup/. CGCBroken[{a___}]:>CGCBroken[{a}/. Conj\[Rule]conj]; *)
+betaFunction =Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction /. SA`gCoup[a__]->0 ],False]];
+betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0] ,False]];
 ];
 If[type===VEVI,
 betaFunction=-betaFunction /. Delta2->Delta /. Delta[a_[{b1_,d1___}][{c1__}],a_[{b2_,d2___}][{c2__}]]->Delta[a[{b1}],a[{b2}]]/. Delta[a__]->0;
@@ -940,15 +967,8 @@ betaFunction2L=betaFunction2L /. Delta2[a__]->1;
 ];
 subGenInd={}; nrInd=1;
 
-(*
-For[j=1,j\[LessEqual]4,
-If[FreeQ[fields[[i,1]],genf[j]]\[Equal]False,
-subGenInd=Join[subGenInd,{genf[j]\[Rule]ToExpression["i"<>ToString[nrInd]]}];
-nrInd++;
-];
-j++;]; 
-*)
 torep={};
+If[SuperpositionNeeded=!=True,
 For[j=1,j<=Length[fields[[i,1]]],
 If[NumericQ[fields[[i,1,j]]]===False,
 If[getGen[fields[[i,1,j]],ALL]>1,
@@ -958,7 +978,18 @@ If[(getGen[fields[[i,1,j]],ALL]<99 ) || (getGenAux[getBlank[fields[[i,1,j]] ]] >
 ];
 ];
 ];
+j++;]; ,
+For[j=1,j<=Length[fields[[i,1,1]]],
+If[NumericQ[fields[[i,1,1,j]]]===False,
+If[getGen[fields[[i,1,1,j]],ALL]>1,
+If[(getGen[fields[[i,1,1,j]],ALL]<99 ) || (getGenAux[getBlank[fields[[i,1,1,j]] ]] >1),
+ torep=Join[torep,{Select[{gen1,gen2,gen3,gen4},(FreeQ[fields[[i,1,1,j]],#]==False)&][[1]]}]; 
+(* torep=Join[torep,Select[{gen1,gen2,gen3,gen4},(FreeQ[fields[[i,1,j]],#]\[Equal]False)&][[Count[Take[fields[[i,1]],{1,j-1}],fields[[i,1,j]]]+1]]]; *)
+];
+];
+];
 j++;]; 
+];
 
 torep=DeleteCases[torep,{}];
 (* torep=Sort[torep]; *)
@@ -971,17 +1002,19 @@ subGenInd=Join[subGenInd,{torep[[nrInd]]->ToExpression["i"<>ToString[Position[Ca
 nrInd++;
 ];
 
+(*
 If[type===LIJKL,
 If[subNonZero[[-1]]===PLUS || subNonZero[[-1]]===MINUS,
-subNonZero=subNonZero[[1]]; coup=coup[[1]]*coup[[2]];];
+subNonZero=subNonZero[[1]]; 
+coup=coup[[1]]*coup[[2]];];
 ];
-
+*)
 If[Simp===True && ThreeIndexParametersInvolved=!=True,
 SaveArray = Join[SaveArray,{{1/factor*CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] /. subGenInd ,Simplify[betaFunction/. subGenInd//.Conj->conj],Simplify[ betaFunction2L/. subGenInd//.Conj->conj]}}];,
 SaveArray = Join[SaveArray,{{1/factor*CalcRGEValue[coup /. subNonZero/. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] /. subGenInd ,betaFunction/. subGenInd//.Conj->conj , betaFunction2L/. subGenInd//.Conj->conj }}];
 ];
 i++;];
-
+DynamicCoupProgess[type]"All Done";
 
 Put[SaveArray,ToFileName[$sarahCurrentRGEDir,filename<>".m"]];
 
@@ -1067,6 +1100,8 @@ i++;
 ];,
 i++;];
 ];
+
+
 If[Found==True,
 Return[{indtab[[i]],(term[[1]]*term[[2]] /. indtab[[i]]  /. Delta[a__]->1  /. searchedcoup[[1]][a__]->1 /. searchedcoup[[1]]->1)}];,
 i=1;j=1;
@@ -1100,11 +1135,68 @@ Return[{{indtab[[i]],indtab[[j]],sign},{(If[sign===MINUS,resM,resP] /. indtab[[i
 
 ];
 
+GetNonZeroEntriesNSAll[term_,type_,fields_]:=Block[{sub={},pos,i,j,fac=1,epsilons,deltas,indnr,coup,coup2,searchedcoup,indtab,Found},Switch[type,LIJKL,coup=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3],fields[[4]]/.subGC[4]];
+coup2=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]/.SA`subImagToReal,fields[[4]]/.subGC[4]/.SA`subImagToReal];,YIJK,coup=Yijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,MFIJ,coup=Muij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,TIJK,coup=Aijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,MSIJ,coup=Bij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,GAUGE,Return[{{},1}];
+coup=fields[[2,1]];,VEVI,coup=VEVi[fields[[1]]/.subGC[1]];,GSij,coup=1;,GSijHat,coup=1;];
+indtab={};
+For[i=1,i<=Length[fields],If[Head[fields[[i]]]=!=Symbol,indnr=ToExpression[StringTake[ToString[(fields[[i]]/.{A_[{a___}][{b__}]->{a,b},A_[{a___}]->{a}})[[1]]],-1]];
+ind=getIndRGENS[getBlankSF[fields[[i]]],indnr];
+For[j=1,j<=Length[ind],indtab=Join[indtab,{Table[ind[[j,1]]->k,{k,1,ind[[j,3]]}]}];
+j++;];];
+i++;];
+indtab=Tuples[indtab/.Flatten[Table[subIndFinal[i,i],{i,1,4}],1]];
+Return[indtab];];
 
-MakeDummyListRGEsNonSUSY:=Block[{i,j},NeededAnaDimsForVEVs={};
+CheckPairsInsertions[list_,coups_,rcoup_]:=Block[{i,sums,lAins},lAins={};
+For[i=1,i<=Length[list],inds=GetNonZeroEntriesNSAll[list[[i,2,1]],LIJKL,list[[i,1]]];
+For[j=1,j<=Length[inds],If[(list[[i,2,1]]/.inds[[j]])=!=0,lAins=Join[lAins,{{list[[i,1]],inds[[j]],list[[i,2,1]]/.inds[[j]]}}];];
+j++;];
+i++;];
+sums={};
+For[i=1,i<Length[lAins],For[j=i+1,j<=Length[lAins],sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],P},{lAins[[i,3]]+lAins[[j,3]],1}}}];
+sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],M},{lAins[[i,3]]-lAins[[j,3]],1}}}];
+j++;];
+i++;];
+sums=Select[sums,FreeQ[#,rcoup]==False&];
+Return[Select[sums,FreeQcoups[#,coups]=={}&]];];
+CheckPairs[list_,coups_,rcoup_]:=Block[{i,sums},sums={};
+For[i=1,i<Length[list],For[j=i+1,j<=Length[list],sums=Join[sums,{{{list[[i,1]],list[[j,1]],P},{list[[i,2,1]]+list[[j,2,1]],list[[i,2,2]]}}}];
+sums=Join[sums,{{{list[[i,1]],list[[j,1]],M},{list[[i,2,1]]-list[[j,2,1]],list[[i,2,2]]}}}];
+j++;];
+i++;];
+sums=Select[sums,FreeQ[#,rcoup]==False&];
+Return[Select[sums,FreeQcoups[#,coups]=={}&]];];
+FreeQcoups[list_,coups_]:=Select[coups,FreeQ[list,#]==False&];
+
+CheckForNecessarySuperpositions:=Block[{i,temp,quartics,res},
+quartics=Transpose[SA`SSSSlist][[2]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1;
+lA4oneNew={};
+For[i=1,i<=Length[quartics],
+temp=Select[Select[lA4,FreeQ[#,quartics[[i]]]==False&],FreeQcoups[#,DeleteCases[quartics,quartics[[i]]]]=={}&];
+If[temp=!={},
+lA4oneNew=Join[lA4oneNew,{temp[[1]]}];,
+res=CheckPairsInsertions[Select[lA4,FreeQ[#,quartics[[i]]]==False&],DeleteCases[quartics,quartics[[i]]],quartics[[i]]];
+If[res==={},
+RGEs::StillEntangled="Can't disentangle the contributions to the running of ``";
+Message[RGEs::StillEntangled,quartics[[i]]];,
+lA4oneNew=Join[lA4oneNew,{res[[1]]}]];
+];
+i++;];
+
+lA4oneNewFlat={};
+For[i=1,i<=Length[lA4oneNew],If[FreeQ[lA4oneNew[[i,1]],Rule],lA4oneNewFlat=Join[lA4oneNewFlat,{lA4oneNew[[i]]}];,lA4oneNewFlat=Join[lA4oneNewFlat,{lA4[[Position[lA4,lA4oneNew[[i,1,1]]][[1,1]]]]}];
+lA4oneNewFlat=Join[lA4oneNewFlat,{lA4[[Position[lA4,lA4oneNew[[i,1,3]]][[1,1]]]]}];];
+i++;];
+lA4oneNewFlat;
+lA4oneBeta=lA4oneNew;
+];
+
+
+MakeDummyListRGEsNonSUSY:=Block[{i,j},
+OnlyDummy=True;
+NeededAnaDimsForVEVs={};
 UseSymmASymm=True;
 ParticlesBefore=Particles[RGEs];
-PARTsave[S]=PART[S];
 PARTsave[F]=PART[F];
 PART[F]=DeleteCases[FFields,0,3]/.conj[x_]->x;
 PART[S]=SplitComplexScalars[DeleteCases[SFields,0,3]];

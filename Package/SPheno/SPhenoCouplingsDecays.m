@@ -127,7 +127,7 @@ If[particle===HiggsBoson  || particle === PseudoScalar,
 MakeVariableList[NeededRatiosLoopCouplings,"",sphenoCoup];
 MakeVariableList[NeededRatiosLoopCouplingsPseudo,"",sphenoCoup];
 WriteString[sphenoCoup,"Complex(dp) :: coup \n"];
-WriteString[sphenoCoup,"Real(dp) :: vev, gNLO, NLOqcd, NNLOqcd, NNNLOqcd, AlphaSQ \n"];
+WriteString[sphenoCoup,"Real(dp) :: vev, gNLO, NLOqcd, NNLOqcd, NNNLOqcd, AlphaSQ, AlphaSQhlf \n"];
 WriteString[sphenoCoup,"Real(dp) :: g1SM,g2SM,g3SM,vSM\n"];
 WriteString[sphenoCoup,"Complex(dp) ::YuSM(3,3),YdSM(3,3),YeSM(3,3)\n"];
 ];
@@ -212,10 +212,17 @@ WriteString[sphenoCoup,"End if \n"];
 ];
 ];
 ]; 
+
 If[(particle===HiggsBoson || particle===PseudoScalar) &&  SupersymmetricModel===False,
 WriteString[sphenoCoup,"! Run always SM gauge couplings if present \n"];
 WriteString[sphenoCoup,"  Qin=sqrt(getRenormalizationScale()) \n"];
-WriteString[sphenoCoup,"  Call RunSMohdm(Qin,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
+WriteString[sphenoCoup,"  Call RunSMohdm(m_in,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
+WriteString[sphenoCoup,"   ! SM pole masses needed for diphoton/digluon rate \n"];
+WriteString[sphenoCoup,"   ! But only top and W play a role. \n"];
+WriteString[sphenoCoup,"   vSM=1/Sqrt((G_F*Sqrt(2._dp))) ! On-Shell VEV needed for loop \n"];
+WriteString[sphenoCoup,"   YuSM(3,3)=sqrt(2._dp)*mf_u(3)/vSM  ! On-Shell top needed in loop \n"];
+WriteString[sphenoCoup,"   ! Other running values kept to get H->ff correct \n"];
+
 For[i=1,i<=Length[BoundaryLowScaleInput],
 If[Select[{vSM,YdSM,YeSM,YuSM,g1SM,g2SM,g3SM},FreeQ[BoundaryLowScaleInput[[i,2]],#]==False&]=!={},
 WriteString[sphenoCoup,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"="<>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
@@ -223,8 +230,17 @@ WriteString[sphenoCoup,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"="<>SPhenoForm
 i++;];
 ];
 
+
 If[(particle===HiggsBoson || particle===PseudoScalar) && FreeQ[parameters,hyperchargeCoupling] ==False && FreeQ[parameters,strongCoupling] ==False&& FreeQ[parameters,leftCoupling] ==False,
 WriteString[sphenoCoup,"! Run always SM gauge couplings if present \n"];
+WriteString[sphenoCoup,"! alphaS(mH/2) for NLO corrections to diphoton rate \n"];
+WriteString[sphenoCoup,"Call RunSMgauge(m_in/2._dp,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>") \n"];
+];
+If[(particle===HiggsBoson || particle===PseudoScalar),
+WriteString[sphenoCoup,"AlphaSQhlf="<>SPhenoForm[strongCoupling]<>"**2/(4._dp*Pi) \n"];
+];
+If[(particle===HiggsBoson || particle===PseudoScalar) && FreeQ[parameters,hyperchargeCoupling] ==False && FreeQ[parameters,strongCoupling] ==False&& FreeQ[parameters,leftCoupling] ==False,
+WriteString[sphenoCoup,"! alphaS(mH) for digluon rate \n"];
 WriteString[sphenoCoup,"Call RunSMgauge(m_in,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>") \n"];
 ];
 If[(particle===HiggsBoson || particle===PseudoScalar),
@@ -299,7 +315,7 @@ WriteString[sphenoCoup, "cplHiggsZZvirt = " <>ToString[getSPhenoCoupling[C[Higgs
 If[particle===HiggsBoson && suffix ==="2B",
 WriteScalarHiggsCouplingsRatio[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
-WriteString[sphenoCoup, "  gNLO = g3 \n"];
+WriteString[sphenoCoup, "  gNLO = Sqrt(AlphaSQhlf*4._dp*Pi) \n"];
 WriteString[sphenoCoup,"Else  \n"];
 WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
 WriteString[sphenoCoup,"End if \n"];

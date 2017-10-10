@@ -64,7 +64,7 @@ line[[13]]=  Sum[Sum[(-3/2  (SA`CasimirRGE[p1,nr] SA`CasimirRGE[p1,nr2]+SA`Casim
 line[[14]]= Sum[(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3],{nr,1,Length[Gauge]}]-21/2 Sum[Sum[ SA`CasimirRGE[p3,nr] SA`CasimirRGE[p3,nr2] Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}]+
 Sum[Sum[If[nr=!=nr2 && Gauge[[nr,2]]===U[1] && Gauge[[nr2,2]]===U[1],(10/3 kF SA`DynkinF[rep,nr,nr2] +11/12 SA`DynkinS[rep,nr,nr2])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3],0],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
 *)
-line[[14]]= Sum[If[Gauge[[nr,2]]===U[1],0,(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3]],{nr,1,Length[Gauge]}]-21/2 Sum[Sum[ SA`CasimirRGE[p3,nr] SA`CasimirRGE[p3,nr2] Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}]+Sum[Sum[ 10/3 kF (SA`CasimirFDynkinF[rep,getBlank[p1],nr,nr2]+SA`CasimirFDynkinF[rep,getBlank[p2],nr,nr2])Yijk[p1,p2,p3]+11/12(SA`CasimirFDynkinS[rep,getBlank[p1],nr,nr2]+SA`CasimirFDynkinS[rep,getBlank[p2],nr,nr2])Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
+line[[14]]= Sum[If[Gauge[[nr,2]]===U[1],0,(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3]],{nr,1,Length[Gauge]}]-21/2 Sum[Sum[ SA`CasimirRGE[p3,nr] SA`CasimirRGE[p3,nr2] Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}]+Sum[Sum[ 10/3 kF(SA`CasimirFDynkinF[rep,getBlank[p1],nr,nr2]+SA`CasimirFDynkinF[rep,getBlank[p2],nr,nr2])Yijk[p1,p2,p3]+11/12(SA`CasimirFDynkinS[rep,getBlank[p1],nr,nr2]+SA`CasimirFDynkinS[rep,getBlank[p2],nr,nr2])Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
 
 (* line[[16]]=Yijk[p1,p2,p3] Sum[ SA`CasimirRGE[p3,nr] (49/4 SA`Casimir[nr] - 2kF SA`DynkinF[rep,nr] - 1/4 SA`DynkinS[rep,nr]),{nr,1,Length[Gauge]}]; *)
 line[[16]]=Yijk[p1,p2,p3]  Sum[If[Gauge[[nr,2]]===U[1],0,SA`CasimirRGE[p3,nr] (49/4 SA`Casimir[nr] - 2kF SA`DynkinF[rep,nr] - 1/4 SA`DynkinS[rep,nr])],{nr,1,Length[Gauge]}]+Yijk[p1,p2,p3]Sum[Sum[-2 kF SA`CasimirSDynkinF[rep,getBlank[p3],nr,nr2]-1/4 SA`CasimirSDynkinS[rep,getBlank[p3],nr,nr2],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
@@ -85,7 +85,7 @@ line[[5]]= (2 LamBar2S[p1,p2,p3] - 6  Lam2g[p1,p2,p3] + 4 kF (cHS HSabc[p1,p2,p3
 line[[6]]=Sum[ 10 kF (Y2FS[p1,p1,nr]+Y2FS[p2,p2,nr]+Y2FS[p3,p3,nr])Aijk[p1,p2,p3],{nr,1,Length[Gauge]}];
 line[[7]]=-(35/3 LamSC2G[p1,p2,p3]-10/3 kF LamSS2F[p1,p2,p3]-11/12 LamSS2S[p1,p2,p3]);
 line[[8]]=3/2 LamSS[p1,p2,p3] + 5/2 ALabc[p1,p2,p3]+1/2 AbarLabc[p1,p2,p3];
-line[[9]]=-(4 kF (BY[p1,p2,p3]-  10 BYbar[p1,p2,p3]));
+line[[9]]=-(4 kF(BY[p1,p2,p3]-  10 BYbar[p1,p2,p3]));
 Return[ExpandTermNS[Plus@@line]];
 ];
 
@@ -109,7 +109,7 @@ line[[14]]=(6 Sum[ SA`CasimirRGE[pB,nr] Yijk[p1,pO,pB] Conj[Muij[pO,pP]] Yijk[pP
 line[[15]]=9/2 Sum[SA`CasimirRGE[pB,nr](Yijk[p1,pP,pB] Conj[Yijk[pP,pQ,pB]] Muij[pQ,p2] + Muij[p1,pP] Conj[Yijk[pP,pQ,pB]] Yijk[pQ,p2,pB]),{nr,1,Length[Gauge]}] ;
 line[[16]]= Sum[(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Muij[p1,p2],{nr,1,Length[Gauge]}];
 
-(* For[i=1,i<=16,
+(* For[i=1,i\[LessEqual]16,
 line[[i]]=l[i]*line[[i]];
 i++;]; *)
 Return[ExpandTermNS[Plus@@line]];
@@ -121,13 +121,13 @@ betaFuncMSij1Lns[p1_,p2_]:=ExpandTermNS[Bij[pQ,pP] Lijkl[p1,p2,pQ,pP]+Aijk[p1,pP
 betaFuncMSij2Lns[p1_,p2_]:=Block[{line=Table[0,{8}]},
 line[[1]]=1/2(Lam2S[p1,p1]+Lam2S[p2,p2])Bij[p1,p2]  - 1/2 LamBar3[p1,p2] -4 kF LamBar2Y[p1,p2]; 
 line[[2]]= kF (4 HbarLam[p1,p2]-Bij[p1,p2](3 H2ab[p1,p1] + 2 Hbar2[p1,p1]+3 H2ab[p2,p2] + 2 Hbar2[p2,p2]));
-line[[3]]=2 kF (HY[p1,p2]  + 2 HYbar[p1,p2]  + 2 H3ab[p1,p2] );
-line[[4]]= (  2 LamBar2S[p1,p2] -    6 Lam2g[p1,p2] + 2 kF   (HSab[p1,p2]-HFab[p1,p2])); 
+line[[3]]=2 kF (HY[p1,p2] + HY[p2,p1]  + 2 HYbar[p1,p2]  + 2 conj[HYbar[p2,p1]]  + 2 H3ab[p1,p2] + 2 H3ab[p2,p1] );
+line[[4]]= (  2 LamBar2S[p1,p2] -    6 Lam2g[p1,p2] + 2 kF   (HSab[p1,p2]-HFab[p1,p2]-HFab[p2,p1])); 
 line[[5]] = Sum[10 kF (Y2FS[p1,p1,nr]+Y2FS[p2,p2,nr]) Bij[p1,p2],{nr,1,Length[Gauge]}];
 line[[6]]=-(35/3 LamSC2G[p1,p2] -10/3 kF LamSS2F[p1,p2] -11/12 LamSS2S[p1,p2] )  ;
 line[[7]]=+3/2 LamSS[p1,p2] +5/2 Alam[p1,p2]   +1/2 AlamBar[p1,p2]; 
-line[[8]]=-(2 kF (BY[p1,p2]-10 BYbar[p1,p2])) ;   
-Return[ExpandTermNS[Plus@@line]];
+line[[8]]=-(2 kF(BY[p1,p2]-10 BYbar[p1,p2])) ;   
+Return[Plus@@line];
 ];
 
 (* Beta functions for quartic scalar couplings: eq. (38)+(44) *)
@@ -135,15 +135,15 @@ betaFuncLijkl1Lns[p1_,p2_,p3_,p4_]:=ExpandTermNS[Lam2[p1,p2,p3,p4]- 8*kF*Habcd[p
 betaFuncLijkl2Lns[p1_,p2_,p3_,p4_]:=Block[{line=Table[0,{10}]},
 line[[1]] = 1/2(Lam2S[p1,p1]+Lam2S[p2,p2]+Lam2S[p3,p3]+Lam2S[p4,p4])Lijkl[p1,p2,p3,p4]-LamBar3[p1,p2,p3,p4]-4 kF LamBar2Y[p1,p2,p3,p4];
 line[[2]]=kF (8 HbarLam[p1,p2,p3,p4] - Lijkl[p1,p2,p3,p4](3 H2ab[p1,p1]+2Hbar2[p1,p1]+3 H2ab[p2,p2]+2Hbar2[p2,p2]+3 H2ab[p3,p3]+2Hbar2[p3,p3]+3 H2ab[p4,p4]+2Hbar2[p4,p4]));
-line[[3]]=4 kF (HY[p1,p2,p3,p4] + 2 HbarY[p1,p2,p3,p4]+2 H3[p1,p2,p3,p4]);
-line[[4]]= ((2 LamBar2S[p1,p2,p3,p4]- 6 Lam2g[p1,p2,p3,p4])+4 kF (HSabcd[p1,p2,p3,p4]-HFabcd[p1,p2,p3,p4])); 
+line[[3]]=4 kF(HY[p1,p2,p3,p4] + 2 HbarY[p1,p2,p3,p4]+2 H3[p1,p2,p3,p4]);
+line[[4]]= ((2 LamBar2S[p1,p2,p3,p4]- 6 Lam2g[p1,p2,p3,p4])+4 kF(HSabcd[p1,p2,p3,p4]-HFabcd[p1,p2,p3,p4])); 
 line[[5]]=Sum[10 kF Lijkl[p1,p2,p3,p4] (Y2FS[p1,p1,nr]+Y2FS[p2,p2,nr]+Y2FS[p3,p3,nr]+Y2FS[p4,p4,nr]),{nr,1,Length[Gauge]}];
 line[[6]]=-(35/3 LamSC2G[p1,p2,p3,p4]-10/3 kF LamSS2F[p1,p2,p3,p4]-11/12 LamSS2S[p1,p2,p3,p4]);
 line[[7]]=3/2 LamSS[p1,p2,p3,p4]+5/2 ALabcd[p1,p2,p3,p4] + 1/2 AbarLabcd[p1,p2,p3,p4];
-line[[8]]=-(4 kF (BY[p1,p2,p3,p4]- 10 BYbar[p1,p2,p3,p4]));
+line[[8]]=-(4 kF(BY[p1,p2,p3,p4]- 10 BYbar[p1,p2,p3,p4]));
 line[[9]]=(161/6 AabcdC2G[p1,p2,p3,p4]  -32/3 kF AabcdDynkinF[p1,p2,p3,p4] - 7/3 AabcdDynkinS[p1,p2,p3,p4]);
  line[[10]]=(-15/2 ASabcd[p1,p2,p3,p4] + 27 Agabcd[p1,p2,p3,p4] );  
-Return[ExpandTermNS[Plus@@line]];
+Return[Plus@@line];
 ];
 
 
