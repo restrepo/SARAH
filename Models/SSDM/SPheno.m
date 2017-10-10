@@ -12,9 +12,9 @@ ParametersToSolveTadpoles = {mu2};
 
 BoundaryLowScaleInput={
    {v, vSM}, 
- {Ye, YeSM*vSM},
- {Yd, YdSM*vSM},
- {Yu, YuSM*vSM},
+ {Ye, YeSM},
+ {Yd, YdSM},
+ {Yu, YuSM},
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
@@ -32,4 +32,4 @@ ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 FlagLoopContributions = True;  
 
-DefaultInputValues ={Lambda1IN -> 0.28, LamSHIN -> 0.01, LamSIN -> 0};
+DefaultInputValues ={Lambda1IN -> 0.28, LamSHIN -> 0.01, LamSIN -> 0, MSinput -> 200};

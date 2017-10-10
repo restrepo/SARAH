@@ -87,4 +87,6 @@ BoundaryLowScaleInput={
 
 SetOptions[CalcRGEs,IgnoreAt2Loop->{L1, L2, T[L1], T[L2]}]; 
 
+DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 10, SignumMu -> 1, Azero->-2000 };
+
 

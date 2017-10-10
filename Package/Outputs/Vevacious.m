@@ -428,7 +428,7 @@ SkipLHMessage=False;
 
 WriteDerivedParametersVpp:=Block[{temp},
   temp=ParametersToSolveTadpoles;
-  If[Head[ParametersToSolveTadpolesLowScaleInput]=!=List,
+  If[Head[ParametersToSolveTadpolesLowScaleInput]===List,
     temp=Join[temp,ParametersToSolveTadpolesLowScaleInput];
    ];
   temp=Intersection[temp];
@@ -595,7 +595,7 @@ WriteMassMatricesVpp[renscheme_]:= Block[{i,j,k,states=Last[NameOfStates],partic
           WriteString[homout, "ParticleName=\""<>StringReplace[ToString[Intersection[particlename/.conj[x_]->x]],{"{"->"","}"->""}]<>"\"  "];
           
           WriteString[homout,"SpinType=\"GaugeBoson\" MultiplicityFactor=\"1\"> \n "];
-          WriteMassMatrixVpp[MassMatricesGauge[states][[i]]];,
+          WriteMassMatrixVpp[MassMatricesGauge[states][[i]]];
           WriteString[homout,"</"<>kind<>"> \n \n"];
           ];
         i++;];

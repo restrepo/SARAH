@@ -299,7 +299,7 @@ SA`ListM2ij=Join[SA`ListM2ij,{{{SFields[[i]] /. conj[x_]->x,SFields[[i]]  /. con
 If[AddMixedSofts=!=False,
 For[j=i,j<=AnzahlChiral,
 If[i!= j  && Drop[Fields[[i]],3]==Drop[Fields[[j]],3],
-(* If[getRParity[SFields[[i]],GaugeES]===getRParity[SFields[[j]],GaugeES] || RParityConservation ==False, *)
+(* If[getRParity[SFields[[i]],GaugeES]===getRParity[SFields[[j]],GaugeES] || RParityConservation \[Equal]False, *)
 temp= (part[SFields[[i]],1]*conj[part[SFields[[j]],2]] genTest[MassScalar[Fields[[i,3]],Fields[[j,3]]],{conj[Fields[[i,3]]],Fields[[j,3]]},False]+conj[part[SFields[[i]],1]]*part[SFields[[j]],2] conj[genTest[MassScalar[Fields[[i,3]],Fields[[j,3]]],{conj[Fields[[i,3]]],Fields[[j,3]]},False]])*makeDelta[i,1,2,{generation}];
 term=SumOverExpandedIndizes[temp, {Fields[[i,3]],Fields[[j,3]]}];
 SoftScalarMass += term;
@@ -499,7 +499,7 @@ If[Gauge[[i,5]]===True,
 res +=  Sqrt[2] SumOverExpandedIndizes[(mName /. gen1->gen2) part[FGauge[[i]],1] part[FFields[[fields[[j]]]],2]*TA[Gauge[[i,2]],gen1,indexB/.subGC[2],Gauge[[i,3]]/.subGC[2]],{None,Fields[[fields[[j]],3]]}];
 res +=  Sqrt[2] SumOverExpandedIndizes[mName part[FGauge[[i]],2] part[FFields[[fields[[j]]]],1]*TA[Gauge[[i,2]],gen2,indexB/.subGC[1],Gauge[[i,3]]/.subGC[1]],{Fields[[fields[[j]],3]],None}];,
 (*
-res +=  Sqrt[2]  (mName /. gen1->gen2) part[FGauge[[i]],1] part[FFields[[fields[[j]]]],2]*TA[Gauge[[i,2]],ADI[i] /. subGC[1],indexB/.subGC[2],Gauge[[i,3]]/.subGC[2]];
+res +=  Sqrt[2]  (mName /. gen1\[Rule]gen2) part[FGauge[[i]],1] part[FFields[[fields[[j]]]],2]*TA[Gauge[[i,2]],ADI[i] /. subGC[1],indexB/.subGC[2],Gauge[[i,3]]/.subGC[2]];
 res +=  Sqrt[2]  mName part[FGauge[[i]],2] part[FFields[[fields[[j]]]],1]*TA[Gauge[[i,2]],ADI[i] /. subGC[2],indexB/.subGC[1],Gauge[[i,3]]/.subGC[1]]; *)
 res +=   (mName /. gen1->gen2) part[FGauge[[i]],1] part[FFields[[fields[[j]]]],2]*Delta[ADI[i] /. subGC[1],Gauge[[i,3]]/.subGC[2]];
 res +=   mName part[FGauge[[i]],2] part[FFields[[fields[[j]]]],1]*Delta[ADI[i] /. subGC[2],Gauge[[i,3]]/.subGC[1]];
@@ -519,7 +519,7 @@ Return[res+conj[res]];
 (*-----------------------------------------*)
 
 
-CalcKinetic:=Block[{i,Bg12,gen1,gen2,Bg22,Bg23,a,g, gauge},
+CalcKinetic:=Block[{i,Bg12,gen1,gen2,Bg22,Bg23,a,g, gauge,realF},
 
 PrintAll["Calculate kinetic Terms"];
 
@@ -555,12 +555,12 @@ For[i=1,i<=AnzahlChiral,
 DynamicKineticScalarNr=i;
 DynamicKineticScalarName=SFields[[i]];
 PrintDebug["   ",SFields[[i]]];
-temp= - g[lor4,lor3]*((conj[part[SFields[[i]],2]]  I KovariantDerivative[i,2,1,3]Deri[part[SFields[[i]],1],lor4])  + part[SFields[[i]],1]  (- I KovariantDerivative[i,2,1,4]) Deri[conj[part[SFields[[i]],2]],lor3]);
+If[FreeQ[RealScalars,SFields[[i]]//.A_[b_List]->A],realF=1;,realF=1/2;];
+temp= - g[lor4,lor3]*realF((conj[part[SFields[[i]],2]]  I KovariantDerivative[i,2,1,3]Deri[part[SFields[[i]],1],lor4])  + part[SFields[[i]],1]  (- I KovariantDerivative[i,2,1,4]) Deri[conj[part[SFields[[i]],2]],lor3]);
 KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne; 
 SumFactor=getSumFields[i,5];
-temp= g[lor4,lor3] SumFactor KovariantDerivative[i,5,1,4]*part[SFields[[i]],1] KovariantDerivative[i,2,5,3]*conj[part[SFields[[i]],2]];
+temp= g[lor4,lor3] realF SumFactor KovariantDerivative[i,5,1,4]*part[SFields[[i]],1] KovariantDerivative[i,2,5,3]*conj[part[SFields[[i]],2]];
 KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]],None,None,Fields[[i,3]]}] /.subFieldsOne; 
-
 i++;];
 DynamicKineticScalarName="All Done";
 
@@ -794,7 +794,7 @@ If[AddDiracGauginos,
 For[ig=1,ig<=Length[SA`DiracGauginos[[gNr]]],
 mName = ToExpression["MD"<>ToString[Gauge[[gNr,1]]]<>ToString[Fields[[SA`DiracGauginos[[gNr,ig]]]][[3]]]];
 mName = genTest[mName,{Fields[[SA`DiracGauginos[[gNr,ig]]]][[3]]},False];
-mName = mName (mName  /. gen1->gen2);
+mName = mName(mName  /. gen1->gen2);
 DTermsDirac += SumOverExpandedIndizes[-mName  part[SFields[[SA`DiracGauginos[[gNr,ig]]]],1] (part[SFields[[SA`DiracGauginos[[gNr,ig]]]],2])MakeIndexStructure[{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}],{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
  DTermsDirac +=SumOverExpandedIndizes[-mName  part[SFields[[SA`DiracGauginos[[gNr,ig]]]],1] (conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],2]])MakeIndexStructure[{Fields[[SA`DiracGauginos[[gNr,ig]],3]],conj[Fields[[SA`DiracGauginos[[gNr,ig]],3]]]}],{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}]; 
  DTermsDirac +=SumOverExpandedIndizes[-mName  conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],1]] ( conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],2]])MakeIndexStructure[{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}],{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];

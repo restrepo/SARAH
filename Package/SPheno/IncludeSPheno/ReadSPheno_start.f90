@@ -299,7 +299,12 @@
 
      Case(58)
       If (wert.Ne.0._dp) Then
-       IncludeDeltaVB=.True.
+        IncludeDeltaVB=.True.
+        If (wert.Ne.2._dp) Then
+         IncludeBSMdeltaVB=.True.
+        Else
+         IncludeBSMdeltaVB=.False.
+        End If
       Else
        IncludeDeltaVB=.False.
       End If
@@ -438,6 +443,12 @@
 
 
 
+     Case(990)
+      If (wert.Ne.1._dp) Then
+       MakeQTEST=.False.
+      Else
+       MakeQTEST=.True.
+      End If
       
 
      Case(999)

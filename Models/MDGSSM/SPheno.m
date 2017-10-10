@@ -95,3 +95,5 @@ ListDecayParticles =  Automatic;
 ListDecayParticles3B = Automatic;
 
 
+DefaultInputValues = {m0 -> 3000, MDirac->500,  TanBeta->2.5, MuInput->200, BMuInput->9*10^5, mSingletInput->1000, mAdjointInput->3500, LambdaInput->0.324, MRinput ->1000, BMRinput -> 10^6, MuE[a_,a_]->1500};
+

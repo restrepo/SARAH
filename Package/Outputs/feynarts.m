@@ -51,7 +51,7 @@ i++;];
 
 
 subGenInd={};
-(* If[FreeQ[NameOfStates,InitalizedVertexCalculaton]\[Equal]True,
+(* If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
 Message[ModelFile::NoVertices];,
 *)
 
@@ -214,7 +214,7 @@ i++;];
 
 
 FAIndizes[x_,add_]:=Block[{ind},
-(* ind=DeleteCases[getIndizes[x],lorentz,2] //. adjcolor\[Rule]Gluon; *)
+(* ind=DeleteCases[getIndizes[x],lorentz,2] //. adjcolor->Gluon; *)
 ind=DeleteCases[TransposeChecked[getIndizesWI[x] //. {color,8}->{Gluon,8}][[1]],lorentz,2] ;
 
 If[FreeQ[ind,generation]==False || FreeQ[ind,flavor]==False,
@@ -714,8 +714,8 @@ M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[VVVV][[i,1]]//.subFA
 i++;];
 
 (*
-For[i=1,i\[LessEqual]Length[SA`VertexList[SSVV]],
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]\[Equal]{{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms}}}];
+For[i=1,i<=Length[SA`VertexList[SSVV]],
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]=={{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms}}}];
 i++;];
 *)
 
@@ -955,10 +955,12 @@ WriteString[abbrfile, ToString[InputForm[subNumDependences /.subGreek]] <>"\n \n
 WriteString[abbrfile,"(* Masses *) \n \n"];
 WriteString[abbrfile,"MassesSARAH = { \n "];
 For[i=1,i<=Length[massList],
+If[massList[[i,1]]=!=0,
 WriteString[abbrfile,"Mass"<>ToString[massList[[i,1,1]]]<>"[generation_] ->" <>ToString[InputForm[massList[[i,2]] /. subGreek]]];
 If[i==Length[massList],
 WriteString[abbrfile, "\n"];,
 WriteString[abbrfile, ", \n"];
+];
 ];
 i++;];
 WriteString[abbrfile,"}; \n \n \n"];

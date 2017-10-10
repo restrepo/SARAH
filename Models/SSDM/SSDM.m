@@ -3,13 +3,14 @@ Off[General::spell]
 Model`Name = "SSDM";
 Model`NameLaTeX ="Singlet scalar Dark Matter";
 Model`Authors = "Diego Restrepo (based on SM model by F.Staub)";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2013-01-24: changed normalization of lambda term to convention of hep-ph/0207271 *)
 (* 2013-06-24: using new name conventions (without inital "S" and "F" for scalar and matter fields) *)
 (* 2013-09-01: changing to new conventions for FermionFields/MatterFields *)
 (* 2013-11-20: Singlet Scalar DM implemented *)
 (* 2014-11-06: Changed sign in Lagrangian *)
+(* 2015-11-16: changed SPheno.m *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

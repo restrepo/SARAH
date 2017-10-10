@@ -27,7 +27,6 @@ BoundaryHighScale={
 {me2, DIAGONAL m0^2},
 {mv2, DIAGONAL m0^2},
 {ms2, DIAGONAL m0^2},
-{mvs2, 0},
 {mHd2, m0^2},
 {mHu2, m0^2},
 {MassB, m12},
@@ -68,4 +67,5 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 (* Example for input values *)
-DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta->20, SignumMu ->1, Azero -> -1500, Yv[1,1]->0.1, Yv[2,2]->0.1, Yv[3,3]->0.1, Mv[1,1]->1000, Mv[2,2]->1000, Mv[3,3]->1000, MUS[1,1]->0.001, MUS[2,2]->0.001, MUS[3,3]->0.001};
+(* Not including neutrino fit! *)
+DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta->20, SignumMu ->1, Azero -> -1500, Yv[a_,a_]->0.1, Mv[a_,a_]->1000, MUS[a_,a_]->0.001};

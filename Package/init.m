@@ -948,7 +948,7 @@ FGauge[[i]]=ToExpression["f"<>ToString[Gauge[[i,1]]]][Flatten[DeleteCases[indize
 gGauge[[i]]=ToExpression["g"<>ToString[Gauge[[i,1]]]][Flatten[DeleteCases[indizes,x_Integer,3]]];
 aGauge[[i]]=ToExpression["a"<>ToString[Gauge[[i,1]]]][Flatten[DeleteCases[indizes,x_Integer,3]]];
 
-typeList=Join[typeList,{{SGauge[[i]],S}}];
+typeList=Join[typeList,{{SGauge[[i]],V}}];
 typeList=Join[typeList,{{FGauge[[i]],F}}];
 typeList=Join[typeList,{{aGauge[[i]],A}}];
 typeList=Join[typeList,{{gGauge[[i]],G}}]; 

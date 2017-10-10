@@ -123,6 +123,12 @@ WriteString[spheno,"vSM = 0._dp \n"];
 ];
 
 WriteString[spheno,"Call Set_All_Parameters_0() \n \n"];
+
+If[SupersymmetricModel=!=False,
+WriteString[spheno,"Qin = SetRenormalizationScale(1.0E3_dp**2)  \n"];,
+WriteString[spheno,"Qin = SetRenormalizationScale(1.6E2_dp**2)  \n"];
+];
+
 WriteString[spheno,"kont = 0 \n"];
 WriteString[spheno,"delta_Mass = 0.0001_dp \n"];
 WriteString[spheno,"CalcTBD = .false. \n"];
@@ -171,8 +177,8 @@ i++;];
 
 For[i=1,i<=Length[BoundaryLowScaleInput],
 Switch[Head[BoundaryLowScaleInput[[i,1]]],
-re,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Complex(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
-im,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Complex(Real(" <>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <> ",dp))\n"];,
+re,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
+im,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <> ",dp))\n"];,
 _,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
 ];
 i++;];
@@ -207,8 +213,8 @@ If[SPhenoOnlyForHM=!=True,
 WriteString[spheno,"\n ! Setting Boundary conditions \n "];
 For[i=1,i<=Length[BoundaryLowScaleInput],
 Switch[Head[BoundaryLowScaleInput[[i,1]]],
-re,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Complex(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
-im,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Complex(Real(" <>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <> ",dp))\n"];,
+re,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
+im,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <> ",dp))\n"];,
 _,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
 ];
 i++;];
@@ -285,8 +291,10 @@ If[NonSUSYModel=!=True,
 WriteString[spheno,"sinW2=1._dp-mW2/mZ2 \n"];
 WriteString[spheno,"vev=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha_mZ))\n"];
 If[AddOHDM=!=True,
+If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 WriteString[spheno,"vdMZ=vev/Sqrt(1._dp+tanbetaMZ**2)\n"];
-WriteString[spheno,"vuMZ=tanbetaMZ*vdMZ \n"];,
+WriteString[spheno,"vuMZ=tanbetaMZ*vdMZ \n"];
+];,
 WriteString[spheno,SPhenoForm[VEVSM]<>"MZ = vev\n"];
 ];
 ];
@@ -452,7 +460,7 @@ WriteString[spheno,"End Subroutine CalculateSpectrum \n \n\n \n"];
 ];
 
 
-GenerateCalcLowEnergy:=Block[{temp,i,j,tlist,name,indlist,indvector,dimind,k},
+GenerateCalcLowEnergy:=Block[{temp,i,j,ii,iiii,tlist,name,indlist,indvector,dimind,k,mfd,mfu,mfe},
 
 (* tlist=Join[Complement[listAllParameters,ParametersToSolveTadpoles],listVEVs]; *)
 
@@ -519,14 +527,16 @@ WriteString[spheno,"mueEff="<>SPhenoForm[mueEff]<>" \n\n"];
 If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"Real(dp) :: g1D("<>ToString[numberAllwithVEVs]<>"), tz, dt \n"];
 ]; 
-WriteString[spheno,"Real(dp) ::Qin,vev2,sinw2, mzsave, scalein, scale_save, gSM(11)  \n"];
-WriteString[spheno, "Integer :: i1, i2, i3, gt1, gt2, gt3, gt4 \n"];
+WriteString[spheno,"Real(dp) ::Qin,vev2,sinw2, mzsave, scalein, scale_save, gSM(11),Qinsave, maxdiff =0._dp \n"];
+WriteString[spheno, "Integer :: i1, i2, i3, gt1, gt2, gt3, gt4,iQTEST, iQFinal \n"];
 WriteString[spheno, "Integer :: IndexArray4(99,4), IndexArray3(99,3), IndexArray2(99,2)   \n"];
 
 
 If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",spheno];];
 If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",spheno];];
 If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",spheno];];
+If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[ToExpression[ToString[#]<>"check"]&/@Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",spheno];];
+If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"check"]&/@Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",spheno];];
 
 If[Length[WrappersLFV]>0,MakeVariableList[Flatten[Transpose[WrappersLFV][[3]]],"",spheno];];
 If[Length[WrappersQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[WrappersQFV][[3]]],"",spheno];];
@@ -557,84 +567,43 @@ WriteString[spheno,"!-------------------------------------\n\n"];
 WriteString[spheno,"Qin=sqrt(getRenormalizationScale()) \n"];
 WriteString[spheno,"scale_save = Qin \n"];
 
-MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"160._dp"},{"CKM_160", "sinW2_160", "Alpha_160","AlphaS_160"},spheno];
-
-(*
-MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],{},{"g1D"},spheno];
-
-WriteString[spheno,"Qin=sqrt(getRenormalizationScale()) \n"];
-WriteString[spheno,"scale_save = Qin \n"];
-
-WriteString[spheno,"If (RunningSUSYparametersLowEnergy) Then \n"];
-WriteString[spheno,"tz=Log(160._dp/Qin) \n"];
-WriteString[spheno,"dt=tz/100._dp \n"];
-WriteString[spheno,"Call odeint(g1D,"<>ToString[numberAllwithVEVs]<>",0._dp,tz,deltaM,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
-WriteString[spheno,"End if \n\n"];
-
-MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1D"},{},spheno];
-WriteString[spheno,"scalein = SetRenormalizationScale(160._dp**2) \n"];
-For[i=1,i<=Length[Gauge],If[Gauge[[i,2,1]]==1,WriteString[spheno,SPhenoForm[Gauge[[i,4]]]<> " = "<>SPhenoForm[Simplify[GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>" \n"]; ];
-i++;];
-For[i=1,i<=Length[SA`ListGaugeMixed2],WriteString[spheno,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> " = "<>SPhenoForm[GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>" \n"];
-i++;];
-WriteString[spheno,"\n\n"];,
-
-For[i=1,i<=Length[tlist],
-name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
-WriteString[spheno,SPhenoForm[tlist[[i]]]<>" = "<>SPhenoForm[name] <>"\n"];
-i++;
-];
-];
-
-If[AddSMrunning=!=False,
-WriteString[spheno, "! Running SM parameters \n"];
-WriteString[spheno, "CKMsave = CKM \n"];
-WriteString[spheno, "CKM = CKMcomplex ! Make sure that complex CKM is used for B-decays \n"];
-If[AddOHDM=!=True,
-WriteString[spheno,"Call RunSM(160._dp,deltaM,TanBeta,"<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[VEVSM2]<>") \n"];,
-WriteString[spheno,"Call RunSMohdm(160._dp,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
-];
-
-
-WriteString[spheno, "! Taking input values from Buras, 1208.0934  \n"]; 
-WriteString[spheno, " mw=mw_sm \n"];
-WriteString[spheno, " mw2=mw**2 \n"];
-(* WriteString[spheno, "sinw2=0.22290_dp \n"]; *)
-WriteString[spheno, "sinw2=1 - mw2/mz2 \n"];
-WriteString[spheno,SPhenoForm[leftCoupling] <>" =sqrt(Alpha*4*Pi)/sqrt(sinW2) \n"];
-WriteString[spheno,SPhenoForm[hyperchargeCoupling]<> " = "<>SPhenoForm[leftCoupling]<>"*Sqrt(sinW2/(1._dp-sinW2)) \n"];
-(* WriteString[spheno, " mw=80.385_dp \n"];
-WriteString[spheno, " mw2=mw**2 \n"]; *)
-
-WriteString[spheno, "If (.not.GenerationMixing) Then \n"];
-WriteString[spheno, SPhenoForm[UpYukawa]<> " =Transpose(Matmul(Transpose(CKMcomplex),Transpose("<>SPhenoForm[UpYukawa]<>"))) \n"];
-If[AddOHDM=!=True && SupersymmetricModel===True,
-If[SA`Casimir[Select[SuperPotential[[Position[SuperPotential,UpYukawa][[1,1]],2]],(SA`Casimir[#,Position[Gauge,color][[1,1]]]==4/3)&][[1]],Position[Gauge,left][[1,1]]]==3/4,
-WriteString[spheno,SPhenoForm[UpYukawa]<> " = Transpose("<>SPhenoForm[UpYukawa]<>") \n"];
-];
-];
-WriteString[spheno, "End If \n"];
-
-WriteString[spheno, "AlphaS_160 = "<>ToString[strongCoupling]<>"**2/(4._dp*Pi)\n"];
-WriteString[spheno, "Alpha_160 = sinW2*"<>ToString[leftCoupling]<>"**2/(4._dp*Pi)\n"];
-WriteString[spheno, "SinW2_160 = SinW2 \n"];
-WriteString[spheno, "CKM_160 = CKM \n"];
-*)
-(* ,
-For[i=1,i<=Length[tlist],
-name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
-WriteString[spheno,SPhenoForm[tlist[[i]]]<>" = "<>SPhenoForm[name] <>"\n"];
-i++;];
-];
-*)
-
-
+MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"160._dp"},{"CKM_160", "sinW2_160", "Alpha_160","AlphaS_160",".false."},spheno];
 
 For[i=1,i<=Length[NewNumericalDependences],
 WriteString[spheno, SPhenoForm[NewNumericalDependences[[i,1]]] <> " = " <> SPhenoForm[NewNumericalDependences[[i,2]]] <> "\n"];
 i++;];
+For[iQFV=1,iQFV<= 2,
+
+If[iQFV==1,
+WriteString[spheno,"\n! ## All contributions ## \n\n"];,
+WriteString[spheno,"\n! ## SM only ##\n\n"];
+];
 
 
+If[(getGen[BottomQuark]> 3 || getGen[TopQuark]> 3 || getGen[Electron]>3 )&& Length[PreSARAHoperatorsQFV]>0,
+mfu=MassMatrix[TopQuark];
+mfd=MassMatrix[BottomQuark];
+mfe=MassMatrix[Electron];
+mfu[[1;;3,1;;3]]=0;
+mfd[[1;;3,1;;3]]=0;
+mfe[[1;;3,1;;3]]=0;
+For[j=4,j<=getGen[BottomQuark],mfd[[j,j]]=0;j++;];
+For[j=4,j<=getGen[TopQuark],mfu[[j,j]]=0;j++;];
+For[j=4,j<=getGen[Electron],mfe[[j,j]]=0;j++;];
+MixingQuarkParameters=Select[Select[Transpose[parameters][[1]],FreeQ[Flatten[{mfu,mfd,mfe}],#]==False&],FreeQ[{UpYukawa,DownYukawa,ElectronYukawa,hyperchargeCoupling,leftCoupling,strongCoupling,VEVSM,VEVSM1,VEVSM2},#]==True&];
+If[iQFV==2,
+For[j=1,j<=Length[MixingQuarkParameters],
+If[FreeQ[listVEVs,MixingQuarkParameters[[j]]],
+WriteString[spheno,SPhenoForm[MixingQuarkParameters[[j]]] <>" = 0._dp \n"];,
+WriteString[spheno,SPhenoForm[MixingQuarkParameters[[j]]] <>" = 0.001_dp \n"];
+];
+j++;];
+];
+];
+
+
+
+If[iQFV==1 || Length[MixingQuarkParameters]>0,
 WriteTadpoleSolution[spheno];
 MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},spheno];
 WriteString[spheno," mf_d_160 = "<>ToString[SPhenoMass[BottomQuark]] <>"(1:3) \n"];
@@ -651,16 +620,6 @@ WriteString[spheno,SPhenoForm[listAllParametersAndVEVs[[i]]] <>"input = "<>SPhen
 i++;];
 WriteString[spheno,"End If \n \n"];
 
-(* 
-SetPoleMasses[spheno];
-If[OnlyLowEnergySPheno=!=True,
-WriteString[spheno,ToString[SPhenoMass[BottomQuark]] <>"(1:3) = mf_d_160 \n"];
-WriteString[spheno,ToString[SPhenoMassSq[BottomQuark]] <>"(1:3) = mf_d_160**2 \n"];
-WriteString[spheno,ToString[SPhenoMass[TopQuark]] <>"(1:3) = mf_u_160 \n"];
-WriteString[spheno,ToString[SPhenoMassSq[TopQuark]] <>"(1:3) = mf_u_160**2 \n"];
-];
-*)
-
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
 WriteString[spheno,SPhenoForm[SPhenoMass[HiggsBoson]]<>"= MhhL \n"];
 WriteString[spheno,SPhenoForm[SPhenoMassSq[HiggsBoson]]<>" = Mhh2L \n"];
@@ -672,8 +631,17 @@ WriteString[spheno,SPhenoForm[SPhenoMassSq[PseudoScalar]]<>" = MAh2L \n"];
 SetGoldstoneMasses[spheno];
 
 MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},spheno];
+];
 
 
+If[iQFV==1,
+WriteString[spheno,"iQFinal = 1 \n"];
+WriteString[spheno,"If (MakeQtest) iQFinal=10 \n"];
+WriteString[spheno,"Qinsave=GetRenormalizationScale() \n"];
+WriteString[spheno,"Do iQTEST=1,iQFinal \n"];
+WriteString[spheno,"maxdiff=0._dp \n"];
+WriteString[spheno,"If (MakeQtest) Qin=SetRenormalizationScale(10.0_dp**iQTest) \n"];
+];
 For[i=1,i<=Length[PreSARAHoperatorsQFV],
 If[PreSARAHoperatorsQFV[[i,1]]=!="dummy",
 WriteString[spheno,"\n ! **** "<>ToString[PreSARAHoperatorsQFV[[i,1]]]<>" **** \n \n"];
@@ -705,9 +673,18 @@ WriteString[spheno,"  gt3= 1 \n"];
 indlist = Join[indlist,{gt3}];
 ];
 ];
-MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];
-
+If[iQFV==1,
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];,
 MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".true."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>"SM"<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];
+(*
+If[getGen[BottomQuark]\[LessEqual] 3 && getGen[TopQuark]\[LessEqual] 3,
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".true."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>"SM"<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];,
+For[iiii=1,iiii\[LessEqual] Length[PreSARAHoperatorsQFV[[i,3]]],
+WriteString[spheno,ToString[PreSARAHoperatorsQFV[[i,3,iiii]]]<>"SM = 0._dp \n"];
+iiii++;];
+];
+*)
+];
 
 If[Length[PreSARAHoperatorsQFV[[i,2]]]===3 && FreeQ[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]][[1]],ALL]==False,WriteString[spheno," End Do  \n"];];
 WriteString[spheno,"End do \n\n"];
@@ -715,6 +692,21 @@ WriteString[spheno,"End do \n\n"];
 WriteString[spheno,"\n"];
 ];
 i++;];
+If[iQFV==1,
+WriteString[spheno,"If (MakeQTEST) Then  \n"];
+For[ii=1,ii<=Length[PreSARAHoperatorsQFV],
+For[k=1,k<=Length[PreSARAHoperatorsQFV[[ii,3]]],
+WriteString[spheno,"where (Abs("<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check).ne.0._dp) "<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check = ("<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check-"<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]] <>")/"<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check\n"];
+WriteString[spheno,"If(MaxVal(Abs("<> ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check)).gt.maxdiff) maxdiff=MaxVal(Abs("<> ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check))\n"];
+WriteString[spheno,ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check="<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"\n"];
+k++;];
+ii++;];
+WriteString[spheno,"If (iQTEST.gt.1) Write(*,*) \"Q=\",10.0_dp**iQTest,\" max change=\",maxdiff  \n"];
+WriteString[spheno,"If (iQTEST.eq.10) Qin=SetRenormalizationScale(Qinsave) \n"];
+WriteString[spheno,"End If  \n"];
+WriteString[spheno,"End Do  \n"];
+];
+iQFV++;];
 
 For[i=1,i<=Length[WrappersQFV],
 WriteString[spheno,"\n ! ***** Combine operators for "<>ToString[WrappersQFV[[i,1]]]<>"\n"];
@@ -737,6 +729,10 @@ i++;];
 For[i=1,i<=Length[PreSARAHobservablesQFV],
 WriteString[spheno,"\n ! **** "<>ToString[PreSARAHobservablesQFV[[i,1]]]<>" **** \n \n"];
 MakeCall["Calculate_"<>ToString[PreSARAHobservablesQFV[[i,1]]],{},ToString/@PreSARAHobservablesQFV[[i,4]],ToString/@PreSARAHobservablesQFV[[i,2]],spheno];
+
+For[iiii=1,iiii<=Length[PreSARAHobservablesQFV[[i,2]]],
+WriteString[spheno,"If("<>ToString[PreSARAHobservablesQFV[[i,2,iiii]]]<>".ne."<>ToString[PreSARAHobservablesQFV[[i,2,iiii]]]<>") "<>ToString[PreSARAHobservablesQFV[[i,2,iiii]]] <>" = 0._dp \n"];
+iiii++;];
 i++;];
 
 If[SkipFlavorKit=!=True,
@@ -747,7 +743,7 @@ i++;];
 
 
 If[IncludeOldObservables===True,
-(* q ->  q' gamma *)
+(* q \[Rule]  q' gamma *)
 WriteString[spheno,"\n! *****  b -> s gamma ***** \n\n"];
 
 If[OnlyLowEnergySPheno=!=True,
@@ -767,11 +763,11 @@ WriteString[spheno,ToString[SPhenoMass[BottomQuark]] <>"(1:3) = mf_d \n"];
 WriteString[spheno,ToString[SPhenoMassSq[BottomQuark]] <>"(1:3) = mf_d**2 \n"];
 ];
 
-(* B0s -> l l *)
+(* B0s \[Rule] l l *)
 
 WriteString[spheno,"\n! ***** B0s -> l l ***** \n\n"];
 
-(*arguments: inState1 (bottom), inState2 (strange or down), outState3, outState4 *)
+(*arguments: inState1(bottom), inState2(strange or down), outState3, outState4 *)
 MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","1","1"},{"GBsEE","BRBsEE","BRBsEESM"},spheno];
 MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","2","2"},{"GBsMuMu","BRBsMuMu","BRBsMuMuSM"},spheno];
 MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","2","1"},{"GBsMuE","BRBsMuE","BRBsMuESM"},spheno];
@@ -793,13 +789,13 @@ WriteString[spheno,"!-------------------------------------\n\n"];
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],{},{"g1D"},spheno];
 WriteString[spheno,"Qin=scale_save \n"];
 
-For[i=1,i<=Length[Gauge],
-If[Gauge[[i,2,1]]==1,
+For[i=1,i\[LessEqual]Length[Gauge],
+If[Gauge[[i,2,1]]\[Equal]1,
 WriteString[spheno,SPhenoForm[Gauge[[i,4]]]<> "input = "<>SPhenoForm[Simplify[GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>"input \n"]; 
 ];
 i++;];
 
-For[i=1,i<=Length[SA`ListGaugeMixed2],
+For[i=1,i\[LessEqual]Length[SA`ListGaugeMixed2],
 WriteString[spheno,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> "input = "<>SPhenoForm[GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>"input \n"];
 i++;];
 WriteString[spheno,"\n\n"];
@@ -811,20 +807,20 @@ WriteString[spheno,"Call odeint(g1D,"<>ToString[numberAllwithVEVs]<>",0._dp,tz,d
 WriteString[spheno,"End if  \n\n"];
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1D"},{},spheno];
 WriteString[spheno,"scalein = SetRenormalizationScale(MZ2) \n"];
-For[i=1,i<=Length[Gauge],
-If[Gauge[[i,2,1]]==1,
+For[i=1,i\[LessEqual]Length[Gauge],
+If[Gauge[[i,2,1]]\[Equal]1,
 WriteString[spheno,SPhenoForm[Gauge[[i,4]]]<> " = "<>SPhenoForm[Simplify[GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>" \n"]; 
 ];
 i++;];
 
-For[i=1,i<=Length[SA`ListGaugeMixed2],
+For[i=1,i\[LessEqual]Length[SA`ListGaugeMixed2],
 WriteString[spheno,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> " = "<>SPhenoForm[GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>" \n"];
 i++;];
 WriteString[spheno,"\n\n"];
 
 ];
 
-For[i=1,i<=Length[NewNumericalDependences],
+For[i=1,i\[LessEqual]Length[NewNumericalDependences],
 WriteString[spheno, SPhenoForm[NewNumericalDependences[[i,1]]] <> " = " <> SPhenoForm[NewNumericalDependences[[i,2]]] <> "\n"];
 i++;];
 
@@ -841,7 +837,7 @@ WriteString[spheno, "End If \n"];
 
 *)
 
-MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"mz"},{"CKM_MZ", "sinW2_MZ", "Alpha_MZ","AlphaS_MZ"},spheno];
+MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"mz"},{"CKM_MZ", "sinW2_MZ", "Alpha_MZ","AlphaS_MZ",".true."},spheno];
 (* ]; *)
 
 WriteTadpoleSolution[spheno];
@@ -850,8 +846,10 @@ WriteString[spheno, "mzsave  = sqrt(mz2) \n"];
 If[OnlyLowEnergySPheno=!=True,
 If[AuxiliaryHyperchargeCoupling, WriteString[spheno,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge]<>"\n"];];
 If[AddOHDM=!=True,
+If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 WriteString[spheno,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
-SPhenoForm[VEVSM1]<>"**2 + "<>SPhenoForm[VEVSM2]<>"**2) \n"];,
+SPhenoForm[VEVSM1]<>"**2 + "<>SPhenoForm[VEVSM2]<>"**2) \n"];
+];,
 WriteString[spheno,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
 SPhenoForm[VEVSM]<>"**2) \n"];
 ];
@@ -869,7 +867,7 @@ MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},spheno];
 
 
 If[IncludeOldObservables===True,
-(* 1 Lepton -> 3 Leptons *)
+(* 1 Lepton \[Rule] 3 Leptons *)
 WriteString[spheno,"\n! *****  l -> 3 l' ***** \n\n"];
 
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
@@ -926,6 +924,13 @@ WriteString[spheno,"TauMuEta = ResultTauMeson(2) \n"];
 WriteString[spheno,"TauMuEtap = ResultTauMeson(3) \n"];
 ];
 
+WriteString[spheno,"iQFinal = 1 \n"];
+WriteString[spheno,"If (MakeQtest) iQFinal=10 \n"];
+WriteString[spheno,"Qinsave=GetRenormalizationScale() \n"];
+WriteString[spheno,"Do iQTEST=1,iQFinal \n"];
+WriteString[spheno,"maxdiff=0._dp \n"];
+WriteString[spheno,"If (MakeQtest) Qin=SetRenormalizationScale(10.0_dp**iQTest) \n"];
+
 For[i=1,i<=Length[PreSARAHoperatorsLFV],
 If[PreSARAHoperatorsLFV[[i,1]]=!="dummy",
 WriteString[spheno,"\n ! **** "<>ToString[PreSARAHoperatorsLFV[[i,1]]]<>" **** \n \n"];
@@ -968,6 +973,19 @@ WriteString[spheno,"\n"];
 ];
 i++;];
 
+WriteString[spheno,"If (MakeQTEST) Then  \n"];
+For[ii=1,ii<=Length[PreSARAHoperatorsLFV],
+For[k=1,k<=Length[PreSARAHoperatorsLFV[[ii,3]]],
+WriteString[spheno,"where (Abs("<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check).ne.0._dp) "<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check = ("<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check-"<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]] <>")/"<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check\n"];
+WriteString[spheno,"If(MaxVal(Abs("<> ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check)).gt.maxdiff) maxdiff=MaxVal(Abs("<> ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check))\n"];
+WriteString[spheno,ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check="<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"\n"];
+k++;];
+ii++;];
+WriteString[spheno,"If (iQTEST.gt.1) Write(*,*) \"Q=\",10.0_dp**iQTest,\" max change=\",maxdiff  \n"];
+WriteString[spheno,"If (iQTEST.eq.10) Qin=SetRenormalizationScale(Qinsave) \n"];
+WriteString[spheno,"End If  \n"];
+WriteString[spheno,"End Do  \n"];
+
 For[i=1,i<=Length[WrappersLFV],
 WriteString[spheno,"\n ! ***** Combine operators for "<>ToString[WrappersLFV[[i,1]]]<>"\n"];
 For[j=1,j<=Length[SumContributionsOperators[WrappersLFV[[i,1]]]],
@@ -997,14 +1015,14 @@ WriteString[spheno,SPhenoForm[SPhenoMassSq[PseudoScalar]]<>" = MAh2_s \n"];
 ];
 
 If[IncludeOldObservables===True,
-(* l -> l' gamma *)
+(* l \[Rule] l' gamma *)
 WriteString[spheno,"\n! *****  l -> l' gamma ***** \n\n"];
 
 MakeCall["BrLgammaLp",Flatten[{NeededMassesLLp,NeededCouplingsLLp}],{"2","1"},{"GMuEgamma","BRMuEgamma"},spheno];
 MakeCall["BrLgammaLp",Flatten[{NeededMassesLLp,NeededCouplingsLLp}],{"3","1"},{"GTauEgamma","BRTauEgamma"},spheno];
 MakeCall["BrLgammaLp",Flatten[{NeededMassesLLp,NeededCouplingsLLp}],{"3","2"},{"GTauMugamma","BRTauMugamma"},spheno];
 
-(* Z -> l l' *)
+(* Z \[Rule] l l' *)
 
 WriteString[spheno,"\n! *****  Z -> l l' ***** \n\n"];
 
@@ -1051,10 +1069,12 @@ WriteString[spheno,SPhenoForm[leftCoupling]<>"=Sqrt(4._dp*Sqrt2*G_F*mW2) \n"];
 WriteString[spheno,SPhenoForm[hyperchargeCoupling]<>"="<>SPhenoForm[leftCoupling]<>"*Sqrt(sinW2/(1._dp-sinW2)) \n"];
 ];
 If[AddOHDM=!=True,
+If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 WriteString[spheno,"mW2=(1._dp-sinW2)*mz2 + "<>SPhenoForm[Simplify[-Vertex[{VectorW,conj[VectorW]}][[2,1]]-(-Vertex[{VectorZ,VectorZ}][[2,1]] )(1-Sin[ThetaW]^2) /. ThetaW->ArcSin[Sqrt[hyperchargeCoupling^2/(hyperchargeCoupling^2+leftCoupling^2)]],{hyperchargeCoupling>0,leftCoupling>0}]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>"\n"];
 WriteString[spheno,"vev2=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) +"<> SPhenoForm[Simplify[-Vertex[{VectorZ,VectorZ}][[2,1]] -1/4 (VEVSM1^2+VEVSM2^2)(leftCoupling Cos[Weinberg]+hyperchargeCoupling Sin[Weinberg])^2]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>" \n"];
 WriteString[spheno,SPhenoForm[VEVSM1]<>"=vev2/Sqrt(1._dp+TanBeta**2) \n"];
-WriteString[spheno,SPhenoForm[VEVSM2]<>"=TanBeta*"<>SPhenoForm[VEVSM1]<>" \n"];,
+WriteString[spheno,SPhenoForm[VEVSM2]<>"=TanBeta*"<>SPhenoForm[VEVSM1]<>" \n"];
+];,
 
 WriteString[spheno,"mW2=(1._dp-sinW2)*mz2 + "<>SPhenoForm[Simplify[-Vertex[{VectorW,conj[VectorW]}][[2,1]]-(-Vertex[{VectorZ,VectorZ}][[2,1]] )(1-Sin[ThetaW]^2) /. ThetaW->ArcSin[Sqrt[hyperchargeCoupling^2/(hyperchargeCoupling^2+leftCoupling^2)]],{hyperchargeCoupling>0,leftCoupling>0}]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>"\n"];
 WriteString[spheno,"vev2=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) +"<> SPhenoForm[Simplify[-Vertex[{VectorZ,VectorZ}][[2,1]] -1/4 (VEVSM^2)(leftCoupling Cos[Weinberg]+hyperchargeCoupling Sin[Weinberg])^2]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>" \n"];

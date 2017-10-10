@@ -153,7 +153,12 @@ subForce = {};
 UseMatMul2=True;
 
 For[i=1,i<=Length[listWtriOne],
-If[FreeQ[listWtriOne[[i]],a_[gen1,gen2,gen3]]==False,threeIndexParameter=Join[threeIndexParameter,{Head[listWtriOne[[i,2,2]]/.Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1],T[Head[listWtriOne[[i,2,2]]/.Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1]]}];
+If[FreeQ[listWtriOne[[i]],a_[gen1,gen2,gen3]]==False,
+
+If[FreeQ[parameters,T[Head[listWtriOne[[i,2,2]]/.Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1]]]===False,
+threeIndexParameter=Join[threeIndexParameter,{Head[listWtriOne[[i,2,2]]/.Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1],T[Head[listWtriOne[[i,2,2]]/.Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1]]}];,
+threeIndexParameter=Join[threeIndexParameter,{Head[listWtriOne[[i,2,2]]/.Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1]}];
+];
 ]; 
 i++;];
 
@@ -371,12 +376,12 @@ gc[i] = Gauge[[i,4]];
 i++;];
 
 (*
-For[i=1,i<=AnzahlGauge,
+For[i=1,i\[LessEqual]AnzahlGauge,
 SA`Dynkin[rep,i]=
 Sum[MulFactor[getBlankSF[LP[[n1]]],i]SA`Dynkin[getBlankSF[LP[[n1]]],i],{n1,1,Length[LP]}];
 SA`Casimir[rep,i]=
 Sum[MulFactor[getBlankSF[LP[[n1]]],i]SA`Casimir[getBlankSF[LP[[n1]]],i],{n1,1,Length[LP]}];
-For[j=1,j<=AnzahlGauge,
+For[j=1,j\[LessEqual]AnzahlGauge,
 SA`CasimirDynkin[rep,i,j]=
 Sum[MulFactor[getBlankSF[LP[[n1]]],i]SA`Dynkin[getBlankSF[LP[[n1]]],i] SA`Casimir[getBlankSF[LP[[n1]]],j],{n1,1,Length[LP]}];
 j++;];
@@ -574,7 +579,7 @@ If[i===j,
 gammaij2LHat[LP[[i]]/. subGCRule[1],LP[[j]]/. subGCRule[2]]=ExpandTerm[1/2 Sum[Xi Xip ThS[nr,LP[[i]]/.subGC[1],pX] (Conj[Yijk[pY,pZ,pX]] Yijk[pY,pZ,pW]+Yijk[pY,pZ,pX] Conj[Yijk[pY,pZ,pW]]) ThS[nr,pW,LP[[j]]/. subGC[2]],{nr,1,AnzahlGauge}]]  /. SA`SubIgnore2L; *)
 
 gammaij2LHat[LP[[i]]/. subGCRule[1],LP[[j]]/. subGCRule[2]]=
- Xi ((1-Xi) SA`CasimirBar[LP[[i]]/.subGC[1]]SA`CasimirBar[LP[[j]]/.subGC[2]]makeDelta[i,1,2,{}]- makeDelta[i,1,2,{}](7-Xi)/2 Sum[gc[n1]^4 *  SA`Casimir[getBlankSF[LP[[i]]],n1] SA`Casimir[n1],{n1,1,AnzahlGauge}]) +ExpandTerm[1/2 Xi SA`CasimirBar[LP[[i]]/.subGC[1]] (Conj[Yijk[pY,pZ,LP[[i]]/.subGC[1]]] Yijk[pY,pZ,LP[[j]]/.subGC[2]]+Yijk[pY,pZ,LP[[i]]/.subGC[1]] Conj[Yijk[pY,pZ,LP[[j]]/.subGC[2]]])]  /. SA`SubIgnore2L;,
+ Xi((1-Xi) SA`CasimirBar[LP[[i]]/.subGC[1]]SA`CasimirBar[LP[[j]]/.subGC[2]]makeDelta[i,1,2,{}]- makeDelta[i,1,2,{}](7-Xi)/2 Sum[gc[n1]^4 *  SA`Casimir[getBlankSF[LP[[i]]],n1] SA`Casimir[n1],{n1,1,AnzahlGauge}]) +ExpandTerm[1/2 Xi SA`CasimirBar[LP[[i]]/.subGC[1]] (Conj[Yijk[pY,pZ,LP[[i]]/.subGC[1]]] Yijk[pY,pZ,LP[[j]]/.subGC[2]]+Yijk[pY,pZ,LP[[i]]/.subGC[1]] Conj[Yijk[pY,pZ,LP[[j]]/.subGC[2]]])]  /. SA`SubIgnore2L;,
 gammaij2LHat[LP[[i]]/. subGCRule[1],LP[[j]]/. subGCRule[2]]=0;
 ];
 
@@ -1036,7 +1041,7 @@ nrInd++;
 ];
 j++;]; 
 
-(* subGenInd={gen1->i1,gen2->i2,gen3->i3,gen4->i4}; *)
+(* subGenInd={gen1\[Rule]i1,gen2\[Rule]i2,gen3\[Rule]i3,gen4\[Rule]i4}; *)
 
 If[Simp===True && ThreeIndexParametersInvolved=!=True,
 SaveArray = Join[SaveArray,{{CalcRGEValue[fields[[i,2,2]]  /. Delta[a__]->1 /.epsTensor[a__]->1 /. RM[a___][b___]->1 /. InvMat[a__][b__]->1] /. subGenInd,Simplify[betaFunction/. subGenInd//.Conj->conj],Simplify[ betaFunction2L/. subGenInd//.Conj->conj]}}];,

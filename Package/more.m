@@ -299,7 +299,7 @@ Message[Lagrange::MaybeChargeViolation,Gauge[[i1,3]],Cases[sum,x_?SymbolQS,2]];
 ];
 violation=True;,
 
-If[Invariants[SusynoForm[Gauge[[i1,2]]],DeleteCases[reps,{0}]]==={},
+If[Invariants[SusynoForm[Gauge[[i1,2]]],DeleteCases[reps/. {-1}->{1},{0}]]==={},
 If[printout==True,Message[Lagrange::ChargeViolation,Gauge[[i1,3]],term];];
 violation=True;
 ];
@@ -530,6 +530,444 @@ Print["    All terms allowed by gauge invariance are present"];
 ];
 
 
+WriteTemplatesParFiles:=Block[{i,j,eig},
+Print[StyleForm["Generate templates for parameters.m and particles.m for this model","Subsection"]];
+missingPar=Select[Transpose[parameters][[1]],FreeQ[Transpose[DeleteCases[ParameterDefinitions,{a_,{Symmetry->b_}}]][[1]],#]&];
+existingPar=Complement[Transpose[parameters][[1]],missingPar];
+allMiscEntry={1};
+
+(* Parameters *)
+
+outParFile=OpenWrite[ToFileName[$sarahCurrentModelDir,"parameters.m.Template"]];
+Print["Writing template for parameters.m to ", ToFileName[$sarahCurrentModelDir,"parameters.m.Template"]];
+WriteString[outParFile,"(* SARAH generated template for parameters.m file for "<>ModelName<>"*)\n"];
+Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
+WriteString[outParFile, "(* File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  *) \n"];
+WriteString[outParFile,"(* IMPORTANT: *)\n"];
+WriteString[outParFile,"(* check/adjust in particular the lines which contain \"CHECK!\" *)\n"];
+WriteString[outParFile,"(* the correct information is needed there to have correct results! *)\n\n\n"];
+
+WriteString[outParFile,"ParameterDefinitions = { \n \n"];
+
+WriteString[outParFile,"(* ----------- Already defined parameters in existing parameters.m ----------- *) \n\n"];
+For[i=1,i<=Length[existingPar],
+WriteTemplatePar[existingPar[[i]],True];
+If[i<Length[existingPar] || missingPar=!={},WriteString[outParFile,", \n\n"];,WriteString[outParFile," \n"];];
+i++;];
+
+If[Length[missingPar]>0,
+WriteString[outParFile,"\n\n(*  ----------- Additional parameters in the model ---------- *) \n\n"];
+];
+
+
+For[i=1,i<=Length[missingPar],
+WriteTemplatePar[missingPar[[i]],False];
+If[i<Length[missingPar] ,WriteString[outParFile,", \n\n"];,WriteString[outParFile," \n"];];
+i++;];
+
+WriteString[outParFile,"} \n"];
+Close[outParFile];
+
+(* Particles *)
+
+outParFile=OpenWrite[ToFileName[$sarahCurrentModelDir,"particles.m.Template"]];
+Print["Writing template for particles.m to ", ToFileName[$sarahCurrentModelDir,"particles.m.Template"]];
+WriteString[outParFile,"(* SARAH generated template for particles.m file for "<>ModelName<>" *)\n"];
+Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
+WriteString[outParFile, "(* File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  *) \n\n"];
+WriteString[outParFile,"(* IMPORTANT: *)\n"];
+WriteString[outParFile,"(* check/adjust in particular the lines which contain \"CHECK!\" *)\n"];
+WriteString[outParFile,"(* the correct information is needed there to have correct results! *)\n\n\n"];
+
+For[j=Length[NameOfStates],j>0,
+eig=NameOfStates[[j]];
+ConsideredEig=eig;
+WriteString[outParFile,"(* ###############            "<>ToString[eig]<>"       ################# *) \n\n"];
+missingFields=Intersection[Select[Select[Transpose[Particles[eig]][[1]],(getType[#,False,eig]=!=A && getType[#,False,eig]=!=NoField)&]/. diracSubBack[eig] /. bar[x_]->x,FreeQ[Transpose[ParticleDefinitions[eig]][[1]],#]&]];
+existingFields=Complement[Select[Transpose[Particles[eig]][[1]],(getType[#,False,eig]=!=A && getType[#,False,eig]=!=NoField)&]/. diracSubBack[eig] /. bar[x_]->x,missingFields];
+
+
+allFANr=Select[Flatten[ParticleDefinitions[eig]],FreeQ[#,FeynArtsNr]==False&] /. ((a_->b_Integer)->b);
+allPDGs=Flatten[Select[Flatten[ParticleDefinitions[eig]],FreeQ[#,PDG]==False && FreeQ[#,IX]&]  /. (a_->b_)->b];
+
+
+
+WriteString[outParFile,"ParticleDefinitions["<>ToString[eig]<>"] = { \n \n"];
+
+WriteString[outParFile,"(* ----------- Already defined particles in existing particles.m -------------- *) \n\n"];
+For[i=1,i<=Length[existingFields],
+WriteTemplateParticle[existingFields[[i]],True];
+If[i<Length[existingFields] || missingFields=!={},WriteString[outParFile,", \n\n"];,WriteString[outParFile," \n"];];
+i++;];
+
+If[Length[missingFields]>0,
+WriteString[outParFile,"\n\n(*  ----------- Additional particles in the model ---------- *) \n\n"];
+];
+For[i=1,i<=Length[missingFields],
+WriteTemplateParticle[missingFields[[i]],False];
+If[i<Length[missingFields] ,WriteString[outParFile,", \n\n"];,WriteString[outParFile," \n"];];
+i++;];
+
+WriteString[outParFile,"}; \n\n\n\n\n"];
+j--;];
+
+existingFields=Join[Select[Transpose[Particles[ALL]][[1]],getType[#,False,ALL]===F&],Select[Transpose[Particles[ALL]][[1]],(getType[#,False,ALL]===S && FreeQ[Flatten[Table[Transpose[Particles[NameOfStates[[i]]]][[1]],{i,1,Length[NameOfStates]}]],#])&]];missingFields=Select[existingFields,FreeQ[WeylFermionAndIndermediate,#]&];
+existingFields=Select[existingFields,FreeQ[missingFields,#]&];
+
+WriteString[outParFile,"(* ###############            Weyl Spinors and intermediate states       ################# *) \n\n"];
+existingFields=Join[Select[Transpose[Particles[ALL]][[1]],getType[#,False,ALL]===F&],Select[Transpose[Particles[ALL]][[1]],(getType[#,False,ALL]===S && FreeQ[Flatten[Table[Transpose[Particles[NameOfStates[[i]]]][[1]],{i,1,Length[NameOfStates]}]],#])&]];
+If[SupersymmetricModel===True,
+existingFields=Join[existingFields,Flatten[{Transpose[SuperFields][[1]],Extract[#,{1}]&/@Gauge,{FFields,SGauge,FGauge,SFields}//.A_[{b__}]->A}]];,
+existingFields=Join[existingFields,Flatten[{Intersection[DeleteCases[Flatten[{Transpose[FermionFields][[3]],Transpose[ScalarFields][[3]],{FFields,SGauge,SFields}//.A_[{b__}]->A}],0]]}]];
+];
+missingFields=Select[existingFields,FreeQ[WeylFermionAndIndermediate,#]&];
+existingFields=Select[existingFields,FreeQ[missingFields,#]&];
+
+
+WriteString[outParFile,"WeylFermionAndIndermediate = { \n \n"];
+
+WriteString[outParFile,"(* ----------- Already defined particles in existing particles.m -------------- *) \n\n"];
+For[i=1,i<=Length[existingFields],
+WriteTemplateParticleAux[existingFields[[i]],True];
+If[i<Length[existingFields] || missingFields=!={},WriteString[outParFile,", \n\n"];,WriteString[outParFile," \n"];];
+i++;];
+
+If[Length[missingFields]>0,
+WriteString[outParFile,"\n\n(*  ----------- Additional particles in the model ---------- *) \n\n"];
+];
+For[i=1,i<=Length[missingFields],
+WriteTemplateParticleAux[missingFields[[i]],False];
+If[i<Length[missingFields] ,WriteString[outParFile,", \n\n"];,WriteString[outParFile," \n"];];
+i++;];
+
+
+WriteString[outParFile,"}; \n\n\n\n\n"];
+Close[outParFile];
+
+
+];
+
+WriteTemplatePar[par_,existing_]:=Block[{entries,i,j,pos,entry},
+entries={Description,Dependence,DependenceNum,DependenceOptional,DependenceSPheno,Form,GUTnormalization,Real,Value,LesHouches,LaTeX,OutputName};
+WriteString[outParFile,"{"<>ToString[InputForm[par]]<>",{ \n"];
+For[i=1,i<=Length[entries],
+If[(entries[[i]]=!=GUTnormalization ||FreeQ[Gauge,par]===False) || (entries[[i]]=!=Form ||Length[getDimPar]===2) ,
+If[getAutoEntryPar[par,entries[[i]],existing]=!=False,
+If[i<Length[entries],
+WriteString[outParFile,"     "<>getAutoEntryPar[par,entries[[i]],existing]<>", \n"];,
+WriteString[outParFile,"     "<>getAutoEntryPar[par,entries[[i]],existing]<>"}}"];
+];
+];
+];
+i++;];
+];
+
+WriteTemplateParticle[particle_,existing_]:=Block[{entries,i,j,pos,entry},
+entries={Description,Goldstone,FeynArtsNr,LaTeX,Mass,MassDependence,OutputName,PDG,ElectricCharge,Width};
+WriteString[outParFile,"{"<>ToString[InputForm[particle]]<>",{ \n"];
+For[i=1,i<=Length[entries],
+If[(entries[[i]]=!=Goldstone )|| (getType[particle,False,ALL]===V && FreeQ[SGauge,particle]===True) , 
+If[getAutoEntryParticle[particle,entries[[i]],existing,False]=!=False,
+If[i<Length[entries],
+WriteString[outParFile,"     "<>getAutoEntryParticle[particle,entries[[i]],existing,False]<>", \n"];,
+WriteString[outParFile,"     "<>getAutoEntryParticle[particle,entries[[i]],existing,False]<>"}}"];
+];
+ ];
+]; 
+i++;];
+];
+
+WriteTemplateParticleAux[particle_,existing_]:=Block[{entries,i,j,pos,entry},
+entries={Description,LaTeX};
+WriteString[outParFile,"{"<>ToString[InputForm[particle]]<>",{ \n"];
+For[i=1,i<=Length[entries],
+If[(entries[[i]]=!=Goldstone )|| (getType[particle,False,ALL]===V && FreeQ[SGauge,particle]===True) , 
+If[getAutoEntryParticle[particle,entries[[i]],existing,True]=!=False,
+If[i<Length[entries],
+WriteString[outParFile,"     "<>getAutoEntryParticle[particle,entries[[i]],existing,True]<>", \n"];,
+WriteString[outParFile,"     "<>getAutoEntryParticle[particle,entries[[i]],existing,True]<>"}}"];
+];
+ ];
+]; 
+i++;];
+];
+
+getAutoEntryPar[par_,name_,existing_]:=Block[{val},
+If[existing,
+val=getEntryParameter[par,name];
+If[val===None && (name===Dependence ||name===DependenceNum || name===DependenceOptional ||name===DependenceSPheno),Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];];,
+val=None
+];
+
+If[val=!=None,
+Switch[name,
+LaTeX,
+Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];,
+Dependence|DependenceNum|DependenceOptional|DependenceSPheno,
+If[getDimParameter[par]==Dimensions[val] || Head[val]=!=List,
+Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];,
+Return[ToString[name]<>" -> None    (* Removed dependence with wrong dimensions *)"];
+];,
+_,
+Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];
+];,
+Switch[name,
+LaTeX,
+Return[ToString[name]<>" -> \""<>StringReplace[AutoNameLaTeX[par],"\\"->"\\\\"]<>"\"  (* auto generated LaTeX name *)"];,
+OutputName,
+Return[ToString[name]<>" -> "<>AutoNameOutput[par]<>"  (* auto generated Output name *)"];,
+LesHouches,
+If[existing===False,
+Return[ToString[name]<>" -> "<>AutoLesHouches[par]<>"  (* auto generated Les Houches entry *)"];,
+Return[False];
+];,
+Real,
+If[FreeQ[DEFINITION[NameOfStates[[-1]]][VEVs],par]===False,
+Return[ToString[name]<>" -> True (* Assuming new VEVs to be real \t\t\t\t => CHECK! *)"];,
+Return[ToString[name]<>" -> "<>ToString[MemberQ[realVar,par]]];
+];,
+_,
+(* Return[ToString[name]<>" -> "<>"None"]; *)
+Return[False];
+];
+];
+];
+
+getAutoEntryParticle[par_,name_,existing_,auxF_]:=Block[{val},
+If[existing,
+If[auxF===True,
+val=getEntryFieldAux[par,name];,
+val=getEntryField[par,name];
+];,
+val=None
+];
+
+If[name===PDG || name===PDG.IX,
+If[Length[val]=!=getGen[par,ALL],val=None;];
+];
+
+If[val=!=None,
+Switch[name,
+LaTeX | OutputName,
+If[Length[val]===2,
+Return[ToString[name]<>" -> {\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\",\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\"}"];,
+Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];
+];,
+_,
+Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];
+];,
+Switch[name,
+LaTeX,
+Return[ToString[name]<>" -> \""<>StringReplace[AutoNameLaTeX[par],"\\"->"\\\\"]<>"\"   (* auto generated LaTeX name *)"];,
+PDG,
+Return[ToString[name]<>" -> "<>AutoPDG[par,getEntryField[par,name]/. a_Integer->{a}]<>If[existing===True,"   (* adjusted number of PDGs to number of generations  *)","   (* auto generated PDGs  *)"]];,
+OutputName,
+Return[ToString[name]<>" -> \""<>AutoNameOutput[par]<>"\"   (* auto generated Output name *)"];,
+FeynArtsNr,
+Return[ToString[name]<>" -> "<>AutoFeynArts[par]<>"   (* auto generated FeynArts number *)"];,
+Mass,
+Return[ToString[name]<>" -> LesHouches"];,
+Width,
+Return[ToString[name]<>" -> Automatic"];,
+Goldstone,
+If[existing==False,
+Return[ToString[name]<>" -> None  (* don't forget to put the correct Goldstone here!\t\t\t\t => CHECK! *)"];,
+Return[False];
+];,
+ElectricCharge,
+If[(FreeQ[Particles[NameOfStates[[-1]]],par]===False ||FreeQ[diracSub[NameOfStates[[-1]]],par]===False) && ConsideredEig===NameOfStates[[-1]],
+Return[ToString[name]<>" -> 0 (* this is just a dummy value for the electric charge! \t\t\t\t => CHECK! *)"];,
+Return[False];
+];,
+_,
+(* Return[ToString[name]<>" -> "<>"None"]; *)
+Return[False];
+];
+];
+];
+
+AutoFeynArts[x_]:=Block[{val},
+val=Max[allFANr];
+allFANr=Join[allFANr,{val+1}];
+Return[ToString[val++]];
+];
+AutoPDG[x_,existing_]:=Block[{max,i,val},
+max=Max[allPDGs];
+If[getType[x]===G,Return["{0}"]];
+If[existing===None,
+val=Table[max+i,{i,1,getGen[x,ALL]}];,
+If[Length[existing]<getGen[x,ALL],
+val=Join[Flatten[existing],Table[max+i,{i,1,getGen[x,ALL]-Length[existing]}]];,
+val=Take[Flatten[existing],{1,getGen[x,ALL]}];
+];
+];
+allPDGs=Join[allPDGs,val];
+Return[ToString[val]];
+];
+
+AutoLesHouches[x_]:=Block[{i,max},
+If[getDimParameter[x]==={}||getDimParameter[x]==={1},
+max=Max[allMiscEntry];
+allMiscEntry=Join[allMiscEntry,{max+1}];
+Return["{"<>ToUpperCase[ModelName]<>","<>ToString[max]<>"}"];,
+Return[ToUpperCase[StringReplace[ToString[FullForm[x /. Mass->M]],{"["->"","]"->"","\\"->""}]]];
+];
+];
+
+AutoNameOutput[x_]:=Block[{temp},
+Switch[Head[x],
+T,Return["T"<>AutoNameOutput[x[[1]]]<>""];,
+B,Return["B"<>AutoNameOutput[x[[1]]]<>""];,
+L,Return["L"<>AutoNameOutput[x[[1]]]<>""];,
+Mass,Return["M"<>AutoNameOutput[x[[1]]]<>""];
+];
+temp=StringReplace[ToLowerCase[ToString[FullForm[x /. Mass->M]]],{"["->"","]"->"","\\"->"","alpha"->"al","beta"->"bet","gamma"->"ga","delta"->"del","epsilon"->"ep","rho"->"rh","sigma"->"sig","lambda"->"lam","omega"->"om","kappa"->"kap","bar"->"b"}];
+If[StringLength[temp]>8,temp=StringTake[temp,{1,7}];];
+Return[temp];
+];
+
+
+AutoNameLaTeX[x_]:=Block[{temp,i,basis,rest},
+If[Head[x]=!=String,
+If[FreeQ[parameters,x]===False,
+Switch[Head[x],
+T,Return["T_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
+B,Return["B_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
+L,Return["L_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
+Mass,Return["M_{"<>AutoNameLaTeX[x[[1]]]<>"}"];
+];,
+basis=StringTake[ToString[x],{1}];
+rest=StringReplace[StringTake[ToString[x],{2,-1}],{"["->"","]"->"","\\"->""}];
+If[(FreeQ[SuperFields,x] && FreeQ[Extract[#,{1}]&/@Gauge,x]) || SupersymmetricModel===False,
+Switch[basis,
+"V",Return[AutoNameLaTeX[rest]];,
+"F",Return[AutoNameLaTeX[rest]];,
+"f",Return["\\tilde{"<>AutoNameLaTeX[rest]<>"}"];,
+"S",Return["\\tilde{"<>AutoNameLaTeX[rest]<>"}"];,
+"g",Return["\\eta_{"<>AutoNameLaTeX[rest]<>"}"];,
+_,Return[AutoNameLaTeX[ToLowerCase[StringReplace[ToString[FullForm[x]],{"["->"","]"->"","\\"->""}]]]];
+];,
+Return["\\hat{"<>AutoNameLaTeX[ToString[x]]<>"}"];
+];
+];
+temp=StringReplace[ToString[FullForm[x]],{"["->"","]"->"","\\"->""}];,
+temp=x;
+];
+If[StringLength[temp]<2,
+Return[temp];
+];
+If[StringTake[temp,{1}]==="m" && StringTake[temp,{-1}]==="2",
+Return["m^2_{"<>AutoNameLaTeX[StringDrop[StringDrop[temp,{1}],{-1}]]<>"}"];
+];
+
+If[StringPosition[temp,"bar"]=!={} || StringPosition[temp,"Bar"]=!={},
+Return["\\bar{"<>AutoNameLaTeX[StringReplace[temp,{"bar"->"","Bar"->""}]]<>"}"];
+];
+
+
+If[StringTake[temp,{-2,-1}]==="pp",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{++}"]
+];
+
+If[StringTake[temp,{-2,-1}]==="mm",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{--}"]
+];
+
+If[StringTake[temp,{-2,-1}]==="pm",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{\\pm}"]
+];
+
+If[StringTake[temp,{-2,-1}]==="mp",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{\\mp}"]
+];
+
+(*
+If[StringTake[temp,{-1}]==="p",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^{+}"]
+];
+
+If[StringTake[temp,{-1}]==="m",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^{-}"]
+];
+
+If[StringTake[temp,{-1}]==="l",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_{L}"]
+];
+
+If[StringTake[temp,{-1}]==="r",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_{R}"]
+];
+
+If[StringTake[temp,{-1}]==="c",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^{*}"]
+];
+
+*)
+
+If[StringTake[temp,{-1}]==="0",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^0"]
+];
+
+
+If[StringTake[temp,{-1}]==="L",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_L"]
+];
+
+If[StringTake[temp,{-1}]==="R",
+Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_R"]
+];
+
+
+Greek={"alpha","beta","gamma","delta","epsilon","mu","rho","sigma","tau","eta","lambda","xi","omega","chi","kappa","phi","nu"};
+GreekSub=Greek;
+Greek=Join[Greek,{"Alpha","Beta","Gamma","Delta","Epsilon","Mu","Rho","Sigma","Tau","Eta","Lambda","Xi","Omega","Chi","Kappa","Phi","Nu"}];
+GreekSub=Join[GreekSub,{"alpha","beta","Gamma","Delta","epsilon","mu","rho","Sigma","tau","eta","lambda","xi","Omega","chi","kappa","Phi","nu"}];
+
+
+i=1;
+found=False;
+While[i<=Length[Greek] && found==False,
+pos=StringPosition[temp,Greek[[i]]];
+If[pos=!={},
+found=True,
+i++;
+];
+];
+If[found,
+If[pos[[1,1]]===1 && pos[[1,2]]===StringLength[temp],
+Return["\\"<>GreekSub[[i]]];
+];
+
+If[pos[[1,1]]===1,
+Return["{\\"<>GreekSub[[i]]<>"}_{"<>AutoNameLaTeX[StringDrop[temp,pos[[1]]]]<>"}"];
+];
+
+If[pos[[1,2]]===StringLength[temp],
+Return["{"<>AutoNameLaTeX[StringDrop[temp,pos[[1]]]]<>"}_{\\"<>GreekSub[[i]]<>"}"];
+];
+Return["{"<>AutoNameLaTeX[StringTake[temp,{1,pos[[1,1]]-1}]]<>"}_{\\"<>GreekSub[[i]]<>"}^{"<>AutoNameLaTeX[StringTake[temp,{pos[[1,2]]+1,-1}]]<>"}"];
+];
+
+If[StringTake[temp,{1}]==="y",
+Return["Y_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
+];
+
+If[StringTake[temp,{1}]==="g",
+Return["g_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
+];
+
+If[StringTake[temp,{1}]==="v",
+Return["v_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
+];
+
+Return[temp];
+
+];
+
+
+
+
 
 
 (* End[] *)
+

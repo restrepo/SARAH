@@ -127,28 +127,26 @@ WriteString[filenames[[l]]," 31 -1              # fixed GUT scale (-1: dynamical
 WriteString[filenames[[l]]," 32 0               # Strict unification \n"];
 WriteString[filenames[[l]]," 34 1.000E-04       # Precision of mass calculation \n"];
 WriteString[filenames[[l]]," 35 40              # Maximal number of iterations\n"];
+WriteString[filenames[[l]]," 36 5               # Minimal number of iterations before discarding points\n"];
 WriteString[filenames[[l]]," 37 1               # Set Yukawa scheme  \n"];
 WriteString[filenames[[l]]," 38 2               # 1- or 2-Loop RGEs \n"];
-WriteString[filenames[[l]]," 50 1               # Majorana phases: use only positive masses \n"];
+WriteString[filenames[[l]]," 50 1               # Majorana phases: use only positive masses (put 0 to use file with CalcHep/Micromegas!) \n"];
 WriteString[filenames[[l]]," 51 0               # Write Output in CKM basis \n"];
 WriteString[filenames[[l]]," 52 0               # Write spectrum in case of tachyonic states \n"];
-If[SupersymmetricModel===True,
-WriteString[filenames[[l]]," 55 1               # Calculate one loop masses \n"];,
-WriteString[filenames[[l]]," 55 0               # Calculate one loop masses \n"];
-];
+WriteString[filenames[[l]]," 55 1               # Calculate loop corrected masses \n"];
 WriteString[filenames[[l]]," 57 1               # Calculate low energy constraints \n"];
 If[Count[Gauge,U[1],3]>1,WriteString[filenames[[l]]," 60 1               # Include possible, kinetic mixing \n"];];
 If[SeveralIndependentTadpoleSolutions=!=True,
 WriteString[filenames[[l]]," 65 1               # Solution tadpole equation \n"];
 ];
 WriteString[filenames[[l]]," 75 1               # Write WHIZARD files \n"];
-WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file \n"];
+WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file   \n"];
 WriteString[filenames[[l]]," 86 0.              # Maximal width to be counted as invisible in Higgs decays; -1: only LSP \n"];
 If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          # Maximal mass of particles taken into account in loops \n"];
 ];
 WriteString[filenames[[l]],"510 0.              # Write tree level values for tadpole solutions \n"];
 WriteString[filenames[[l]],"515 0               # Write parameter values at GUT scale \n"];
-WriteString[filenames[[l]],"520 1.              # Write effective Higgs couplings (HiggsBounds blocks) \n"];
+WriteString[filenames[[l]],"520 1.              # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! \n"];
 WriteString[filenames[[l]],"525 0.              # Write loop contributions to diphoton decay of Higgs \n"];
 WriteString[filenames[[l]],"530 1.              # Write Blocks for Vevacious \n"];
 If[IncludeFineTuning===True,
@@ -183,9 +181,10 @@ WriteString[filenames[[l]],ToString[1502]<>" 1               # Include Box diagr
 ];
 
 
-If[l==1,
+If[l==1 && OnlyLowEnergySPheno=!=True,
 listIn = Intersection[Select[Flatten[{BoundaryHighScale,BoundarySUSYScale,BoundaryEWSBScale,BoundaryConditionsUp,BoundaryConditionsDown}],(Head[#]==LHInput)&,99] /. LHInput[x_]->x];,
 listIn = Intersection[DeleteCases[DeleteCases[listAllParametersAndVEVs,x_?(MemberQ[Transpose[BoundaryLowScaleInput][[1]],#]&)],x_?(MemberQ[ParametersToSolveTadpolesLowScaleInput,#]&)]];
+listIn =Join[listIn, Select[Flatten[BoundaryLowScaleInput],(Head[#]==LHInput)&,99] /. LHInput[x_]->x];
 ];
 If[AddSMrunning===True,
 listIn = Complement[listIn,{ElectronYukawa,UpYukawa,DownYukawa,strongCoupling,leftCoupling,hyperchargeCoupling,VEVSM1,VEVSM2, VEVSM}];

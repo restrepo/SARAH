@@ -233,6 +233,9 @@ LagReDef=replaceGen[ReleaseHold[LagReDef/. SA`subDeleteParticles/.vevSub/.subGau
 (* -------------------------------- Effective after Gauge Bososn Mixing ------------------ *)
 
 If[Length[IntegrateOut]>0,
+ModelFile::IntegrateOut="The option to integrate out fields has been removed: SARAH is optimized to handle renormalisable models. You can use 'DeleteFields' to remove degrees of freedom from the model without the efforts to derive all induced, effective operators.";
+Message[ModelFile::IntegrateOut];
+Interrupt[];
 Lagrangian = Kinetic - Potential + LagrangianVVV + LagrangianVVVV;
 MakeEffective;
 ];

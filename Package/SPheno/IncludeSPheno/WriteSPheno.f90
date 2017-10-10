@@ -22,7 +22,7 @@ End if
 
 Write(io_L,102) 31,m_GUT,"# GUT scale"
 
-Write(io_L,102) 33,Q,"# SUSY scale"
+Write(io_L,102) 33,Q,"# Renormalization scale"
 
 Write(io_L,102) 34,delta_mass,"# Precision"
 

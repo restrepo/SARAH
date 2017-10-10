@@ -120,7 +120,8 @@ BoundaryLowScaleInput={
 };
 
 (* Example for mSugra input values *)
-DefaultInputValues[1] = {m0 -> 250, m12 -> 250, TanBeta -> 10, SignumMu -> 1, Azero->0 };
+DefaultInputValues[1] = {m0 -> 1500, m12 -> 1500, TanBeta -> 10, SignumMu -> 1, Azero->-2000 };
+
 
 (* Example for GMSB input values *)
 DefaultInputValues[2] = {LambdaInput -> 10^5, MessengerScale -> 2*10^5, TanBeta -> 10, SignumMu -> 1, cGrav -> 1, n5plets -> 1, n10plets ->0  };

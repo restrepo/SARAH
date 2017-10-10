@@ -1,9 +1,17 @@
-MINPAR={{1,m0},
-        {2,m12},
+(* Some simplified setup with universal Sfermion masses at the SUSY scale *)
+(* For a more general input, use the '_low' input !*)
+
+
+MINPAR={{1,mSUSY},
         {3,TanBeta},
-        {5,Azero}};
+        {5,Azero},
+        {6,AzeroX}};
 
 EXTPAR = {
+          {1, M1input},
+          {2, M2input},
+          {3, M3input},
+     
 	   {61,LambdaInput},
 	   {62,KappaInput},
 	   {63,ALambdaInput},
@@ -16,18 +24,22 @@ EXTPAR = {
        {79, vTbinput}
 	 };
 
-RealParameters = {TanBeta,m0};
+RealParameters = {TanBeta,m0,mSUSY};
+
+UseParameterAsGUTscale = {mSUSY};  
 
 ParametersToSolveTadpoles = {mHd2,mHu2,ms2,mt2,mtb2};
 
-RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
-RenormalizationScale = MSu[1]*MSu[6];
+RenormalizationScaleFirstGuess = mSUSY^2;
+RenormalizationScale = mSUSY^2;
 
 ConditionGUTscale = g1 == g2;
 
 
 BoundarySUSYScale = {
 {vS, vSInput},  
+{vT, vTinput},
+{vTb, vTbinput},
 {\[Kappa], KappaInput},
 {\[Lambda], LambdaInput},
 {XiD, XiDinput},
@@ -39,30 +51,27 @@ BoundaryHighScale={
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
-{mq2, DIAGONAL m0^2},
-{ml2, DIAGONAL m0^2},
-{md2, DIAGONAL m0^2},
-{mu2, DIAGONAL m0^2},
-{me2, DIAGONAL m0^2},
+{mq2, DIAGONAL mSUSY^2},
+{ml2, DIAGONAL mSUSY^2},
+{md2, DIAGONAL mSUSY^2},
+{mu2, DIAGONAL mSUSY^2},
+{me2, DIAGONAL mSUSY^2},
 {T[\[Kappa]], AKappaInput*\[Kappa]},
 {T[\[Lambda]], ALambdaInput*\[Lambda]},
-{T[XiD], Azero* XiD},
-{T[XiU], Azero* XiU},
-{T[LamT], Azero* LamT},
-{MassB, m12},
-{MassWB,m12},
-{MassG,m12}
-};
-
-BoundaryLowScaleInput={
- {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
- {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+{T[XiD], AzeroX* XiD},
+{T[XiU], AzeroX* XiU},
+{T[LamT], AzeroX* LamT},
+{MassB, M1input},
+{MassWB,M2input},
+{MassG,M3input}
 };
 
 
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
+
+DefaultInputValues = {TanBeta -> 2.0, mSUSY->2500, Azero->-2500, AzeroX -> -900, M1input->200, M2input->500, M3input->1500, AKappaInput->-500, ALambdaInput->50,KappaInput->0.3,LambdaInput->0.45, LamTinput->0.1, XiDinput->0.1, XiUinput->0.1, vTinput->2, vTbinput->0.1, vSInput-> 20  };
 
 
 

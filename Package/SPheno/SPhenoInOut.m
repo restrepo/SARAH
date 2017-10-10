@@ -132,7 +132,7 @@ listVEVsIN = Join[listVEVsIN,{ToExpression[SPhenoForm[listVEVs[[i]]]<>"IN"]}];
 listVEVsStable = Join[listVEVsStable,{ToExpression[SPhenoForm[listVEVs[[i]]]<>"Fix"]}];
 SPhenoParameters=Join[SPhenoParameters,{newEntry /. {listVEVs[[i]] -> listVEVsIN[[i]]}}];
 SPhenoParameters=Join[SPhenoParameters,{newEntry /. {listVEVs[[i]] -> listVEVsStable[[i]]}}];
-If[conj[listVEVs[[i]]]===listVEVs,
+If[conj[listVEVs[[i]]]===listVEVs[[i]],
 realVar = Join[realVar,{ToExpression[SPhenoForm[listVEVs[[i]]]<>"IN"]}];
 realVar = Join[realVar,{ToExpression[SPhenoForm[listVEVs[[i]]]<>"Fix"]}];
 ];
@@ -144,6 +144,9 @@ listAllParameters = LowScaleParameter;
 listAllParametersAndVEVs = Join[LowScaleParameter,listVEVs];
 ]; *)
 listAllParametersAndVEVs = Join[LowScaleParameter,listVEVs];
+
+ListAllInputParameters=Join[ListAllInputParameters,Replace[DeleteCases[DeleteCases[DeleteCases[listVEVs,VEVSM],VEVSM1],VEVSM2] , a_Symbol:>{a,getDimParameter[a],a,TrueQ[a===conj[a]]} ,{1}]/. {1}->{}];
+
 ];
 
 AddParametersToList[list_]:=Block[{i},
@@ -186,7 +189,7 @@ sphenoInOut=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"InputOutput_"<>ModelNam
 
 WriteCopyRight[sphenoInOut];
 
-If[SupersymmetricModel===False,
+If[SupersymmetricModel=!=True,
 StringScaleOut="Renormalization Scale";,
 StringScaleOut="SUSY Scale";
 ];
@@ -881,7 +884,6 @@ Switch[Length[dimensions],
 
 
 WriteReadInRoutines[list_]:=Block[{i},
-
 For[i=1,i<=Length[list],
 If[FreeQ[CombindedBlock,list[[i,1]]],
 Switch[Length[list[[i,2]]],
@@ -1704,10 +1706,10 @@ If[Head[RegimeNr]=!=Integer,
 WriteString[sphenoInOut,"If (WriteGUTvalues) Then \n"];
 
 For[i=1,i<=Length[CombindedBlock],
-If[Select[Transpose[Drop[CombindedBlock[[i]],1]][[1]],((FreeQ[ListAllInputParameters,#]==False)&)]=!={},
+If[Select[Transpose[Drop[CombindedBlock[[i]],1]][[1]],((FreeQ[ListAllInputParameters,#]==False && FreeQ[listVEVs,#]==True)&)]=!={},
 WriteString[sphenoInOut,"Write(io_L,106) \"Block "<> ToString[CombindedBlock[[i,1]]] <>"GUT Q=\",M_GUT,\"# (GUT scale)\" \n"];
 For[j=2,j<=Length[CombindedBlock[[i]]],
-If[FreeQ[ThresholdCouplings,CombindedBlock[[i,j,1]]] && FreeQ[listParametersOtherRegimes,CombindedBlock[[i,j,1]]] && FreeQ[ListAllInputParameters,CombindedBlock[[i,j,1]]]==False,
+If[FreeQ[ThresholdCouplings,CombindedBlock[[i,j,1]]] && FreeQ[listVEVs,CombindedBlock[[i,j,1]]] && FreeQ[listParametersOtherRegimes,CombindedBlock[[i,j,1]]] && FreeQ[ListAllInputParameters,CombindedBlock[[i,j,1]]]==False,
 WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[CombindedBlock[[i,j,2]]]<>",Real("<>SPhenoForm[ CombindedBlock[[i,j,1]] /. subNumAdd]<>"GUT"<>",dp), \"# "<>SPhenoForm[CombindedBlock[[i,j,1]]]<>"\" \n"];
 ];
 j++;];
@@ -1715,7 +1717,7 @@ j++;];
 i++;];
 
 For[i=1,i<=Length[ListAllInputParameters],
-If[Length[ListAllInputParameters[[i,2]]]>0 && FreeQ[ThresholdCouplings,ListAllInputParameters[[i,1]]] && FreeQ[listParametersOtherRegimes,ListAllInputParameters[[i,1]]],
+If[Length[ListAllInputParameters[[i,2]]]>0 && FreeQ[ThresholdCouplings,ListAllInputParameters[[i,1]]] && FreeQ[listVEVs,ListAllInputParameters[[i,1]]]&& FreeQ[listParametersOtherRegimes,ListAllInputParameters[[i,1]]],
 WriteOutputBlock[ToExpression[SPhenoForm[ListAllInputParameters[[i,1]]]<>"GUT"],ListAllInputParameters[[i,2]],GUTSCALE,"GUT Scale"];
 ];
 i++;];
@@ -1771,7 +1773,7 @@ WriteString[sphenoInOut,"End if \n"];
 
 
 If[Length[AdditionalVariablesSPheno]>0,
-WriteString[sphenoInOut,"Write(io_L,106) \"Block AddPars # \" \n"];
+WriteString[sphenoInOut,"Write(io_L,106) \"Block AddPars Q=1.0000E00 # Additional parameters not appearing elsewhere; scale Q just a dummy\" \n"];
 For[j=1,j<=Length[AdditionalVariablesSPheno],
 If[Depth[AdditionalVariablesSPheno[[j]]]<2,
 WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[j]<>", Abs("<>SPhenoForm[AdditionalVariablesSPheno[[j]]]<>"), \"# "<>ToString[AdditionalVariablesSPheno[[j]]]  <>" \"  \n"];

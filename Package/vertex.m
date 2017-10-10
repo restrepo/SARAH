@@ -450,12 +450,12 @@ subInvMatrices= Join[subInvMatrices,subInvMatrices/.conj[x_]->x];
 
 tempSave2=temp;
 tempWithLorentz=makeSumAll[CalcDelta[temp /.subVert /. subAlways] /.subInvMatrices/. subFinal]  /.subAlways;
-If[Length[tempWithLorentz]>1000,
+If[Length[tempWithLorentz]>500,
  tempWithLorentz = tempWithLorentz /. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; ,
  tempWithLorentz = Simplify[tempWithLorentz,Trig->True] /. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; 
 
 ];
-(* tempWithLorentz = tempWithLorentz/. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; *)
+(* tempWithLorentz = tempWithLorentz/. Inv[X_][a_,b_]\[Rule]conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; *)
 
 If[tempWithLorentz=!=0,
 If[LorentzNeeded==True,
@@ -637,7 +637,7 @@ ExtractLorentzNew[vertexIN_]:=Block[{i,j,k,l,temp={},subs,current,coeff,vertex},
 LorentzHeaders={g,gamma,sig,Mom};
 LorentzInd={lt1,lt2,lt3,lt4,lt4,lt5};
 
-(* contract g_\mu\n u *)
+(* contract g_\mu\nu *)
 
 vertex=Expand[vertexIN]/. A_[b__,l1_] g[l1_,l_]->A[b,l];
 

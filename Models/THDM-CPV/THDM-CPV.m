@@ -1,12 +1,9 @@
 Off[General::spell]
 
-Model`Name = "THDM";
-Model`NameLaTeX ="Two Higgs Doublet Model";
+Model`Name = "THDMCPV";
+Model`NameLaTeX ="General Two Higgs Doublet Model with CPV";
 Model`Authors = "F.Staub";
-Model`Date = "2015-11-16";
-
-(* 2014-11-06: Changed sign in Lagrangian *)
-(* 2015-11-16: added conj[H1].H2 term *)
+Model`Date = "2015-06-25";
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -43,7 +40,7 @@ NameOfStates={GaugeES, EWSB};
 (* ----- Before EWSB ----- *)
 
 DEFINITION[GaugeES][Additional]= {
-	{LagHC, { AddHC->True}},
+	{LagHC, {AddHC->True}},
 	{LagNoHC,{ AddHC->False}}
 };
 
@@ -52,7 +49,8 @@ LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1 conj[H1].H1.conj[H1].H
 		Lambda2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + Lambda4 conj[H2].H1.conj[H1].H2 );
 
 
-LagHC = -(M12 conj[H1].H2 + Lambda5/2 conj[H2].H1.conj[H2].H1 + Yd conj[H2].d.q + Ye conj[H2].e.l + Yu H2.u.q);
+LagHC = -(Lambda5/2 conj[H2].H1.conj[H2].H1 + Lambda6 conj[H1].H1.conj[H1].H2 + Lambda7 conj[H2].H2.conj[H1].H2 - M12 conj[H1].H2  \
+ + Yd conj[H1].d.q + Ye conj[H1].e.l + Yu H2.u.q + epsD conj[H2].d.q + epsE conj[H2].e.l + epsU H1.u.q);
 
 (* Gauge Sector *)
 
@@ -63,7 +61,11 @@ DEFINITION[EWSB][GaugeSector] =
 };     
         
         
-          	
+ DEFINITION[GaugeES][Phases]= 
+{    {H1p, Exp[I eta]},
+     {H10, Exp[I eta]}
+    }; 
+ 
 
 (* ----- VEVs ---- *)
 
@@ -73,8 +75,7 @@ DEFINITION[EWSB][VEVs]=
  
 
 DEFINITION[EWSB][MatterSector]=   
-    { {{phi1, phi2}, {hh, ZH}},
-      {{sigma1, sigma2}, {Ah, ZA}},
+    { {{phi1, phi2, sigma1, sigma2}, {hh, ZH}},
       {{conj[H1p],conj[H2p]},{Hm,ZP}},
       {{{dL}, {conj[dR]}}, {{DL,Vd}, {DR,Ud}}},
       {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},

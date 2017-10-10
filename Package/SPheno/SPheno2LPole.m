@@ -54,8 +54,7 @@ WriteString[spheno2LP,"Contains \n \n"];
 
 
 Write2LPoleFunction:=Block[{},
-MakeSubroutineTitle["CalculatePi2S",Join[listVEVs,listAllParameters],{"p2"},{"kont","tad2L","Pi2S"},spheno2LP];
-
+MakeSubroutineTitle["CalculatePi2S",Join[listVEVs,listAllParameters],{"p2"},{"kont","tad2L","Pi2S","Pi2P"},spheno2LP];
 
 			  
 
@@ -81,6 +80,7 @@ WriteString[spheno2LP,"Real(dp)  :: tempcont("<>dimMatrix<>","<>dimMatrix<>")\n"
  WriteString[spheno2LP,"Real(dp)  :: runningval("<>dimMatrix<>","<>dimMatrix<>")\n"];
 WriteString[spheno2LP,"Real(dp), Intent(out) :: tad2l("<>dimMatrix<>")\n"];
 WriteString[spheno2LP,"Real(dp), Intent(out) :: Pi2S("<>dimMatrix<>","<>dimMatrix<>")\n"];
+WriteString[spheno2LP,"Real(dp), Intent(out) :: Pi2P("<>dimMatrix<>","<>dimMatrix<>")\n"];
 
 WriteString[spheno2LP,"complex(dp) :: coup1,coup2,coup3,coup4\n"];
 WriteString[spheno2LP,"complex(dp) :: coup1L,coup1R,coup2l,coup2r,coup3l,coup3r,coup4l,coup4r\n"];
@@ -114,9 +114,10 @@ WriteString[spheno2LP,"\n\n"];
 
 WriteString[spheno2LP,"tad2l(:)=0\n"];
 WriteString[spheno2LP,"Pi2S(:,:)=0\n"];
+WriteString[spheno2LP,"Pi2P(:,:)=0\n"];
 WriteString[spheno2LP,"Qscale=getrenormalizationscale()\n"];
 WriteString[spheno2LP,"epsfmass=0._dp\n"];
-WriteString[spheno2LP,"epscouplings=0._dp\n"];
+WriteString[spheno2LP,"epscouplings=1.0E-6_dp\n"];
 
 
 (* Call tree level masses *)
@@ -134,7 +135,7 @@ Print["Generating tadpole diagrams"];
 
 total2Ldiagramswritten=0;
 	 		   
-all2LPddata=Classify2LTadpoleDiagrams;
+all2LPddata=Classify2LTadpoleDiagrams[HiggsBoson];
 all2LPdiagrams=all2LPddata[[1]];
 POLE2Ldiagramdata=all2LPddata[[2]];
 
@@ -212,10 +213,23 @@ dynamictwolooptadpolediagram=ToString[total2Ldiagramswritten]<>" diagrams writte
 (********************* MASS DIAGRAMS *************************************)
 (*************************************************************************)
 
+If[FreeQ[ParticleDefinitions[CurrentStates],"Pseudo-Scalar Higgs"],iScalarEnd=1;,iScalarEnd=2;];
+
+For[iScalar=1,iScalar<=iScalarEnd,
+
 total2Ldiagramswritten=0;
-Print["Generating mass diagrams"];
+
+If[iScalar===1,
+
+Print["Generating mass diagrams for CP-even states"];
 Clear[all2LPddata,all2LPdiagrams,POLE2Ldiagramdata,topdata];
-all2LPddata=Classify2LPdiagrams;
+all2LPddata=Classify2LPdiagrams[HiggsBoson];,
+Print["Generating mass diagrams for CP-odd states"];
+Clear[all2LPddata,all2LPdiagrams,POLE2Ldiagramdata,topdata];
+all2LPddata=Classify2LPdiagrams[PseudoScalar];
+];
+
+
 all2LPdiagrams=all2LPddata[[1]];
 POLE2Ldiagramdata=all2LPddata[[2]];
 
@@ -363,6 +377,7 @@ dynamictwolooppolediagram=ToString[total2Ldiagramswritten]<>" diagrams written t
 
 WriteString[spheno2LP,"! ----- TIDY UP AND SYMMETRISE -----\n"];
 
+If[iScalar==1,
 
 (** TIDY UP THE POLE FUNCTION ***)
 WriteString[spheno2LP,"do gE1=1,"<>dimMatrix<>"\n"];
@@ -382,7 +397,35 @@ WriteString[spheno2LP,"Pi2S = Matmul(Transpose("<>SPhenoForm[HiggsMixingMatrix]<
 If[Length[IncludeOnlyInternals]!=0,
    WriteString[spheno2LP,"write(*,*) \"Result of Pi2S: \"\n"];
    WriteString[spheno2LP,"write(*,*) Pi2S\n"];
+   ];,
+
+
+
+(** TIDY UP THE POLE FUNCTION ***)
+WriteString[spheno2LP,"do gE1=1,"<>dimMatrix<>"\n"];
+WriteString[spheno2LP,"Pi2P(gE1,gE1)=Pi2P(gE1,gE1)+tempcont(gE1,gE1)*oo16Pi2*oo16Pi2\n"];
+WriteString[spheno2LP,"do gE2=1,gE1-1\n"];
+
+WriteString[spheno2LP,"Pi2P(gE1,gE2)=Pi2P(gE1,gE2)+0.5_dp*(tempcont(gE1,gE2)+tempcont(gE2,gE1))*oo16Pi2*oo16Pi2\n"];
+WriteString[spheno2LP,"Pi2P(gE2,gE1)=Pi2P(gE1,gE2)\n"];
+WriteString[spheno2LP,"End do\nEnd do\n"];
+
+
+(** --- now to "undiagonalise" ---- *)
+
+WriteString[spheno2LP,"Pi2P = Matmul(Pi2P,"<>SPhenoForm[PseudoScalarMixingMatrix]<>")\n"];
+WriteString[spheno2LP,"Pi2P = Matmul(Transpose("<>SPhenoForm[PseudoScalarMixingMatrix]<>"),Pi2P)\n"];
+
+If[Length[IncludeOnlyInternals]!=0,
+   WriteString[spheno2LP,"write(*,*) \"Result of Pi2P: \"\n"];
+   WriteString[spheno2LP,"write(*,*) Pi2P\n"];
    ];
+
+ ];
+ iScalar++;
+];
+
+
 
 
 			   

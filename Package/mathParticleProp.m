@@ -1102,7 +1102,6 @@ If[gens>1,
 pos=Position[listP,sameDis[[i]]];
 rep=ind /.Join[subGCRE[pos[[1,1]],pos[[2,1]]], subGCRE[pos[[2,1]],pos[[1,1]]]];
 posDef=Position[ParameterDefinitions,Op];
-Print[rep];
 If[rep===ind,
 If[MemberQ[listP,conj[sameDis[[i]]]] && MemberQ[listP,sameDis[[i]]],symmetry=Hermitian;,symmetry=Symmetric;];
 PrintDebug["   Defined ",Op," as ",symmetry];
@@ -1668,6 +1667,13 @@ Return[ToString[y]];
 ];
 ];
 
+getEntryFieldAux[y_,Type_]:=Block[{pos,field,i,states,des},field=y;
+If[FreeQ[WeylFermionAndIndermediate,field]==False,
+pos=Position[Transpose[WeylFermionAndIndermediate][[1]],field];
+];
+If[Head[pos]===List,If[FreeQ[WeylFermionAndIndermediate[[pos[[1,1]]]][[2]],Type],Return[None];,Return[Type/. WeylFermionAndIndermediate[[pos[[1,1]]]][[2]]];];,Return[None];];]
+
+
 getElectricCharge[x_conj]:=-getElectricCharge[RE[x]];
 getElectricCharge[x_bar]:=-getElectricCharge[RE[x]];
 getElectricCharge[x_]:=getEntryField[x,ElectricCharge] /; (getType[x]=!=A);
@@ -2189,11 +2195,13 @@ repsDoub=Intersection[Select[fields,(Count[fields,#]>1)&]];
 If[repsDoub==={},Return[];];
 Switch[Length[Dimensions[InvMatFull[nr]]],
 2,
-	If[Length[Intersection[Table[CGCBroken[fields][i,i],{i,1,Dimensions[InvMatFull[nr]][[1]]}]]]>1,
+	If[(Table[CGCBroken[fields][i,j],{i,1,Dimensions[InvMatFull[nr]][[1]]},{j,1,Dimensions[InvMatFull[nr]][[1]]}]==Transpose[Table[CGCBroken[fields][i,j],{i,1,Dimensions[InvMatFull[nr]][[1]]},{j,1,Dimensions[InvMatFull[nr]][[1]]}]]),
 	CGCBroken[fields][a_,b_]:= CGCBroken[fields][b,a] /;(OrderedQ[{a,b}]==False);
 	InvMat[nr][a_,b_]:= InvMat[nr][b,a] /;(OrderedQ[{a,b}]==False);,
+If[(Table[CGCBroken[fields][i,j],{i,1,Dimensions[InvMatFull[nr]][[1]]},{j,1,Dimensions[InvMatFull[nr]][[1]]}]==-Transpose[Table[CGCBroken[fields][i,j],{i,1,Dimensions[InvMatFull[nr]][[1]]},{j,1,Dimensions[InvMatFull[nr]][[1]]}]]),
 	CGCBroken[fields][a_,b_]:= -CGCBroken[fields][b,a] /;(OrderedQ[{a,b}]==False);
 	InvMat[nr][a_,b_]:= -InvMat[nr][b,a] /;(OrderedQ[{a,b}]==False);
+];
 	];,
 3,
 For[j=1,j<=Length[repsDoub],
@@ -2315,8 +2323,8 @@ subInv=Join[subInv,{invFields[[j]][{b__}][{genf[j],d___}]->1,invFields[[j]][{gen
 ];
 j++;];
 subInv=Flatten[subInv];
-temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}] /. subInv,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A/.conj[x_]->x/.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c];
-temp = temp //. Flatten[subs] /. Delta[a__]->1 /. epsTensor[a__]->1 /. CG[a__][b__]->1 /. conj[x_]->x;
+temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}]/.conj[x_]->x  /. subInv,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A (*/.conj[x_]\[Rule]x *)/.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c];
+temp = temp /. conj[x_[y_]]:>ToExpression[ToString[x]<>"c"][y] //. Flatten[subs] /. Delta[a__]->1 /. epsTensor[a__]->1 /. CG[a__][b__]->1 (*/. conj[x_]\[Rule]x*);
 temp=temp/.sub2;
 
 Switch[Length[dims],

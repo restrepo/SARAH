@@ -86,7 +86,7 @@ ParticleDefinitions[GaugeES] = {
                  Mass -> {0, LesHouches},
                  FeynArtsNr -> 8,
 		 ElectricCharge -> -2,
-                 LaTeX -> {"H^--","H^++"},
+                 LaTeX -> {"H^{--}","H^{++}"},
                  OutputName -> {"Hmm","Hpp"}  }},                                                                  
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson" }}, 

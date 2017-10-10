@@ -3,10 +3,11 @@ Off[General::spell]
 Model`Name = "LinSeesaw";
 Model`NameLaTeX ="Linear Seesaw";
 Model`Authors = "M. Hirsch";
-Model`Date = "2012-09-01";
+Model`Date = "2015-11-16";
 
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
+(* 2015-11-16: changed SPheno.m *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

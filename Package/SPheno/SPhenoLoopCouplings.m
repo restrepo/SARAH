@@ -598,7 +598,7 @@ If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False,
 If[FreeQ[list,C[HiggsBoson,AntiField[ParticlesToGPH[[i]]],ParticlesToGPH[[i]]]]==False && FreeQ[Massless[Eigenstates],ParticlesToGPH[[i]]] && (FreeQ[Transpose[GoldstoneGhost][[2]],ParticlesToGPH[[i]]]|| getGen[ParticlesToGPH[[i]]]>1),
 coup = getSPhenoCoupling[Cp[HiggsBoson,AntiField[ParticlesToGPH[[i]]],ParticlesToGPH[[i]]]][[1,1]];
 ind = MakeIndicesCoupling[{HiggsBoson,i1},{AntiField[ParticlesToGPH[[i]]],i2},{ParticlesToGPH[[i]],i2},getSPhenoCoupling[Cp[HiggsBoson,AntiField[ParticlesToGPH[[i]]],ParticlesToGPH[[i]]]][[2]]][[1]];
-If[FreeQ[SMParticles,ParticlesToGPH[[i]]]==True,
+If[FreeQ[SMParticles,ParticlesToGPH[[i]]]==True || OldApproach=!=True,
 Switch[getType[ParticlesToGPH[[i]]],
 F,
 WriteString[sphenoBR,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = "<>SPhenoForm[coup]<>ind<>"*1._dp*vev/"<>SPhenoMass[ParticlesToGPH[[i]],i2]<>" \n" ];,
@@ -753,7 +753,7 @@ If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False,
 If[FreeQ[list,C[HiggsBoson,AntiField[ParticlesToGPH[[i]]],ParticlesToGPH[[i]]]]==False && FreeQ[Massless[Eigenstates],ParticlesToGPH[[i]]] && (FreeQ[Transpose[GoldstoneGhost][[2]],ParticlesToGPH[[i]]]|| getGen[ParticlesToGPH[[i]]]>1),
 coup = getSPhenoCoupling[Cp[HiggsBoson,AntiField[ParticlesToGPH[[i]]],ParticlesToGPH[[i]]]][[1,1]];
 ind = MakeIndicesCoupling[{HiggsBoson,i1},{AntiField[ParticlesToGPH[[i]]],i2},{ParticlesToGPH[[i]],i2},getSPhenoCoupling[Cp[HiggsBoson,AntiField[ParticlesToGPH[[i]]],ParticlesToGPH[[i]]]][[2]]][[1]];
-If[FreeQ[SMParticles,ParticlesToGPH[[i]]]==True || FreeQ[ParameterDefinitions,"Scalar-Mixing-Matrix"] || FreeQ[ParameterDefinitions,"Down-VEV"]|| FreeQ[ParameterDefinitions,"Up-VEV"],
+(* If[FreeQ[SMParticles,ParticlesToGPH[[i]]]\[Equal]True  || FreeQ[ParameterDefinitions,"Scalar-Mixing-Matrix"] || FreeQ[ParameterDefinitions,"Down-VEV"]|| FreeQ[ParameterDefinitions,"Up-VEV"] | TreatSMstatesSeparately=!=True, *)
 Switch[getType[ParticlesToGPH[[i]]],
 F,
 WriteString[file,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = "<>SPhenoForm[coup]<>ind<>"*1._dp*vev/"<>SPhenoMass[ParticlesToGPH[[i]],i2]<>" \n" ];,
@@ -761,7 +761,7 @@ S,
 WriteString[file,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = 0.5_dp*"<>SPhenoForm[coup]<>ind<>"*vev/"<>SPhenoMassSq[ParticlesToGPH[[i]],i2]<>" \n" ];,
 V,
 WriteString[file,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = -0.5_dp*"<>SPhenoForm[coup]<>ind<>"*vev/"<>SPhenoMassSq[ParticlesToGPH[[i]],i2]<>" \n" ];
-];,
+];(* , 
 Switch[ParticlesToGPH[[i]],
 Electron,
 	WriteString[file,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = -"<>SPhenoForm[HiggsMixingMatrix]<>"(i1,1)*vev/"<>SPhenoForm[VEVSM1] <>" \n"];,
@@ -772,7 +772,7 @@ BottomQuark,
 VectorW,
 	WriteString[file,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = -("<>SPhenoForm[VEVSM1]<>"*"<>SPhenoForm[HiggsMixingMatrix]<>"(i1,1) + "<>SPhenoForm[VEVSM2]<>"*"<>SPhenoForm[HiggsMixingMatrix]<>"(i1,2))/vev  \n"];
 ];
-];,
+]; *),
 WriteString[file,SPhenoRatio[ParticlesToGPH[[i]],i2]<>" = 0._dp \n"]; 
 ];
 ];
@@ -1015,7 +1015,7 @@ WriteString[sphenoLoopCoup,"coup = 0._dp \n \n"];
 For[i=1,i<=Length[list],
 If[SMQ[list[[i,1]]],
 If[getGenSPheno[list[[i,1]]]>1,
-WriteString[sphenoLoopCoup,"Do i1 ="<>ToString[getGenSPhenoStart[list[[i,1]]]]<> ", "<>ToString[getGenSPheno[list[[i,1]]]] <>"\n"];
+WriteString[sphenoLoopCoup,"Do i1 ="<>ToString[getGenSPhenoStart[list[[i,1]]]]<> ", 3 \n"];
 ];
 
 Switch[getType[list[[i,1]]],
@@ -1616,8 +1616,9 @@ WriteString[sphenoLoopCoup,"  & + Log(cosW2)*(3.5_dp - 2.5_dp *sinW2   & \n"];
 WriteString[sphenoLoopCoup,"  & - sinW2_DR*(5._dp - 1.5_dp*cosW2/cosW2_DR))/sinW2   \n"];
 WriteString[sphenoLoopCoup,"res = sumI*"<>SPhenoForm[leftCoupling]<>"**2*rho \n \n \n"];
 
+WriteString[sphenoLoopCoup,"If (IncludeBSMdeltaVB) Then \n"];
 WriteString[sphenoLoopCoup,"!-------------------------- \n"];
-WriteString[sphenoLoopCoup,"!SUSY  Contributions \n"];
+WriteString[sphenoLoopCoup,"!BSM  Contributions \n"];
 WriteString[sphenoLoopCoup,"!-------------------------- \n"];
 
 WriteString[sphenoLoopCoup,"teil = 0._dp \n \n"];
@@ -1674,6 +1675,7 @@ WriteString[sphenoLoopCoup,"\n \n"];
 
 WriteString[sphenoLoopCoup,"sumI = -2._dp*cosW2_DR*mz2*Real(teil,dp)/"<>SPhenoForm[leftCoupling]<>"**2 \n"];
 WriteString[sphenoLoopCoup, "res = res + SumI \n"];
+WriteString[sphenoLoopCoup,"End if ! BSM part \n"];
 WriteString[sphenoLoopCoup, "res = res*oo16pi2 \n"];
 
 

@@ -49,6 +49,7 @@ WriteString[ModelData,"Logical, Save :: Enable3BDecaysF = .True. \n"];
 WriteString[ModelData,"Logical, Save :: FirstRun = .True. \n"];
 WriteString[ModelData,"Logical, Save :: RunningCouplingsDecays = .True. \n"];
 WriteString[ModelData,"Logical, Save :: WriteSLHA1 = .False. \n"];
+WriteString[ModelData,"Logical, Save :: MakeQTEST = .False. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMasses = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMassesSave = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateTwoLoopHiggsMasses = .True. \n"];
@@ -74,6 +75,7 @@ WriteString[ModelData,"Logical :: TwoLoopSafeMode \n"];
 WriteString[ModelData,"Integer :: TwoLoopMethod = 3 \n"];
 WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleParameters = .false. \n"];
 WriteString[ModelData,"Logical :: IncludeDeltaVB = .True. \n"];
+WriteString[ModelData,"Logical :: IncludeBSMdeltaVB = .True. \n"];
 WriteString[ModelData,"Real(dp) :: WidthToBeInvisible = 0._dp \n"];
 WriteString[ModelData,"Real(dp) :: nLep = 3._dp, mf_u_mz_running \n"];
 WriteString[ModelData,"Real(dp) :: nUp = 2._dp \n"];
@@ -176,6 +178,11 @@ MakeVariableList[listVEVsStable,"",ModelData];
 MakeVariableList[SPhenoWidthBR,"",ModelData];
 MakeVariableList[NeededRatiosLoopCouplingsSave,"",ModelData];
 MakeVariableList[NeededRatiosLoopCouplingsSavePseudo,"",ModelData];
+
+For[i=1,i<=Length[AuxiliaryParametersSPheno],
+WriteString[ModelData,AuxiliaryParametersSPheno[[i]]<>"\n"];
+i++;
+];
 
 WriteString[ModelData,"Real(dp) :: gForTadpoles("<>ToString[numberAllwithVEVs]<>")\n"];
 WriteString[ModelData, "Complex(dp) :: tForTadpoles("<>ToString[Length[ParametersToSolveTadpoles]]<>")\n"];

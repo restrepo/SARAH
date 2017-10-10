@@ -49,3 +49,8 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 
+(* Example for mSugra input values *)
+DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 10, SignumMu -> 1, Azero->-2000 };
+
+
+

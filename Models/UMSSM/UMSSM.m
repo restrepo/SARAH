@@ -3,7 +3,10 @@ Off[General::spell]
 Model`Name = "UMSSM";
 Model`NameLaTeX ="$U(1)$ extended MSSM";
 Model`Authors = "F.Staub";
+Model`Date = "2015-11-16";
+
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
+(* 2015-11-16: added right-handed neutrinos *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -33,8 +36,9 @@ SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, QHu, RpP};
 SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, Qd, RpM};
 SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, Qu, RpM};
 SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, Qe, RpM};
+SuperFields[[8]] = {vR, 3, conj[vR],      1, 1,  1, Qv, RpM};
 
-SuperFields[[8]] = {s, 1, sR,     0, 1,  1, Qs, RpP};
+SuperFields[[9]] = {s, 1, sR,     0, 1,  1, Qs, RpP};
 
 NoU1Mixing=True;
 
@@ -43,7 +47,7 @@ NoU1Mixing=True;
 (* Superpotential *)
 (*------------------------------------------------------*)
 
-SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s;
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s + Yv l.Hu.vR;
 
 
 
@@ -61,25 +65,6 @@ DeleteParticles={};
 
 NameOfStates={GaugeES,EWSB};
 
-(* ----- Before EWSB ----- *)
-
-
-DEFINITION[GaugeES][DiracSpinors]={
-  Bino ->{fB, conj[fB]},
-  Wino -> {fWB, conj[fWB]},
-  Glu -> {fG, conj[fG]},
-  H0 -> {FHd0, conj[FHu0]},
-  HC -> {FHdm, conj[FHup]},
-  Fd1 -> {FdL, 0},
-  Fd2 -> {0, FdR},
-  Fu1 -> {FuL, 0},
-  Fu2 -> {0, FuR},
-  Fe1 -> {FeL, 0},
-  Fe2 -> {0, FeR},
-  FS -> {FsR, conj[FsR]},
-  FU -> {fU, conj[fU]},
-  Fv -> {FvL,0}
-};
 
 (* ----- After EWSB ----- *)
 
@@ -106,13 +91,14 @@ DEFINITION[EWSB][VEVs]=
 DEFINITION[EWSB][MatterSector]= 
 
 {    {{SdL, SdR}, {Sd, ZD}},
-     {{SvL}, {Sv, ZV}},
+     {{SvL, SvR}, {Sv, ZV}},
      {{SuL, SuR}, {Su, ZU}},
      {{SeL, SeR}, {Se, ZE}},
      {{phid, phiu, phiS}, {hh, ZH}},
      {{sigmad, sigmau,sigmaS}, {Ah, ZA}},
      {{SHdm,conj[SHup]},{Hpm,ZP}},
      {{fU,fB, fW0, FHd0, FHu0,FsR}, {L0, ZN}}, 
+     {{{FvL},{conj[FvR]}},{{FVL,ZVL},{FVR,ZVR}}},
      {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
      {{{FeL},{conj[FeR]}},{{FEL,ZEL},{FER,ZER}}},
      {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},
@@ -128,7 +114,7 @@ DEFINITION[EWSB][DiracSpinors]={
  Fd ->{  FDL, conj[FDR]},
  Fe ->{  FEL, conj[FER]},
  Fu ->{  FUL, conj[FUR]},
- Fv ->{  FvL, 0},
+ Fv ->{  FVL, conj[FVR]},
  Chi ->{ L0, conj[L0]},
  Cha ->{ Lm, conj[Lp]},
  Glu ->{ fG, conj[fG]}

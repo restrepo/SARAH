@@ -63,6 +63,6 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 
-DefaultInputValues[1] = {m0 -> 70, m12 -> 400, TanBeta -> 10, SignumMu->1, Azero -> 300, Bzero->100, Lzero->0, LambdaInput -> 0.1, KappaInput -> 0.8,  ALambdaInput -> 200,  AKappaInput -> 30,  vSInput -> 600, MSInput->-100};
+DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 20, SignumMu->1, Azero -> -2500, Bzero->100, Lzero->0, LambdaInput -> 0.1, KappaInput -> 0.3,  ALambdaInput -> -300,  AKappaInput -> 650,  vSInput -> 300, MSInput->800};
 
   

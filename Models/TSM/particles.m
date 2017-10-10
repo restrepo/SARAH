@@ -52,6 +52,7 @@ ParticleDefinitions[GaugeES] = {
                  Width -> {0, External}, 
                  Mass -> {0, LesHouches},
                  LaTeX -> {"H^+","H^-"},
+                 ElectricCharge -> 1,                 
                  OutputName -> {"Hp","Hm"}
                  }},                                                   
       

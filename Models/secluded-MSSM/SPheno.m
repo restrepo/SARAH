@@ -81,4 +81,7 @@ ListDecayParticles3B = Automatic;
 
 
 
+DefaultInputValues = {m0 -> 3000, m12 -> 1000, TanBeta->20,  Azero -> -2500,  LambdaInput -> 0.07, ALambdaInput -> 1500, KappaInput->0.3 AKappaInput->-10, vSInput -> 4000, v1Input->1000, v2Input->2000, v3Input->2000,\
+Qq->1./(2 Sqrt[6]), Ql->1./(2 Sqrt[6]), QHd-> -1./(Sqrt[6]), QHu-> -1./(Sqrt[6]), Qd->-1./(2 Sqrt[6]), Qe->-1./(2 Sqrt[6]), Qu->-1./(2 Sqrt[6]),  Qs->2./(Sqrt[6]),  Qs1->-2./(Sqrt[6]),  Qs2->-2./(Sqrt[6]),  Qs3->-4./(Sqrt[6])  };
+
   

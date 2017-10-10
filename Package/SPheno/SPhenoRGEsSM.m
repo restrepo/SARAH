@@ -46,7 +46,7 @@ WriteString[sphenoSM, "Logical,Private,Save::OnlyDiagonal \n"];
 
 WriteString[sphenoSM, "Contains \n \n "];
 
-MakeSubroutineTitle["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"Qout"},{"CKMout","sinW2_out", "Alpha_out","AlphaS_out"},sphenoSM];
+MakeSubroutineTitle["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"Qout"},{"CKMout","sinW2_out", "Alpha_out","AlphaS_out", "realCKM"},sphenoSM];
 WriteString[sphenoSM,"Implicit None \n"];
 MakeVariableList[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],",Intent(in)",sphenoSM];
 MakeVariableList[listAllParametersAndVEVs,",Intent(out)",sphenoSM];
@@ -58,6 +58,7 @@ WriteString[sphenoSM,"Real(dp) :: g1SM, g2SM, g3SM, vevSM \n"];
 WriteString[sphenoSM,"Complex(dp) :: lambdaSM, muSM, dummy(3,3) \n"];
 WriteString[sphenoSM,"Integer :: kont \n"];
 WriteString[sphenoSM,"Logical :: OnlyDiagonal \n"];
+WriteString[sphenoSM,"Logical :: realCKM \n"];
 WriteString[sphenoSM,"Real(dp) :: deltaM = 0.000001_dp, test(3)  \n"];
 If[WriteCKMBasis===True,
 WriteString[sphenoSM,"Complex(dp) :: Yd_ckm(3,3), Yu_ckm(3,3), Tu_ckm(3,3), Td_ckm(3,3), mq2_ckm(3,3), mu2_ckm(3,3), md2_ckm(3,3) \n"];
@@ -69,7 +70,6 @@ WriteString[sphenoSM,"Real(dp) :: scale_save, Qin, tz, dt, g1D("<>ToString[numbe
 
 WriteRunSUSYRGEs[sphenoSM];
 WriteRunSMRGEs[sphenoSM];
-
 
 
 WriteString[sphenoSM,"Qin = SetRenormalizationScale(Qout**2) \n"];
@@ -129,7 +129,7 @@ WriteString[file, "End If \n"];
 ];
 
 WriteGetSMparameters[file_]:=Block[{i,j,v1,v2},
-MakeSubroutineTitle["GetRunningSMparametersMZ",{"YdSM","YeSM","YuSM","g1SM","g2SM","g3SM","lambdaSM","muSM","vevSM"},{},{},file];
+MakeSubroutineTitle["GetRunningSMparametersMZ",{"YdSM","YeSM","YuSM","g1SM","g2SM","g3SM","lambdaSM","muSM","vevSM","realCKM"},{},{},file];
 WriteString[file,"Implicit None \n"];
 WriteString[file,"Complex(dp), Intent(out) :: YdSM(3,3), YuSM(3,3), YeSM(3,3) \n"];
 WriteString[file,"Real(dp), Intent(out) :: g1SM, g2SM, g3SM, vevSM \n"];
@@ -138,6 +138,7 @@ WriteString[file,"Real(dp) :: vev2, sinW2, CosW2SinW2 \n"];
 WriteString[file,"Real(dp) :: gSM2(2), gSM3(3), mtopMS, mtopMS_MZ \n"];
 WriteString[file,"Real(dp) :: dt, tz\n"];
 WriteString[file,"Real(dp) :: deltaM = 0.000001_dp, test(3)  \n"];
+WriteString[file,"Logical :: realCKM \n"];
 WriteString[file, "Integer :: i1,kont \n \n \n"];
 
 WriteString[file,"SinW2=0.22290_dp \n"];
@@ -186,8 +187,13 @@ WriteString[file,"Call odeint(gSM3,3,0._dp,tz,deltaM,dt,0._dp,RGEtop,kont) \n"];
 WriteString[file,"mtopMS_MZ=gSM3(3) \n"];
 WriteString[file,"YuSM(3,3) = sqrt2*mtopMS_MZ/vevSM \n \n\n"];
 
-WriteString[file,"YuSM = Transpose(Matmul(Transpose(CKMcomplex),Transpose(YuSM))) \n"];
-If[AddOHDM=!=True && SupersymmetricModel===True,
+WriteString[file,"If (realCKM) Then \n"];
+WriteString[file," YuSM = Transpose(Matmul(Transpose(Real(CKMcomplex,dp)),Transpose(YuSM))) \n"];
+WriteString[file,"Else \n"];
+WriteString[file," YuSM = Transpose(Matmul(Transpose(CKMcomplex),Transpose(YuSM))) \n"];
+WriteString[file,"End if \n"];
+
+If[AddOHDM=!=True && SupersymmetricModel===True && FreeQ[SuperPotential,UpYukawa]===False,
 If[SA`Casimir[Select[SuperPotential[[Position[SuperPotential,UpYukawa][[1,1]],2]],(SA`Casimir[#,Position[Gauge,color][[1,1]]]==4/3)&][[1]],Position[Gauge,left][[1,1]]]==3/4,
 WriteString[file,"YuSM = Transpose(YuSM) \n"];
 ];
@@ -212,7 +218,7 @@ WriteString[file,"If (RunningSMparametersLowEnergy) Then \n"];
 WriteString[sphenoSM,"! Run SM RGEs separately \n \n"];
 
 WriteString[sphenoSM,"! Get values of gauge and Yukawa couplings at M_Z \n"];
-MakeCall["GetRunningSMparametersMZ",{"YdSM","YeSM","YuSM","g1SM","g2SM","g3SM","lambdaSM", "muSM","vevSM"},{},{},file];
+MakeCall["GetRunningSMparametersMZ",{"YdSM","YeSM","YuSM","g1SM","g2SM","g3SM","lambdaSM", "muSM","vevSM","realCKM"},{},{},file];
 
 WriteString[file,"Call ParametersToG62_SM(g1SM, g2SM, g3SM, lambdaSM, YuSM, YdSM, YeSM, muSM, vevSM, g62_SM) \n"];
 
@@ -229,9 +235,9 @@ If[FreeQ[ParameterDefinitions,"Left-Coupling"]==False,WriteString[file,SPhenoFor
 If[FreeQ[ParameterDefinitions,"Strong-Coupling"]==False,WriteString[file,SPhenoForm[strongCoupling]<> " = g3SM \n"];];
 
 If[AddOHDM=!=True,
-If[FreeQ[ParameterDefinitions,"Down-VEV"]==False ,WriteString[file,SPhenoForm[VEVSM1]<>"=vevSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2) \n"];];
-If[FreeQ[ParameterDefinitions,"Up-VEV"]==False ,WriteString[file,SPhenoForm[VEVSM2]<>"="<>SPhenoForm[TanBeta]<>"*"<>SPhenoForm[VEVSM1]<>" \n"];];,
-If[FreeQ[ParameterDefinitions,"EW-VEV"]==False,WriteString[file,SPhenoForm[VEVSM]<>"=vevSM \n"];];
+If[FreeQ[ParameterDefinitions,"Down-VEV"]==False  && FreeQ[parameters,VEVSM1]===False ,WriteString[file,SPhenoForm[VEVSM1]<>"=vevSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2) \n"];];
+If[FreeQ[ParameterDefinitions,"Up-VEV"]==False && FreeQ[parameters,VEVSM2]===False ,WriteString[file,SPhenoForm[VEVSM2]<>"="<>SPhenoForm[TanBeta]<>"*"<>SPhenoForm[VEVSM1]<>" \n"];];,
+If[FreeQ[ParameterDefinitions,"EW-VEV"]==False  && FreeQ[parameters,VEVSM]===False ,WriteString[file,SPhenoForm[VEVSM]<>"=vevSM \n"];];
 ];
 
 If[AddOHDM=!=True,

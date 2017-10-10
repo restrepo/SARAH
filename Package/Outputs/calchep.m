@@ -32,7 +32,7 @@ MakeCHep[opt___ ]:=MakeCalcHepOutput[FeynmanGauge/.{opt}/.Options[MakeCHep],CPVi
 
 MakeCalcHepOutput[FeynmanGauge_,CPViolation_,ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_, RunningCoup_, SLHA_, WriteMO_, CalcMM_,RunSPhenoCH_,effHiggsV_,DMc1_,DMc2_]:=Block[{startedtime},
 startedtime=TimeUsed[];
-(*If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
+(*If[FreeQ[NameOfStates,InitalizedVertexCalculaton]\[Equal]True,
 Message[ModelFile::NoVertices];,
 *)
 
@@ -656,7 +656,7 @@ iter1++;];
 ];
 
 (*
-For[i=1,i<=Length[CalcHepParticlesM0],
+For[i=1,i\[LessEqual]Length[CalcHepParticlesM0],
 WriteString[funcFile];
 WriteString[funcFile,InsString[CalcHepParticlesM0[[i,3]],lFF]<>"|"];
 WriteString[funcFile,"aWidth(\""<>CalcHepParticlesM0[[i,4]]<>"\") \n"];
@@ -1248,7 +1248,7 @@ i++;];
 CreateParticleList[CompHep_,DMc1_,DMc2_] :=Block[{i,j, name,k,l,temp={}},
 If[CompHep==True,
 maxStringLengthName=3;,
-maxStringLengthName=4;
+maxStringLengthName=8;
 ];
 
 CHParticleList = {};
@@ -1280,10 +1280,10 @@ nameStringAdj = nameString[[2]];
 nameString=nameString[[1]];
 ];
 
-(* If[CompHep==True, *)
+(* If[CompHep\[Equal]True, *)
 LettersToAdd=0;
 (*
-If[(RParity /. pList[[i,2]])==-1, LettersToAdd++;];
+If[(RParity /. pList[[i,2]])\[Equal]-1, LettersToAdd++;];
 *)
 
 If[DMc1===Default,
@@ -1304,7 +1304,7 @@ nameString=StringTake[nameString,{1,maxStringLengthName-LettersToAdd}];
 If[AntiFieldGiven=!=True,
 nameAdj = If[SelfAdjQ[name]==True,nameStringAdj=nameString;,nameStringAdj =SwitchCase[nameString];];
 ];
-(*If[(RParity /. pList[[i,2]])==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
+(*If[(RParity /. pList[[i,2]])\[Equal]-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
 If[DMc1===Default,
 If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];,
 If[getSecondParity[ pList[[i,1]],ToExpression[modelName],DMc1[[1]]]==DMc1[[2]],nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];
@@ -1340,9 +1340,9 @@ nameStringAdj = nameString[[2]];
 nameString=nameString[[1]];
 ];
 
-(* If[CompHep==True, *)
+(* If[CompHep\[Equal]True, *)
 LettersToAdd=1;
-(*If[(RParity /. pList[[i,2]])==-1, LettersToAdd++;]; *)
+(*If[(RParity /. pList[[i,2]])\[Equal]-1, LettersToAdd++;]; *)
 If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1, LettersToAdd++;];
 If[StringLength[nameString]+LettersToAdd >maxStringLengthName,
 Message[CHep::ParticleNameLength,pList[[i,1]]];
@@ -1361,8 +1361,8 @@ nameStringAdj = nameStringAdj <>ToString[j]<>ToString[l];,
 nameStringAdj = nameStringAdj <>ToString[j];
 ];
 ];
-(* If[(RParity /. pList[[i,2]])==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
-(* If[getRParity[pList[[i,1]],ToExpression[modelName]]==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
+(* If[(RParity /. pList[[i,2]])\[Equal]-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
+(* If[getRParity[pList[[i,1]],ToExpression[modelName]]\[Equal]-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
 If[DMc1===Default,
 If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];,
 If[getSecondParity[ pList[[i,1]],ToExpression[modelName],DMc1[[1]]]==DMc1[[2]],nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];
@@ -1698,7 +1698,7 @@ DeleteSpace[string_]:=StringReplace[string,{" " ->""}];
 
 WriteCHepParticles[list_, CompHep_, WriteOut_,SLHA_,CalcMM_]:=Block[{i,j,k,name,nameC},
 For[i=1,i<=Length[list],
-For[j=1,j<=getGen[list[[i,1]]],(* For[j=1,j<=getGenOne[list[[i,1]]], *)
+For[j=1,j<=getGen[list[[i,1]]],(* For[j=1,j\[LessEqual]getGenOne[list[[i,1]]], *)
 For[k=1,k<=getFla[list[[i,1]]],
 name=CalcHepName[list[[i,1]],j,k];
 nameC=CalcHepName[AntiField[list[[i,1]]],j,k];
@@ -1791,8 +1791,8 @@ WriteString[particlesFile," 0    |"];
 ];
 
 (*
-If[FreeQ[getIndizes[list[[i,1]]],color]==True,
-If[FreeQ[ColoredGaugeParticles,list[[i,1]]]==True,
+If[FreeQ[getIndizes[list[[i,1]]],color]\[Equal]True,
+If[FreeQ[ColoredGaugeParticles,list[[i,1]]]\[Equal]True,
 WriteString[particlesFile,"1    |"];,
 WriteString[particlesFile,"8    |"]
 ];,

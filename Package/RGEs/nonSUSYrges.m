@@ -422,7 +422,7 @@ indices=Select[indices,MemberQ[Gauge,#,2]&];
 deltaInd=1;
 deltaInd2=1;
 For[k=1,k<=Length[indices],
-deltaInd=deltaInd*Delta[indices[[k]]/.subGC[1],indNr[[k,1]]];
+deltaInd=deltaInd*Delta[indices[[k]]/.subGC[1],indNr[[1,k]]];
 deltaInd2=deltaInd2*(Delta[indices[[k]]/.subGC[1],indices[[k]]/.subGC[2]]); 
 k++;
 ];

@@ -128,7 +128,7 @@ If[BrokenGaugeSymmetries[NameOfStates[[i]]]=!={} && Head[BrokenGaugeSymmetries[N
 Print["*** Gauge groups which get broken at this step: ***"];
 Print["*** ",Table[Gauge[[BrokenGaugeSymmetries[NameOfStates[[i]]][[j]],3]],{j,1,Length[BrokenGaugeSymmetries[NameOfStates[[i]]]]}]," ***"];
 ];
-(* If[RParityConservation==True,Print["*** R-Parity is assumed to be conserved ***"];]; *)
+(* If[RParityConservation\[Equal]True,Print["*** R-Parity is assumed to be conserved ***"];]; *)
 Print["-----------------------------------------------------------------"];
 If[Head[DEFINITION[NameOfStates[[i]]][GaugeSector]]===List,
 CheckRotationsGauge[NameOfStates[[i]]];
@@ -258,7 +258,7 @@ Print["    ... mixing allowed by quantum number with respect to \"" ,Gauge[[j,3]
 j++;];
 
 (*
-If[RParityConservation==True,
+If[RParityConservation\[Equal]True,
 If[Length[Intersection[charges2[[-1]]]]>1,
 Mixing::DifferentRParity="Particles `` have different R-Parity and can't mix as long as R-Parity is conserved.";
 Message[Mixing::DifferentRParity,ifields];,
@@ -319,7 +319,7 @@ pos=Position[SA`QNscalar,entry[[i,1]]][[1,1]];
 charges = Drop[SA`QNscalar[[pos]],1][[1]];
 For[j=1,j<=Length[Gauge],
 If[entry[[i,2,1]]=!=0 &&  entry[[i,2,2]]=!=0,
-If[(FreeQ[BrokenGaugeSymmetries[ES],j] && Gauge[[j,2]]===U[1] && charges[[j]]=!=0) || (FreeQ[BrokenGaugeSymmetries[ES],j] && Gauge[[j,2,0]]===SU && charges[[j]]=!=1),
+If[(FreeQ[BrokenGaugeSymmetries[ES],j] && Gauge[[j,2]]===U[1] && charges[[j]]=!=0) || (FreeQ[BrokenGaugeSymmetries[ES],j] && Gauge[[j,2,0]]===SU && Abs[charges[[j]]]=!=1),
 VEV::UnbrokenSymmetries="Particle `` charged under unbroken gauge group \" `` \" receives VEV";
 Message[VEV::UnbrokenSymmetries,entry[[i,1]],Gauge[[j,3]]];,
 If[FreeQ[BrokenGaugeSymmetries[ES],j],
@@ -330,8 +330,8 @@ Print["    ... does not break \"",Gauge[[j,3]],"\" "];
 j++];
 
 (*
-If[entry[[i,2,1]]=!=0 &&  entry[[i,2,2]]=!=0 &&  RParityConservation==True,
-If[charges[[-1]]===-1 && RParityConservation==True,
+If[entry[[i,2,1]]=!=0 &&  entry[[i,2,2]]=!=0 &&  RParityConservation\[Equal]True,
+If[charges[[-1]]===-1 && RParityConservation\[Equal]True,
 VEV::BreaksRParity="Particle `` has R-parity -1 and receives VEV.";
 Message[VEV::BreaksRParity,entry[[i,1]]];,
 Print["    ... does not break R-Parity"];
@@ -372,7 +372,7 @@ Print["    checking for missing OutputNames"];
 missingOutputNames=Select[allParticleNames,(getOutputName[#,1,1]===None)&];
 If[missingOutputNames=!={},Message[CheckModelFiles::MissingOutputName,missingOutputNames];];
 
-(* If[RParityConservation==True, *)
+(* If[RParityConservation\[Equal]True, *)
 If[FreeQ[Global,RParity]==False,
 Print["    checking for defned R-Parity"];
 CheckModelFiles::MissingRParity = "R-Parity for particles `` has not been defined";
@@ -388,7 +388,7 @@ missingPDG=Select[missingPDG,(FreeQ[FGauge/.diracSubBack1[ES]/.diracSubBack2[ES]
 If[missingPDG=!={},Message[CheckModelFiles::WrongPDG,missingPDG];];
 
 Print["    checking Length of OutputNames"];
-longNames=Select[allParticleNames,((StringLength[ToString[getOutputName[#,1,1]]]+(getRParity[#,ES] /. {1->0,-1->1}))>4)&];
+longNames=Select[allParticleNames,((StringLength[ToString[getOutputName[#,1,1]]]+(getRParity[#,ES] /. {1->0,-1->1}))>8)&];
 If[longNames=!={},
 ParticleNames::TooLong="The OutputNames of the following particles are too long for an valid CalcHep output: ``";
 Message[ParticleNames::TooLong,longNames];
@@ -491,7 +491,7 @@ If[missingOutputNameParameter=!={},Message[CheckModelFiles::MissingOutputNamePar
 
 
 Print["    checking Length of OutputNames"];
-longNames=Select[allParameterNames,((StringLength[ToString[getEntryParameter[#,OutputName]]]+ Length[getDimParameters[#]/. {1}->{} /. {0}->{}])>6)&];
+longNames=Select[allParameterNames,((StringLength[ToString[getEntryParameter[#,OutputName]]]+ Length[getDimParameters[#]/. {1}->{} /. {0}->{}])>8)&];
 If[longNames=!={},
 ParameterNames::TooLong="The OutputNames of the following parameters are too long for an valid CalcHep output: ``";
 Message[ParameterNames::TooLong,longNames];
@@ -550,7 +550,7 @@ partV=Flatten[Take[#,1]&/@Select[Particles[ES],(#[[4]]===V)&]];
 
 (*
 partS=Transpose[Select[Particles[ES],(#[[4]]===S)&]][[1]];
-partF=Intersection[Transpose[Select[Particles[ES],(#[[4]]===F)&]][[1]] /. diracSubBack[ES] /. bar[x_]->x];
+partF=Intersection[Transpose[Select[Particles[ES],(#[[4]]===F)&]][[1]] /. diracSubBack[ES] /. bar[x_]\[Rule]x];
 partV=Transpose[Select[Particles[ES],(#[[4]]===V)&]][[1]];
 *)
 

@@ -52,15 +52,6 @@ InitializationValues = {
 };
 
 
-(*
-Thresholds={
-{Abs[MRIN[1,1]],{vR[1],s[1]}},
-{Abs[MRIN[2,2]],{vR[2],s[2]}},
-{Abs[MRIN[3,3]],{vR[3],s[3]}}
-};
-*)
-
-
 QuadruplePrecision = {Fv};
 
 
@@ -70,29 +61,10 @@ BoundaryLowScaleInput={
 };
 
 
-UseHiggs2LoopMSSM = True;
-(* UseHiggs2LoopMSSM = False; *)
-
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
+(* Example for input values *)
+(* Not including neutrino fit! *)
+DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta->20, SignumMu ->1, Azero -> -1500, Yv[a_,a_]->0.1, MR[a_,a_]->1};
 
-(*
-
-BoundaryConditionsUp=Table[{},{Length[Thresholds]}];
-BoundaryConditionsDown=Table[{},{Length[Thresholds]}];
-
-BoundaryConditionsDown[[1]]={
-{WOp[index1,index2],WOp[index1,index2] - Yv[1,index1] MUS[1,1] Yv[1,index2]/(MassOfvR[1] MassOfvR[1])}
-};
-
-BoundaryConditionsDown[[2]]={
-{WOp[index1,index2],WOp[index1,index2] - Yv[2,index1] MUS[2,2] Yv[2,index2]/(MassOfvR[2] MassOfvR[2])}
-};
-
-BoundaryConditionsDown[[3]]={
-{WOp[index1,index2], - Yv[3,index1] MUS[3,3] Yv[3,index2]/(MassOfvR[3] MassOfvR[3])}
-};
-
-
-*)

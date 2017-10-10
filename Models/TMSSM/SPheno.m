@@ -1,25 +1,37 @@
-MINPAR={{1,m0},
-        {2,m12},
+(* Some simplified setup with universal Sfermion masses at the SUSY scale *)
+(* For a more general input, use the '_low' input !*)
+
+MINPAR={{1,mSUSY},
         {3,TanBeta},
-        {4,SignumMu},
-        {5,Azero},
-        {6,MTinput}};
+        {5,Azero}};
         
-EXTPAR = {{80, LambdaInput},
+EXTPAR = {
+          {1, M1input},
+          {2, M2input},
+          {3, M3input},
+          {30, MuInput},
+          {31, BMuInput},
+          {35, ALambdaInput}, 
+          {40, MTinput},
+          {41, BMTinput},
+          {80, LambdaInput},
           {85, vTinput}
           };        
 
-RealParameters = {TanBeta,m0};
 
-ParametersToSolveTadpoles = {\[Mu],B[\[Mu]],mT2};
 
-RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
-RenormalizationScale = MSu[1]*MSu[6];
+RealParameters = {TanBeta,mSUSY};
+UseParameterAsGUTscale = {mSUSY};  
+
+ParametersToSolveTadpoles = {mHd2, mHu2,mT2};
+
+RenormalizationScaleFirstGuess = mSUSY^2;
+RenormalizationScale = mSUSY^2;
 
 ConditionGUTscale = g1 == g2;
 
 BoundarySUSYScale={
-{vT, vTInput},  
+{vT, vTinput},  
 {\[Lambda], LambdaInput}
 };
 
@@ -28,35 +40,25 @@ BoundaryHighScale={
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
 {MT, MTinput},
-{B[MT], Azero*MT},
-{T[\[Lambda]], Azero*\[Lambda]},
-{mq2, DIAGONAL m0^2},
-{ml2, DIAGONAL m0^2},
-{md2, DIAGONAL m0^2},
-{mu2, DIAGONAL m0^2},
-{me2, DIAGONAL m0^2},
-{mHd2, m0^2},
-{mHu2, m0^2},
-{MassB, m12},
-{MassWB,m12},
-{MassG,m12}
+{B[MT], BMTinput},
+{T[\[Lambda]], ALambdaInput*\[Lambda]},
+{mq2, DIAGONAL mSUSY^2},
+{ml2, DIAGONAL mSUSY^2},
+{md2, DIAGONAL mSUSY^2},
+{mu2, DIAGONAL mSUSY^2},
+{me2, DIAGONAL mSUSY^2},
+{MassB, M1input},
+{MassWB,M2input},
+{MassG,M3input},
+{B[\[Mu]], BMuInput},
+{\[Mu], MuInput}
 };
 
-InitializationValues = {
- {\[Mu],0},
- {B[\[Mu]],0}
-};
-
-BoundaryLowScaleInput={
- {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
- {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
-};
-
-
-UseHiggs2LoopMSSM = False;
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
+
+DefaultInputValues[1] = {mSUSY -> 1500, TanBeta -> 10, Azero->-2000, M1input -> 200, M2input->400, M3input->1500, MTinput->500, BMTinput->-10^6, MuInput->200, BMuInput->10^6, vTinput->2,LambdaInput-> -0.2, ALambdaInput->-1500 };
 
 
 

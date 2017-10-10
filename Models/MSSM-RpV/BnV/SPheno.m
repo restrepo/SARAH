@@ -73,3 +73,5 @@ FineTuningParameters={
 {m0,1/2},{m12,1/2},{Azero,1/2},{\[Mu],1/2},{B[\[Mu]],1/2},{Yu,1/2},{L3,1/2}
 };
 
+DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 10, SignumMu -> 1, Azero->-2000 };
+

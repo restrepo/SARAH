@@ -79,7 +79,15 @@ If[FreeQ[ParameterDefinitions[[i,1]], A_[b_Integer]],
 TeXLength[ParameterDefinitions[[i,1]]]=3+StringCount[ LaTeX /. ParameterDefinitions[[i,2]],"_"]+StringCount[ LaTeX /. ParameterDefinitions[[i,2]],"^"];,
 TeXLength[ParameterDefinitions[[i,1]]]=5+StringCount[ LaTeX /. ParameterDefinitions[[i,2]],"_"]+StringCount[ LaTeX /. ParameterDefinitions[[i,2]],"^"];
 ];
+
+If[FreeQ[parameters,ParameterDefinitions[[i,1]]]==False,
+If[Length[getDimParameter[ParameterDefinitions[[i,1]]]]===3 && FreeQ[Transpose[ParameterDefinitions][[1]],ParameterDefinitions[[i,1]][1]],
+For[j=1,j<=getDimParameter[ParameterDefinitions[[i,1]]][[3]],
+TeXParameters= Join[TeXParameters,{{ParameterDefinitions[[i,1]][j], (LaTeX /. ParameterDefinitions[[i,2]])<>"^"<>ToString[j]<>""}}];
+j++;];
 ];
+];
+]; 
 i++;];
 
 ];
@@ -337,6 +345,8 @@ temp=ReplaceAll[Hold[SetDelayed[Format[TeXParticles[[i,1]][{a__}],TeXForm],Forma
 temp=ReplaceAll[Hold[SetDelayed[Format[TeXParticles[[i,1]][{a__}],TeXForm],Format[StringReplace[TeXParticles[[nr,2]]<>"_"<>StringReplace[ToString[TeXForm/@{a}] ,","->""],{RegularExpression["(.[^\\_]*)\\_(.[^\\_\\^]*)\\_(.[^\\]]*)"]:>"$1_{$2,$3}",RegularExpression["(.[^\\_]*)\\_(.[^\\]]*)\\^(.[^\\]^\\_]*)\\_(.[^\\]]*)"]:>"$1^$3_{$2,$4}"}],OutputForm]]], nr->i];
 ];,
 temp=ReplaceAll[Hold[SetDelayed[Format[TeXParticles[[i,1]],TeXForm],Format[TeXParticles[[nr,2]],OutputForm]]], nr->i];
+ReleaseHold[temp];
+temp=ReplaceAll[Hold[SetDelayed[Format[TeXParticles[[i,1]][{a__}],TeXForm],Format[TeXParticles[[nr,2]],OutputForm]]], nr->i];
 ];
 ReleaseHold[temp];
 
@@ -932,7 +942,6 @@ Switch[temp2,
 "^", super=res[[2]];
 ];
 ];
-
 If[temp=!="",
 temp2 = StringTake[temp,1];
 temp = StringDrop[temp,1];
@@ -942,16 +951,16 @@ res={"",""};
 ];
 temp=res[[1]];
 Switch[temp2,
-"_", sub = res[[2]];,
+"_", sub =res[[2]];,
 "^", super=res[[2]];
 ];
 ];
-
 If[StringTake[basis,{1}]==="{",
-If[StringCount[basis,"{"]===1,basis=StringDrop[basis,{1}];];
+If[(StringCount[basis,"{"])===1+(StringCount[basis,"}"]),basis=StringDrop[basis,{1}];];
 ];
 
 res = basis;
+
 
 If[down =!="" || sub =!= "",
 res = StringReplace[res <>"_{"<>sub <>","<>down <>"}",{"{,"->"{",",}"->"}"}];

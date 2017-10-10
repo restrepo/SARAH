@@ -1,5 +1,3 @@
-ModelName = "DiracNMSSMnuhm";
-
 MINPAR={{1,m0},
         {2,m12},
         {3,TanBeta},
@@ -13,9 +11,7 @@ EXTPAR = {
            {70, MSinput},
            {71, BMSinput},
            {80, mS2input},
-           {81, mSb2input},
-           {82, mHd2input},
-           {83, mHu2input}
+           {81, mSb2input}
 	 };
 
 RealParameters = {TanBeta,m0};
@@ -44,8 +40,8 @@ BoundaryHighScale={
 {md2, DIAGONAL m0^2},
 {mu2, DIAGONAL m0^2},
 {me2, DIAGONAL m0^2},
-{mHd2, mHd2input},
-{mHu2,  mHu2input},
+{mHd2, m0^2},
+{mHu2,  m0^2},
 {ms2,  mS2input},
 {msb2,  mSb2input},
 {\[Lambda], LambdaInput},
@@ -72,13 +68,13 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 
-UseHiggs2LoopMSSM = True;
-
 IncludeFineTuning = True;
 FineTuningParameters={
 {m0,1},{m12,1/2},{B[\[Mu]],1},{\[Mu],1/2},{L[tad],1},{L[tadb],1},{MSinput,1/2},{BMSinput,1},
-{mHd2input,1},{mHu2input,1},{mS2input,1},{mSb2input,1},{LambdaInput,1},{ALambdaInput,1/2}
+{mHd2,1},{mHu2,1},{mS2input,1},{mSb2input,1},{LambdaInput,1},{ALambdaInput,1/2}
 };
+
+DefaultInputValues = {m0 -> 600, m12 -> 700, TanBeta -> 4, SignumMu -> 1, Azero->4000, LambdaInput->0.4, ALambdaInput->750, vSInput->3, vSbInput->10,MSinput->-900,BMSinput->2*10^6, mS2input->5*10^6, mSb2input->2*10^8    };
 
 
 

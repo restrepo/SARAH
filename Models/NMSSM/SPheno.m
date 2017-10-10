@@ -134,7 +134,7 @@ AuxiliaryMu2Loop = vS*\[Lambda]/Sqrt[2];
 (* --------- Examples for input values ---------- *)
 
 (* Boundary condition type 1 *)
-DefaultInputValues[1] = {m0 -> 500, m12 -> 500, TanBeta -> 10, Azero ->-1500, LambdaInput -> 0.1, KappaInput -> 0.11,  ALambdaInput -> -1500,  AKappaInput -> -36,  MuEffinput -> 965};
+DefaultInputValues[1] = {m0 -> 1000, m12 -> 1000, TanBeta -> 10, Azero ->-2500, LambdaInput -> 0.1, KappaInput -> 0.11,  ALambdaInput -> -1500,  AKappaInput -> -36,  MuEffinput -> 965};
 
 (* Boundary condition type 2 *)
 DefaultInputValues[2] = {};

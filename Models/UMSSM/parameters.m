@@ -72,7 +72,12 @@ ParameterDefinitions = {
 {ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
 {ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
-              
+
+
+{Yv,     { Description -> "Neutrino-Yukawa-Coupling"}},
+{T[Yv],     { Description -> "Trilinear-Neutrino-Coupling"}},
+{mvR2,   {Description -> "Softbreaking right Sneutrino Mass"}},
+
 {ThetaW,    { Description -> "Weinberg-Angle"}},              
 
                          
@@ -85,6 +90,15 @@ ParameterDefinitions = {
              
 {ms2,       { Description -> "Softbreaking Singlet Mass" }},
 {vS,        { Description -> "Singlet-VEV"}},
+
+{ZVL,	    {Description -> "Neutrino-Mixing-Matrix",
+             LaTeX->"Z^{V_L}", 
+             LesHouches ->  SNUMIX,
+             OutputName-> ZVL             
+             }},
+{ZVR,	    {LaTeX -> "Z^{V_R}",
+             LesHouches ->  SNURMIX,
+             OutputName-> ZVR }},  	
 
 
 (* ------------------------------------------- *)
@@ -130,10 +144,16 @@ ParameterDefinitions = {
               Real -> True,
 		OutputName -> Qe,
 			  LesHouches -> {XCharge,7}}},
+{Qv,        { LaTeX -> "Q_v",
+              Real -> True,
+		OutputName -> Qv,
+			  LesHouches -> {XCharge,8}}},
+			  
+
 {Qs,        { LaTeX -> "Q_s",
               Real -> True,
 		OutputName -> Qs,
-			  LesHouches -> {XCharge,8}}},
+			  LesHouches -> {XCharge,9}}},			  
 
 {ThetaZ,    { LaTeX -> "\\Theta_Z",
 			  OutputName -> ThZ}},

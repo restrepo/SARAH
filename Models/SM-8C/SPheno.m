@@ -3,7 +3,7 @@ OnlyLowEnergySPheno = True;
 
 MINPAR={{1,LambdaIN},
         {2,LambdaHCinput},
-        {3,LambdaHSinput},
+        {3, LambdaHSinput},
         {4,LambdaSinput},
         {5,LambdaCSinput},
         {6,eSinput}, 
@@ -23,7 +23,7 @@ BoundaryLowScaleInput={
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
- {vS,vSin},
+ {vS,vSinput},
  {L,LambdaIN},
  {LS,LambdaSinput},
  {LHc,LambdaHCinput},
@@ -40,4 +40,6 @@ ListDecayParticles = {Fu,Fe,Fd,hh};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 
+
+DefaultInputValues ={LambdaIN -> -0.1, LambdaHCinput -> -0.1,LambdaHSinput->0.2, LambdaSinput->-0.5, LambdaCSinput->-0.1, eSinput->0.1, eHinput->0.1, eCinput->0.2, vSinput->-1000 };
 

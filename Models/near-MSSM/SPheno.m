@@ -7,9 +7,7 @@ MINPAR={{1,m0},
 
 EXTPAR = {
 	   {61,LambdaInput},
-	   {62,KappaInput},
-	   {63,ALambdaInput},
-	   {64,AKappaInput},
+           {63,ALambdaInput},
            {65,vSInput},
            {100,TadInput}
 	 };
@@ -59,4 +57,4 @@ ListDecayParticles3B = Automatic;
 
 
 
-  
+ DefaultInputValues = {m0 -> 1000, m12 -> 1000, TanBeta -> 10, SignumMu->1, Azero -> -2500,  Lzero->0, LambdaInput -> 0.2,  ALambdaInput -> -100,   vSInput -> 200, TadInput-> 10^6};

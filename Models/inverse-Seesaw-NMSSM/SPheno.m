@@ -35,7 +35,6 @@ BoundaryHighScale={
 {me2, DIAGONAL m0^2},
 {mv2, DIAGONAL m0^2},
 {mx2, DIAGONAL m0^2},
-{mvx2, 0},
 {MassB, m12},
 {MassWB,m12},
 {MassG,m12},
@@ -50,7 +49,8 @@ BoundarySUSYScale={
 {MUX, LHInput[MUX]},
 {B[MUX], LHInput[B[MUX]]},
 {Yv,LHInput[Yv]},
-{\[Lambda]N,LHInput[\[Lambda]N]}
+{\[Lambda]N,LHInput[\[Lambda]N]},
+{vS, vSInput}
 };
 
 
@@ -62,11 +62,10 @@ BoundaryLowScaleInput={
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]}
 };
 
-UseHiggs2LoopMSSM = False;
-
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
+DefaultInputValues[1] = {m0->1000, m12->1000, TanBeta -> 10, Azero -> -1500, LambdaInput ->-0.2, KappaInput ->-0.1, ALambdaInput ->-1500, AKappaInput->-36, vSInput->1000,MUX[a_,a_]->10^-4, \[Lambda]N[a_,a_]->-.1  };
 
 
 

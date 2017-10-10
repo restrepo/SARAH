@@ -3,7 +3,8 @@ Off[General::spell]
 Model`Name = "NBLSSM";
 Model`NameLaTeX ="Next to minimal B-L-SSM";
 Model`Authors = "L.Basso, F.Staub";
-Model`Date = "2012-06-09";
+Model`Date = "2015-11-16";
+(* 2015-11-16: changed SPheno.m *)
 
 
 (*-------------------------------------------*)

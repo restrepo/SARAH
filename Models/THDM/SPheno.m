@@ -6,6 +6,7 @@ MINPAR={{1,Lambda1Input},
         {3,Lambda3Input},
         {4,Lambda4Input},
         {5,Lambda5Input},
+        {9,M12input},
         {10,TanBeta} };
 
 RealParameters = {TanBeta};
@@ -19,6 +20,7 @@ BoundaryLowScaleInput={
  {Lambda3,Lambda3Input},
  {Lambda4,Lambda4Input},
  {Lambda5,Lambda5Input},
+ {M12, M12input},
  {v1,vSM*Cos[ArcTan[TanBeta]]},
  {v2,vSM*Sin[ArcTan[TanBeta]]},
  {Ye, YeSM*vSM/v2},
@@ -38,3 +40,4 @@ ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 
 
+DefaultInputValues ={Lambda1Input -> 0.1, Lambda2Input -> 0.27, Lambda3Input -> 1.1, Lambda4Input ->-0.5, Lambda5Input ->0.5,  M12input -> -200, TanBeta->50};

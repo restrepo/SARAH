@@ -3,9 +3,10 @@ Off[General::spell]
 Model`Name = "THDMIII";
 Model`NameLaTeX ="Two Higgs Doublet Model III";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2014-11-06: Changed sign in Lagrangian *)
+(* 2015-11-16: added conj[H1].H2 term *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

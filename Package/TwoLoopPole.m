@@ -81,66 +81,66 @@ Return[res]
 ];
 
 
-GenerateW :=Block[{topW,insW},
-topW = {{C[hh, hh, FieldToInsert[1], FieldToInsert[2]], C[AntiField@FieldToInsert[1], FieldToInsert[3], FieldToInsert[4]],C[AntiField@FieldToInsert[2], AntiField@FieldToInsert[3],AntiField@FieldToInsert[4]]}, {Internal[1] -> FieldToInsert[1], Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], Internal[4] -> FieldToInsert[4], External[1] -> hh,External[2] -> hh}};
+GenerateW[field_] :=Block[{topW,insW},
+topW = {{C[field, field, FieldToInsert[1], FieldToInsert[2]], C[AntiField@FieldToInsert[1], FieldToInsert[3], FieldToInsert[4]],C[AntiField@FieldToInsert[2], AntiField@FieldToInsert[3],AntiField@FieldToInsert[4]]}, {Internal[1] -> FieldToInsert[1], Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], Internal[4] -> FieldToInsert[4], External[1] -> field,External[2] -> field}};
 insW=InsFields[topW];
 Return[insW]];
 
-GenerateX := Block[{topX, insX},
-  topX = {{C[hh, hh, FieldToInsert[1], FieldToInsert[2]],C[AntiField@FieldToInsert[1], AntiField@FieldToInsert[2],FieldToInsert[3],AntiField@FieldToInsert[3]]}, {Internal[1] -> FieldToInsert[1],Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], External[1] -> hh, External[2] -> hh}};
+GenerateX[field_] := Block[{topX, insX},
+  topX = {{C[field, field, FieldToInsert[1], FieldToInsert[2]],C[AntiField@FieldToInsert[1], AntiField@FieldToInsert[2],FieldToInsert[3],AntiField@FieldToInsert[3]]}, {Internal[1] -> FieldToInsert[1],Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], External[1] -> field, External[2] -> field}};
   insX = InsFields[topX];
 		   Return[insX]];
 
 
-GenerateY :=Block[{topY,insY},
-		  topY = {{C[hh, FieldToInsert[1], FieldToInsert[2]], 
-			   C[hh, AntiField@FieldToInsert[1], FieldToInsert[3]],
+GenerateY[field_] :=Block[{topY,insY},
+		  topY = {{C[field, FieldToInsert[1], FieldToInsert[2]], 
+			   C[field, AntiField@FieldToInsert[1], FieldToInsert[3]],
 			   C[AntiField@FieldToInsert[2], AntiField@FieldToInsert[3], FieldToInsert[4],AntiField@FieldToInsert[4]]}, {Internal[1] -> FieldToInsert[1], 
     Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], 
-    Internal[4] -> FieldToInsert[4], External[1] -> hh,External[2] -> hh}};
+    Internal[4] -> FieldToInsert[4], External[1] -> field,External[2] -> field}};
 insY=InsFields[topY];
 Return[insY]];
 
-GenerateZ :=Block[{topZ,insZ},
-		  topZ = {{C[hh, FieldToInsert[1], FieldToInsert[2]], 
-			   C[hh, FieldToInsert[3], FieldToInsert[4]],
+GenerateZ[field_] :=Block[{topZ,insZ},
+		  topZ = {{C[field, FieldToInsert[1], FieldToInsert[2]], 
+			   C[field, FieldToInsert[3], FieldToInsert[4]],
 			   C[AntiField@FieldToInsert[1], AntiField@FieldToInsert[2], AntiField@FieldToInsert[3],AntiField@FieldToInsert[4]]}, {Internal[1] -> FieldToInsert[1], 
     Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], 
-    Internal[4] -> FieldToInsert[4], External[1] -> hh,External[2] -> hh}};
+    Internal[4] -> FieldToInsert[4], External[1] -> field,External[2] -> field}};
 insZ=InsFields[topZ];
 Return[insZ]];
 
 
-GenerateS := Block[{topS, insS},
-  topS = {{C[hh, FieldToInsert[1], FieldToInsert[2],FieldToInsert[3]], C[hh, AntiField@FieldToInsert[1], AntiField@FieldToInsert[2], AntiField@FieldToInsert[3]]}, {Internal[1] -> FieldToInsert[1], 
+GenerateS[field_] := Block[{topS, insS},
+  topS = {{C[field, FieldToInsert[1], FieldToInsert[2],FieldToInsert[3]], C[field, AntiField@FieldToInsert[1], AntiField@FieldToInsert[2], AntiField@FieldToInsert[3]]}, {Internal[1] -> FieldToInsert[1], 
      Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3],
-      External[1] -> hh, External[2] -> hh}};
+      External[1] -> field, External[2] -> field}};
   insS = InsFields[topS];
 		   Return[insS]];
 
 
-GenerateU :=Block[{topU,insU},
-		  topU = {{C[hh, FieldToInsert[1], FieldToInsert[2]], 
-			   C[hh, AntiField@FieldToInsert[1], FieldToInsert[3],FieldToInsert[4]],
+GenerateU[field_] :=Block[{topU,insU},
+		  topU = {{C[field, FieldToInsert[1], FieldToInsert[2]], 
+			   C[field, AntiField@FieldToInsert[1], FieldToInsert[3],FieldToInsert[4]],
 			   C[AntiField@FieldToInsert[2], AntiField@FieldToInsert[3],AntiField@FieldToInsert[4]]}, {Internal[1] -> FieldToInsert[1], 
     Internal[2] -> FieldToInsert[2], Internal[3] -> FieldToInsert[3], 
-    Internal[4] -> FieldToInsert[4], External[1] -> hh,External[2] -> hh}};
+    Internal[4] -> FieldToInsert[4], External[1] -> field,External[2] -> field}};
 insU=InsFields[topU];
 Return[insU]];
 
 
-GenerateV := 
+GenerateV[field_] := 
   Block[{topV, insV}, 
-   topV = {{C[hh, FieldToInsert[1], FieldToInsert[2]], 
-      C[hh, AntiField@FieldToInsert[1], FieldToInsert[3]], 
+   topV = {{C[field, FieldToInsert[1], FieldToInsert[2]], 
+      C[field, AntiField@FieldToInsert[1], FieldToInsert[3]], 
       C[AntiField@FieldToInsert[2], FieldToInsert[4], 
        FieldToInsert[5]],C[AntiField@FieldToInsert[3], AntiField@FieldToInsert[4], 
        AntiField@FieldToInsert[5]]}, {Internal[1] -> FieldToInsert[1],
        Internal[2] -> FieldToInsert[2], 
       Internal[3] -> FieldToInsert[3], 
       Internal[4] -> FieldToInsert[4], 
-      Internal[5] -> FieldToInsert[5], External[1] -> hh, 
-      External[2] -> hh}};
+      Internal[5] -> FieldToInsert[5], External[1] -> field, 
+      External[2] -> field}};
    insV = InsFields[topV];
    Return[insV]];
 
@@ -155,10 +155,10 @@ GenerateV :=
 
 	 
 
-GenerateM := 
+GenerateM[field_] := 
   Block[{topM, insM}, 
-   topM = {{C[hh, FieldToInsert[1], FieldToInsert[3]], 
-      C[hh, FieldToInsert[2], FieldToInsert[4]], 
+   topM = {{C[field, FieldToInsert[1], FieldToInsert[3]], 
+      C[field, FieldToInsert[2], FieldToInsert[4]], 
       C[AntiField@FieldToInsert[1], AntiField@FieldToInsert[2], 
        FieldToInsert[5]], 
       C[AntiField@FieldToInsert[3], AntiField@FieldToInsert[4], 
@@ -166,8 +166,8 @@ GenerateM :=
        Internal[2] -> FieldToInsert[2], 
       Internal[3] -> FieldToInsert[3], 
       Internal[4] -> FieldToInsert[4], 
-      Internal[5] -> FieldToInsert[5], External[1] -> hh, 
-      External[2] -> hh}};
+      Internal[5] -> FieldToInsert[5], External[1] -> field, 
+      External[2] -> field}};
    insM = InsFields[topM];
    Return[insM]];
 
@@ -332,58 +332,58 @@ POLEorderVFFFFS[diag_] := Module[{i, ps, result},
 ];
 
 
-Classify2LPdiagrams := 
+Classify2LPdiagrams[field_] := 
 	 Block[{diagsS, diagsX, diagsW,listWoSSSS,listXoSSS, listSoSSS, res,ddata},
 	       ddata={}; (* STORES GLOBAL INFO FOR DIAGRAMS*)
 
 	       (* SCALAR ONLY DIAGRAMS *)
 	       
-	       diagsW = GenerateW;
+	       diagsW = GenerateW[field];
 	       listWoSSSS = {WoSSSS, delconj[Select[diagsW, POLEordertypes[#] === SSSS &]]};
-	       AppendTo[ddata,{WoSSSS,{pfuncstring->"WfSSSS",pprefactor->1/4,topdata->{{{hh, gE1}, {hh, gE2}, {Internal[1], i1}, {Internal[2],i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], i3}, {AntiField@Internal[4], i4}}}}}];
+	       AppendTo[ddata,{WoSSSS,{pfuncstring->"WfSSSS",pprefactor->1/4,topdata->{{{field, gE1}, {field, gE2}, {Internal[1], i1}, {Internal[2],i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], i3}, {AntiField@Internal[4], i4}}}}}];
 
-	        diagsX = GenerateX;
+	        diagsX = GenerateX[field];
 	       listXoSSS = {XoSSS, delconj[Select[diagsX, POLEordertypes[#] === SSS &]]};
-	       AppendTo[ddata,{XoSSS,{pfuncstring->"XfSSS",pprefactor->1/4,topdata-> {{{hh,gE1},{hh,gE2},{Internal[1],i1},{Internal[2],i2}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[3],i3},{AntiField@Internal[3],i3}}}}}];
+	       AppendTo[ddata,{XoSSS,{pfuncstring->"XfSSS",pprefactor->1/4,topdata-> {{{field,gE1},{field,gE2},{Internal[1],i1},{Internal[2],i2}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[3],i3},{AntiField@Internal[3],i3}}}}}];
 
-	       diagsY = GenerateY;
+	       diagsY = GenerateY[field];
 	       listYoSSSS = {YoSSSS, delconj[Select[diagsY, POLEordertypes[#] === SSSS &]]};
-	       AppendTo[ddata,{YoSSSS,{pfuncstring->"YfSSSS",pprefactor->1/2,topdata-> {{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{Internal[4],i4},{AntiField@Internal[4],i4}}}}}];
+	       AppendTo[ddata,{YoSSSS,{pfuncstring->"YfSSSS",pprefactor->1/2,topdata-> {{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{Internal[4],i4},{AntiField@Internal[4],i4}}}}}];
 
-	       diagsZ= GenerateZ;
+	       diagsZ= GenerateZ[field];
 	       listZoSSSS = {ZoSSSS, delconj[Select[diagsZ, POLEordertypes[#] === SSSS &]]};
-	       AppendTo[ddata,{ZoSSSS,{pfuncstring->"ZfSSSS",pprefactor->1/4,topdata-> {{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{Internal[3],i3},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{AntiField@Internal[4],i4}}}}}];
+	       AppendTo[ddata,{ZoSSSS,{pfuncstring->"ZfSSSS",pprefactor->1/4,topdata-> {{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{Internal[3],i3},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{AntiField@Internal[4],i4}}}}}];
 	       
-	       diagsS = GenerateS;
+	       diagsS = GenerateS[field];
 	       listSoSSS = {SoSSS, delconj[Select[diagsS, POLEordertypes[#] === SSS &]]};
-	       AppendTo[ddata,{SoSSS,{pfuncstring->"SfSSS",pprefactor->1/6, topdata->{{{hh,gE1}, {Internal[1],i1}, {Internal[2],i2}, {Internal[3],i3}},{{hh,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{AntiField@Internal[3],i3}}}}}];
+	       AppendTo[ddata,{SoSSS,{pfuncstring->"SfSSS",pprefactor->1/6, topdata->{{{field,gE1}, {Internal[1],i1}, {Internal[2],i2}, {Internal[3],i3}},{{field,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{AntiField@Internal[3],i3}}}}}];
 
-	       diagsU = GenerateU;
+	       diagsU = GenerateU[field];
 	       listUoSSSS = {UoSSSS, delconj[Select[diagsU, POLEordertypes[#] === SSSS &]]};
-	       AppendTo[ddata,{UoSSSS,{pfuncstring->"UfSSSS",pprefactor->1, topdata->{{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{Internal[3],i3},{Internal[4],i4}},{{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{AntiField@Internal[4],i4}}}}}];
+	       AppendTo[ddata,{UoSSSS,{pfuncstring->"UfSSSS",pprefactor->1, topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{Internal[3],i3},{Internal[4],i4}},{{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{AntiField@Internal[4],i4}}}}}];
 
-	       diagsV = GenerateV;
+	       diagsV = GenerateV[field];
 	       listVoSSSSS = {VoSSSSS, delconj[Select[diagsV, POLEordertypes[#] === SSSSS &]]};
-	       AppendTo[ddata,{VoSSSSS,{pfuncstring->"VfSSSSS",pprefactor->1/2, topdata->{{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}}}}];
+	       AppendTo[ddata,{VoSSSSS,{pfuncstring->"VfSSSSS",pprefactor->1/2, topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}}}}];
 
-	       diagsM = GenerateM;
+	       diagsM = GenerateM[field];
 	       listMoSSSSS = {MoSSSSS, delconj[Select[diagsM, POLEordertypes[#] === SSSSS &]]};
-	       AppendTo[ddata, {MoSSSSS, {pfuncstring -> "MfSSSSS", pprefactor -> 1/2, topdata->{{{hh,gE1},{Internal[1],i1},{Internal[3],i3}},{{hh,gE2},{Internal[2],i2},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}}}}];
+	       AppendTo[ddata, {MoSSSSS, {pfuncstring -> "MfSSSSS", pprefactor -> 1/2, topdata->{{{field,gE1},{Internal[1],i1},{Internal[3],i3}},{{field,gE2},{Internal[2],i2},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}}}}];
 	       
 	       (* SCALARS AND VECTORS *)
 
 	       listWoSSSV = {WoSSSV, Select[diagsW, POLEtypes[#] === SSSV &]};
-	       AppendTo[ddata, {WoSSSV, {pfuncstring -> "WfSSSV", pprefactor -> 1/2,topdata->{{{hh,gE1},{hh,gE2},{Internal[1],i1},{AntiField@Internal[1],i1}}}}}];
+	       AppendTo[ddata, {WoSSSV, {pfuncstring -> "WfSSSV", pprefactor -> 1/2,topdata->{{{field,gE1},{field,gE2},{Internal[1],i1},{AntiField@Internal[1],i1}}}}}];
 
 	       listMoSSSSV = {MoSSSSV, Select[diagsM, POLEtypes[#] === SSSSV &]};
-	       AppendTo[ddata, {MoSSSSV, {pfuncstring -> "MfSSSSV", pprefactor -> 1/2,topdata->{{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2}}}}}];
+	       AppendTo[ddata, {MoSSSSV, {pfuncstring -> "MfSSSSV", pprefactor -> 1/2,topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2}}}}}];
 
 
 	       (* SCALARS AND FERMIONS *)
 	       
 	      
 	       listWoSSFF = {WoSSFF, delconj[Select[diagsW, POLEordertypes[#] === SSFF &]]};
-	       AppendTo[ddata, {WoSSFF, {topdata->{{{hh, gE1}, {hh, gE2}, {Internal[1], i1}, {Internal[2],i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], i3}, {AntiField@Internal[4], i4}}},
+	       AppendTo[ddata, {WoSSFF, {topdata->{{{field, gE1}, {field, gE2}, {Internal[1], i1}, {Internal[2],i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], i3}, {AntiField@Internal[4], i4}}},
 		     (* first combination *)
 		       {
 			 {pfuncstring -> "WfSSFbFb", pprefactor -> 1/2,pfermionmasses->{{Internal[3],i3},{Internal[4],i4}},pcouplingtypes->{0,L,L}},
@@ -393,7 +393,7 @@ Classify2LPdiagrams :=
 		   }}];
 	       
 	       listMoFFFFS={MoFFFFS,delconj[Select[diagsM, POLEordertypes[#] === FFFFS &]]};
-	       AppendTo[ddata, {MoFFFFS,{topdata->{{{hh,gE1},{Internal[1],i1},{Internal[3],i3}},{{hh,gE2},{Internal[2],i2},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
+	       AppendTo[ddata, {MoFFFFS,{topdata->{{{field,gE1},{Internal[1],i1},{Internal[3],i3}},{{field,gE2},{Internal[2],i2},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
 		       {
 			 {pfuncstring -> "MfFbFbFbFbS", pprefactor->1, pfermionmasses->{{Internal[1],i1},{Internal[2],i2},{Internal[3],i3},{Internal[4],i4}},pcouplingtypes->{L,L,L,L}},
 			 {pfuncstring -> "MfFFbFbFS", pprefactor->2, pfermionmasses->{{Internal[2],i2},{Internal[3],i3}},pcouplingtypes->{L,R,R,L}},  
@@ -404,7 +404,7 @@ Classify2LPdiagrams :=
 		   }}];
 	       
 	        listMoSFSFF={MoSFSFF,delconj[Select[diagsM, POLEordertypes[#] === SFSFF &]]};
-	       AppendTo[ddata, {MoSFSFF,{topdata->{{{hh,gE1},{Internal[1],i1},{Internal[3],i3}},{{hh,gE2},{Internal[2],i2},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
+	       AppendTo[ddata, {MoSFSFF,{topdata->{{{field,gE1},{Internal[1],i1},{Internal[3],i3}},{{field,gE2},{Internal[2],i2},{Internal[4],i4}},{{AntiField@Internal[1],i1},{AntiField@Internal[2],i2},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
 		       {
 			 {pfuncstring -> "MfSFbSFbFb", pprefactor->2, pfermionmasses->{{Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},pcouplingtypes->{0,L,L,L}},
 			 {pfuncstring -> "MfSFSFbF", pprefactor->4, pfermionmasses->{{Internal[4],i4}},pcouplingtypes->{0,L,R,L}},
@@ -413,7 +413,7 @@ Classify2LPdiagrams :=
 		   }}];
 	      
 	       listVoSSSFF = {VoSSSFF, delconj[Select[diagsV, POLEordertypes[#] === SSSFF &]]};
-	       AppendTo[ddata,{VoSSSFF,{topdata->{{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
+	       AppendTo[ddata,{VoSSSFF,{topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
 		     {
 		       {pfuncstring -> "VfSSSFbFb", pprefactor->1, pfermionmasses->{{Internal[4],i4},{Internal[5],i5}},pcouplingtypes->{0,0,L,L}},
 		       {pfuncstring -> "VfSSSFF", pprefactor->1, pfermionmasses->{},pcouplingtypes->{0,0,L,R}}
@@ -423,7 +423,7 @@ Classify2LPdiagrams :=
 
 	       (* NB special treatment for VoFFFFS because we can switch the scalar and fermion positions *)
 	       listVoFFFFS = {VoFFFFS, POLEorderVFFFFS/@delconj[Select[diagsV, POLEtypes[#] === SFFFF &]]};
-	       AppendTo[ddata,{VoFFFFS,{topdata->{{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
+	       AppendTo[ddata,{VoFFFFS,{topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{Internal[3],i3}},{{AntiField@Internal[2],i2},{Internal[4],i4},{Internal[5],i5}},{{AntiField@Internal[3],i3},{AntiField@Internal[4],i4},{AntiField@Internal[5],i5}}},
 		     {
 		       {pfuncstring -> "VfFbFbFbFbS", pprefactor->2, pfermionmasses->{{Internal[1],i1},{Internal[2],i2},{Internal[3],i3},{Internal[4],i4}},pcouplingtypes->{L,L,L,L}},
 		       {pfuncstring -> "VfFbFFbFS", pprefactor->4, pfermionmasses->{{Internal[1],i1},{Internal[3],i3}},pcouplingtypes->{L,L,R,L}},
@@ -435,7 +435,7 @@ Classify2LPdiagrams :=
 		   }}];
 
 	       ListGoFFFFV={GoFFFFV, delconj[Select[diagsV, POLEtypes[#] === FFFFV &]]};
-	       AppendTo[ddata,{GoFFFFV,{topdata->{{{hh,gE1},{Internal[1],i1},{Internal[2],i2}},{{hh,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2}}},
+	       AppendTo[ddata,{GoFFFFV,{topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2}}},
 		       {
 			 {pfuncstring ->"GfFFV", pprefactor->1, pfermionmasses->{},pcouplingtypes->{L,R,0,0}},
 			 {pfuncstring ->"GfFbFbV", pprefactor->1, pfermionmasses->{{Internal[1],i1},{Internal[2],i2}},pcouplingtypes->{L,L,0,0}}
@@ -498,9 +498,9 @@ checkconj[diag_, listparts_, outdiags_] :=
 
 
 
-GenerateT1 := 
+GenerateT1[field_] := 
   Block[{topT1, insT1}, 
-   topT1 = {{C[hh, FieldToInsert[1], FieldToInsert[2], 
+   topT1 = {{C[field, FieldToInsert[1], FieldToInsert[2], 
        FieldToInsert[3]], 
       C[AntiField@FieldToInsert[1], AntiField@FieldToInsert[2], 
        AntiField@FieldToInsert[3]]}, {Internal[1] -> FieldToInsert[1],
@@ -510,9 +510,9 @@ GenerateT1 :=
    Return[insT1]];
 
 
-GenerateT2 := 
+GenerateT2[field_] := 
   Block[{topT2, insT2}, 
-   topT2 = {{C[hh, FieldToInsert[1], FieldToInsert[2]], 
+   topT2 = {{C[field, FieldToInsert[1], FieldToInsert[2]], 
       C[AntiField@FieldToInsert[1], AntiField@FieldToInsert[2], 
        FieldToInsert[3], AntiField@FieldToInsert[3]]}, {Internal[1] ->
         FieldToInsert[1], Internal[2] -> FieldToInsert[2], 
@@ -521,9 +521,9 @@ GenerateT2 :=
    Return[insT2]];
 
 
-GenerateT3 := 
+GenerateT3[field_] := 
   Block[{topT3, insT3}, 
-   topT3 = {{C[hh, FieldToInsert[1], FieldToInsert[2]], 
+   topT3 = {{C[field, FieldToInsert[1], FieldToInsert[2]], 
       C[AntiField@FieldToInsert[1], FieldToInsert[3], 
        FieldToInsert[4]], 
       C[AntiField@FieldToInsert[2], AntiField@FieldToInsert[3], 
@@ -534,7 +534,7 @@ GenerateT3 :=
    insT3 = InsFields[topT3];
    Return[insT3]];
 
-Classify2LTadpoleDiagrams := 
+Classify2LTadpoleDiagrams[field_] := 
   Block[{diagsT1, diagsT2, diagsT3, i, diag, ps, psT, listparts, 
     listbroken, type, listSS, listSSS, listSSSS, listFFFS, listSSFF, 
     listSV, listFV, listpartsSSSS, listpartsFFFS, listpartsSSFF, 
@@ -550,9 +550,9 @@ Classify2LTadpoleDiagrams :=
    ddata = {};
    
    
-   diagsT1 = GenerateT1;
-   diagsT2 = GenerateT2;
-   diagsT3 = GenerateT3;
+   diagsT1 = GenerateT1[field];
+   diagsT2 = GenerateT2[field];
+   diagsT3 = GenerateT3[field];
    
    listparts = {};
    For[i = 1, i <= Length[diagsT1], i++,
@@ -565,7 +565,7 @@ Classify2LTadpoleDiagrams :=
      ];
     ];
     AppendTo[ddata, {ToSSS, { pfuncstring -> "TfSSS", pprefactor -> 1/6,
-      topdata -> {{{hh, gE1}, {Internal[1], i1}, {Internal[2], 
+      topdata -> {{{field, gE1}, {Internal[1], i1}, {Internal[2], 
           i2}, {Internal[3], i3}}, {{AntiField@Internal[1], 
           i1}, {AntiField@Internal[2], i2}, {AntiField@Internal[3], 
           i3}}}
@@ -589,7 +589,7 @@ Classify2LTadpoleDiagrams :=
      ];
     ];
     AppendTo[ddata, {ToSS, {pfuncstring -> "TfSS", pprefactor -> 1/4,
-      topdata -> {{{hh, gE1}, {Internal[1], i1}, {Internal[2], i2}}, {{AntiField@Internal[1], i1}, {AntiField@Internal[2], i2}, {Internal[3], i3}, {AntiField@Internal[3], i3}}}
+      topdata -> {{{field, gE1}, {Internal[1], i1}, {Internal[2], i2}}, {{AntiField@Internal[1], i1}, {AntiField@Internal[2], i2}, {Internal[3], i3}, {AntiField@Internal[3], i3}}}
       }}];
    
    listpartsSSSS = {};
@@ -632,9 +632,9 @@ Classify2LTadpoleDiagrams :=
     ];
 
    AppendTo[ddata, {ToSSSS, {pfuncstring -> "TfSSSS", pprefactor -> 1/4, 
-		  topdata -> {{{hh, gE1}, {Internal[1], i1}, {Internal[2], i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], i3}, {AntiField@Internal[4], i4}}}
+		  topdata -> {{{field, gE1}, {Internal[1], i1}, {Internal[2], i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], i3}, {AntiField@Internal[4], i4}}}
 	      }}];
-    AppendTo[ddata, {ToSSFF, {topdata -> {{{hh, gE1}, {Internal[1], i1}, {Internal[2], i2}}, {{AntiField@Internal[1],i1},{Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2},{AntiField@Internal[3],i3}, {AntiField@Internal[4], i4}}},
+    AppendTo[ddata, {ToSSFF, {topdata -> {{{field, gE1}, {Internal[1], i1}, {Internal[2], i2}}, {{AntiField@Internal[1],i1},{Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2},{AntiField@Internal[3],i3}, {AntiField@Internal[4], i4}}},
       {
 	{pfuncstring -> "TfSSFF", pprefactor -> 1/2, 
         pfermionmasses -> {}, pcouplingtypes -> {0, L, R}},
@@ -643,7 +643,7 @@ Classify2LTadpoleDiagrams :=
         pcouplingtypes -> {0, L, L}}
        }
       }}];
-   AppendTo[ddata, {ToFFFS, {topdata -> {{{hh, gE1}, {Internal[1],i1}, {Internal[2], i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], 
+   AppendTo[ddata, {ToFFFS, {topdata -> {{{field, gE1}, {Internal[1],i1}, {Internal[2], i2}}, {{AntiField@Internal[1], i1}, {Internal[3], i3}, {Internal[4], i4}}, {{AntiField@Internal[2], i2}, {AntiField@Internal[3], 
           i3}, {AntiField@Internal[4], i4}}},
       {
 	{pfuncstring -> "TfFFFbS", pprefactor -> 2, 
@@ -657,9 +657,9 @@ Classify2LTadpoleDiagrams :=
            i2}, {Internal[3], i3}}, pcouplingtypes -> {L, L, L}}
        }
       }}];
-   AppendTo[ddata, {ToSV, {pfuncstring -> "TfSV", pprefactor -> 1/2, topdata -> {{{hh, gE1}, {Internal[1], 
+   AppendTo[ddata, {ToSV, {pfuncstring -> "TfSV", pprefactor -> 1/2, topdata -> {{{field, gE1}, {Internal[1], 
           i1}, {AntiField@Internal[1], i1}}}}}];
-   AppendTo[ddata, {ToFV, {topdata -> {{{hh, gE1}, {Internal[1], i1}, {AntiField@Internal[1], i1}}},
+   AppendTo[ddata, {ToFV, {topdata -> {{{field, gE1}, {Internal[1], i1}, {AntiField@Internal[1], i1}}},
 	   {
 	     {pfuncstring -> "TfFV", pprefactor -> 1, 
 		 pfermionmasses -> {{Internal[1], i1}}, pcouplingtypes -> {L,0,0}}

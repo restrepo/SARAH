@@ -3,7 +3,9 @@ Off[General::spell]
 Model`Name = "SDDM";
 Model`NameLaTeX ="Singlet doublet Dark Matter";
 Model`Authors = "F. Staub";
-Model`Date = "2014-08-15";
+Model`Date = "2015-11-16";
+
+(* 2015-11-16: changed SPheno.m *)
 
 
 (* ############### *)

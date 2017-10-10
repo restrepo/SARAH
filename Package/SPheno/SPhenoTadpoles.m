@@ -28,7 +28,7 @@ WriteShiftTadpoleSolutionList[file,SubSolutionsTadpolesLoop,SeveralIndependentTa
 WriteString[file,"End if \n"];
 ]; *)
 
-WriteShiftTadpoleSolutionList[file_,list_,sevsol_]:=Block[{i},
+WriteShiftTadpoleSolutionList[file_,list_,sevsol_]:=Block[{i,j},
 If[sevsol=!=True,
 For[i=1,i<=Length[list],
 Switch[Head[list[[i,1]]],
@@ -66,7 +66,9 @@ WriteString[file, "End If \n "];
 If[FreeQ[realVar,list[[i,1]]/.{re[x_]->re,im[x_]->x, A_[b__Integer]->A}]===True && Head[list[[i,1]]]=!=re &&  Head[list[[i,1]]]=!=im,
 WriteString[file, "If (Abs(AImag("<>SPhenoForm[list[[i,1]]]<>")).gt.1.0E-04_dp) Then \n "];
 WriteString[file, "  Write(*,*) \"No real solution of tadpole equations for "<>SPhenoForm[list[[i,1]]/.{re[x_]->x,im[x_]->x}] <>"\" \n "];
-WriteString[file, "  Call TerminateProgram  \n "];
+WriteString[file, "  !Call TerminateProgram  \n "];
+WriteString[file,"  "<>SPhenoForm[list[[i,1]]] <>" = Real("<>SPhenoForm[list[[i,1]]]<>",dp) \n"];
+WriteString[file, "  SignOfMuChanged= .True. \n"];
 WriteString[file, "End If \n "];
 ];
 ];
@@ -111,7 +113,8 @@ WriteString[file, "End If \n "];
 If[FreeQ[realVar,list[[j,i,1]]/.{re[x_]->re,im[x_]->x, A_[b__Integer]->A}]===True && Head[list[[j,i,1]]]=!=re &&  Head[list[[j,i,1]]]=!=im,
 WriteString[file, "If (Abs(AImag("<>SPhenoForm[list[[j,i,1]]]<>")).gt.1.0E-04_dp) Then \n "];
 WriteString[file, "  Write(*,*) \"No real solution of tadpole equations for "<>SPhenoForm[list[[j,i,1]]/.{re[x_]->x,im[x_]->x}] <>"\" \n "];
-WriteString[file, "  Call TerminateProgram  \n "];
+WriteString[file,"  "<>SPhenoForm[list[[j,i,1]]] <>" = Real("<>SPhenoForm[list[[j,i,1]]]<>",dp) \n"];
+WriteString[file, "  SignOfMuChanged= .True. \n"];
 WriteString[file, "End If \n "];
 ];
 
@@ -394,8 +397,8 @@ WriteString[sphenoTad,"If (HighScaleModel.Eq.\"LOW\") Then \n \n"];
 WriteString[sphenoTad,"! SUSY scale input  \n"];
 For[i=1,i<=Length[ParametersToSolveTadpoles],
 Switch[Head[ParametersToSolveTadpolesLowScaleInput[[i]]],
-re,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>" = Complex(x("<>ToString[i]<>"), Aimag("<>SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>"),dp) \n"];,
-im,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>" = Complex(Real("<>SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>",dp),x("<>ToString[i]<>"),dp) \n"];,
+re,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>" = Cmplx(x("<>ToString[i]<>"), Aimag("<>SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>"),dp) \n"];,
+im,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>" = Cmplx(Real("<>SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i,1]]]<>",dp),x("<>ToString[i]<>"),dp) \n"];,
 _,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpolesLowScaleInput[[i]]]<>" = x("<>ToString[i]<>") \n"];
 ];
 i++;];
@@ -403,8 +406,8 @@ WriteString[sphenoTad,"\n Else \n \n"];
 WriteString[sphenoTad,"! GUT scale input \n"];
 For[i=1,i<=Length[ParametersToSolveTadpoles],
 Switch[Head[ParametersToSolveTadpoles[[i]]],
-re,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>" = Complex(x("<>ToString[i]<>"), Aimag("<>SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>"),dp) \n"];,
-im,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>" = Complex(Real("<>SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>",dp),x("<>ToString[i]<>"),dp) \n"];,
+re,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>" = Cmplx(x("<>ToString[i]<>"), Aimag("<>SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>"),dp) \n"];,
+im,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>" = Cmplx(Real("<>SPhenoForm[ParametersToSolveTadpoles[[i,1]]]<>",dp),x("<>ToString[i]<>"),dp) \n"];,
 _,WriteString[sphenoTad,SPhenoForm[ParametersToSolveTadpoles[[i]]]<>" = x("<>ToString[i]<>") \n"];
 ];
 i++;];

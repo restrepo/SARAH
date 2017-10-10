@@ -50,8 +50,8 @@ BoundaryHighScale={
 BoundarySUSYScale = {
 {Yv,LHInput[Yv]},
 {vL[1], vL1Input},
-{vL[2], vL1Input},
-{vL[3], vL1Input},
+{vL[2], vL2Input},
+{vL[3], vL3Input},
 {vR, vR1Input}
 };
 
@@ -65,14 +65,4 @@ ListDecayParticles3B = Automatic;
 
 QuadruplePrecision = {Chi};
 
-ConditionForMassOrdering={
-{Chi,
-"If ((Abs(UV(1,2)).gt.Abs(UV(2,1))).And.(MChi(1).lt.1.0E-15_dp).And.(MChi(2).lt.1.0E-15_dp)) Then \n
-   MChitemp = MChi \n
-   UVtemp = UV \n
-   UV(1,:) = UVtemp(2,:) \n
-   UV(2,:) = UVtemp(1,:) \n
-   MChi(1) = MChitemp(2) \n
-   MChi(2) = MChitemp(1) \n
-End If \n \n"}
-};
+DefaultInputValues = {m0 -> 1500, m12->1500, TanBeta -> 10, Azero -> -2500, LambdaInput ->0.1, KappaInput ->0.1, vR1Input ->1000, vL1Input->0.0, vL2Input->0.0, vL3Input->0.0};

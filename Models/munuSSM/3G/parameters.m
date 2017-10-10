@@ -81,10 +81,10 @@ ParameterDefinitions = {
              
 {Yv,       { Description -> "Neutrino-Yukawa-Coupling" }},               
 {T[Yv],     {  Description -> "Trilinear-Neutrino-Coupling"}},
-{\[Kappa],  {  Description -> "Singlet Self-Interaction"}}, 
-{\[Lambda], { Description -> "Singlet-Higgs-Interaction"}},              
-{T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction"}},        
-{T[\[Lambda]],  { Description -> "Softbreaking Singlet-Higgs-Interaction"}},               
+{\[Kappa],  {  Description -> "Singlet Self-Interaction", LesHouches ->KAPPA}}, 
+{\[Lambda], { Description -> "Singlet-Higgs-Interaction", LesHouches ->LAMBDA}},              
+{T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction", LesHouches ->TKAPPA}},        
+{T[\[Lambda]],  { Description -> "Softbreaking Singlet-Higgs-Interaction", LesHouches ->TLAMBDA}},               
 {mv2,       { Description -> "Softbreaking right Sneutrino Mass",
 						LesHouches->mv2}}, 
 

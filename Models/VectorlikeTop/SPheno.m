@@ -39,8 +39,8 @@ BoundaryHighScale={
 {MassG, gGMSB[LambdaInput/MessengerScale]*(n5plets + 3*n10plets)*g3^2*LambdaInput/(16*Pi^2)},
 {mT, MTinput},
 {mUT, LHInput[mUT]},
-{B[mT], B[\[Mu]]/\[Mu]*mT},
-{B[mUT], B[\[Mu]]/\[Mu]*mUT}
+{B[mT], 0},
+{B[mUT], 0}
 };
 
 IncludeFineTuning = True;
@@ -92,3 +92,6 @@ BoundaryLowScaleInput={
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
+
+DefaultInputValues = {LambdaInput -> 2*10^7, MessengerScale->5*10^7, TanBeta->10, SignumMu->1,n5plets->1, MTinput->1000, YTinput->0.1};
+

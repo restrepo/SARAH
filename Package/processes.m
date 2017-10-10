@@ -367,7 +367,7 @@ res1=ThreeParticleVertex[p];
 addedP={};
 
 For[i=1,i<=Length[res1],
-If[FreeQ[addedP,C[res1[[i,1]],res1[[i,2]]]] && FreeQ[addedP,C[AntiField[res1[[i,1]]],AntiField[res1[[i,2]]]]],
+If[(FreeQ[addedP,C[res1[[i,1]],res1[[i,2]]]] && FreeQ[addedP,C[AntiField[res1[[i,1]]],AntiField[res1[[i,2]]]]]) || AntiField[p]=!=p,
 If[((FreeQ[massless,getBlank[res1[[i,1]]]]==True || getType[res1[[i,1]]]=!=V) &&  (FreeQ[massless,getBlank[res1[[i,2]]]]==True || getType[res1[[i,1]]]=!=V)) || (FreeQ[AllowDecaysMasslessVectors,RE[p]]==False),
 process=Join[process,{{res1[[i,1]],res1[[i,2]],res1[[i,3]],CalculateColorFactorDecay[AntiField[p],res1[[i,1]],res1[[i,2]]],SymmFactor2BodyDecay[p,res1[[i,1]],res1[[i,2]]]}}];
 addedP=Join[addedP,{C[res1[[i,1]],res1[[i,2]]]}];

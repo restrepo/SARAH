@@ -41,7 +41,7 @@ CurrentEigenstates=Last[NameOfStates];
 SA`CurrentStates=CurrentEigenstates;
 
 (*
-If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
+If[FreeQ[NameOfStates,InitalizedVertexCalculaton]\[Equal]True,
 Message[ModelFile::NoVertices];,
 *)
 
@@ -150,8 +150,8 @@ conj[T[a_,b_,c_]]->T[a,c,b],
 
 T[a_,b_,c_]:> T[a/.subGluonIndex,b,c],
 LorentzProduct[a__]-> TensDot[Dot@@a],
-PR->ProjM[Index[Spin,Ext[1]],Index[Spin,Ext[2]]],
-PL->ProjP[Index[Spin,Ext[1]],Index[Spin,Ext[2]]]
+PR->ProjP[Index[Spin,Ext[1]],Index[Spin,Ext[2]]],
+PL->ProjM[Index[Spin,Ext[1]],Index[Spin,Ext[2]]]
 };
 
 subIndizesWO = {
@@ -243,7 +243,7 @@ Print["Expanding Vertices : ",Dynamic[progressNrWO],"/",Length[res]," (",Dynamic
 For[i=1,i<=Length[res],
 progressNrWO=i;
 progressCoupWO=res[[i,1]] /. Index[a_,b_]->b;
-(* If[Mod[i,10]==0,Print["...",i," finished"];]; *)
+(* If[Mod[i,10]\[Equal]0,Print["...",i," finished"];]; *)
 If[Length[res[[i,1]]]==3,
 tempVert=Join[tempVert,ExpandWHIZARD3[res[[i]]]];,
 tempVert=Join[tempVert,ExpandWHIZARD4[res[[i]]]];
@@ -592,8 +592,8 @@ WidthListFR = Select[WidthListFR,(FreeQ[#,0]==True)&] /. {Width ->External} /. E
 ];
 
 (* getColorRep[x_]:=Block[{},
-If[FreeQ[getIndizes[getBlank[x]],color]==True,
-If[FreeQ[ColoredGaugeParticles,getBlank[x]]==True,
+If[FreeQ[getIndizes[getBlank[x]],color]\[Equal]True,
+If[FreeQ[ColoredGaugeParticles,getBlank[x]]\[Equal]True,
 Return[S];,
 Return[O];
 ];,

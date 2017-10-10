@@ -487,21 +487,23 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
 ! alpha_s alpha_t
 !---------------------------------
 
-  T1=mst2(1)
-  T2=mst2(2)
-!  write(*,*) "Rst: ",Rst
-  st= 1._dp*real(RSt(2,2))
-!  st=-real(RSt(1,2))
-! ct = -real(RSt(1,1))
-  ct=real(RSt(1,2))
-  sbsquark = real(RSb(1,2))
+  T1=mst2(2)
+  T2=mst2(1)
+
+
+
+  st= real(RSt(2,2))
+  ct= - real(RSt(1,2))
+
+
+  sbsquark = - real(RSb(1,2))
   cbsquark = real(RSb(2,2))
 
   
 
   octetBmass=BO+2._dp*MDO**2
   octetMmass=mO2+MO*conjg(MO)+2._dp*MDO*conjg(MDO)
-!  write(*,*) "octetBmass, octetMmass: ",octetBmass, octetMmass
+
 
   if(abs(octetBmass) .gt. 1E-8) then
      cO=real(octetBmass/abs(octetBmass))
@@ -511,21 +513,18 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
      sO=0._dp
   end if
 
-!  write(*,*) "cO, sO: ",cO,sO
+
   O1=octetmmass+abs(octetbmass)
   O2=octetmmass-abs(octetbmass)
 
-!  write(*,*) "mO1, mO2: ",sqrt(O1),sqrt(O2)
+
 
   DMS=0._dp
   DMP=0._dp
-  ! write(*,*) "ZG: "
-  ! write(*,*) ZG(1,1),ZG(1,2)
-  ! write(*,*) ZG(2,1),ZG(2,2)
-
+  
   ! In this basis, ZG*MGlu*ZG^T is diagonal, so we have gauge eigenstates = ZG^T. mass eigenstates, thus lambda = ZG(1,1) l1 + ZG(2,1) l2
 
-!  write(*,*) "st,ct,s2t,c2t,ls,lt ",st,ct,s2t," ",c2t,lam,lt
+
 
 call effpotasat(2,mt,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg(MDO),T1,T2,st,ct,O1,O2,sO,cO,q2,tanb,sqrt(vv/2),-real(lam),real(LT),mu,vevs(3)/sqrt(2d0),vevs(4)/sqrt(2d0),astrong,DMS,DMP,tadpoles)
 
@@ -535,16 +534,11 @@ call effpotasat(2,mt,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg
      do mi2=1,4
         PiS2(mi1,mi2) = DMS(mi1,mi2)
         PiPS2(mi1,mi2) = DMP(mi1,mi2)
-!        write(*,*) PiS2(mi1,mi2)
+!        
         end do
      end do
 
-!     write(*,*) "tadpoles: ",temptads
 
-
-
-     ! write(*,*) "as at: "
-     ! write(*,*) PiS2
  !---------------------------------------------
  ! alpha_s alpha_b
  !---------------------------------------------
@@ -552,7 +546,7 @@ call effpotasat(2,mt,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg
   
   DMS=0._dp
   DMP=0._dp
-  call effpotasat(2,mb,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg(MDO),msb2(1),msb2(2),sbsquark,cbsquark,O1,O2,sO,cO,q2,1d0/tanb,sqrt(vv/2),-real(lam),real(LT),mu,vevs(3)/sqrt(2d0),vevs(4)/sqrt(2d0),astrong,DMS,DMP,temptads) 
+  call effpotasat(2,mb,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg(MDO),msb2(2),msb2(1),sbsquark,cbsquark,O1,O2,sO,cO,q2,1d0/tanb,sqrt(vv/2),-real(lam),real(LT),mu,vevs(3)/sqrt(2d0),vevs(4)/sqrt(2d0),astrong,DMS,DMP,temptads) 
 
 
 ! write(*,*) "as ab: "
@@ -571,25 +565,15 @@ call effpotasat(2,mt,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg
         else
            mi2hat=mi2
         end if
-!        write(*,*) "PiS2a(",mi1,mi2,") = DMS(",mi1hat,mi2hat,")"
-!        PiS2b(mi1,mi2) = DMS(mi1hat,mi2hat)
+
         PiS2(mi1,mi2) = PiS2(mi1,mi2) + DMS(mi1hat,mi2hat)
         PiPS2(mi1,mi2) = PiPS2(mi1,mi2) + DMP(mi1hat,mi2hat)
-!        write(*,"(ES15.7)",advance="no") real(DMS(mi1hat,mi2hat))
+
         end do
         write(*,*) 
      end do
     
-!     write(*,*) real(DMS)
 
-!     write(*,*) PiS2b
-
- !    PiS2 = PiS2 + PiS2b
-
-     
-  
-     ! write(*,*) "Total two loop correction: "
-     ! write(*,*) PiS2
 
   Iname = Iname - 1
 
@@ -3534,6 +3518,7 @@ call effpotasat(2,mt,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg
   Ab = Real(A_b/Y_b, dp)
   Atau = Real(A_tau/Y_tau, dp)
   muR = - Real(mu, dp) ! different sign convention
+
   PiA02 =0._dp
   FA=0._dp
   FA_A=0._dp

@@ -24,7 +24,7 @@ CheckSM[list_]:=Length[Intersection[SMparticles,list/.{bar[a_]->a,conj[a_]->a}]]
 WriteGoldstoneCheck[file_,particles_]:=Block[{temp,ifstring,ifstring2,listT},
 listT={HiggsBoson,PseudoScalar,ChargedHiggs};
 listT=Select[listT,(getGen[#]>1)&];
-(* temp=Select[particles,MemberQ[{HiggsBoson,PseudoScalar,ChargedHiggs},#[[1]]/.{bar[a_]->a,conj[a_]->a}]&]; *)
+(* temp=Select[particles,MemberQ[{HiggsBoson,PseudoScalar,ChargedHiggs},#[[1]]/.{bar[a_]\[Rule]a,conj[a_]\[Rule]a}]&]; *)
 temp=Select[particles,MemberQ[listT,#[[1]]/.{bar[a_]->a,conj[a_]->a}]&];
 ifstring="("<>ToString[#[[2]]]<>".eq.1)"&/@temp;
 ifstring=Riffle[ifstring,".and."];
@@ -69,7 +69,7 @@ AddPenguinContributions2[list_,resFFVscalar_,resFFVvector_,resSSV_,resFFSscalar_
 (* - inital: can be used to refer to some function which is added BEFORE the calcualtion of the diagrams. This function has also to be saved in 'AddPenguinResult' *)
 (* - final: can be used to refer to some function which is added AFTER the calcualtion of the diagrams. This function has also to be saved in 'AddPenguinResult' *)
 (* - V3Needed: statement, if it is necessary to write also the third vertex. (has been used in older version for photonic penguins, but is now always set to True. Will be removed in future) *)
-(* - mb: (m)ass (b)ound: what is the mass threshold to include a diagram. Normally, this corresponds to the mass of the decaying particle *)
+(* - mb: (m)ass(b)ound: what is the mass threshold to include a diagram. Normally, this corresponds to the mass of the decaying particle *)
 (* - goldstone: (True/False): defines, if the Goldstone contributions are added explicitly (True) or if they are already included in the expression for the corresponding vector bosons (False). => the used results have been calculated in different gauge in literature *)
 (* - file: name of the output file *)
 
@@ -123,7 +123,7 @@ c3[[1]]=-Reverse[c3[[1]]];
 ];
 (*
 If[getVertexType[penguin[[1,3]]]===FFV,
-If[(AntiField[Internal[3]]/.penguin[[2]])===(c3[[2,1]] /. A_[{b__}]->A) && ( Internal[2]/.penguin[[2]])===(c3[[2,2]]/. A_[{b__}]->A) &&   RE[Internal[2]/.penguin[[2]]]=!= RE[Internal[3]/.penguin[[2]]],
+If[(AntiField[Internal[3]]/.penguin[[2]])===(c3[[2,1]] /. A_[{b__}]\[Rule]A) && ( Internal[2]/.penguin[[2]])===(c3[[2,2]]/. A_[{b__}]\[Rule]A) &&   RE[Internal[2]/.penguin[[2]]]=!= RE[Internal[3]/.penguin[[2]]],
 c3[[1]]=-Reverse[c3[[1]]];
 ];
 ];
@@ -492,12 +492,12 @@ AddPenguinContributions2[list_,resFFVscalar_,resFFVvector_,resSSV_,resFFSscalar_
 (* - inital: can be used to refer to some function which is added BEFORE the calcualtion of the diagrams. This function has also to be saved in 'AddPenguinResult' *)
 (* - final: can be used to refer to some function which is added AFTER the calcualtion of the diagrams. This function has also to be saved in 'AddPenguinResult' *)
 (* - V3Needed: statement, if it is necessary to write also the third vertex. (has been used in older version for photonic penguins, but is now always set to True. Will be removed in future) *)
-(* - mb: (m)ass (b)ound: what is the mass threshold to include a diagram. Normally, this corresponds to the mass of the decaying particle *)
+(* - mb: (m)ass(b)ound: what is the mass threshold to include a diagram. Normally, this corresponds to the mass of the decaying particle *)
 (* - goldstone: (True/False): defines, if the Goldstone contributions are added explicitly (True) or if they are already included in the expression for the corresponding vector bosons (False). => the used results have been calculated in different gauge in literature *)
 (* - file: name of the output file *)
 
 
-For[j=1,j<=Length[list], (* loop over all diagrams *)
+For[j=1,j\[LessEqual]Length[list], (* loop over all diagrams *)
 
 (* if the penguin is only part of a process with 4 external particles, it is assumed that the third particle involved in the penguin diagram is the propagator which connects the external fields.  *)
 
@@ -528,7 +528,7 @@ ind2 =MakeIndicesCoupling[{External[2],gt2}/.penguin[[2]],{AntiField[Internal[1]
 {Internal[3],i3}/.penguin[[2]],c2[[2]]]; 
 
 (* do the same for the third vertex. As said, this separation will be removed sometimes since it became superflous.  *)
-If[V3Needed ==True,
+If[V3Needed \[Equal]True,
 c3=getSPhenoCoupling2[penguin[[1,3]],SPhenoCouplingsAll];
 ind3 = MakeIndicesCoupling[{External[3],gt3}/.penguin[[2]],{Internal[2],i2}/.penguin[[2]],{AntiField[Internal[3]],i3}/.penguin[[2]],c3[[2]]];
 If[getVertexType[penguin[[1,3]]]===SSV ||  getVertexType[penguin[[1,3]]]===VVV,
@@ -544,7 +544,7 @@ p2 =(Internal[2] /. penguin[[2]]);
 p3 =(Internal[3] /. penguin[[2]]);
 
 (* check, if goldstone bosons are involved, ie. start always with the first generation. Otherwise, the loops in the following have to start with the first PHYSICAL state. The corresponding generation index is returned by 'getGenSPhenoStart' *)
-If[goldstones==True,
+If[goldstones\[Equal]True,
 start1=1; start2=1; start3=1;,
 start1=getGenSPhenoStart[p1]; start2=getGenSPhenoStart[p2]; start3=getGenSPhenoStart[p3];
 ];
@@ -557,7 +557,7 @@ WriteString[file,"If (("<>SPhenoIncludeLoop[getBlank[p1]]<>").and.("<>SPhenoIncl
 (* The loops in the Fortran code over all internal particles start here *)
 If[getGenSPheno[p1]>1,WriteString[file,"Do i1= "<>ToString[start1]<>","<> ToString[getGenSPheno[p1]]<>"\n"];];
 If[getGenSPheno[p2]>1,WriteString[file,"  Do i2= "<>ToString[start2]<>","<> ToString[getGenSPheno[p2]]<>"\n"];];
-If[V3Needed ==True (* || getGenSPheno[p2]=!=getGenSPheno[p3] *),
+If[V3Needed \[Equal]True (* || getGenSPheno[p2]=!=getGenSPheno[p3] *),
 If[getGenSPheno[p3]>1,WriteString[file,"   Do i3= "<>ToString[start3]<>","<> ToString[getGenSPheno[p3]]<>"\n"];];,
 If[getGenSPheno[p3]>1,WriteString[file,"   i3 = i2\n"];];
 ];
@@ -570,7 +570,7 @@ WriteString[file, "  If (("<>SPhenoMassSq[p1,i1]<>".gt."<>mb<>").Or.("<>SPhenoMa
 (* Write the expression for the vertices to file. The function 'WriteVertexToFile' creates variable called 'coupXL, coupXR' for chiral couplings  or coupX for scalar couplings (X: number of vertex. These vertices can then be used easily in the calculation of the amplitudes *)
 WriteVertexToFile[1,c1,ind1,getVertexType[penguin[[1,1]]],file];
 WriteVertexToFile[2,c2,ind2,getVertexType[penguin[[1,2]]],file];
-If[V3Needed ==True  (*|| getGenSPheno[p2]=!=getGenSPheno[p3]*), WriteVertexToFile[3,c3,ind3,getVertexType[penguin[[1,3]]],file]; ];
+If[V3Needed \[Equal]True  (*|| getGenSPheno[p2]=!=getGenSPheno[p3]*), WriteVertexToFile[3,c3,ind3,getVertexType[penguin[[1,3]]],file]; ];
 
 
 (* It's now neceessary to check for the generic type of the diagram. This is done in two steps: *)
@@ -633,7 +633,7 @@ SVV,
 	currentFermion1=p1;IndexFermion1=i1;
 	currentScalar1=p2; IndexScalar1=i2;
 	currentVector1=p3;IndexVector1=i3;
-	flagFirstVertexFFV=0; (* case where the vector attaches to Fermion (gt2) *)
+	flagFirstVertexFFV=0; (* case where the vector attaches to Fermion(gt2) *)
 	AddPenguinResult[resSVV,file];,	
 	FFV,
 	(* internal Scalar/Vector interchanged *)
@@ -656,7 +656,7 @@ WriteString[file,"End if \n"];
 (* here, the loops over the internal field generations finish *)
 If[getGenSPheno[p1]>1,WriteString[file,"   End Do\n"];];
 If[getGenSPheno[p2]>1,WriteString[file,"  End Do\n"];];
-If[V3Needed==True (*|| getGenSPheno[p2]=!=getGenSPheno[p3] *),
+If[V3Needed\[Equal]True (*|| getGenSPheno[p2]=!=getGenSPheno[p3] *),
 If[getGenSPheno[p3]>1,WriteString[file,"End Do\n"];];
 ];
 If[FlagLoopContributions===True,
@@ -684,7 +684,7 @@ AddWaveContributions2[list_,resFFS_,resFFV_,initial_,initialLoop_,final_,mb_,gol
 (*   - resFFV: name of generic amplitude for vector/fermions loops *)
 (*   - initial: possible, initial statements *)
 (*   - final: possible, final statements *)
-(*   - mb: (m)ass (b)ound: threshold to include the diagram *)
+(*   - mb: (m)ass(b)ound: threshold to include the diagram *)
 (*   - goldstone: include Goldstone bosons (True/False) *)
 (*   - file: output file *)
 
@@ -792,7 +792,7 @@ AddBoxResult[res_,file_]:=Block[{string,string1,string2,string3,string4,subB,
 subB2={"B1L"->"B1R","B2L"->"B2R","B3L"->"B3R", "B4L"->"B4R","coup1L"->"coup1R","coup2L"->"coup2R","coup3L"->"coup3R","coup4L"->"coup4R","coup1R"->"coup1L","coup2R"->"coup2L","coup3R"->"coup3L","coup4R"->"coup4L"},M1F,M2F,M2Fsq,M1Fsq,MSsq,MVsq,MV2sq},
 
 Switch[res,
-(*Contributions from B0 (s,d)->l l*)
+(*Contributions from B0 (s,d)\[Rule]l l*)
 BoxB0LLpIn,
 	Clear[M1F,M2F,M2Fsq,M1Fsq,MSsq,MVsq,MV2sq];
 	WriteString[file,"! box diagram nr. "<>ToString[i]<>" ("<>ToString[i]<>"/"<>ToString[NrAllDiagrams]<>"), InsertionOrder="<>ToString[CurrentInsertionOrder]<>"\n"];,BoxB0LLpFin,WriteString[file,"cnt = cnt+1 \n"];,
@@ -1039,7 +1039,7 @@ WriteString[file,FortranLineBreak["WCV_SM(cnt,4)=WCV_SM(cnt,4)+chargefactor*"<>S
 If[GoldstoneFlagKilian,WriteString[file,"   End If\n"]];
 ];,
 
-(* Box l -> 3 l' *)
+(* Box l \[Rule] 3 l' *)
 
 Box1LeptonTo3Leptons,
 string= SPhenoMassSq[currentFermion1,IndexFermion1 ]<>","<>SPhenoMassSq[currentFermion2,IndexFermion2 ]<>","<>SPhenoMassSq[currentScalar1,IndexScalar1 ]<>","<>SPhenoMassSq[currentScalar2,IndexScalar2 ];
@@ -1153,7 +1153,7 @@ WriteString[file, "End if\n"];
 
 AddWaveResult[res_,file_]:=Block[{n,start4,prop,MF,MpropSq,mQi,mQj,mQisq,mQjsq,mQn,mQnsq,subB={"coup1L"->"coup1R","coup2L"->"coup2R","coup3L"->"coup3R","coup4L"->"coup4R","coup1R"->"coup1L","coup2R"->"coup2L","coup3R"->"coup3L","coup4R"->"coup4L","coup5L"->"coup5R","coup5R"->"coup5L"},string1,string2,string3,string4,M1Sq,M2Sq,M3Sq,stringLow,stringHigh,stringHightilde,stringHighV,stringLowV,stringHighVtilde,stringLowVtilde},
 
-Switch[res,(*----------Contributions to B0->l l'------------*)
+Switch[res,(*----------Contributions to B0\[Rule]l l'------------*)
 
 WaveB0LLpIn,
 
@@ -1671,7 +1671,7 @@ If[getGen[prop]>=2,WriteString[file,"   End Do\n"];];];
 ,
 	
 
-(* ---------- Contributions to Z -> l l' ------------ *)
+(* ---------- Contributions to Z \[Rule] l l' ------------ *)
 
 WaveZLLpFFS,
 	(* prefactor is I/(16 pi^2)  *)
@@ -1706,7 +1706,7 @@ WaveZLLpIn,
 WaveZLLpFin,
 	WriteString[file, "countvar = countvar +1\n"];,
 
-(* ---------- Contributions to l -> 3 l' ------------ *)
+(* ---------- Contributions to l \[Rule] 3 l' ------------ *)
 
 Wave1LeptonTo3LeptonsFFSVector,
 	If[FreeQ[massless,currentPropagator]==False,
@@ -1766,7 +1766,7 @@ Wave1LeptonTo3LeptonsFFSScalar,
 (* ---------- Contributions to delta_VB ------------ *)
 
 WaveDeltaVB,
-	WriteString[file,"sumI = sumI + chargefactor*0.5_dp*coup1L*Conjg(coup2R)*B1(0._dp,"<>SPhenoMassSq[currentFermion1,IndexFermion1]<>","<>SPhenoMassSq[currentScalar1,IndexScalar1]<>")  \n"];
+	WriteString[file,"sumI = sumI + chargefactor*0.5_dp*coup1L*coup2R*B1(0._dp,"<>SPhenoMassSq[currentFermion1,IndexFermion1]<>","<>SPhenoMassSq[currentScalar1,IndexScalar1]<>")  \n"];
 ];
 
 ];
@@ -1785,7 +1785,7 @@ AddPenguinResult[res_,file_]:=Block[{norm,M1,M2,M3,M1Sq,M2Sq,M3Sq,MpropSq,string
 
 Switch[res,
 
-(*---------Contributions to B0 (s,d)->l l'--------*)
+(*---------Contributions to B0 (s,d)\[Rule]l l'--------*)
 
 PenguinB0LLpIn,
 
@@ -2133,7 +2133,7 @@ PenguinB0LLpFin,
 If[getGen[prop]>=2,WriteString[file,"End Do \n"];];
 WriteString[file,"cnt = cnt + 1 \n"];,
 
-(* ---------- Contributions to l -> 3l' ------------ *)
+(* ---------- Contributions to l \[Rule] 3l' ------------ *)
 
 PenguinScalar1LeptonTo3LeptonsFFS,
 	WriteString[file,"fun1=B0(0._dp,"<>SPhenoMassSq[currentFermion1,IndexFermion1]<>","<>SPhenoMassSq[currentFermion2,IndexFermion2]<>") \n"];
@@ -2262,7 +2262,7 @@ PenguinDeltaVBSSV,
  WriteString[file,"vertex = vertex + chargefactor*(0.5_dp*sqrt2*coup1L*coup2R*coup3*("<>SPhenoMassSq[currentFermion1,IndexFermion1]<>"*C0_3m("<>SPhenoMassSq[currentFermion1,IndexFermion1]<>","<>SPhenoMassSq[currentScalar1,IndexScalar1]<>","<>SPhenoMassSq[currentScalar2,IndexScalar2]<>") + B0(0._dp,"<>SPhenoMassSq[currentScalar1,IndexScalar1]<>","<>SPhenoMassSq[currentScalar2,IndexScalar2]<>") +0.5_dp)) \n"];, 
 
 
-(* ---------- Contributions to l -> gamma l' ------------ *)
+(* ---------- Contributions to l \[Rule] gamma l' ------------ *)
 
 LLpFFVscalar,
          WriteString[file,"If ("<>SPhenoMassSq[currentScalar1,IndexScalar1]<>".lt."<>SPhenoMassSq[currentFermion1,IndexFermion1]<>") Then \n"];
@@ -2321,7 +2321,7 @@ LLpFin,
 	WriteString[file, "countvar = countvar +1\n"];,
 
 
-(* ---------- photonic Contributions to l -> gamma 3 l' ------------ *)
+(* ---------- photonic Contributions to l \[Rule] gamma 3 l' ------------ *)
 
 LLpLpLpFFVscalar,
 	norm = "/"<>ToString[getSPhenoCoupling2[C[Electron,bar[Electron],VectorP],SPhenoCouplingsAll][[1,1]]]<>"(1,1)";
@@ -2399,7 +2399,7 @@ LLpLpLpVVV,
 	WriteString[file,"End If \n"];,
 
 
-(* ----------- Contributions to Z -> l l'-----------------*)
+(* ----------- Contributions to Z \[Rule] l l'-----------------*)
 
  
 ZLLpSSV,

@@ -3,12 +3,12 @@ Off[General::spell]
 Model`Name = "SSM";
 Model`NameLaTeX ="Singlet Extended Standard Model";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2013-01-24: changed normalization of lambda term to convention of hep-ph/0207271 *)
 (* 2013-06-24: using new name conventions (without inital "S" and "F" for scalar and matter fields) *)
 (* 2014-11-06: Changed sign in Lagrangian *)
-
+(* 2015-11-16: changed SPheno.m *)
 
 
 (*-------------------------------------------*)

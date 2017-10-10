@@ -100,7 +100,7 @@ DEFINITION[EWSB][MatterSector]=
      {{phid, phiu, phiR, phiL}, {hh, ZH}},
      {{sigmad, sigmau,sigmaR,sigmaL}, {Ah, ZA}},
      {{SHdm,conj[SHup], SeL, SeR},{Hpm,ZP}},
-     {{FvL,fB, fW0, FHd0, FHu0, FvR}, {L0, ZN}}, 
+     {{FvL,fB, fW0, FHd0, FHu0, conj[FvR]}, {L0, ZN}}, 
      {{{FeL,fWm, FHdm}, {conj[FeR],fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
      {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},
      {{{FuL},{conj[FuR]}},{{FUL,ZUL},{FUR,ZUR}}}                     \

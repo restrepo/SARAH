@@ -4,9 +4,10 @@ Off[General::spell]
 Model`Name = "BLSM";
 Model`NameLaTeX ="B-L extended Standard Model";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2014-11-06: Changed sign in Lagrangian *)
+(* 2015-11-16: fixed particles.m *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

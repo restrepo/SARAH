@@ -308,12 +308,12 @@ c3=CheckFermionFlipPS[{Propagator,AntiField[Internal[3]],Internal[2]}/.diagrams[
 ind3=c3[[2]];c3=c3[[1]];
 c4=CheckFermionFlipPS[{External[4],External[3],AntiField[Propagator]}/.diagrams[[i,2]],c4,ind4];
 ind4=c4[[2]];c4=c4[[1]];
-If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV,
+If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV ,
 c3[[1]] = getSignVertex[(Cp[AntiField[Internal[3]],Internal[2],Propagator] /.diagrams[[i,2]]),c3[[2]],getVertexType[diagrams[[i,1,3]]]]c3[[1]];
 ];,
  c3=CheckFermionFlipPS[{External[3],AntiField[Internal[3]],Internal[2]}/.diagrams[[i,2]],c3,ind3];  (* NEW FLIP *)
 ind3=c3[[2]];c3=c3[[1]];
-If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV,
+If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV ,
 c3[[1]] = getSignVertex[(Cp[AntiField[Internal[3]],Internal[2],External[3]] /.diagrams[[i,2]]),c3[[2]],getVertexType[diagrams[[i,1,3]]]]c3[[1]];
 ];
 ];
@@ -854,7 +854,7 @@ ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{Internal[1
 ind2 =MakeIndicesCouplingPS[{External[2],Index[2]}/.diagrams[[i,2]],{AntiField[Internal[1]],i1}/.diagrams[[i,2]],{Internal[3],i3}/.diagrams[[i,2]],c2[[2]]]; 
 ind3 = MakeIndicesCouplingPS[{External[3],Index[3]}/.diagrams[[i,2]],{AntiField[Internal[3]],i3}/.diagrams[[i,2]],{Internal[2],i2}/.diagrams[[i,2]],c3[[2]]]; 
 
-If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV,
+If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV ,
 c3[[1]] = getSignVertex[(Cp[External[3],Internal[2],AntiField[Internal[3]]] /.diagrams[[i,2]]),c3[[2]],getVertexType[diagrams[[i,1,3]]]]c3[[1]];
 ];
 
@@ -1599,8 +1599,10 @@ i++;
 For[i=1,i<=Length[PreSARAHoperatorsLFV],
 For[j=1,j<=Length[PreSARAHoperatorsLFV[[i,3]]],
 If[getType[PreSARAHoperatorsLFV[[i,2,3]]]===S,
-SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0]}}];,
+SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsLFV[[i,3,j]]]<>"check"],DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0]}}];,
 SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsLFV[[i,3,j]]]<>"check"],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0]}}];
 ];
 j++;];
 i++;];
@@ -1615,9 +1617,11 @@ For[i=1,i<=Length[PreSARAHoperatorsQFV],
 For[j=1,j<=Length[PreSARAHoperatorsQFV[[i,3]]],
 If[getType[PreSARAHoperatorsQFV[[i,2,3]]]===S,
 SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsQFV[[i,3,j]],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];,
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"check"],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];,
 SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsQFV[[i,3,j]],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
 SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"check"],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
 ];
 j++;];
 i++;];

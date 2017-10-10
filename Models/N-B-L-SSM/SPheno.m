@@ -130,5 +130,5 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B =Automatic;
 
 
-
+DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta->10,  Azero -> -2500,  TBetaP -> 1.06, MZp -> 2500, Yn[a_,a_]->0.42, LambdaInput -> -0.1, KappaInput->0.1, ALambdaInput->-500, vSInput->300, Lambda2Input->0.6};
 

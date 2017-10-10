@@ -3,10 +3,10 @@ Off[General::spell]
 Model`Name = "SM8C";
 Model`NameLaTeX ="Standard Model with color octet";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2014-11-06: Changed sign in Lagrangian *)
-
+(* 2015-11-16: changed SPheno.m *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

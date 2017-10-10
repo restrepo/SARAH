@@ -518,7 +518,7 @@ complexVertex=False;
 ];
 MakeSPhenoCoupling[valueCurrent,"res",sphenoCoup];
 If[complexVertex==False,
-WriteString[sphenoCoup,"res = (0.,1.)*res \n \n"];
+WriteString[sphenoCoup,"res = -(0.,1.)*res \n \n"];
 ];,
 
 3, 

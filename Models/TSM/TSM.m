@@ -3,12 +3,13 @@ Off[General::spell]
 Model`Name = "TSM";
 Model`NameLaTeX ="Triplet Extended Standard Model";
 Model`Authors = "F.Staub";
-Model`Date = "2015-04-20";
+Model`Date = "2015-11-16";
 
 
 (* 2014-11-01: Removed CP odd component of neutral triplet *)
 (* 2014-11-06: Changed sign in Lagrangian *)
 (* 2015-04-20: Changed definition of triplet and added additional terms to Lagrangian *)
+(* 2015-11-16: changed SPheno.m *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

@@ -5,10 +5,11 @@ Print["Model file for the SM loaded"];
 Model`Name = "BLSMIS";
 Model`NameLaTeX ="B-L extended Standard Model with inverse Seesaw";
 Model`Authors = "F.Staub, L.Basso, A. Hammad";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2014-09-11: changed B-L charges of s1, s2; added dirac spinor for s1 *)
 (* 2014-11-06: Changed sign in Lagrangian *)
+(* 2015-11-16: fixed particles.m *)
 
 
 (*-------------------------------------------*)

@@ -3,9 +3,10 @@ Off[General::spell]
 Model`Name = "THDMLS";
 Model`NameLaTeX ="Lepton specific Two Higgs Doublet Model";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2015-11-16";
 
 (* 2014-11-06: Changed sign in Lagrangian *)
+(* 2015-11-16: added conj[H1].H2 term *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -51,7 +52,7 @@ LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1 conj[H1].H1.conj[H1].H
 		Lambda2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + Lambda4 conj[H2].H1.conj[H1].H2 );
 
 
-LagHC = -(Lambda5/2 conj[H2].H1.conj[H2].H1  + Yd conj[H2].d.q + Ye conj[H1].e.l + Yu H2.u.q);
+LagHC = -(M12 conj[H1].H2 + Lambda5/2 conj[H2].H1.conj[H2].H1  + Yd conj[H2].d.q + Ye conj[H1].e.l + Yu H2.u.q);
 
 (* Gauge Sector *)
 

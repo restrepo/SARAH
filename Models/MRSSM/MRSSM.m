@@ -3,11 +3,11 @@ Off[General::spell]
 Model`Name = "MRSSM";
 Model`NameLaTeX ="minimal R-symmetric SSM";
 Model`Authors = "F.Staub";
-Model`Date = "2012-09-01";
+Model`Date = "2015-11-16";
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
 (* 2013-10-03: Added mu-term (must be zero) to get automatically B_mu *)
-
+(* 2015-11-16: changed SPheno.m *)
 
 
 (*-------------------------------------------*)

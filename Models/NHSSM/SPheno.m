@@ -50,14 +50,11 @@ BoundarySUSYScale={
 };
 
 
-
-
-
-UseHiggs2LoopMSSM = True;
-(* UseHiggs2LoopMSSM = False; *)
-
 QuadruplePrecision = {};
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
+
+
+DefaultInputValues = {m0 -> 1000, m12 -> 1000, TanBeta->10,  Azero -> -2500,  MuInput -> 200, BMuInput ->10^6  };
 

@@ -64,7 +64,7 @@ Print["--------------------------------------"];
 Print["  Writing three-body decay: ",Dynamic[Dynamic3BDnr],"/",Length[ListDecayParticles3B],"(",Dynamic[Dynamic3BDpart],")"];
 
 If[Length[ListDecayParticles3B]>0,
-MakeListPhaseSpaceIntegrals[25000,500000,8,12,10,12,16];
+MakeListPhaseSpaceIntegrals[25000,500000,9,12,10,12,16];
  For[i=1,i<=Length[ListDecayParticles3B],
 Dynamic3BDnr=i;
 Dynamic3BDpart=ListDecayParticles3B[[i,1]];
@@ -191,7 +191,7 @@ savedDecayInfos = Join[savedDecayInfos,{{particle,NeededCouplings,NeededMasses,F
 channels=CountNumberEntries[FullInformation];
 (*
 channels=0;
-For[i=1,i\[LessEqual]Length[FullInformation],
+For[i=1,i<=Length[FullInformation],
 channels += (1+getGenSPheno[FullInformation[[i,1]]]-getGenSPhenoStart[FullInformation[[i,1]]])*(1+getGenSPheno[FullInformation[[i,2]]]-getGenSPhenoStart[FullInformation[[i,2]]]);
 i++;];
 *)

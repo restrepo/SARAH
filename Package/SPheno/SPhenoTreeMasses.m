@@ -347,6 +347,8 @@ DynamicMassName=listNotMixedMasses[[i,1]];
 Switch[getType[listNotMixedMasses[[i,1]]],
 F,
 If[Length[Dimensions[listNotMixedMasses[[i,5]]]]==2,
+WriteString[sphenoTree,"! ------------------------------- \n"];
+WriteString[sphenoTree,"! Mass of "<>SPhenoForm[listNotMixedMasses[[i,1]]]<>" \n"];
 WriteString[sphenoTree,"Do i1=1,"<>ToString[getGenSPheno[listNotMixedMasses[[i,1]]]] <>"\n"];
 If[FreeQ[listNotMixedMasses[[i,4]],sum],
 WriteString[sphenoTree,SPhenoMass[listNotMixedMasses[[i,1]],i1] <>"= "<>SPhenoForm[listNotMixedMasses[[i,4]] /. {gt1->i1, gt2->i1} ]  <>" \n"];,
@@ -355,25 +357,39 @@ MakeSPhenoCoupling[listNotMixedMasses[[i,4]] /. {gt1->i1, gt2->i1} ,SPhenoMass[l
 WriteString[sphenoTree,SPhenoMassSq[listNotMixedMasses[[i,1]],i1] <>"= "<>SPhenoMass[listNotMixedMasses[[i,1]],i1] <>"**2 \n"];
 WriteString[sphenoTree,"End Do \n \n"];,
 If[listNotMixedMasses[[i,4]]=!=0,
+WriteString[sphenoTree,"! ------------------------------- \n"];
+WriteString[sphenoTree,"! Mass of "<>SPhenoForm[listNotMixedMasses[[i,1]]]<>" \n"];
 If[FreeQ[listNotMixedMasses[[i,4]],sum],
 WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = "<>SPhenoForm[listNotMixedMasses[[i,4]]  /. subCouplingsSPheno]  <>" \n"];,
 MakeSPhenoCoupling[listNotMixedMasses[[i,4]]   /. subCouplingsSPheno ,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]],sphenoTree];
 ];
 
+WriteString[sphenoTree,"If (RotateNegativeFermionMasses) Then \n"];
 If[FreeQ[ParticlePhases,listNotMixedMasses[[i,1]]]==False,
 pos = Position[ParticlePhases,listNotMixedMasses[[i,1]]][[1,1]];
 WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>")/"<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"\n"];
+If[FreeQ[MajoranaPart,listNotMixedMasses[[i,1]]]==False,
 WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Sqrt("<>SPhenoForm[ParticlePhases[[pos,2]]]<>")\n"];
 ];
-
-
+];
 WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>") \n"];
 WriteString[sphenoTree,ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" = "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"**2 \n"];
+WriteString[sphenoTree,"Else \n"];
+If[FreeQ[ParticlePhases,listNotMixedMasses[[i,1]]]==False,
+pos = Position[ParticlePhases,listNotMixedMasses[[i,1]]][[1,1]];
+WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = 1._dp\n"];
+];
+WriteString[sphenoTree,ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" = "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"**2 \n"];
+WriteString[sphenoTree,"End if\n"];
+WriteString[sphenoTree,"! ------------------------------- \n"];
+
 ];
 ];,
 _,
 If[getType[listNotMixedMasses[[i,1]]]===S || SA`NewGaugeSector ==False,
 If[Length[Dimensions[listNotMixedMasses[[i,5]]]]==2,
+WriteString[sphenoTree,"! ------------------------------- \n"];
+WriteString[sphenoTree,"! Mass of "<>SPhenoForm[listNotMixedMasses[[i,1]]]<>" \n"];
 WriteString[sphenoTree,"Do i1=1,"<>ToString[getGenSPheno[listNotMixedMasses[[i,1]]]] <>"\n"];
 If[FreeQ[listNotMixedMasses[[i,4]],sum],
 WriteString[sphenoTree,SPhenoMassSq[listNotMixedMasses[[i,1]],i1] <>"= "<>SPhenoForm[listNotMixedMasses[[i,4]] /. {gt1->i1, gt2->i1} ]  <>" \n"];,
@@ -447,7 +463,7 @@ WriteString[sphenoTree,"        "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1
 WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
 ];
 WriteString[sphenoTree, " End if \n\n\n"];
-
+WriteString[sphenoTree,"! ------------------------------- \n"];
 
 
 ];
@@ -950,6 +966,7 @@ MakeVariableList[Parameters," ,Intent(in)",sphenoTree];
 WriteString[sphenoTree, "Integer, Intent(inout) :: kont \n"];
 WriteString[sphenoTree, "Integer :: i1,i2,i3,i4, ierr, pos \n"];
 WriteString[sphenoTree,"Integer :: j1,j2,j3,j4 \n"];
+WriteString[sphenoTree,"Logical :: SecondDiagonalisationNeeded \n"];
 
 dimMatrix = ToString[Dimensions[MatrixFunction][[1]]];
 WriteString[sphenoTree, "Real(dp), Intent(out) :: "<> Name <>"("<>dimMatrix <>") \n" ];
@@ -1034,6 +1051,60 @@ WriteString[sphenoTree, "Else \n \n"];
 WriteString[sphenoTree, "mat2 = Matmul( Transpose(Conjg( mat) ), mat ) \n"];
 WriteString[sphenoTree, "Call Eigensystem"<>stringQP<>"(mat2, Eig, "<>MixingName<>", ierr, test) \n"];
 WriteString[sphenoTree, "mat2 = Matmul( Conjg("<>MixingName<>"), Matmul( mat, Transpose( Conjg("<>MixingName<>")))) \n"];
+
+WriteString[sphenoTree, "! Special efforts are needed for matrices like the Higgsinos one \n"];
+WriteString[sphenoTree, "SecondDiagonalisationNeeded = .False. \n"];
+WriteString[sphenoTree, "Do i1=1,"<>dimMatrix<>"-1\n"];
+WriteString[sphenoTree, "If (MaxVal(Abs(mat2(i1,(i1+1):"<>dimMatrix<>"))).gt.Abs(mat2(i1,i1))) SecondDiagonalisationNeeded = .True. \n\n"];
+WriteString[sphenoTree, "  If (Eig(i1).ne.Eig(i1)) Then \n"];
+WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in '//NameOfUnit(Iname) \n"];
+WriteString[sphenoTree, "      Call TerminateProgram \n"];
+WriteString[sphenoTree, "    End If \n"];
+WriteString[sphenoTree, "  If ((Abs(Eig(i1)).Le.MaxMassNumericalZero).and.(Eig(i1).lt.0._dp)) Eig(i1) = Abs(Eig(i1))+1.E-10_dp \n"]; 
+WriteString[sphenoTree, "  If (Eig(i1).Le.0._dp) Then \n"];
+If[MassesForEffpot===False,
+WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
+WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
+WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,Eig(i1) \n"];
+WriteString[sphenoTree, "      Write(*,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
+WriteString[sphenoTree, "      Write(*,*) 'a mass squarred is negative: ',i1,Eig(i1) \n"];
+WriteString[sphenoTree, "      Call TerminateProgram \n"];
+WriteString[sphenoTree, "    End If \n"];
+WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
+WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
+WriteString[sphenoTree,"     Write(ErrCan,*) 'occurred a negative mass squared!' \n"];
+WriteString[sphenoTree,"     Write(ErrCan,*) i1,Eig(i1) \n"];
+WriteString[sphenoTree,"     Write(*,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
+WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
+WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
+WriteString[sphenoTree,"     Write(*,*) i1,Eig(i1) \n"];
+];
+If[MassesForEffpot===False,
+WriteString[sphenoTree, "  Eig(i1) = 1._dp \n"];
+WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
+];
+WriteString[sphenoTree, "! kont = -104 \n"];
+WriteString[sphenoTree, " End if \n"];
+WriteString[sphenoTree, "End do \n"];
+
+WriteString[sphenoTree, "If (SecondDiagonalisationNeeded) Then \n"];
+WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(Real(mat2,dp),Eig,"<>  MixingName <>"a,ierr,test) \n \n "];
+WriteString[sphenoTree, "    "<>MixingName<>" = MatMul("<>MixingName<>","<>MixingName<>"a)\n"];
+
+WriteString[sphenoTree, "  Do i1=1,"<>dimMatrix <>"\n"];
+(* WriteString[sphenoTree, "   If (Eig(i1).Lt.0._dp) Then \n"]; *)
+WriteString[sphenoTree, "   If ((Eig(i1).Lt.0._dp).or.(Abs(eig(i1)).lt.1E-15)) Then \n"];
+WriteString[sphenoTree, "    "<>Name<>"(i1) = - Eig(i1) \n"];
+WriteString[sphenoTree, "    "<>MixingName<>"(i1,:) = (0._dp,1._dp)*" <>MixingName <>"a(i1,:) \n"];
+WriteString[sphenoTree, "   Else \n"];
+WriteString[sphenoTree, "    "<>Name<>"(i1) = Eig(i1) \n"];
+WriteString[sphenoTree, "    "<>MixingName<>"(i1,:) = "<>MixingName<>"a(i1,:)\n"];
+WriteString[sphenoTree, "    End If \n"];
+WriteString[sphenoTree, "   End Do \n \n"];
+
+WriteString[sphenoTree, "Else \n"];
+
+
 WriteString[sphenoTree, "Do i1=1,"<>dimMatrix<>"\n"];
 WriteString[sphenoTree, "  If (Eig(i1).ne.Eig(i1)) Then \n"];
 WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in '//NameOfUnit(Iname) \n"];
@@ -1071,6 +1142,7 @@ WriteString[sphenoTree, " End if \n"];
 
 WriteString[sphenoTree, "End Do \n"];
 WriteString[sphenoTree, Name <> " = Sqrt( Eig ) \n \n"];
+WriteString[sphenoTree, "End if ! Second diagonalisation \n"];
 WriteString[sphenoTree, "End If \n \n"]; 
 
 

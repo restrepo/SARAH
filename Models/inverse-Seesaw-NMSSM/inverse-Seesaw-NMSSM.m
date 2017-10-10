@@ -3,10 +3,11 @@ Off[General::spell]
 Model`Name = "NInvSeesaw";
 Model`NameLaTeX ="Inverse Seesaw NMSSM";
 Model`Authors = "A.Vicente, F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2015-11-16";
 
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
+(* 2015-11-16: changed SPheno.m *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)

@@ -947,7 +947,7 @@ WriteString[SFFile,"\\begin{align} \n"];
 clines=1;
 WriteString[SFFile,"- L_{SB,W} = \, & "<>TeXOutput[SoftW /. sum[a__]->1 /. subIndFinal[1,1] /. subIndFinal[2,2] /. subIndFinal[3,3]] <>"+ \\mbox{h.c.} \\\\ \n"];
 WriteString[SFFile,"- L_{SB,\\phi} = \, & "<>TeXOutput[SoftScalarMass /. sum[a__]->1 /. subIndFinal[1,1] /. subIndFinal[2,2] /. subIndFinal[3,3]] <>"\\\\ \n"];
-WriteString[SFFile,"- L_{SB,\\lambda} = \, & \\frac{1}{2}\\left("<>TeXOutput[SoftGauginoMass /. gen2->gen1 /. sum[a__]->1 /. conj[x_]->0/.a_[1]->a /. a_[2] ->a /. subIndFinal[1,1] /. subIndFinal[2,2] /. subIndFinal[3,3]] <>"+ \\mbox{h.c.} \\right) \n"];
+WriteString[SFFile,"- L_{SB,\\lambda} = \, & \\frac{1}{2}\\left("<>TeXOutput[SoftGauginoMass  /. sum[a__]->1 /. conj[x_]->0/.a_[1]->a /. a_[2] ->a /. subIndFinal[1,1] /. subIndFinal[2,2] /. subIndFinal[3,3]] <>"+ \\mbox{h.c.} \\right) \n"];
 
 If[AddDiracGauginos===True,
 WriteString[SFFile,"\\\\ - L_{SB,DG} = \, &"<>TeXOutput[(Simplify[SoftDG]  /. sum[a__]->1  /. conj[x_]->0/.a_[1]->a /. a_[2] ->a /. subIndFinal[1,1] /. subIndFinal[2,2] /. subIndFinal[3,3] )//. a_ Sig[b_,c_,d_]:>Sum[a Sigma[[b,c,d]],{b,1,3}]] <>" \n"];
@@ -968,7 +968,7 @@ i++;];
 WriteString[SFFile,"\\subsection{Gauge fixing terms} \n"];
 
 (*
-For[i=1,i<=Length[NameOfStates],
+For[i=1,i\[LessEqual]Length[NameOfStates],
 If[Head[DEFINITION[NameOfStates[[i]]][GaugeFixing]]===List,
 WriteString[SFFile,"\\subsubsection{Gauge fixing terms for eigenstates {\\tt '"<>ToString[NameOfStates[[i]]] <>"'} } \n"];
 gf = DEFINITION[NameOfStates[[i]]][GaugeFixing];
@@ -1029,7 +1029,10 @@ WriteString[vevFile,"\\subsection{VEVs for eigenstates {\\tt '"<>ToString[NameOf
 WriteString[vevFile,"\\begin{align} \n"];
 clines=1;
 For[i=1,i<=Length[list],
-WriteString[vevFile, TeXOutput[list[[i,1]]] <> " = & \, " <> TeXOutput[Sum[list[[i,j,1]]*list[[i,j,2]],{j,2,4}]]];
+If[Length[list[[i,-1]]]===2,
+WriteString[vevFile, TeXOutput[list[[i,1]]] <> " = & \, " <> TeXOutput[Sum[list[[i,j,1]]*list[[i,j,2]],{j,2,Length[list[[i]]]}]]];,
+WriteString[vevFile, TeXOutput[list[[i,1]]] <> " = & \, e^{i"<>TeXOutput[list[[i,-1,1]]]<>"} \\left(" <> TeXOutput[Sum[list[[i,j,1]]*list[[i,j,2]],{j,2,4}]]<>"\\right)"];
+];
 If[i==Length[list], WriteString[vevFile,"\n"];,WriteString[vevFile,"\\\\ \n"];];
 i++;];
 WriteString[vevFile,"\\end{align} \n"];
@@ -1199,7 +1202,7 @@ WriteMatrixToTeX[mixings[[i]],mixedNames[[i]],MMatrizen[[i]],False];
 
 WriteString[outputfile,"\\begin{equation} \n"];
 If[getTypeOld[mixings[[i,1,1]]]===F,
-If[Length[RE[mixedNames[[i,1]]]]==0,
+If[Length[RE[mixedNames[[i,1]]]]\[Equal]0,
 WriteString[outputfile,"m_{"<>TeXOutput[getParticleNameDirac[mixedNames[[i,1]]]]<> "} = \\left( \n"];,
 WriteString[outputfile,"m_{"<>TeXOutput[getParticleNameDirac[mixedNames[[i,1,1]]]]<> "} = \\left( \n"];
 ];,
@@ -1207,7 +1210,7 @@ WriteString[outputfile,"m^2_{"<>TeXOutput[getParticleNameDirac[mixedNames[[i,1]]
 ];
 WriteString[outputfile,"\\begin{array}{"];
 
-For[j=1,j<=Length[mixings[[i,1]]],
+For[j=1,j\[LessEqual]Length[mixings[[i,1]]],
 WriteString[outputfile,"c"];
 j++;];
 WriteString[outputfile,"}\n"];
@@ -1216,52 +1219,52 @@ listAbbrEntries = {};
 
 subRealSum={
 
-MatMul[A_,B_]+MatMul[conj[A_],conj[B_]]->2Re[MatMul[A,B]],
-MatMul[A_,conj[B_]]+MatMul[conj[A_],B_]->2Re[MatMul[A,conj[B]]],
-MatMul[A_,Tp[B_]]+MatMul[conj[A_],Adj[B_]]->2Re[MatMul[A,Tp[B]]],
-MatMul[A_,Adj[B_]]+MatMul[conj[A_],Tp[B_]]->2Re[MatMul[A,Adj[B]]],
-MatMul[conj[A_],Tp[B_]]+MatMul[A_,Adj[B_]]->2Re[MatMul[conj[A],Tp[B]]],
-MatMul[conj[A_],B_]+MatMul[A_,conj[B_]]->2Re[MatMul[conj[A],B]],
-MatMul[conj[A_],Adj[B_]]+MatMul[A_,Tp[B_]]->2Re[MatMul[conj[A],Adj[B]]],
-MatMul[Tp[A_],B_]+MatMul[Adj[A_],conj[B_]]->2Re[MatMul[Tp[A],B]],
-MatMul[Tp[A_],conj[B_]]+MatMul[Adj[A_],B_]->2Re[MatMul[Tp[A],conj[B]]],
-MatMul[Tp[A_],Tp[B_]]+MatMul[Adj[A_],Adj[B_]]->2Re[MatMul[Tp[A],Tp[B]]],
-MatMul[Tp[A_],Adj[B_]]+MatMul[Adj[A_],Tp[B_]]->2Re[MatMul[Tp[A],Adj[B]]],
-MatMul[Adj[A_],B_]+MatMul[Tp[A_],conj[B_]]->2Re[MatMul[Adj[A],conj[B]]],
-MatMul[Adj[A_],Tp[B_]]+MatMul[Tp[A_],Adj[B_]]->2Re[MatMul[Adj[A],Tp[B]]],
-MatMul[Adj[A_],conj[B_]]+MatMul[Tp[A_],B_]->2Re[MatMul[Adj[A],conj[B]]],
-a_ MatMul[A_,B_]+a_ MatMul[conj[A_],conj[B_]]->2 a Re[MatMul[A,B]],
-a_ MatMul[A_,conj[B_]]+a_ MatMul[conj[A_],B_]->2a Re[MatMul[A,conj[B]]],
-a_ MatMul[A_,Tp[B_]]+a_ MatMul[conj[A_],Adj[B_]]->2a Re[MatMul[A,Tp[B]]],
-a_ MatMul[A_,Adj[B_]]+a_ MatMul[conj[A_],Tp[B_]]->2a Re[MatMul[A,Adj[B]]],
-a_ MatMul[conj[A_],Tp[B_]]+a_ MatMul[A_,Adj[B_]]->2a Re[MatMul[conj[A],Tp[B]]],
-a_ MatMul[conj[A_],B_]+a_ MatMul[A_,conj[B_]]->2a Re[MatMul[conj[A],B]],
-a_ MatMul[conj[A_],Adj[B_]]+a_ MatMul[A_,Tp[B_]]->2 a Re[MatMul[conj[A],Adj[B]]],
-a_ MatMul[Tp[A_],B_]+a_ MatMul[Adj[A_],conj[B_]]->2a Re[MatMul[Tp[A],B]],
-a_ MatMul[Tp[A_],conj[B_]]+a_ MatMul[Adj[A_],B_]->2 a Re[MatMul[Tp[A],conj[B]]],
-a_ MatMul[Tp[A_],Tp[B_]]+a_ MatMul[Adj[A_],Adj[B_]]->2a Re[MatMul[Tp[A],Tp[B]]],
-a_ MatMul[Tp[A_],Adj[B_]]+a_ MatMul[Adj[A_],Tp[B_]]->2a Re[MatMul[Tp[A],Adj[B]]],
-a_ MatMul[Adj[A_],B_]+a_ MatMul[Tp[A_],conj[B_]]->2 a Re[MatMul[Adj[A],conj[B]]],
-a_ MatMul[Adj[A_],Tp[B_]]+a_ MatMul[Tp[A_],Adj[B_]]->2 a Re[MatMul[Adj[A],Tp[B]]],
-a_ MatMul[Adj[A_],conj[B_]]+a_ MatMul[Tp[A_],B_]->2 a Re[MatMul[Adj[A],conj[B]]],
+MatMul[A_,B_]+MatMul[conj[A_],conj[B_]]\[Rule]2Re[MatMul[A,B]],
+MatMul[A_,conj[B_]]+MatMul[conj[A_],B_]\[Rule]2Re[MatMul[A,conj[B]]],
+MatMul[A_,Tp[B_]]+MatMul[conj[A_],Adj[B_]]\[Rule]2Re[MatMul[A,Tp[B]]],
+MatMul[A_,Adj[B_]]+MatMul[conj[A_],Tp[B_]]\[Rule]2Re[MatMul[A,Adj[B]]],
+MatMul[conj[A_],Tp[B_]]+MatMul[A_,Adj[B_]]\[Rule]2Re[MatMul[conj[A],Tp[B]]],
+MatMul[conj[A_],B_]+MatMul[A_,conj[B_]]\[Rule]2Re[MatMul[conj[A],B]],
+MatMul[conj[A_],Adj[B_]]+MatMul[A_,Tp[B_]]\[Rule]2Re[MatMul[conj[A],Adj[B]]],
+MatMul[Tp[A_],B_]+MatMul[Adj[A_],conj[B_]]\[Rule]2Re[MatMul[Tp[A],B]],
+MatMul[Tp[A_],conj[B_]]+MatMul[Adj[A_],B_]\[Rule]2Re[MatMul[Tp[A],conj[B]]],
+MatMul[Tp[A_],Tp[B_]]+MatMul[Adj[A_],Adj[B_]]\[Rule]2Re[MatMul[Tp[A],Tp[B]]],
+MatMul[Tp[A_],Adj[B_]]+MatMul[Adj[A_],Tp[B_]]\[Rule]2Re[MatMul[Tp[A],Adj[B]]],
+MatMul[Adj[A_],B_]+MatMul[Tp[A_],conj[B_]]\[Rule]2Re[MatMul[Adj[A],conj[B]]],
+MatMul[Adj[A_],Tp[B_]]+MatMul[Tp[A_],Adj[B_]]\[Rule]2Re[MatMul[Adj[A],Tp[B]]],
+MatMul[Adj[A_],conj[B_]]+MatMul[Tp[A_],B_]\[Rule]2Re[MatMul[Adj[A],conj[B]]],
+a_ MatMul[A_,B_]+a_ MatMul[conj[A_],conj[B_]]\[Rule]2 a Re[MatMul[A,B]],
+a_ MatMul[A_,conj[B_]]+a_ MatMul[conj[A_],B_]\[Rule]2a Re[MatMul[A,conj[B]]],
+a_ MatMul[A_,Tp[B_]]+a_ MatMul[conj[A_],Adj[B_]]\[Rule]2a Re[MatMul[A,Tp[B]]],
+a_ MatMul[A_,Adj[B_]]+a_ MatMul[conj[A_],Tp[B_]]\[Rule]2a Re[MatMul[A,Adj[B]]],
+a_ MatMul[conj[A_],Tp[B_]]+a_ MatMul[A_,Adj[B_]]\[Rule]2a Re[MatMul[conj[A],Tp[B]]],
+a_ MatMul[conj[A_],B_]+a_ MatMul[A_,conj[B_]]\[Rule]2a Re[MatMul[conj[A],B]],
+a_ MatMul[conj[A_],Adj[B_]]+a_ MatMul[A_,Tp[B_]]\[Rule]2 a Re[MatMul[conj[A],Adj[B]]],
+a_ MatMul[Tp[A_],B_]+a_ MatMul[Adj[A_],conj[B_]]\[Rule]2a Re[MatMul[Tp[A],B]],
+a_ MatMul[Tp[A_],conj[B_]]+a_ MatMul[Adj[A_],B_]\[Rule]2 a Re[MatMul[Tp[A],conj[B]]],
+a_ MatMul[Tp[A_],Tp[B_]]+a_ MatMul[Adj[A_],Adj[B_]]\[Rule]2a Re[MatMul[Tp[A],Tp[B]]],
+a_ MatMul[Tp[A_],Adj[B_]]+a_ MatMul[Adj[A_],Tp[B_]]\[Rule]2a Re[MatMul[Tp[A],Adj[B]]],
+a_ MatMul[Adj[A_],B_]+a_ MatMul[Tp[A_],conj[B_]]\[Rule]2 a Re[MatMul[Adj[A],conj[B]]],
+a_ MatMul[Adj[A_],Tp[B_]]+a_ MatMul[Tp[A_],Adj[B_]]\[Rule]2 a Re[MatMul[Adj[A],Tp[B]]],
+a_ MatMul[Adj[A_],conj[B_]]+a_ MatMul[Tp[A_],B_]\[Rule]2 a Re[MatMul[Adj[A],conj[B]]],
 
 
-A_ *conj[B_]+conj[A_] B_ -> 2 Re[A conj[B]],
-a_ A_ *conj[B_]+a_ conj[A_] B_ -> 2 a Re[A conj[B]],
- A_ *Adj[B_]+conj[A_] Tp[B_] -> 2 Re[A Adj[B]],
-a_ A_ *Adj[B_]+a_ conj[A_] Tp[B_] -> 2 a  Re[A Adj[B]],
- A_ *Tp[B_]+conj[A_] Adj[B_] -> 2 Re[A Tp[B]],
-a_ A_ *Tp[B_]+a_ conj[A_] Adj[B_] -> 2 a  Re[A Tp[B]]
+A_ *conj[B_]+conj[A_] B_ \[Rule] 2 Re[A conj[B]],
+a_ A_ *conj[B_]+a_ conj[A_] B_ \[Rule] 2 a Re[A conj[B]],
+ A_ *Adj[B_]+conj[A_] Tp[B_] \[Rule] 2 Re[A Adj[B]],
+a_ A_ *Adj[B_]+a_ conj[A_] Tp[B_] \[Rule] 2 a  Re[A Adj[B]],
+ A_ *Tp[B_]+conj[A_] Adj[B_] \[Rule] 2 Re[A Tp[B]],
+a_ A_ *Tp[B_]+a_ conj[A_] Adj[B_] \[Rule] 2 a  Re[A Tp[B]]
 
 };
 
 
-For[j=1,j<= Length[mixings[[i,1]]],
-For[k=1,k<= Length[mixings[[i,1]]],
-value = FullSimplify[MMatrizen[[i,j,k]] /. ThetaStep[a___]->1] //. subTeXMM //. Delta[ToExpression["gm"<>ToString[k]],ToExpression["gn"<>ToString[j]]]->UnitM //. A_[ToExpression["gm"<>ToString[j]],ToExpression["gn"<>ToString[k]]]-> A //. A_[ToExpression["gn"<>ToString[k]],ToExpression["gm"<>ToString[j]]]->Tp[A] //. Conj->conj //. a_ conj[x_] + a_ x_ ->2 a Re[x] //. a_ x_ + a_ conj[x_] ->2 a Re[x] //. conj[x_] +  x_ ->2 Re[x]//. x_ + conj[x_]-> 2 Re[x] //. conj[x_]x_ -> abs[x] //. x_ conj[x_]->abs[x] //. conj[Tp[x_]]->Adj[x] //. Tp[conj[x_]]->Adj[x] //. conj[Adj[x_]]->Tp[x] //. Adj[conj[x_]]->Tp[x] //.(a_-b_)(a_+b_)->(a^2-b^2) //. subRealSum //.RXl[_]->0;
+For[j=1,j\[LessEqual] Length[mixings[[i,1]]],
+For[k=1,k\[LessEqual] Length[mixings[[i,1]]],
+value = FullSimplify[MMatrizen[[i,j,k]] /. ThetaStep[a___]\[Rule]1] //. subTeXMM //. Delta[ToExpression["gm"<>ToString[k]],ToExpression["gn"<>ToString[j]]]\[Rule]UnitM //. A_[ToExpression["gm"<>ToString[j]],ToExpression["gn"<>ToString[k]]]\[Rule] A //. A_[ToExpression["gn"<>ToString[k]],ToExpression["gm"<>ToString[j]]]\[Rule]Tp[A] //. Conj\[Rule]conj //. a_ conj[x_] + a_ x_ \[Rule]2 a Re[x] //. a_ x_ + a_ conj[x_] \[Rule]2 a Re[x] //. conj[x_] +  x_ \[Rule]2 Re[x]//. x_ + conj[x_]\[Rule] 2 Re[x] //. conj[x_]x_ \[Rule] abs[x] //. x_ conj[x_]\[Rule]abs[x] //. conj[Tp[x_]]\[Rule]Adj[x] //. Tp[conj[x_]]\[Rule]Adj[x] //. conj[Adj[x_]]\[Rule]Tp[x] //. Adj[conj[x_]]\[Rule]Tp[x] //.(a_-b_)(a_+b_)\[Rule](a^2-b^2) //. subRealSum //.RXl[_]\[Rule]0;
  If[getLaTeXlength[value]*Length[mixings[[i,1]]] < 100, 
 WriteString[outputfile,TeXOutput[value]];,
-If[Length[mixedNames[[i,1]]]==0 && j<k,
+If[Length[mixedNames[[i,1]]]\[Equal]0 && j<k,
 If[getTypeOld[mixings[[i,1,1]]]===S,
 If[conj[mixings[[i,1,1]]]===mixings[[i,1,1]],
 If[getGenALL[mixings[[i,1,1]]]===1,
@@ -1279,8 +1282,8 @@ WriteString[outputfile,"m_{"<>ToString[j] <> ToString[k] <> "}"];
 listAbbrEntries = Join[listAbbrEntries,{{"m_{"<>ToString[j] <> ToString[k] <> "}",value}}];
 ];
 ];
-If[k==Length[mixings[[i,1]]],
-If[j!= Length[mixings[[i,1]]],
+If[k\[Equal]Length[mixings[[i,1]]],
+If[j\[NotEqual] Length[mixings[[i,1]]],
 WriteString[outputfile,"\\\\ \n"];
 ];,
 WriteString[outputfile," &"];
@@ -1289,9 +1292,9 @@ k++;];
 j++;];
 WriteString[outputfile,"\\end{array} \n"];
 WriteString[outputfile,"\\right) "];
-If[FreeQ[MMatrizen[[i]],RXi]==False,
+If[FreeQ[MMatrizen[[i]],RXi]\[Equal]False,
 rxis=Intersection[Select[MMatrizen[[i]],((Head[#]===RXi)&),10];];
-For[j=1,j<=Length[rxis],
+For[j=1,j\[LessEqual]Length[rxis],
 WriteString[outputfile,"+  "<>TeXOutput[rxis[[j]]]<>"m^2("<>TeXOuptut[rxis[[j,1]]]<>") "];
 j++;];
 ];
@@ -1301,7 +1304,7 @@ WriteString[outputfile,"\\end{equation} \n"];
 
  If[Length[listAbbrEntries]>0,
 WriteString[outputfile,"\\begin{align} \n"];
-For[j=1,j<=Length[listAbbrEntries],
+For[j=1,j\[LessEqual]Length[listAbbrEntries],
 If[j<Length[listAbbrEntries],
 WriteString[outputfile, listAbbrEntries[[j,1]]<>" &= " <> TeXOutput[listAbbrEntries[[j,2]]] <> "\\\\ \n"];,
 WriteString[outputfile, listAbbrEntries[[j,1]]<>" &= " <> TeXOutput[listAbbrEntries[[j,2]]] <> "\n"];
@@ -1597,7 +1600,7 @@ WriteString[SelfE,"\\begin{itemize} \n"];
 
 For[i=1,i<=Length[SelfEnergy],
 (*
-If[Length[mixedNames[[i,1]]]==0,
+If[Length[mixedNames[[i,1]]]\[Equal]0,
 WriteString[SelfE,"\\item {\\bf Self-Energy for "<>getDescriptionField[getParticleNameDirac[mixedNames[[i,1]]]]  <>"} \\thickspace (\\("<> TeXOutput[mixedNames[[i,1]] /. diracSubBack1[ALL] /. diracSubBack2[ALL]] <>"\\)) \n\n"];,
 WriteString[SelfE,"\\item {\\bf Self-Energy for "<>getDescriptionField[getParticleNameDirac[mixedNames[[i,1,1]]]]  <>"} \\thickspace (\\("<> TeXOutput[mixedNames[[i,1,1]] /. diracSubBack1[ALL] /. diracSubBack2[ALL]] <>"\\)) \n\n"];
 ];
@@ -1695,7 +1698,7 @@ WriteString[TFile,"\\subsection{Tadpole Equations for eigenstates {\\tt '"<>ToSt
 (*
 WriteString[TFile,"\\begin{align} \n"];
 vev=DEFINITION[NameOfStates[[j]]][VEVs];
-For[i=1,i<=Length[TadEqu],
+For[i=1,i\[LessEqual]Length[TadEqu],
 If[getDimParameters[vev[[i,2,1]]]==={},
 WriteString[TFile,"\\frac{\\partial V}{\\partial "<>TeXOutput[vev[[i,2,1]]] <>"} &= "];,
 If[getDimParameters[vev[[i,2,1]]][[1]]>1,

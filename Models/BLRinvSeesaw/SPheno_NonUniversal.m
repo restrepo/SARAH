@@ -151,8 +151,6 @@ vdexp =                                                        \
  Sqrt[-(1 + TanBeta^2) (gR^2 (4 mz2 - gBL^2 vR^2) +            \
    gL^2 (4 mz2 - (gBL^2 + gR^2) vR^2))];
 
-UseHiggs2LoopMSSM = True;
-
 DefaultInputValues = {m0 -> 420, m12 -> 780, TanBeta->10, TanBetaRinput-> 1.15, SignumMu ->1, Azero -> -300, mARinput->820, vR->6000, MuRinput->-1230,Yv[1,1]-> 0.1, Yv[1,2]->0.147*10^-8, Yv[1,3]->0.167*10^-8, Yv[2,1]->0, Yv[2,2]->0.1, Yv[2,3]->0, Yv[3,1]->0.162*10^-7, Yv[3,2]->0,Yv[3,3]->0.1, Ys[1,1]->0.3, Ys[2,2]->0.3, Ys[3,3]->0.3}; 
 
 

@@ -30,10 +30,11 @@ ParameterDefinitions = {
 {ms2,       { Description -> "Softbreaking Singlet Mass" }},
 {mv2,       { Description -> "Softbreaking right Sneutrino Mass"}},
 
+(*
 {mvs2,     { LaTeX -> "m^2_{\\nu s}",
              LesHouches -> mvs2,
              OutputName-> mvs2}},
-
+*)
 
 {MassB,     { Description -> "Bino Mass parameter"}},
 {MassWB,    { Description -> "Wino Mass parameter"}},
