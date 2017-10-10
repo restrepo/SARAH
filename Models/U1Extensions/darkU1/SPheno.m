@@ -21,6 +21,17 @@ ParametersToSolveTadpoles = {muH2,muP2,vX};
 (*
 Tad1Loop[2]=0;
 *)
+
+DEFINITION[MatchingConditions]= {
+ {Ye, YeSM},
+ {Yd, YdSM},
+ {Yu, YuSM},
+ {g1, g1SM},
+ {g2, g2SM},
+ {g3, g3SM},
+ {vH, vSM}
+ };
+
 BoundaryLowScaleInput={
  {gX,gXINPUT},
  {g1X,g1XINPUT},
@@ -42,15 +53,8 @@ BoundaryLowScaleInput={
  {YXD, LHInput[YXD]},
  {U1Qa, U1QaINPUT},
  {U1Qb, U1QbINPUT},
- {vH, vSM}, 
  {vP, vPINPUT},
- {Ye, YeSM},
- {Yd, YdSM},
- {Yu, YuSM},
- {Yv, LHInput[Yv]},
- {g1, g1SM},
- {g2, g2SM},
- {g3, g3SM}
+ {Yv, LHInput[Yv]}
 };
 
 

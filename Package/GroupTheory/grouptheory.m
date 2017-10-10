@@ -53,8 +53,10 @@ res = Sum[res,{gen10,1,Gauge[[pos,2,1]]^2-1}];
 res=Table[Table[D[D[res,IR[x1][i]],IR[x2][j]],{i,1,dim}],{j,1,dim}];
 
 Off[Part::"pspec"];
+Off[Part::"pkspec1"];
 ReleaseHold[Hold[Set[LHS,RHS]] /. LHS -> GINV[group,dim][a__Integer] /. RHS -> (res[[a]])];
 On[Part::"pspec"];
+On[Part::"pkspec1"];
 
 ];
 
@@ -215,8 +217,14 @@ F, Switch[group[[1]],4,26],
 E,Switch[group[[1]],6,27,7,56,8,248]
 ];
 
-SA`DynL[conj[a_],b_]:=ConjugatedRep[SA`DynL[a,b],Gauge[[b,2]]];
-SA`DynL[bar[a_],b_]:=ConjugatedRep[SA`DynL[a,b],Gauge[[b,2]]];
+SA`DynL[conj[a_],b_Integer]:=ConjugatedRep[SA`DynL[a,b],Gauge[[b,2]]];
+SA`DynL[bar[a_],b_Integer]:=ConjugatedRep[SA`DynL[a,b],Gauge[[b,2]]];
+SA`DynL[conj[a_],b_Symbol]:=ConjugatedRep[SA`DynL[a,b],Gauge[[Position[Gauge,b][[1,1]]]][[2]]]/;(FreeQ[Gauge,b]==False);
+SA`DynL[bar[a_],b_Symbol]:=ConjugatedRep[SA`DynL[a,b],Gauge[[Position[Gauge,b][[1,1]]]][[2]]]/;(FreeQ[Gauge,b]==False);
+SA`DynL[conj[a_],b_Symbol]:=ConjugatedRep[SA`DynL[a,b],AuxGauge[[Position[AuxGauge,b][[1,1]]]][[2]]]/;(FreeQ[Gauge,b]==True && FreeQ[AuxGauge,b]==False );
+SA`DynL[bar[a_],b_Symbol]:=ConjugatedRep[SA`DynL[a,b],AuxGauge[[Position[AuxGauge,b][[1,1]]]][[2]]]/;(FreeQ[Gauge,b]==True &&  FreeQ[AuxGauge,b]==False );
+
+
 SA`DynL[a_,b_]:=SA`DynL[(a/.diracSub[ALL])[[1]],b]/;(FreeQ[diracFermions[ALL],a]==False);
 
 CG[a_,{}][b___]=1;
@@ -287,6 +295,20 @@ CG[Gauge[[i,2]],{rep,crep}][a__]=Delta[a];
 ];
 ];
 j++;];
+i++;];
+
+For[i=1,i<=Length[AuxGauge],
+If[AuxGauge[[i,2]]=!=U[1],
+CG[AuxGauge[[i,2]],{{0},{0}}][a_,b_]:=1;
+SA`KnonwCG=Join[SA`KnonwCG,{CG[AuxGauge[[i,2]],{{0},{0}}]}];
+reps=Intersection[Join[{getDynkinLabelsAdjoint[AuxGauge[[i,2]]]},DeleteCases[getDynkinLabels[#,AuxGauge[[i,2]]]&/@Intersection[Select[Flatten[Select[Flatten[AuxDimFields,1],FreeQ[#,{AuxGauge[[i,3]],_}]==False&]],Head[#]===Integer&]],{0}]]];
+(* reps=Abs[reps]; *)
+GenerateDynkinCasimir[AuxGauge[[i,2]] ,#]&/@reps;
+GenerateGeneratorsUnbrokenGroup[i,#,True]&/@reps;
+If[Head[AuxGauge[[i,2]]]=!=SU || AuxGauge[[i,2,1]]>3,
+GeneratorMatrices[AuxGauge[[i,2]]]=Normal[RepMatrices[SusynoForm[AuxGauge[[i,2]]],getDynkinLabels[getDimFundamental[AuxGauge[[i,2]]],AuxGauge[[i,2]]]]];
+];
+];
 i++;];
 
 
@@ -365,8 +387,10 @@ CG[SU[3],{{1,0},{1,0},{1,0}}][a_,b_,c_]:=epsTensor[a,b,c];
 CG[SU[3],{{1,0},{0,1}}][a__]=Delta[a];
 CG[SU[3],{{0,1},{1,0}}][a__]=Delta[a];
 CG[SU[3],{{1,0},{1,0},{1,0}}]=epsTensor;
-
-
+(*
+CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]=Delta[a,b] Delta[c,d];
+CG[SU[3],{{0,1},{1,0},{0,1},{1,0}}][a_,b_,c_,d_]=Delta[a,b] Delta[c,d];
+*)
 ];
 
 GenerateDynkinCasimir[group_,dyn_]:=Block[{i,j,k,casimir,dim,dimAdjoint},
@@ -410,8 +434,12 @@ MakeGenerator[nr,dyn,ytab[[2]],ytab[[3]]];
 ];
 ];
 
-GenerateGeneratorsUnbrokenGroup[nr_,dyn_]:=Block[{i,j,group},
-group=Gauge[[nr,2]];
+GenerateGeneratorsUnbrokenGroup[nr_,dyn_]:=GenerateGeneratorsUnbrokenGroup[nr,dyn,False];
+GenerateGeneratorsUnbrokenGroup[nr_,dyn_,auxgauge_]:=Block[{i,j,group},
+If[auxgauge=!=True,
+group=Gauge[[nr,2]];,
+group=AuxGauge[[nr,2]];
+];
 If[group==SU[2] && dyn=={1},
 Generator[SU[2],{1}][a__]=Sig[a]/2;
 Return[];
@@ -467,6 +495,8 @@ SA`SavedGenerators=Join[SA`SavedGenerators,{{Generator[group,dyn],repm}}];
 
 
 ];
+
+
 
 SA`DynL[a_,b_Integer]:=SA`DynL[a,Gauge[[b,3]]];
 SA`Casimir[a_,b_Integer]:=SA`Casimir[a,Gauge[[b,3]]];

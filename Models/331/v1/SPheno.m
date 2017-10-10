@@ -23,12 +23,17 @@ ParametersToSolveTadpoles = {mu12,mu22,mu32};
 
 QuadruplePrecision = {Fv};
 
-BoundaryLowScaleInput={
+DEFINITION[MatchingConditions]= {
   {vevk1,vSM*Cos[ArcTan[TanBeta]]},
   {vevk3,vSM*Sin[ArcTan[TanBeta]]},
   {g1, g2SM/0.57},
   {g2, g2SM},
   {g3, g3SM},
+  {yl, YeSM*vSM/vevk1}
+ };
+
+BoundaryLowScaleInput={
+
   {l1,Lambda1IN},
   {l2,Lambda2IN},
   {l3,Lambda3IN},
@@ -43,7 +48,7 @@ BoundaryLowScaleInput={
   {kap,kapIinput},
   {muX2,muX2Input},
   {vevn,nIN},
-  {yl, YeSM*vSM/vevk1},
+
   {ya, LHInput[ya]},
   {ys, LHInput[ys]},
   {mS, LHInput[mS]},

@@ -18,6 +18,8 @@ int main(int argc, char** argv)
 		double cut = 0.01;		// cut-off for channel output								
 		int fast = 1;			/* 0 = best accuracy, 1 = "fast option" accuracy ~1% 	     */
  		double Beps = 1.E-5;  		/* Criteqrium for including co-annihilations (1 = no coann.) */
+ 		VZdecay=0; VWdecay=0; cleanDecayTable();
+		ForceUG=1; 		
 			err = sortOddParticles(lspname);	
 			printMasses(stdout,1);				
 	 		Omega = darkOmega(&Xf,fast,Beps);

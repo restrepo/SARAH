@@ -52,8 +52,7 @@ MINPAR={{1, vHRinput},
 
 ParametersToSolveTadpoles = {muL2,muR2,mudL2,mudR2,muU,muD,muE}; 
 
-
-BoundaryLowScaleInput={
+DEFINITION[MatchingConditions]= {
  {g3, g3SM},
  {g2, g2SM},
  {g1L1R, 0},      (* assuming for simplicity no gauge kinetic mixing *)
@@ -67,7 +66,12 @@ BoundaryLowScaleInput={
  {vSU, vSUinput},
  {vtL, vtLinput},
  {vtR, vtRinput},
- {vHL, Sqrt[vSM^2 - 2*vtL^2]},
+ {vHL, Sqrt[vSM^2 - 2*vtL^2]}
+ };
+
+
+BoundaryLowScaleInput={
+
  {rho1R, rho1Rinput},
  {rho2R, rho2Rinput},
  {rho1L, rho1Linput},

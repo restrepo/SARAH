@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 Options[CalcLoopCorrections]={ReadLists->False, OnlyWith->{}};
 
@@ -171,6 +172,7 @@ CalculatedLoopCorrections=Eigenstates;
 ];
 
 
+(* ::Input::Initialization:: *)
  OneLoopNotMixed[particles_, Eigenstates_]:=Block[{i,j},
 
 CorrectionList = Table[0,{Length[particles]}];
@@ -179,14 +181,14 @@ Print["    ... processing: ",Dynamic[DynamicOneLoopNameNM],"(",Dynamic[DynamicOn
 For[i=1,i<=Length[particles],
 DynamicOneLoopNrNM=i;
 DynamicOneLoopNameNM=particles[[i,1]];
-If[FreeQ[massless,particles[[i,1]]]==True, 
+If[FreeQ[massless,particles[[i,1]]]==True || getType[particles[[i,1]]]===V  || getType[particles[[i,1]]]===F, 
 particle=particles[[i,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
 (* Print["    Calculate One Loop Self Energy of ",particle]; *)
 
 Switch[getType[particle],
   S,temp=Join[ThreeParticleVertex2[particle],FourParticleVertex2[particle]];,
   V,temp=Join[ThreeParticleVertex2[particle],FourParticleVertex2[particle]];,
-  F,temp=ThreeParticleVertex2[particle];
+  F,temp=ThreeParticleVertex2check[particle];
 ];
 
 If[getGen[particle]>1,
@@ -336,7 +338,7 @@ listAddedMasses=Join[listAddedMasses,{particle}];
 Switch[getType[particle],
  S,temp=Join[ThreeParticleVertex2[particle],FourParticleVertex2[particle]];,
   V,temp=Join[ThreeParticleVertex2[particle],FourParticleVertex2[particle]];,
-  F,temp=ThreeParticleVertex2[particle];
+  F,temp=ThreeParticleVertex2check[particle];
 ];
 
 SA`subUnrotedFieldsRotatedFields=Join[SA`subUnrotedFieldsRotatedFields,{ ToExpression["U"<>ToString[particle]]->particle}];
@@ -540,6 +542,7 @@ Return[0];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 OrderMasses[p1_,p2_,type_]:=Block[{m1,m2},
 If[getType[p1]===type,
@@ -697,6 +700,7 @@ Switch[corrections[[4]],
 
 
 
+(* ::Input::Initialization:: *)
 AddLoopVector[particle_,corrections_]:=Block[{temp,m1,m2,m0,mS,mV,v,fac,m11,m12,m21,m22,ind1,ind2},
 (* If[corrections[[4]]===VVVV || corrections[[4]]===SSVV,Return[0];]; *)
 
@@ -771,6 +775,7 @@ Switch[corrections[[4]],
 ];
 
 
+(* ::Input::Initialization:: *)
 getUnmixedMasses[Eigenstates_]:=Block[{i,j,neededP,treeMass,massMatrixTemp},
 partListFSV=Join[PART[F],Join[PART[S],PART[V]]];
 For[i=1,i<=Length[partListFSV],
@@ -865,6 +870,7 @@ Return[temp];
 ];
 
 
+(* ::Input::Initialization:: *)
 OneLoopDifferentExternal[Eigenstates_]:=Block[{i,j,k, particles,temp2},
 CorrectionListVS ={};
 CorrectionListVV ={};
@@ -878,12 +884,24 @@ temp2={};
 For[k=1,k<=Length[temp],
 temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[2],C[External[1],AntiField[Internal[1]],Internal[2]],C[AntiField[External[2]],AntiField[Internal[2]],Internal[1]],VType[getType[Internal[1]],getType[Internal[2]],getType[External[1]]],CalculateColorFactor[getBlank[External[1]],Internal[1],Internal[2]],CalculateSymmetryFactor[Internal[1],Internal[2]]}]/. temp[[k,2]]] }];
 k++];
+temp=InsFields[{{C[particles[[i]],AntiField[particles[[j]]],AntiField[FieldToInsert[1]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],External[1]->particles[[i]], External[2]->particles[[j]],Index[1]->gO1,Index[2]->gO2,Index[3]->gI1}}];
+If[temp=!={},
+For[k=1,k<=Length[temp],
+temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[1],Cp[External[1],AntiField[External[2]],AntiField[Internal[1]],Internal[1]],Cp[External[1],AntiField[External[2]],AntiField[Internal[1]],Internal[1]],VType[getType[Internal[1]],getType[Internal[1]],getType[External[1]],getType[External[2]]],CalculateColorFactor[getBlank[External[1]],Internal[1],AntiField[Internal[1]]],CalculateSymmetryFactor[Internal[1],AntiField[Internal[1]]]}]/. temp[[k,2]]] }];
+
+If[FreeQ[AddedVertex,temp2[[-1,3]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C],
+VerticesGaugeMassES = Join[VerticesGaugeMassES,{{AddVertex[{temp2[[-1,5]],temp2[[-1,1]],particles[[i]],AntiField[particles[[j]]]}],temp2[[-1,5]]}}]; 
+ AddedVertex=Join[AddedVertex,{temp2[[-1,3]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C}];
+];
+
+k++];
+];
 CorrectionListVV=Join[CorrectionListVV,{{{particles[[i]],particles[[j]]},ReleaseHold[temp2]}}];
 ];
 j++;];
 i++;];
 
-particles1=Transpose[PART[V]][[1]];
+particles1=Select[Transpose[PART[V]][[1]],FreeQ[massless,#]&];
 particles2=Transpose[PART[S]][[1]];
 For[i=1,i<=Length[particles1],
 For[j=1,j<=Length[particles2],
@@ -893,6 +911,22 @@ temp2={};
 For[k=1,k<=Length[temp],
 temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[2],C[External[1],AntiField[Internal[1]],Internal[2]],C[AntiField[External[2]],AntiField[Internal[2]],Internal[1]],VType[getType[Internal[1]],getType[Internal[2]],getType[External[1]]],CalculateColorFactor[getBlank[External[1]],Internal[1],Internal[2]],CalculateSymmetryFactor[Internal[1],Internal[2]]}]/. temp[[k,2]]] }];
 k++];
+
+temp=InsFields[{{C[particles1[[i]],AntiField[particles2[[j]]],AntiField[FieldToInsert[1]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],External[1]->particles1[[i]], External[2]->particles2[[j]],Index[1]->gO1,Index[2]->gO2,Index[3]->gI1}}];
+If[temp=!={},
+For[k=1,k<=Length[temp],
+temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[1],Cp[External[1],AntiField[External[2]],AntiField[Internal[1]],Internal[1]],Cp[External[1],AntiField[External[2]],AntiField[Internal[1]],Internal[1]],VType[getType[Internal[1]],getType[Internal[1]],getType[External[1]],getType[External[2]]],CalculateColorFactor[getBlank[External[1]],Internal[1],AntiField[Internal[1]]],CalculateSymmetryFactor[Internal[1],AntiField[Internal[1]]]}]/. temp[[k,2]]] }];
+
+If[FreeQ[AddedVertex,temp2[[-1,3]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C],
+VerticesGaugeMassES = Join[VerticesGaugeMassES,{{AddVertex[{temp2[[-1,5]],temp2[[-1,1]],particles1[[i]],AntiField[particles2[[j]]]}],temp2[[-1,5]]}}]; 
+ AddedVertex=Join[AddedVertex,{temp2[[-1,3]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C}];
+];
+
+k++];
+];
+
+
+
 CorrectionListVS=Join[CorrectionListVS,{{{particles1[[i]],particles2[[j]]},ReleaseHold[temp2]}}];
 ];
 j++;];

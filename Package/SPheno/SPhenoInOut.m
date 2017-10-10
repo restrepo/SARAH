@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 InitInputOutput:=Block[{i},
 LowScaleList={};
 HighScaleList={};
@@ -170,6 +171,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateInOut:=Block[{i1,i2,i3,i4},
 
 (*
@@ -191,9 +193,11 @@ StringScaleOut="SUSY Scale";
 
 WriteString[sphenoInOut,"Module InputOutput_"<>ModelName<>" \n \n"];
 WriteString[sphenoInOut,"Use Control \n"];
+WriteString[sphenoInOut,"Use Settings \n"];
 WriteString[sphenoInOut,"!Use Experiment \n"];
 WriteString[sphenoInOut,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoInOut,"Use LoopFunctions \n"];
+WriteString[sphenoInOut,"Use AddLoopFunctions \n"];
 If[OnlyLowEnergySPheno===True,
 WriteString[sphenoInOut,"Use StandardModel \n"];
 WriteString[sphenoInOut,"Use LoopCouplings_"<>ModelName<>" \n \n"];,
@@ -251,6 +255,7 @@ Close[sphenoInOut];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLesHouchesIn:=Block[{},
 
 Print["  Writing input routines"];
@@ -349,6 +354,8 @@ WriteString[sphenoInOut,"    Else If (read_line(7:11).Eq.\"FLIFE\") Then  \n"];
 WriteString[sphenoInOut,"     Call Read_FLIFE(99)  \n"];
 WriteString[sphenoInOut,"    Else If (read_line(7:17).Eq.\"SPHENOINPUT\") Then  \n"];
 WriteString[sphenoInOut,"     Call Read_SPhenoInput(99)  \n"];
+WriteString[sphenoInOut,"    Else If (read_line(7:18).Eq.\"DECAYOPTIONS\") Then  \n"];
+WriteString[sphenoInOut,"     Call Read_DecayOptions(99)  \n"];
 WriteString[sphenoInOut,"    Else If (read_line(7:12).Eq.\"MINPAR\") Then  \n"];
 WriteString[sphenoInOut,"     Call Read_MINPAR(99,0,i_model,set_mod_par,kont)  \n"];
 WriteString[sphenoInOut,"    Else If (read_line(7:14).Eq.\"IMMINPAR\") Then  \n"];
@@ -401,7 +408,7 @@ WriteString[sphenoInOut,"gamW2 = gamW**2\n"];
 WriteString[sphenoInOut,"gmW = gamW * mW\n"];
 WriteString[sphenoInOut,"gmW2 = gmW**2\n"];
 
-If[SupersymmetricModel===True,
+If[SupersymmetricModel===True && OnlyLowEnergySPheno=!=True,
 WriteString[sphenoInOut,"Alpha_mZ = Alpha_MSbar(mZ, mW)\n"];
 WriteString[sphenoInOut,"If (calc_ferm) Call CalculateRunningMasses(mf_l,mf_d,mf_u&\n"];
 WriteString[sphenoInOut,"&,Q_light_quarks,alpha_mZ,alphas_mZ,mZ&\n"];
@@ -424,8 +431,103 @@ AppendSourceCode["ReadSPINFO.f90",sphenoInOut];
 AppendSourceCode["ReadSPheno_start.f90",sphenoInOut];
 If[FlagLoopContributions===True,WriteCheckFieldsLoop;];
 AppendSourceCode["ReadSPheno_end.f90",sphenoInOut];
+GenerateReadDecayOptions;
 WriteString[sphenoInOut,"End Subroutine LesHouches_Input \n \n \n \n"];
 
+];
+
+GenerateReadDecayOptions:=Block[{i,j},
+WriteString[sphenoInOut,"Subroutine Read_DecayOptions(io) \n"];
+WriteString[sphenoInOut,"Implicit None \n"];
+WriteString[sphenoInOut,"Integer,Intent(in) :: io \n"];
+
+WriteString[sphenoInOut,"Integer :: i_par, divset \n"];
+WriteString[sphenoInOut,"Real(dp) :: wert, divvalue \n"];
+WriteString[sphenoInOut,"Character(len=80) :: read_line \n"];
+WriteString[sphenoInOut,"Do \n"];
+WriteString[sphenoInOut,"Read(io,*,End=200,err=200) read_line \n"];
+WriteString[sphenoInOut,"If (read_line(1:1).Eq.\"#\") Cycle! this loop \n"];
+WriteString[sphenoInOut,"Backspace(io)! resetting to the beginning of the line \n"];
+WriteString[sphenoInOut,"If ((read_line(1:1).Eq.\"B\").Or.(read_line(1:1).Eq.\"b\")) Exit! this loop \n"];
+WriteString[sphenoInOut,"Read(io,*,End=200) i_par,wert,read_line \n"];
+WriteString[sphenoInOut,"Select Case(i_par) \n"];
+For[i=1,i<=Length[ListDecayParticles3B],
+WriteString[sphenoInOut,"Case("<>ToString[i]<>") \n"];
+WriteString[sphenoInOut,"  If (wert.ne.1) Calc3BodyDecay_"<>SPhenoForm[ListDecayParticles3B[[i,1]]]<>"= .False. \n"];
+i++;];
+If[SA`AddOneLoopDecay === True,
+WriteString[sphenoInOut,"Case(1000) \n"];
+WriteString[sphenoInOut,"  If (wert.eq.1) CalcLoopDecay_LoopInducedOnly = .True. \n"];
+For[i=1,i<=Length[SA`ParticlesDecays1Loop],
+WriteString[sphenoInOut,"Case("<>ToString[1000+i]<>") \n"];
+WriteString[sphenoInOut,"  If (wert.ne.1) CalcLoopDecay_"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>"= .False. \n"];
+i++;];
+WriteString[sphenoInOut,"Case(1101) \n"];
+WriteString[sphenoInOut,"  divonly_save = wert ! divset = SetDivonlyAdd(INT(wert)) \n"];
+WriteString[sphenoInOut,"Case(1102) \n"];
+WriteString[sphenoInOut,"  divergence_save = wert ! divvalue = SetDivergenceAdd(wert) \n"];
+WriteString[sphenoInOut,"Case(1110) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  SimplisticLoopDecays=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  SimplisticLoopDecays=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1111) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  ShiftIRdiv=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  ShiftIRdiv=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1112) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  DebugLoopDecays=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  DebugLoopDecays=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1113) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  OnlyTreeLevelContributions=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  OnlyTreeLevelContributions=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1114) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.0._dp) Then\n"];
+WriteString[sphenoInOut,"  ExternalZfactors=.True. \n"];
+WriteString[sphenoInOut,"    If (wert.eq.1._dp) Then\n"];
+WriteString[sphenoInOut,"     UseZeroRotationMatrices=.False.\n"];
+WriteString[sphenoInOut,"     UseP2Matrices=.True.\n"];
+WriteString[sphenoInOut,"    Else if (wert.eq.2._dp) Then  \n"];
+WriteString[sphenoInOut,"     UseZeroRotationMatrices=.True.\n"];
+WriteString[sphenoInOut,"     UseP2Matrices=.False.\n"];
+WriteString[sphenoInOut,"    Else  \n"];
+WriteString[sphenoInOut,"     UseZeroRotationMatrices=.False.\n"];
+WriteString[sphenoInOut,"     UseP2Matrices=.False.\n"];
+WriteString[sphenoInOut,"    End if  \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  ExternalZfactors=.False.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1115) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  OSkinematics=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  OSkinematics=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+
+
+WriteString[sphenoInOut,"Case(1201) \n"];
+WriteString[sphenoInOut,"  Mass_Regulator_PhotonGluon=wert \n"];
+];
+WriteString[sphenoInOut,"Case Default \n"];
+WriteString[sphenoInOut," If (output_screen) Write(*,*)&\n"];
+WriteString[sphenoInOut,"   & \"Problem while reading DecayOptions, ignoring unknown entry\"&\n"];
+WriteString[sphenoInOut,"   &,i_par,wert\n"];
+WriteString[sphenoInOut," Write(Errcan,*)&\n"];
+WriteString[sphenoInOut,"   & \"Problem while reading  DecayOptions, ignoring unknown entry\"&\n"];
+WriteString[sphenoInOut,"   &,i_par,wert \n"];
+WriteString[sphenoInOut,"End Select \n"];
+WriteString[sphenoInOut,"End Do! i_par \n\n"];
+WriteString[sphenoInOut,"200 Return \n"];
+WriteString[sphenoInOut,"End Subroutine Read_DecayOptions \n\n\n"];
 ];
 
 
@@ -551,6 +653,7 @@ WriteString[sphenoInOut,"End Subroutine Read_"<>name<>" \n \n \n"];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLesHouchesOut:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
 
 Print["  Writing output routines"];
@@ -671,6 +774,8 @@ If[getGen[HiggsBoson]>0 || (1+getGen[PseudoScalar]-getGenSPhenoStart[PseudoScala
 WriteInOutLowEnergyObservables;
 If[IncludeFineTuning===True,WriteInOutFT;];
 WriteInOutDecays;
+
+If[SA`AddOneLoopDecay === True,WriteInOutDecays1L;];
 ];
 
 WriteString[sphenoInOut,"99 Format(1x,i5,3x,a) \n"];
@@ -694,6 +799,7 @@ WriteString[sphenoInOut,"108 Format(9x,1P,E16.8,0P,3x,a) \n"];
 WriteString[sphenoInOut,"109 Format(1x,3i3,3x,1P,e16.8,3x,a) \n"];
 WriteString[sphenoInOut,"110 Format(3x,2i3,3x,\"# \",a) \n"];
 WriteString[sphenoInOut,"200 Format(\"DECAY\",1x,I9,3x,1P,E16.8,0P,3x,\"# \",a) \n"];
+WriteString[sphenoInOut,"210 Format(\"DECAY1L\",1x,I9,3x,1P,E16.8,0P,3x,\"# \",a) \n"];
 WriteString[sphenoInOut,"201 Format(3x,1P,e16.8,0p,3x,I2,3x,2(i10,1x),2x,\"# BR(\",a) \n"];
 WriteString[sphenoInOut,"202 Format(3x,1P,e16.8,0p,3x,I2,3x,3(i10,1x),2x,\"# BR(\",a) \n"];
 WriteString[sphenoInOut,"222 Format(1x,a8,1x,a4,3x,a2,3x,a1,3x,E16.8,3x,a) \n"];
@@ -710,6 +816,7 @@ WriteString[sphenoInOut,"End Subroutine LesHouches_Out \n \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 
 
@@ -934,6 +1041,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateMixedLHBlock:=Block[{i,temp,ParticlePhasesTEMP},
 CombindedBlock={};
 NewLHoutputBlocks={};
@@ -1042,6 +1150,7 @@ treeleveltadpolesLOW=temp2;
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteReadInFunctions:=Block[{i,j,temp,temp2},
 For[i=1,i<=Length[CombindedBlock],
 temp={};
@@ -1648,6 +1757,12 @@ WriteString[sphenoInOut,"Write(io_L,104)  48,  Real(sqrt("<>SPhenoForm[SoftDown]
 WriteString[sphenoInOut,"Write(io_L,104)  49,  Real(sqrt("<>SPhenoForm[SoftDown]<>"(3,3)),dp), \" # mD(3,3)\" \n"];
 WriteString[sphenoInOut, "End if \n"];
 ];
+If[SLHA1Possible==True && CombindedBlock[[i,1]]===HMIX && kk ==1 && ModelName==="MSSM",
+WriteString[sphenoInOut, "If (WriteSLHA1) Then \n"];
+WriteString[sphenoInOut,"Write(io_L,104)  2,  TanBeta, \" # TB\" \n"];
+WriteString[sphenoInOut,"Write(io_L,104)  4,  MAh2(2), \" # MA2\" \n"];
+WriteString[sphenoInOut, "End if \n"];
+];
 i++;];
 kkk++;];
 Switch[kk,
@@ -1883,7 +1998,7 @@ WriteString[sphenoInOut, "End if \n"];
 
 ];
 
-WriteInOutDecays:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
+WriteInOutDecays:=Block[{i,j,k,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
 
 For[i=1,i<=Length[savedDecayInfos],
 WriteString[sphenoInOut, "\n \n !-------------------------------\n"];
@@ -2032,30 +2147,6 @@ p3=finalparticles[[3]];
 
 If[sign<0,p1=AntiField[p1];p2=AntiField[p2]; p3=AntiField[p3];];
 
-(*
-If[getGenSPheno[p1]>1,
-WriteString[sphenoInOut,"Do gt1= "<>ToString[getGenSPhenoStart[p1]] <> ", "<>ToString[getGenSPheno[p1]] <> "\n"];
-];
-If[getGenSPheno[p2]>1,
-WriteString[sphenoInOut,"  Do gt2="<>ToString[getGenSPhenoStart[p2]] <> ", "<>ToString[getGenSPheno[p2]] <> "\n"];
-];
-If[getGenSPheno[p3]>1,
-WriteString[sphenoInOut,"  Do gt3="<>ToString[getGenSPhenoStart[p3]] <> ", "<>ToString[getGenSPheno[p3]] <> "\n"];
-];
-*)
-
-(*
-If[getGenSPheno[p1]>1,
-WriteString[sphenoInOut,"Do gt1= 1, "<>ToString[getGenSPheno[p1]] <> "\n"];
-];
-If[getGenSPheno[p2]>1,
-WriteString[sphenoInOut,"  Do gt2= 1, "<>ToString[getGenSPheno[p2]] <> "\n"];
-];
-If[getGenSPheno[p3]>1,
-WriteString[sphenoInOut,"  Do gt3= 1, "<>ToString[getGenSPheno[p3]] <> "\n"];
-];
-*)
-
 If[getGenSPheno[p1]>1,
 WriteString[sphenoInOut,"Do gt1="<>ToString[getGenSPhenoStart[p1]] <> ","<>ToString[getGenSPheno[p1]] <> "\n"];
 ];
@@ -2085,7 +2176,6 @@ StringPT1="\" \"";
 StringPT1s="\"^* \"";
 WriteString[sphenoInOut,"CurrentPDG3(1) = " <>SPhenoPDG[p1,gt1] <>" \n"];
 ];
-
 If[Head[p2]=== bar || Head[p2]=== conj,
 StringPT2="\"^* \"";
 StringPT2s="\" \"";
@@ -2116,7 +2206,6 @@ WriteString[sphenoInOut,"& Trim("<>SPhenoNameArray[p0,j]<>")//\""<>StringPT0<>" 
 
 
 WriteString[sphenoInOut,"End if \n"];
-
 WriteString[sphenoInOut, "icount = icount +1 \n"];
 If[getGenSPheno[p1]>1,WriteString[sphenoInOut,"  End Do \n"];];
 If[getGenSPheno[p2]>1, WriteString[sphenoInOut,"End Do \n \n"];];
@@ -2124,6 +2213,124 @@ If[getGenSPheno[p3]>1, WriteString[sphenoInOut,"End Do \n \n"];];
 
 k++;];
 ];
+WriteString[sphenoInOut,"End if \n"];
+];
+j++;]; 
+i++;];
+];
+
+
+WriteInOutDecays1L:=Block[{i,j,k,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
+
+For[i=1,i<=Length[savedDecayInfos],
+WriteString[sphenoInOut, "\n \n !-------------------------------\n"];
+WriteString[sphenoInOut, "!" <>ToString[savedDecayInfos[[i,1]]]<>"\n"];
+WriteString[sphenoInOut, "!-------------------------------\n \n"];
+particle=savedDecayInfos[[i,1]];
+For[j=1,j<=getGenSPheno[particle],
+If[FreeQ[GoldstoneGhost,particle[{j}]],
+WriteString[sphenoInOut,"If("<>SPhenoWidth1L[particle,j] <>".gt.MinWidth) Then \n"]; 
+If[getPDG[particle,j]<0,
+sign=-1;
+sign2="-";
+p0=AntiField[particle];
+StringPT0="^*";,
+sign=1;
+sign2="";
+p0=particle;
+StringPT0="";];
+(* WriteString[sphenoInOut,"Write(io_L,200) "<>ToString[sign*getPDG[particle,j]]<>","<>SPhenoWidth[particle,j]<>","<>"Trim(\""<>ToString[getBlank[particle ]]<>"_"<>ToString[j]<>"\") \n"]; *)
+WriteString[sphenoInOut,"Write(io_L,210) "<>sign2<>"INT("<>SPhenoPDG[particle,j]<>"),"<>SPhenoWidth1L[particle,j]<>","<>"Trim("<>SPhenoNameArray[particle,j]<>") \n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"#    BR                NDA      ID1      ID2\" \n"];
+WriteString[sphenoInOut, "icount = 1 \n"];
+For[k=1,k<=Length[savedDecayInfos[[i,4]]],
+
+pt1=savedDecayInfos[[i,4,k,1]];
+pt2=savedDecayInfos[[i,4,k,2]];
+t1=getType[pt1];
+t2=getType[pt2];
+		   Which[
+t1=== F && t2=== F,p1=pt1;p2=pt2;,
+t1=== S && t2=== S,p1=pt1;p2=pt2;,
+t1=== F && t2=== S,p1=pt1;p2=pt2;,
+t1=== S && t2=== F,p1=pt2;p2=pt1;,
+t1=== F && t2=== V,p1=pt1;p2=pt2;,
+t1=== V && t2=== F,p1=pt2;p2=pt1;,
+t1=== V && t2=== S,p1=pt2;p2=pt1;,
+t1=== S && t2=== V,p1=pt1;p2=pt2;,
+t1=== V && t2=== V,p1=pt2;p2=pt1;
+];
+
+If[sign<0,p1=AntiField[p1];p2=AntiField[p2];];
+
+If[getGenSPheno[p1]>1,
+WriteString[sphenoInOut,"Do gt1= "<>ToString[getGenSPhenoStart[p1]] <> ", "<>ToString[getGenSPheno[p1]] <> "\n"];
+];
+If[getGenSPheno[p2]>1,
+If[p1===p2,
+WriteString[sphenoInOut,"  Do gt2= gt1, "<>ToString[getGenSPheno[p2]] <> "\n"];,
+WriteString[sphenoInOut,"  Do gt2="<>ToString[getGenSPhenoStart[p2]] <> ", "<>ToString[getGenSPheno[p2]] <> "\n"];
+];
+];
+
+WriteString[sphenoInOut,"If ("<>SPhenoBR1L[particle,j,icount]<>".Gt.BrMin) Then \n"];
+
+If[p1 ===VectorW && p2 === VectorW,
+StringPT1="\"^* \"";
+StringPT1s="\" \"";
+WriteString[sphenoInOut,"CurrentPDG2(1) = -" <>SPhenoPDG[p1,gt1] <>" \n"];
+StringPT2="\"_virt \"";
+StringPT2s="\"^*_virt \"";
+WriteString[sphenoInOut,"CurrentPDG2(2) = " <>SPhenoPDG[p2,gt2] <>" \n"];
+
+
+WriteString[sphenoInOut,"Write(io_L,201) "<>SPhenoBR1L[particle,j,icount]<>",2,CurrentPDG2, & \n "];
+WriteString[sphenoInOut,"& Trim("<>SPhenoNameArray[p0,j]<>")//\""<>StringPT0<>" -> \"//Trim("<>SPhenoNameArray[getBlank[p1],gt1]<>")//"<>StringPT1<>"//Trim("<>SPhenoNameArray[getBlank[p2],gt2]<>")//"<>StringPT2<>"//\")\"\n"];
+(*
+WriteString[sphenoInOut,"Write(io_L,201) "<>SPhenoBR[particle,j,icount]<>"/2._dp,2,-CurrentPDG2, & \n "];
+WriteString[sphenoInOut,"& Trim("<>SPhenoNameArray[p0,j]<>")//\""<>StringPT0<>" -> \"//Trim("<>SPhenoNameArray[getBlank[p1],gt1]<>")//"<>StringPT1s<>"//Trim("<>SPhenoNameArray[getBlank[p2],gt2]<>")//"<>StringPT2s<>"210//\")\"\n"];
+*),
+
+If[Head[p1]=== bar || Head[p1]=== conj,
+StringPT1="\"^* \"";
+StringPT1s="\" \"";
+WriteString[sphenoInOut,"CurrentPDG2(1) = -" <>SPhenoPDG[p1,gt1] <>" \n"];,
+StringPT1="\" \"";
+StringPT1s="\"^* \"";
+WriteString[sphenoInOut,"CurrentPDG2(1) = " <>SPhenoPDG[p1,gt1] <>" \n"];
+];
+
+If[Head[p2]=== bar || Head[p2]=== conj,
+StringPT2="\"^* \"";
+StringPT2s="\" \"";
+WriteString[sphenoInOut,"CurrentPDG2(2) = -" <>SPhenoPDG[p2,gt2] <>" \n"];,
+StringPT2="\" \"";
+StringPT2s="\"^* \"";
+WriteString[sphenoInOut,"CurrentPDG2(2) = " <>SPhenoPDG[p2,gt2] <>" \n"];
+];
+
+
+
+If[AntiField[particle]===particle && (AntiField[p1]=!=p1 || AntiField[p2]=!=p2) && AntiField[p1]=!=p2,
+WriteString[sphenoInOut,"Write(io_L,201) "<>SPhenoBR1L[particle,j,icount]<>"/2._dp,2,CurrentPDG2, & \n "];
+WriteString[sphenoInOut,"& Trim("<>SPhenoNameArray[p0,j]<>")//\""<>StringPT0<>" -> \"//Trim("<>SPhenoNameArray[getBlank[p1],gt1]<>")//"<>StringPT1<>"//Trim("<>SPhenoNameArray[getBlank[p2],gt2]<>")//"<>StringPT2<>"//\")\"\n"];
+WriteString[sphenoInOut,"Write(io_L,201) "<>SPhenoBR1L[particle,j,icount]<>"/2._dp,2,-CurrentPDG2, & \n "];
+WriteString[sphenoInOut,"& Trim("<>SPhenoNameArray[particle,j]<>")//\""<>StringPT0<>" -> \"//Trim("<>SPhenoNameArray[getBlank[p1],gt1]<>")//"<>StringPT1s<>"//Trim("<>SPhenoNameArray[getBlank[p2],gt2]<>")//"<>StringPT2s<>"//\")\"\n"];,
+WriteString[sphenoInOut,"Write(io_L,201) "<>SPhenoBR1L[particle,j,icount]<>",2,CurrentPDG2, & \n "];
+WriteString[sphenoInOut,"& Trim("<>SPhenoNameArray[p0,j]<>")//\""<>StringPT0<>" -> \"//Trim("<>SPhenoNameArray[getBlank[p1],gt1]<>")//"<>StringPT1<>"//Trim("<>SPhenoNameArray[getBlank[p2],gt2]<>")//"<>StringPT2<>"//\")\"\n"];
+];
+];
+
+WriteString[sphenoInOut,"End if \n"];
+
+WriteString[sphenoInOut, "icount = icount +1 \n"];
+
+
+If[getGenSPheno[p1]>1,WriteString[sphenoInOut,"  End Do \n"];];
+If[getGenSPheno[p2]>1, WriteString[sphenoInOut,"End Do \n \n"];];
+
+k++;];
+
 WriteString[sphenoInOut,"End if \n"];
 ];
 j++;]; 

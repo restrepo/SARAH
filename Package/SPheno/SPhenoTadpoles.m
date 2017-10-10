@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (*
 WriteShiftTadpoleSolution[file_]:=Block[{},
 WriteString[file,"If (HighScaleModel.Eq.\"LOW\") Then \n"];
@@ -306,7 +307,8 @@ WriteString[sphenoTad,"Module Tadpoles_"<>ModelName<>" \n \n"];
 WriteString[sphenoTad,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoTad,"Use TreeLevelMasses_"<>ModelName<>" \n"];
 WriteString[sphenoTad,"Use RGEs_"<>ModelName<>" \n"];
-WriteString[sphenoTad,"Use Control \n\n"];
+WriteString[sphenoTad,"Use Control \n"];
+WriteString[sphenoTad,"Use Settings \n"];
 WriteString[sphenoTad,"Use Mathematics \n\n"];
 
 WriteString[sphenoTad,"Contains \n\n\n"];

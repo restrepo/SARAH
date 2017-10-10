@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 SPhenoLowEnergyIncluded =True;
 
 GenerateSPhenoLowEnergy:=Block[{i,temp,file,ModuleName},
@@ -90,6 +91,7 @@ WriteCopyRight[file];
 
 WriteString[file,"Module "<>ModuleName<>ModelName<>" \n"];
 WriteString[file,"Use Control \n"];
+WriteString[file,"Use Settings \n"];
 WriteString[file,"Use Couplings_"<>ModelName<>" \n"];
 WriteString[file,"Use LoopCouplings_"<>ModelName<>" \n"];
 WriteString[file,"Use LoopFunctions \n"];
@@ -158,6 +160,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateB0LLp:=Block[{i,j,temp,AllInternalParticles={},AllPenguinDiagrams={},AllBoxDiagrams={},AllWaveDiagrams={},AllInfoList,AllInfoList2,AllInfoList3},
 
 (* This function generates all possible diagrams for B0 (s,d) \[Rule] ll; checks for necessary couplings and other parameters and passes this information to another routine which writes the Fortran function afterwards *)
@@ -602,6 +605,7 @@ WriteString[sphenoLow,"End Subroutine BrB0LLp  \n\n"];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLgammaLp:=Block[{i,j,temp,AllInternalParticles={},AllAddedCouplings={}},
 
 (* This function generate all possible diagrams for l \[Rule] l' gamma; checks for necessary couplings and other parameters  and passes this information to another routine which writes the Fortran function afterwards *)
@@ -805,6 +809,7 @@ LowEnergyConstraintsParameterList=Join[LowEnergyConstraintsParameterList,{{OneLe
 
 
 
+(* ::Input::Initialization:: *)
 Write1LeptonTo3Leptons[masses_,couplings_,wave_,penguinScalar_,penguinVector_,box_] :=Block[{i,j,k,fermions,scalars},
 
 MakeSubroutineTitle["BR1LeptonTo3Leptons",Flatten[{masses,couplings}],{"in","out"},{"BR"},sphenoLow];
@@ -1192,6 +1197,7 @@ WriteString[sphenoLow,"End Subroutine BR1LeptonTo3Leptons \n\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateLLpHadron:=Block[{i,j},
 Print["Writing Function for Lepton to Lepton and Hadron"];
 
@@ -2029,6 +2035,7 @@ WriteString[sphenoLow,"End Subroutine BrLLpHadron \n\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateZLLp:=Block[{i,j,temp,AllInternalParticles={},AllAddedCouplings={}},
 
 (* This function generates all possible diagrams for Z \[Rule] ll'; checks for necessary couplings and other parameters and passes this information to another routine which writes the Fortran function afterwards *)
@@ -2157,6 +2164,7 @@ WriteString[sphenoLow,"End Subroutine BrZLLp  \n\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateGminus2:=Block[{i},
 
 Print["Write Function for g-2"];
@@ -2339,6 +2347,7 @@ SA`AdditionalDoubletVEVs=doub;
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteNeededParameters:=Block[{},
 
 
@@ -2394,6 +2403,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateC7andC8:=Block[{i,j,k,temp,list},
 temp={};
 tempSM={};
@@ -2460,6 +2470,7 @@ j++;
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteC7orC8[name_,masses_,couplings_,sm_,nonSM_,pTrue_,currentVectorBoson_]:=Block[{i,j},
 
 
@@ -2514,6 +2525,7 @@ WriteString[sphenoLow,"End subroutine "<>name <>"\n \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteBtoQGamma:=Block[{i,pos},
 Print["Write Function for B->q gamma"];
 

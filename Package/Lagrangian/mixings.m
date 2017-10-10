@@ -19,7 +19,7 @@
 
 
 
-CalcGaugeMixing[type_, def_]:=Block[{i,ll,j,k},
+CalcGaugeMixing[type_, def_]:=Block[{i,ll,j,k,l},
 
 PrintAll["Calc Mixings Gauge Sector"];
 
@@ -62,12 +62,12 @@ ll++;];
 If[FreeQ[Particles[Current],RE[def[[i,j,k,1]]]]==True,
 (* addParticle[RE[def[[i,j,k,1]]],getIndizesWI[def[[i,1]]], 1,getType[def[[i,1]]]]; *)
 addParticle[RE[def[[i,j,k,1]]],{{lorentz,4}}, 1,getType[def[[i,1]]]];
-For[l=1,l<=Length[Gauge],SA`DynL[RE[def[[i,j,k,1]]],l]={0};];
+For[l=1,l<=Length[Gauge],SA`DynL[RE[def[[i,j,k,1]]],Gauge[[l,2]]]={0};];
 ];
 If[getType[def[[i,1]]]===V && FreeQ[Particles[Current],getGhost[def[[i,j,k,1]]]]==True,
 (* addParticle[getGhost[def[[i,j,k,1]]],getIndizesWI[getGhost[def[[i,1]]]], 1,G]; *)
 addParticle[getGhost[def[[i,j,k,1]]],{}, 1,G];
-For[l=1,l<=Length[Gauge],SA`DynL[getGhost[def[[i,j,k,1]]],l]={0};];
+For[l=1,l<=Length[Gauge],SA`DynL[getGhost[def[[i,j,k,1]]],Gauge[[l,2]]]={0};];
 ];
 If[getType[def[[i,1]]]===V, bosons = Join[bosons,{RE[def[[i,j,k,1]]]}]];
 ];
@@ -387,7 +387,7 @@ PrintAll["Cleaning up"];
 AddMatrixProducts;
 
 MakeParameterDependenceList;
-CheckForMassless;
+If[SkipCheckMassless=!=True,CheckForMassless;];
 CalculateTreeLevelMasses;
 SimplifyMatrices;
 CurrentStates = Last[NameOfStates];
@@ -482,12 +482,12 @@ If[FreeQ[indold,generation],indold=Join[{{generation,gen}},indold];];
 addParticle[RE[mixES[[i,2,1]]],indold,gen, getType[mixES[[i,1,1]]]];
 For[i2=1,i2<=AnzahlGauge,
  If[FreeQ[BrokenSymmetries,i2]==True,
-SA`Casimir[RE[mixES[[i,2,1]]],i2]=SA`Casimir[mixES[[i,1,1]],i2];
-SA`Dynkin[RE[mixES[[i,2,1]]],i2]=SA`Dynkin[mixES[[i,1,1]],i2];
-SA`DimensionGG[RE[mixES[[i,2,1]]],i2]=SA`DimensionGG[mixES[[i,1,1]],i2];
-SA`DynL[RE[mixES[[i,2,1]]],i2]=SA`DynL[mixES[[i,1,1]],i2];
+SA`Casimir[RE[mixES[[i,2,1]]],Gauge[[i2,3]]]=SA`Casimir[mixES[[i,1,1]],Gauge[[i2,3]]];
+SA`Dynkin[RE[mixES[[i,2,1]]],Gauge[[i2,3]]]=SA`Dynkin[mixES[[i,1,1]],Gauge[[i2,3]]];
+SA`DimensionGG[RE[mixES[[i,2,1]]],Gauge[[i2,3]]]=SA`DimensionGG[mixES[[i,1,1]],Gauge[[i2,3]]];
+SA`DynL[RE[mixES[[i,2,1]]],Gauge[[i2,3]]]=SA`DynL[mixES[[i,1,1]],Gauge[[i2,3]]];
 ]; 
-MultiplicityFactor[mixES[[i,2,1]],i2]=MultiplicityFactor[mixES[[i,1,1]],i2];
+MultiplicityFactor[mixES[[i,2,1]],Gauge[[i2,3]]]=MultiplicityFactor[mixES[[i,1,1]],Gauge[[i2,3]]];
 i2++;];
 
 For[i2=1,i2<=Length[AuxGauge],
@@ -525,12 +525,12 @@ addParticle[RE[mixESnoFV[[i,2,1]]],Insert[getIndizesOldWI[RE[mixESnoFV[[i,1,1]]]
 
 For[i2=1,i2<=AnzahlGauge,
  If[FreeQ[BrokenSymmetries,i2]==True,
-SA`Casimir[mixESnoFV[[i,2,1]],i2]=SA`Casimir[mixESnoFV[[i,1,1]],i2];
-SA`Dynkin[mixESnoFV[[i,2,1]],i2]=SA`Dynkin[mixESnoFV[[i,1,1]],i2];
-SA`DimensionGG[mixESnoFV[[i,2,1]],i2]=SA`DimensionGG[mixESnoFV[[i,1,1]],i2];
-SA`DynL[mixESnoFV[[i,2,1]],i2]=SA`DynL[mixESnoFV[[i,1,1]],i2];
+SA`Casimir[mixESnoFV[[i,2,1]],Gauge[[i2,3]]]=SA`Casimir[mixESnoFV[[i,1,1]],Gauge[[i2,3]]];
+SA`Dynkin[mixESnoFV[[i,2,1]],Gauge[[i2,3]]]=SA`Dynkin[mixESnoFV[[i,1,1]],Gauge[[i2,3]]];
+SA`DimensionGG[mixESnoFV[[i,2,1]],Gauge[[i2,3]]]=SA`DimensionGG[mixESnoFV[[i,1,1]],Gauge[[i2,3]]];
+SA`DynL[mixESnoFV[[i,2,1]],Gauge[[i2,3]]]=SA`DynL[mixESnoFV[[i,1,1]],Gauge[[i2,3]]];
 ]; 
-MultiplicityFactor[mixESnoFV[[i,2,1]],i2]=MultiplicityFactor[mixESnoFV[[i,1,1]],i2];
+MultiplicityFactor[mixESnoFV[[i,2,1]],Gauge[[i2,3]]]=MultiplicityFactor[mixESnoFV[[i,1,1]],Gauge[[i2,3]]];
 i2++;];
 
 For[i2=1,i2<=Length[AuxGauge],
@@ -566,6 +566,7 @@ MatrixValues = Join[MatrixValues,{{ParameterDefinitions[[i,1]], Dependence /.  P
 ];
 ];
 i++;];
+
 For[i=1,i<=Length[mixES],
 If[FreeQ[MatrixValues,mixES[[i,2,2]]]==False,
 maxX=0; maxY=0;newMatrixName=None;
@@ -628,6 +629,7 @@ If[Head[mixES[[i,1,j]]]===conj,
 subDef=Join[subDef,{Simplify[getFull[RE[mixES[[i,1,j]]]] /.subIndizesMixStart][fnr_]->sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[mixES[[i,2,1]]],GetGen[mixES[[i,2,1]]]]*repl[xgen] mixES[[i,2,2]][Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],OffSet+xgen] *conj[mixES[[i,2,1]][(getIndizes[RE[mixES[[i,1,j]]]]/.subIndizesMixEnde)][fnr]]} ],
 subDef=Join[subDef,{Simplify[getFull[mixES[[i,1,j]]] /. subIndizesMixStart][fnr_]-> sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[mixES[[i,2,1]]],GetGen[mixES[[i,2,1]]]]*repl[xgen] conj[mixES[[i,2,2]][Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],OffSet+xgen]] *mixES[[i,2,1]][(getIndizes[RE[mixES[[i,1,j]]]]/.subIndizesMixEnde)][fnr]}];
 ];,
+
 If[Head[mixES[[i,1,j]]]===conj,
 subDef=Join[subDef,{Simplify[getFull[RE[mixES[[i,1,j]]]] /.subIndizesMixStart]->sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[mixES[[i,2,1]]],GetGen[mixES[[i,2,1]]]]*repl[xgen] mixES[[i,2,2]][Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],OffSet+xgen] *conj[mixES[[i,2,1]][(getIndizes[RE[mixES[[i,1,j]]]]/.subIndizesMixEnde)]]} ],
 subDef=Join[subDef,{Simplify[getFull[mixES[[i,1,j]]] /. subIndizesMixStart]-> sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[mixES[[i,2,1]]],GetGen[mixES[[i,2,1]]]]*repl[xgen] conj[mixES[[i,2,2]][Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],OffSet+xgen]] *mixES[[i,2,1]][(getIndizes[RE[mixES[[i,1,j]]]]/.subIndizesMixEnde)]}];
@@ -641,7 +643,6 @@ subDefInverse=Join[subDefInverse,{cH[mixES[[i,2,1]][(getIndizes[RE[mixES[[i,1,1]
 subDefInverse=Join[subDefInverse,{cH[mixES[[i,2,1]][(getIndizes[RE[mixES[[i,1,1]]]]/.subIndizesMixStart)][fnr_]]-> Sum[cH[(getFull[mixES[[i,1,j]]][fnr]/.subIndizesMixEnde )sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],getGenStart[mixES[[i,1,j]]],getGen[mixES[[i,1,j]]]]*repl[xgen]*Inv[mixES[[i,2,2]]][OffSetArray[[j]]+Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],xgen]], {j,1,Length[mixES[[i,1]]]}]}];
 ];
   i++;]; 
-
 
 
 For[i=1,i<=Length[mixESnoFV],
@@ -1069,10 +1070,10 @@ For[j=1,j<=Length[flav[[i,2]]],
 addParticle[flav[[i,2,j]],getIndizesWI[flav[[i,1]]] /. {generation,x_}->{generation,1},1,getType[flav[[i,1]]]];
 For[i2=1,i2<=Length[Gauge],
  If[FreeQ[BrokenSymmetries,i2]==True,
-SA`Casimir[flav[[i,2,j]],i2]=SA`Casimir[flav[[i,1]],i2];
-SA`Dynkin[flav[[i,2,j]],i2]=SA`Dynkin[flav[[i,1]],i2];
-SA`DimensionGG[flav[[i,2,j]],i2]=SA`DimensionGG[flav[[i,1]],i2];
-SA`DynL[flav[[i,2,j]],i2]=SA`DynL[flav[[i,1]],i2];
+SA`Casimir[flav[[i,2,j]],Gauge[[i2,3]]]=SA`Casimir[flav[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[flav[[i,2,j]],Gauge[[i2,3]]]=SA`Dynkin[flav[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[flav[[i,2,j]],Gauge[[i2,3]]]=SA`DimensionGG[flav[[i,1]],Gauge[[i2,3]]];
+SA`DynL[flav[[i,2,j]],Gauge[[i2,3]]]=SA`DynL[flav[[i,1]],Gauge[[i2,3]]];
 ]; 
 i2++ ];
 
@@ -1122,10 +1123,10 @@ If[FreeQ[Particles[ALL],decomp[[i,2,j,2]]],
 addParticle[decomp[[i,2,j,2]],getIndizesWI[decomp[[i,1]]] /. {generation,x_}->{generation,1},1,getType[decomp[[i,1]]]];
 For[i2=1,i2<=Length[Gauge],
  If[FreeQ[BrokenSymmetries,i2]==True,
-SA`Casimir[decomp[[i,2,j,2]],i2]=SA`Casimir[decomp[[i,1]],i2];
-SA`Dynkin[decomp[[i,2,j,2]],i2]=SA`Dynkin[decomp[[i,1]],i2];
-SA`DimensionGG[decomp[[i,2,j,2]],i2]=SA`DimensionGG[decomp[[i,1]],i2];
-SA`DynL[decomp[[i,2,j,2]],i2]=SA`DynL[decomp[[i,1]],i2];
+SA`Casimir[decomp[[i,2,j,2]],Gauge[[i2,3]]]=SA`Casimir[decomp[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[decomp[[i,2,j,2]],Gauge[[i2,3]]]=SA`Dynkin[decomp[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[decomp[[i,2,j,2]],Gauge[[i2,3]]]=SA`DimensionGG[decomp[[i,1]],Gauge[[i2,3]]];
+SA`DynL[decomp[[i,2,j,2]],Gauge[[i2,3]]]=SA`DynL[decomp[[i,1]],Gauge[[i2,3]]];
 ]; 
 i2++ ];
 
@@ -1351,7 +1352,7 @@ For[j=1,j<=Length[Particles[Current]],
 particle=Particles[Current][[j,1]];
 type=getType[particle];
 If[(FreeQ[firstStates,particle]==False  || type===V) &&type=!=A  && type=!=G,
- mass=TreeMass[particle,NameOfStates[[i]]]; 
+ If[CheckForMasslessFast=!=True,mass=TreeMass[particle,NameOfStates[[i]]];,mass=1]; 
 If[Simplify[mass/.subDependences] ===0 || GetEntryDef[particle,NameOfStates[[i]],Mass]===0,
 temp=Join[temp,{particle /. diracSubBack1[NameOfStates[[i]]] /. diracSubBack2[NameOfStates[[i]]]}];
 ];
@@ -1379,8 +1380,8 @@ For[i=1,i<=Length[def],
 DynamicMMgaugeNr[name]=i;
 DynamicMMgaugeName[name]=def[[i,1]];
 PrintDebug[def[[i,1]]];
-If[getType[getBlank[def[[i,1,1]]]]===V,PartLag=Kinetic;,PartLag=Potential;];
-temp =Table[DMM[DMM[PartLag /. vevSub,def[[i,1,i1]] /. a_[b_Integer]->a,1,"t",1],def[[i,1,i2]] /. a_[b_Integer]->a,2,"t",2] /. {gt1-> ExtractGen[def[[i,1,i1]]],gt2-> ExtractGen[def[[i,1,i2]]]} /.subVac /. Mom[_]->0 /. zero[a_]->0 ,{i1,1,Length[def[[i,1]]]},{i2,1,Length[def[[i,1]]]}];
+If[getType[getBlank[def[[i,1,1]]]]===V,PartLag=Kinetic /.vacuumF  /. vevSub /.vacuumS /. Mom[_]->0  /.zero[a_]->0;,PartLag=Potential/. vevSub /.vacuumS /. Mom[_]->0;];
+temp =Table[DMM[DMM[PartLag,def[[i,1,i1]] /. a_[b_Integer]->a,1,"t",1],def[[i,1,i2]] /. a_[b_Integer]->a,2,"t",2] /. {gt1-> ExtractGen[def[[i,1,i1]]],gt2-> ExtractGen[def[[i,1,i2]]]} /.subVac  /. zero[a_]->0 ,{i1,1,Length[def[[i,1]]]},{i2,1,Length[def[[i,1]]]}];
 MassMatricesGauge[name]=Join[MassMatricesGauge[name],{temp}];
 
 subV = Join[subV,GenerateSubGauge[def[[i]]]];
@@ -1392,8 +1393,13 @@ subG = Join[subG, GenerateSubGauge[{getGhost /@ def[[i,1]],getGhost /@ def[[i,2]
 subGI = Join[subGI, GenerateSubGauge[{getGhost /@ def[[i,2]],getGhost /@ def[[i,1]],InvMT[def[[i,3]]]}] /. InvMT[A_][b_,c_]->conj[A[c,b]]];
 ];
 
+
+
+
 i++;];
 DynamicMMgaugeName[name]="All Done";
+
+
 
 subGauge = OrderSubstitutions[subV]; subGaugeInv=OrderSubstitutions[subVI];
 subGhost=OrderSubstitutions[subG];subGhostInv=OrderSubstitutions[subGI];
@@ -1456,15 +1462,30 @@ addParticle[getBlank[out[[i]]],getIndizesWI[getBlank[in[[i]]]] /. {generation,a_
 For[i2=1,i2<=Length[Global],
 SA`ChargeGlobal[getBlank[out[[i]]],Global[[i2,2]]] =SA`ChargeGlobal[getBlank[in[[i]]],Global[[i2,2]]];
 i2++;];
-For[ll=1,ll<=Length[Gauge],SA`DynL[getBlank[out[[i]]],ll]={0};ll++;];
+For[ll=1,ll<=Length[Gauge],
+SA`DynL[getBlank[out[[i]]],Gauge[[ll,3]]]={0};
+ll++;];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[getBlank[out[[i]]],AuxGauge[[i2,3]]]=SA`Casimir[getBlank[in[[i]]],AuxGauge[[i2,3]]];
+SA`Dynkin[getBlank[out[[i]]],AuxGauge[[i2,3]]]=SA`Dynkin[getBlank[in[[i]]],AuxGauge[[i2,3]]];
+SA`DimensionGG[getBlank[out[[i]]],AuxGauge[[i2,3]]]=SA`DimensionGG[getBlank[in[[i]]],AuxGauge[[i2,3]]];
+SA`DynL[getBlank[out[[i]]],AuxGauge[[i2,3]]]=SA`DynL[getBlank[in[[i]]],AuxGauge[[i2,3]]];
+MultiplicityFactor[getBlank[out[[i]]],AuxGauge[[i2,3]]]=MultiplicityFactor[getBlank[in[[i]]],AuxGauge[[i2,3]]];
+i2++;];
+
+
 If[FreeQ[out,conj[out[[i]]]],realVar = Join[realVar,{out[[i]],getGhost[out[[i]]]}]];
 bosons=Join[bosons,{RE[out[[i]]]}];
 SA`NewGaugeBosons = Join[SA`NewGaugeBosons,{RE[out[[i]]]}];,
+If[getType[getBlank[in[[i]]]]===G,
+addParticle[getBlank[out[[i]]],getIndizesWI[getBlank[in[[i]]]] /. {generation,a_}->{generation,1},1,getType[getBlank[in[[i]]]]];,
 addParticle[getBlank[out[[i]]],{{generation,1}},1,getType[getBlank[in[[i]]]]];
+];
 For[i2=1,i2<=Length[Global],
 SA`ChargeGlobal[getBlank[out[[i]]],Global[[i2,2]]] =SA`ChargeGlobal[getBlank[in[[i]]],Global[[i2,2]]];
 i2++;];
-For[ll=1,ll<=Length[Gauge],SA`DynL[getBlank[out[[i]]],ll]={0};ll++;];
+For[ll=1,ll<=Length[Gauge],SA`DynL[getBlank[out[[i]]],Gauge[[ll,3]]]={0};ll++;];
 ];
 ];
 i++;];
@@ -1539,12 +1560,20 @@ indold=Join[indold,{{def[[i,2,1]],SA`DimensionGG[def[[i,1]],def[[i,2,1]]]}}];
 
 For[i2=1,i2<=AnzahlGauge,
  If[FreeQ[BrokenSymmetries,i2]==True,
-SA`Casimir[def[[i,2,2]],i2]=SA`Casimir[def[[i,1]],i2];
-SA`Dynkin[def[[i,2,2]],i2]=SA`Dynkin[def[[i,1]],i2];
-SA`DimensionGG[def[[i,2,2]],i2]=SA`DimensionGG[def[[i,1]],i2];
-SA`DynL[def[[i,2,2]],i2]=SA`DynL[def[[i,1]],i2];
+SA`Casimir[def[[i,2,2]],Gauge[[i2,3]]]=SA`Casimir[def[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[def[[i,2,2]],Gauge[[i2,3]]]=SA`Dynkin[def[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[def[[i,2,2]],Gauge[[i2,3]]]=SA`DimensionGG[def[[i,1]],Gauge[[i2,3]]];
+SA`DynL[def[[i,2,2]],Gauge[[i2,3]]]=SA`DynL[def[[i,1]],Gauge[[i2,3]]];
 ]; 
-MultiplicityFactor[def[[i,2,2]],i2]=MultiplicityFactor[def[[i,1]],i2];
+MultiplicityFactor[def[[i,2,2]],Gauge[[i2,3]]]=MultiplicityFactor[def[[i,1]],Gauge[[i2,3]]];
+i2++;];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[def[[i,2,2]],AuxGauge[[i2,3]]]=SA`Casimir[def[[i,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[def[[i,2,2]],AuxGauge[[i2,3]]]=SA`Dynkin[def[[i,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[def[[i,2,2]],AuxGauge[[i2,3]]]=SA`DimensionGG[def[[i,1]],AuxGauge[[i2,3]]];
+SA`DynL[def[[i,2,2]],AuxGauge[[i2,3]]]=SA`DynL[def[[i,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[def[[i,2,2]],AuxGauge[[i2,3]]]=MultiplicityFactor[def[[i,1]],AuxGauge[[i2,3]]];
 i2++;];
 
 addParticle[def[[i,2,2]],indold,getGen[def[[i,1]]],getType[def[[i,1]]]];
@@ -1559,23 +1588,31 @@ Potential=Potential/.def[[i,2,3]];
 Kinetic=Kinetic/.def[[i,2,3]];
 i++;];
 
+
+If[IgnoreGaugeFixing=!=True,
+UpdateGaugeTransformationsTensorToVector[def];
 ];
 
-RenameIndicesAux:=Block[{i,j,jjj,sub},
+];
+
+RenameIndicesAux:=Block[{i,j,jjj,sub,sub2},
 Print["Rename indices"];
 For[i=1,i<=Length[AuxGauge],
-sub=Reverse/@Flatten[Table[(AuxGauge[[i,3]]/.subGC[iii])->ToExpression[ToString[AuxGauge[[i,3]]/.subGC[iii]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,4}]];
-LagReDef=LagReDef/.sub;
-LagrangianVVV=LagrangianVVV/.sub;
-LagrangianVVVV=LagrangianVVVV/.sub;
-Potential=Potential/.sub;
-Kinetic=Kinetic/.sub;
+sub2=Reverse/@Flatten[Table[Delta[1,generation/.subGC[iii+jjj+10]]A[{generation/.subGC[iii+jjj+10],(AuxGauge[[i,3]]/.subGC[iii+jjj+10])}]->A_[{generation/.subGC[iii],ToExpression[ToString[AuxGauge[[i,3]]/.subGC[iii]]<>appendIndex[[jjj]]]}],{jjj,2,4},{iii,1,4}],1];
+
+sub=Reverse/@Flatten[Table[(AuxGauge[[i,3]]/.subGC[iii+jjj+10])->ToExpression[ToString[AuxGauge[[i,3]]/.subGC[iii]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,4}]];
+LagReDef=LagReDef/.sub2/.sub;
+LagrangianVVV=LagrangianVVV/.sub2/.sub;
+LagrangianVVVV=LagrangianVVVV/.sub2/.sub;
+Potential=Potential/.sub2/.sub;
+Kinetic=Kinetic/.sub2/.sub;
 
 Particles[SA`CurrentStates]=Particles[SA`CurrentStates]/.Reverse/@Flatten[Table[(AuxGauge[[i,3]])->ToExpression[ToString[AuxGauge[[i,3]]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,1}]];
 Particles[GaugeES]=Particles[GaugeES]/.Reverse/@Flatten[Table[(AuxGauge[[i,3]])->ToExpression[ToString[AuxGauge[[i,3]]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,1}]];
 Particles[Current]=Particles[Current]/.Reverse/@Flatten[Table[(AuxGauge[[i,3]])->ToExpression[ToString[AuxGauge[[i,3]]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,1}]];
 i++;];
 
+genMax=20;
 
 
 

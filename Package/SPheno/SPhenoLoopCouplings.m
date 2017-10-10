@@ -85,6 +85,7 @@ WriteCopyRight[sphenoLoopCoup];
 
 WriteString[sphenoLoopCoup, "Module LoopCouplings_"<>ModelName<>" \n \n"];
 WriteString[sphenoLoopCoup, "Use Control \n"];
+WriteString[sphenoLoopCoup, "Use Settings \n"];
 WriteString[sphenoLoopCoup, "Use Couplings_"<>ModelName<>" \n"];
 WriteString[sphenoLoopCoup, "Use Mathematics \n"];
 WriteString[sphenoLoopCoup, "Use LoopFunctions \n"];
@@ -177,7 +178,7 @@ i++;];
 	NeededCouplingsToGluon= Join[NeededCouplingsToGluon,{getSPhenoCoupling[C[bar[partF[[i]]],partF[[i]],VectorG]][[1,1]]}];
 	If[partF[[i]]===bar[partF[[i]]],
 	coupAlphaStrong= Join[coupAlphaStrong,{{partF[[i]],1,4,CalculateColorFactor[VectorG,partF[[i]],partF[[i]]]/2}}];,
-	coupAlphaStrong= Join[coupAlphaStrong,{{partF[[i]],1,4,CalculateColorFactor[VectorG,partF[[i]],partF[[i]]]}}];
+	coupAlphaStrong= Join[coupAlphaStrong,{{partF[[i]],1,4,CalculateColorFactor[VectorG,bar[partF[[i]]],partF[[i]]]}}];
 	];
 	RelativeCoupling[VectorG,partF[[i]]]=1;,
 	RelativeCoupling[VectorG,partF[[i]]]=0;
@@ -296,8 +297,11 @@ WriteString[sphenoLoopCoup," \n"];
 WriteString[sphenoLoopCoup,"Integer::i1 \n"];
 WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 
+WriteString[sphenoLoopCoup,"DeltaAlpha = 0._dp \n"];
 
-WriteString[sphenoLoopCoup,"DeltaAlpha = 0.5_dp !- 2._dp*Log(sqrt(mf_u2(3))/Q)/3._dp \n"];
+WriteString[sphenoLoopCoup,"If (rMS.lt.0.5_dp) Then \n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha = 0.5_dp \n"];
+WriteString[sphenoLoopCoup,"End if \n"];
 For[i=1,i<=Length[coupAlphaStrong],
 If[getGenSPheno[coupAlphaStrong[[i,1]]]>1,
 WriteString[sphenoLoopCoup, "Do i1=1,"<> ToString[getGenSPheno[coupAlphaStrong[[i,1]]]]<>"\n"];
@@ -312,11 +316,12 @@ i++;];
 WriteString[sphenoLoopCoup,"DeltaAlpha=AlphaS_mZ*DeltaAlpha/(2._dp*Pi) \n"];
 WriteString[sphenoLoopCoup,"AlphaSDR=AlphaS_mZ/(1._dp-DeltaAlpha)\n \n"];
 
+(*
 WriteString[sphenoLoopCoup,"! Conversion to MS bar if necessary \n"];
 WriteString[sphenoLoopCoup,"If (rMS.gt.0.5_dp) Then \n"];
 WriteString[sphenoLoopCoup,"AlphaSDR = AlphaSDR*(1._dp - oo4pi*AlphaSDR-5._dp/4._dp*(AlphaSDR/Pi)**2) \n"];
 WriteString[sphenoLoopCoup,"End if \n"];
-
+*)
 WriteString[sphenoLoopCoup,"End Function AlphaSDR \n"];
 
 ];
@@ -347,7 +352,8 @@ WriteString[sphenoLoopCoup,"\n"];
 WriteString[sphenoLoopCoup,"Integer::i1 \n"];
 WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 
-WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/6._dp \n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/(6._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];
+
 For[i=1,i<=Length[coupAlphaEWSB],
 If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,
 If[SMQ[coupAlphaEWSB[[i,1]]]=!=True,
@@ -361,9 +367,9 @@ WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i
 ];
 i++;];
 
-WriteString[sphenoLoopCoup,"DeltaAlpha=-alpha_in*DeltaAlpha/(2._dp*Pi) \n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha=-AlphaEW_in*DeltaAlpha/(2._dp*Pi) \n"];
 
-WriteString[sphenoLoopCoup,"AlphaEW_T=Alpha_in/(1._dp-DeltaAlpha) \n \n"];
+WriteString[sphenoLoopCoup,"AlphaEW_T=AlphaEW_in/(1._dp-DeltaAlpha) \n \n"];
 WriteString[sphenoLoopCoup,"End Function AlphaEW_T \n \n \n"];
 
 ];
@@ -395,14 +401,19 @@ WriteString[sphenoLoopCoup," \n"];
 WriteString[sphenoLoopCoup,"Integer::i1 \n"];
 WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 
+WriteString[sphenoLoopCoup,"DeltaAlpha=0._dp \n"];
 
-WriteString[sphenoLoopCoup,"DeltaAlpha = 0.5_dp \n"];
+WriteString[sphenoLoopCoup,"!Conversion to DR bar if necessary \n"];
+WriteString[sphenoLoopCoup,"If (rMS.lt.0.5_dp) Then \n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha=0.5_dp \n"];
+WriteString[sphenoLoopCoup,"End if\n"];
+
 For[i=1,i<=Length[coupAlphaStrong],
 If[getGenSPheno[coupAlphaStrong[[i,1]]]>1,
-WriteString[sphenoLoopCoup, "Do i1=1,"<> ToString[getGenSPheno[coupAlphaStrong[[i,1]]]]<>"\n"];
-WriteString[sphenoLoopCoup," If (Abs("<>SPhenoMass[coupAlphaStrong[[i,1]],i1]<>"/mf_u(3)).gt.1._dp) Then \n"];
+WriteString[sphenoLoopCoup, "Do i1="<>If[SMQ[coupAlphaStrong[[i,1]]],"4","1"]<>","<> ToString[getGenSPheno[coupAlphaStrong[[i,1]]]]<>"\n"];
+(* WriteString[sphenoLoopCoup," If (Abs("<>SPhenoMass[coupAlphaStrong[[i,1]],i1]<>"/mf_u(3)).gt.1._dp) Then \n"]; *)
 WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-"<>SPhenoForm[coupAlphaStrong[[i,2]]^2*coupAlphaStrong[[i,3]]*coupAlphaStrong[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaStrong[[i,1]],i1]<>"/ Q) \n"];
-WriteString[sphenoLoopCoup," End If \n"];
+(* WriteString[sphenoLoopCoup," End If \n"]; *)
 WriteString[sphenoLoopCoup,"End Do \n"];,
 WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-"<>SPhenoForm[coupAlphaStrong[[i,2]]^2*coupAlphaStrong[[i,3]]*coupAlphaStrong[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaStrong[[i,1]],i1]<>"/ Q) \n"];
 ];
@@ -1024,6 +1035,11 @@ WriteString[sphenoLoopCoup,"Real(dp) :: Mh2p \n"];
 WriteString[sphenoLoopCoup,"mH2p = 0.25_dp*mHiggs**2 \n"];
 WriteString[sphenoLoopCoup,"coup = 0._dp \n \n"];
 
+If[FreeQ[AuxGauge,color]===False,
+garray=AuxGauge;,
+garray=Gauge;
+];
+
 For[i=1,i<=Length[list],
 If[getGenSPheno[list[[i,1]]]>1,
 WriteString[sphenoLoopCoup,"Do i1 = "<>ToString[getGenSPhenoStart[list[[i,1]]]]<>" , "<>ToString[getGenSPheno[list[[i,1]]]] <>"\n"];
@@ -1032,13 +1048,13 @@ WriteString[sphenoLoopCoup,"Do i1 = "<>ToString[getGenSPhenoStart[list[[i,1]]]]<
 Switch[getType[list[[i,1]]],
 S,
 	spinname = "zero";
-         If[SA`Dynkin[list[[i,1]],Position[Gauge,strongCoupling][[1,1]]]===1/2,qcdfactor="rsq";,qcdfactor="1._dp";];,
+         If[SA`Dynkin[list[[i,1]],color]===1/2,qcdfactor="rsq";,qcdfactor="1._dp";];,
 V,
 	spinname ="one";
          qcdfactor = "1._dp";,
 F,
 	spinname ="onehalf";
-          If[SA`Dynkin[list[[i,1]],Position[Gauge,strongCoupling][[1,1]]]===1/2,qcdfactor="rq";,qcdfactor="1._dp";];
+          If[SA`Dynkin[list[[i,1]],color]===1/2,qcdfactor="rq";,qcdfactor="1._dp";];
 ];
 
 
@@ -1059,7 +1075,7 @@ If[vname=!="Gluon",
 currentVB = VectorP;
 mulfactor = ChargeFactor[HiggsBoson,list[[i,1]],AntiField[list[[i,1]]]];,
 currentVB = VectorG;
-mulfactor =2 SA`Dynkin[list[[i,1]],Position[Gauge,color][[1,1]]];
+mulfactor =2 SA`Dynkin[list[[i,1]],color];
 ];
 
 If[AntiField[list[[i,1]]]===list[[i,1]],
@@ -1071,7 +1087,7 @@ If[getType[list[[i,1]]]===F && SA`Dynkin[list[[i,1]],Position[Gauge,strongCoupli
 *)
 If[vname==="Gluon",
 WriteString[sphenoLoopCoup,"coup = coup + "<>SPhenoForm[mulfactor]<> "*"<>SPhenoRatio[list[[i,1]],i1]<>"*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];,
-If[(getType[list[[i,1]]]===F || getType[list[[i,1]]]===S) && SA`Dynkin[list[[i,1]],Position[Gauge,strongCoupling][[1,1]]]===1/2,
+If[(getType[list[[i,1]]]===F || getType[list[[i,1]]]===S) && SA`Dynkin[list[[i,1]],color]===1/2,
 WriteString[sphenoLoopCoup,"coup = coup + cNLO_"<>spinname<>"(mHiggs,"<>SPhenoMass[list[[i,1]],i1]<>",gNLO)"<>"*"<>SPhenoForm[mulfactor]<> "*("<>SPhenoForm[getElectricCharge[list[[i,1]]]]<>")**2*"<>SPhenoRatio[list[[i,1]],i1]<>"*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];
 WriteString[sphenoLoopCoup,stringTemp<>" = "<> stringTemp <>" + cNLO_"<>spinname<>"(mHiggs,"<>SPhenoMass[list[[i,1]],i1]<>",gNLO)"<>"*"<>SPhenoForm[mulfactor]<> "*("<>SPhenoForm[getElectricCharge[list[[i,1]]]]<>")**2*"<>SPhenoRatio[list[[i,1]],i1]<>"*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];,
 WriteString[sphenoLoopCoup,"coup = coup + "<>SPhenoForm[mulfactor]<> "*("<>SPhenoForm[getElectricCharge[list[[i,1]]]]<>")**2*"<>SPhenoRatio[list[[i,1]],i1]<>"*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];
@@ -1126,7 +1142,7 @@ V,
 	qcdfactor = "1._dp";,
 F,
 	spinname ="onehalf";
-	If[SA`Dynkin[list[[i,1]],Position[Gauge,strongCoupling][[1,1]]]===1/2,qcdfactor="rq";,qcdfactor="1._dp";];
+	If[SA`Dynkin[list[[i,1]],color]===1/2,qcdfactor="rq";,qcdfactor="1._dp";];
 ];
 
 factor = list[[i,2]]^2;
@@ -1135,7 +1151,7 @@ If[vname=!="Gluon",
 currentVB = VectorP;
 mulfactor = ChargeFactor[HiggsBoson,list[[i,1]],AntiField[list[[i,1]]]];,
 currentVB = VectorG;
-mulfactor =2 SA`Dynkin[list[[i,1]],Position[Gauge,color][[1,1]]];
+mulfactor =2 SA`Dynkin[list[[i,1]],color];
 ];
 
 If[AntiField[list[[i,1]]]===list[[i,1]],
@@ -1145,7 +1161,7 @@ mulfactor=1/2mulfactor;
 
 If[vname==="Gluon",
 WriteString[sphenoLoopCoup,"coup = coup + "<>SPhenoForm[mulfactor]<> "*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];,
-If[(getType[list[[i,1]]]===F || getType[list[[i,1]]]===S) && SA`Dynkin[list[[i,1]],Position[Gauge,strongCoupling][[1,1]]]===1/2,
+If[(getType[list[[i,1]]]===F || getType[list[[i,1]]]===S) && SA`Dynkin[list[[i,1]],color]===1/2,
 WriteString[sphenoLoopCoup,"coup = coup + cNLO_"<>spinname<>"(mHiggs,"<>SPhenoMass[list[[i,1]],i1]<>",gNLO)"<>"*"<>SPhenoForm[mulfactor]<> "*("<>SPhenoForm[getElectricCharge[list[[i,1]]]]<>")**2*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];,
 WriteString[sphenoLoopCoup,"coup = coup + "<>SPhenoForm[mulfactor]<> "*("<>SPhenoForm[getElectricCharge[list[[i,1]]]]<>")**2*A_"<>spinname <>"(mH2p/"<>SPhenoMass[list[[i,1]],i1]<>"**2)\n"];
 ];
@@ -1204,7 +1220,7 @@ If[vname=!="Gluon",
 currentVB = VectorP;
 mulfactor = ChargeFactor[PseudoScalar,list[[i,1]],bar[list[[i,1]]]];,
 currentVB = VectorG;
-mulfactor =2 SA`Dynkin[list[[i,1]],Position[Gauge,color][[1,1]]];
+mulfactor =2 SA`Dynkin[list[[i,1]],color];
 ];
 If[AntiField[list[[i,1]]]===list[[i,1]],
 mulfactor=1/2mulfactor;

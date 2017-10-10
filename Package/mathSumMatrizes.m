@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ---------------------------------- *)
 (* Sum Properties *)
 (* ---------------------------------- *)
@@ -26,6 +27,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 sum[a_,b_,0]:=0;
 sum[a_Integer,b_,c_]:=1 /; (a >= b && a <= c );
 sum[a_Integer,b_,c_]:=0 /; (a < b );
@@ -42,6 +44,9 @@ sum[ind_,1,b_,Delta[x_,ind_]]:=ThetaStep[x,b]; (* CHECK *)
 
 
 (* Color algebra  *)
+
+sum[a_,1,3,sum[b_,1,3,Lam[_,b_,a_] sum[c_,1,3,Lam[_,a_,c_] Lam[_,c_,b_]]]]:=0;
+sum[a_,1,3,sum[b_,1,3,Lam[_,a_,b_] sum[c_,1,3,Lam[_,b_,c_] Lam[_,c_,a_]]]]:=0;
 
 sum[a_,1,3,sum[b_,1,3,Lam[c_,a_,b_] Lam[d_,b_,a_]]]:=Delta[c,d]*2;
 sum[j3_,1,3,sum[j2_,1,3,Lam[act3_,j2_,j3_] sum[j1_,1,8,Lam[j1_,ct1_,ct2_] Lam[j1_,j3_,j2_]]]]:= sum[j1,1,8,Lam[j1,ct1,ct2] Delta[j1,act3]*2];
@@ -111,11 +116,13 @@ Return[{0}];
 
 
 
+(* ::Input::Initialization:: *)
 (*------------------------------------- *)
 (* Group Factors *)
 (*------------------------------------- *)
 
 
+(* ::Input::Initialization:: *)
 (*------- SU2 ---------*)
 
 Sigma={{{0,1},{1,0}},{{0,-I},{I,0}},{{1,0},{0,-1}}};
@@ -168,6 +175,7 @@ fSU2[a_,b_,a_]:=0;
 sum[a_,1,3,d_]:=Sum[d,{a,1,3}] /; (FreeQ[d,fSU2[a,x_,y_]]==False);
 
 
+(* ::Input::Initialization:: *)
 (*---------------------------------*)
 (* Matrices *)
 (*---------------------------------*)
@@ -183,6 +191,7 @@ epsTensor[a__Integer]:=1 /; OrderedQ[{a}] && Intersection[{a}]==={a};
 epsTensor[a__]:=0 /; Intersection[{a}]=!={a};
 
 
+(* ::Input::Initialization:: *)
 CalcDelta[expr_]:=Block[{i,j},
 If[Head[expr]==List,erg=List@@expr;erg=CalcDelta/@erg;Return[List@@erg];];
 If[Head[expr]==Plus, erg=List@@expr;erg=CalcDelta/@erg;Return[Plus@@erg];];
@@ -194,7 +203,8 @@ Return[Plus@@erg];
 ];
 
 If[FreeQ[expr,Delta]==False,
-expand=expand//.Delta[a_,b_] Delta[c_,b_] sum[b_,__]->Delta[a,c];
+(* expand=expand//.Delta[a_,b_] Delta[c_,b_] sum[b_,__]\[Rule]Delta[a,c]; *)
+expand=expand//.(Delta[a_,b_] Delta[c_,b_] sum[b_,__]/; FreeQ[expand/. Delta[a,b] Delta[c,b] sum[b,__]->Delta[a,c],b])->Delta[a,c]; 
 deltas=Cases[Cases[expand,x:(Delta[a_,b_]),3],x_?IntF];
  If[Length[deltas]>0,
 expand =expand /. Flatten[Table[{deltas[[j,2]]->deltas[[j,1]]},{j,1,Length[deltas]}]];
@@ -327,6 +337,13 @@ Return[MassMatricesGauge[states][[pos[[1,1]]]]];
 ];
 ];
 
+getMixingMatrixHead[part_]:=Block[{},
+If[Head[part]===conj,
+Return[conj[getMixingMatrix[part]]];,
+Return[getMixingMatrix[part]];
+];
+];
+
 getMixingMatrix[part_]:=Block[{i,j,x,res=NoMatrix,pos},
 x=RE[part];
 If[Head[x /. diracSub[ALL]]==List,
@@ -440,11 +457,13 @@ jnf[x_]:=ToExpression["j"<>ToString[x]];
 
 
 
+(* ::Input::Initialization:: *)
 (* -------------------------------------------- *)
 (* Structure Constant *)
 (* -------------------------------------------- *)
 
 
+(* ::Input::Initialization:: *)
 (* Gell-Mann basis*)
 Levi=Table[0,{8},{8},{8}];
 Levi[[1,2,3]]=1; Levi[[3,1,2]]=1; Levi[[2,3,1]]=1; Levi[[3,2,1]]=-1; Levi[[2,1,3]]=-1;Levi[[1,3,2]]=-1;
@@ -540,6 +559,7 @@ g[1,1]:=-1;g[2,2]:=-1;g[3,3]:=-1;g[4,4]:=-1;
 g[a_Integer,b_Integer]:=0 /; (a!= b);
 
 
+(* ::Input::Initialization:: *)
 GetNonZeroEntries[term_]:=Block[{sub={},pos,i,j,fac=1,epsilons, deltas, noSUN},
 If[Head[term]===Times, temp= List@@term;, temp = {term}];
 

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 MakeDecayLists3Body[particle_,file_]:=Block[{i,temp, channels,addedDecays},
 
 $sarahSPheno3BodyDecays=ToFileName[{$sarahCurrentSPhenoDir,"3-Body-Decays"}];
@@ -125,6 +126,7 @@ WriteCopyRight[SPhenoThreeBody];
 
 WriteString[SPhenoThreeBody,"Module "<>ToString[particle]<>"3Decays_"<>ModelName<>" \n \n"];
 WriteString[SPhenoThreeBody,"Use Control \n"];
+WriteString[SPhenoThreeBody,"Use Settings \n"];
 WriteString[SPhenoThreeBody, "Use CouplingsForDecays_"<>ModelName<>" \n"];
 If[getType[particle]===F,
 WriteString[SPhenoThreeBody,"Use ThreeBodyPhaseSpace \n \n"];,
@@ -296,6 +298,7 @@ i++;
 
 
 
+(* ::Input::Initialization:: *)
  WriteThreeBodyDecayTotal[particle_,masses_,couplings_,integrals_,neededwidths_,widths_,widthsI_,detailcouplings_,detailmasses_,detailintegrals_,detailwidths_,processes_,file_]:=Block[{i,tempString},
 
 
@@ -524,6 +527,7 @@ WriteString[file, "End Subroutine "<>ToString[particle]<>"ThreeBodyDecay"<>"\n \
 ];
 
 
+(* ::Input::Initialization:: *)
 
 MakeDiagonalProcess[particle_, {f1_,n1_},{f2_,n2_},{f3_,n3_},{f1b_,f2b_,f3b_},{prop_,nProp_},{couplingsAll_, NRC_},process_,file_]:=Switch[getType[particle],
 F,MakeDiagonalProcessFermion[particle, {f1,n1},{f2,n2},{f3,n3},{f1b,f2b,f3b},{prop,nProp},{couplingsAll, NRC},process,file];,

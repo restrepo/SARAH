@@ -31,14 +31,17 @@ MINPAR={
 
 ParametersToSolveTadpoles = {mu2, Kappa1};
 
-BoundaryLowScaleInput={
- {v, vSM}, 
+DEFINITION[MatchingConditions]= {
  {Ye, YeSM},
  {Yd, YdSM},
  {Yu, YuSM},
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
+ {v, vSM}
+ };
+
+BoundaryLowScaleInput={
  {vS,vSinput},
  { Lambda1,            Lambda1input},
  { Lambda2,            Lambda2input},

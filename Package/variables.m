@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 (* ----------------------------------------- *)
 (* List with parameters for RGE calculation  *)
@@ -97,6 +98,7 @@ NeglectLoopsInvolving={};
 SA`ListAllFieldsInit={};
 
 
+(* ::Input::Initialization:: *)
 InitArrays:=Block[{},
 
 Print["Preparing arrays"];
@@ -211,7 +213,7 @@ SA`CheckSameVertices=True;
 
 (*SA`KnonwCG={CG[SU[2],{{1},{1}}],CG[SU[2],{{2},{2}}],CG[SU[2],{{-1},{-1}}],CG[SU[2],{{-1},{1}}],CG[SU[2],{{1},{-1}}],CG[SU[3],{{1,1},{1,0},{0,1}}],CG[SU[3],{{1,1},{1,0},{0,1}}],CG[SU[3],{{0,1},{0,1},{0,1}}],CG[SU[3],{{1,0},{1,0},{1,0}}],CG[SU[3],{{1,0},{0,1}}],CG[SU[3],{{0,1},{1,0}}],CG[SU[3],{{1,0},{1,0},{1,0}}],CG[SU[2],{{1},{2},{1}}],CG[SU[2],{{-1},{2},{1}}]}; *)
 
-SA`KnonwCG={CG[SU[2],{{1},{1}}], (* CG[SU[2],{{2},{2}}],  *)  CG[SU[2],{{-1},{-1}}],CG[SU[2],{{-1},{1}}],CG[SU[2],{{1},{-1}}],(* CG[SU[3],{{1,1},{1,0},{0,1}}],CG[SU[3],{{1,1},{1,0},{0,1}}], *)CG[SU[3],{{0,1},{0,1},{0,1}}],CG[SU[3],{{1,0},{1,0},{1,0}}],CG[SU[3],{{1,0},{0,1}}],CG[SU[3],{{0,1},{1,0}}],CG[SU[3],{{1,0},{1,0},{1,0}}]};
+SA`KnonwCG={CG[SU[2],{{1},{1}}], (* CG[SU[2],{{2},{2}}],  *)  CG[SU[2],{{-1},{-1}}],CG[SU[2],{{-1},{1}}],CG[SU[2],{{1},{-1}}],(* CG[SU[3],{{1,1},{1,0},{0,1}}],CG[SU[3],{{1,1},{1,0},{0,1}}], *)CG[SU[3],{{0,1},{0,1},{0,1}}],CG[SU[3],{{1,0},{1,0},{1,0}}],CG[SU[3],{{1,0},{0,1}}],(*CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}],*) CG[SU[3],{{0,1},{1,0}}],(*CG[SU[3],{{0,1},{1,0},{0,1},{1,0}}],*)CG[SU[3],{{1,0},{1,0},{1,0}}]};
 
 SA`ChargeGlobal[p_,x_]:=SA`ChargeGlobal[DeleteCases[p/.diracSub[ALL],0][[1]],x]/;MemberQ[diracFermions[ALL],p];
 (* SA`ChargeGlobal[conj[p_],x_]:=SA`ChargeGlobal[p,x]; *)

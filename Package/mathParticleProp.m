@@ -1078,7 +1078,11 @@ i++;];
 Return[temp];];
 
 SplitGhostsAuxFabc[term_]:=Block[{i,j,temp},temp=Expand[term];
-For[i=1,i<=Length[GaugeListAux],If[GaugeListAux[[i,1]]==True,For[j=1,j<=5,If[FreeQ[term,getGhost[Head[SGauge[[i]]]][{SGauge[[i,1,1]]}]/.subGC[j]]==False,temp=Expand[temp]//.(subGhostsAuxFabc/.{a->(generation/.subGC[j]),b->(lorentz/.subGC[j])})/.{color->((Gauge[[i,3]]/.subGC[j])/.subNamesAux)};];
+For[i=1,i<=Length[GaugeListAux],
+If[GaugeListAux[[i,1]]==True,
+For[j=1,j<=5,
+If[FreeQ[term,getGhost[Head[SGauge[[i]]]][{SGauge[[i,1,1]]}]/.subGC[j]]==False,temp=Expand[temp]//.(subGhostsAuxFabc/.{a->(generation/.subGC[j]),b->(lorentz/.subGC[j])})/.{color->((Gauge[[i,3]]/.subGC[j])/.subNamesAux)} /. {gen1->col1};
+];
 j++;];];
 i++;];
 Return[temp];];

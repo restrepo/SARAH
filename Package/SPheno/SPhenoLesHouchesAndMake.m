@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLesHouchesFile := Block[{i,i1, i2,i3,i4,k,l,listIn,fin,iminpar},
 (*
 Print["--------------------------------- "];
@@ -166,10 +167,7 @@ WriteString[filenames[[l]],"530 1.              # Write Blocks for Vevacious \n"
 If[IncludeFineTuning===True,
 WriteString[filenames[[l]],"550 1.             # Calculate Fine-Tuning \n"];
 ];
-If[SA`AddOneLoopDecay === True,
-WriteString[filenames[[l]],"600 0.1             # Photon/Gluon mass in loop decays \n"];
-WriteString[filenames[[l]],"610 0               # Calculate (Tree+Wave+Vertex)^2 instead of Tree*(Tree+2*Wave+2*Vertex) \n"];
-];
+
 
 If[FlagLoopContributions===True,
 For[i=1,i<=Length[PART[F]],
@@ -198,6 +196,20 @@ WriteString[filenames[[l]],ToString[1502]<>" 1               # Include Box diagr
 
 ];
 
+WriteString[filenames[[l]],"Block DECAYOPTIONS   # Options to turn on/off specific decays \n"];
+For[i=1,i<=Length[ListDecayParticles3B],
+WriteString[filenames[[l]],ToString[i]<>"    1     # Calc 3-Body decays of "<>SPhenoForm[ListDecayParticles3B[[i,1]]]<>" \n"];
+i++;];
+If[SA`AddOneLoopDecay === True,
+WriteString[filenames[[l]], ToString[1000] <>" 0     # One loop-induced decays only \n"];
+For[i=1,i<=Length[SA`ParticlesDecays1Loop],
+WriteString[filenames[[l]],ToString[1000+i]<> " 1     # Loop Decay of "<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>" \n"];
+i++;];
+WriteString[filenames[[l]], ToString[1101] <>" 0      # Only UV divergent parts of integrals \n"];
+WriteString[filenames[[l]], ToString[1102] <>" 0.     # Value used for divergence \n"];
+WriteString[filenames[[l]], ToString[1110] <>" 0.     # Use pole masses \n"];
+WriteString[filenames[[l]],"1201 1.0E-5               # Photon/Gluon mass in loop decays \n"];
+];
 
 If[l==1 && OnlyLowEnergySPheno=!=True,
 listIn = Intersection[Select[Flatten[{BoundaryHighScale,BoundarySUSYScale,BoundaryEWSBScale,BoundaryConditionsUp,BoundaryConditionsDown}],(Head[#]==LHInput)&,99] /. LHInput[x_]->x];,
@@ -278,6 +290,7 @@ GenerateSSPtemplate;
 ];
 
 
+(* ::Input::Initialization:: *)
 
 GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i},
 Print["  Writing Makefile"];
@@ -294,7 +307,7 @@ WriteString[sphenoMake,"PreDef = -DGENERATIONMIXING -DONLYDOUBLE\n"];
 WriteString[sphenoMake,"# setting various paths  \n"];
 WriteString[sphenoMake,"InDir = ../include\n"];
 WriteString[sphenoMake,"Mdir = ${InDir}\n"];
-WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables\n"];
+WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables:SM \n"];
 WriteString[sphenoMake,"name = ../lib/libSPheno"<>NameForModel<>".a\n \n"];
 WriteString[sphenoMake,"# check if SARAH module and SPheno are compatibel  \n"];
 WriteString[sphenoMake,"minV=330.00 \n"];
@@ -362,7 +375,9 @@ WriteString[sphenoMake,"\t ${F90} -o SPheno"<>NameForModel<>" ${LFlagsB} SPheno"
 
 WriteString[sphenoMake,"\t mv SPheno"<>NameForModel<>" ../bin\n"];
 WriteString[sphenoMake,"\t rm SPheno"<>NameForModel<>".o  \n"];
-WriteString[sphenoMake,"${name}:  ${name}(Model_Data_"<>ModelName<>".o)  \\\n"]; 
+WriteString[sphenoMake,"${name}:  ${name}(Settings.o) ${name}(Model_Data_"<>ModelName<>".o)  \\\n"]; 
+
+
 WriteString[sphenoMake," ${name}(RGEs_"<>ModelName<>".o)   \\\n"];  
 WriteString[sphenoMake," ${name}(Couplings_"<>ModelName<>".o) ${name}(TreeLevelMasses_"<>ModelName<>".o) ${name}(TadpoleEquations_"<>ModelName<>".o) \\\n"];  
 If[SPhenoOnlyForHM=!=True,
@@ -387,12 +402,17 @@ WriteString[sphenoMake," ${name}(TwoLoopHiggsMass_SARAH.o) \\\n"];
 ];
 WriteString[sphenoMake,"${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \\\n"];
 WriteString[sphenoMake," ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
+If[OnlyLowEnergySPheno=!=True,
+WriteString[sphenoMake," ${name}(RGEs_SM_HC.o) ${name}(Couplings_SM_HC.o) ${name}(TreeLevelMasses_SM_HC.o) ${name}(2LPole_SM_HC.o) ${name}(LoopMasses_SM_HC.o)   \\\n"];,
+WriteString[sphenoMake," ${name}(RGEs_SM_HC.o) \\\n"];
+];
 If[Head[RegimeNr]===Integer,
 WriteString[sphenoMake," ${name}(Shifts_"<>ModelName<>".o) \\\n"];
 ];
 
 If[SA`AddOneLoopDecay === True && SPhenoOnlyForHM=!=True ,
-WriteString[sphenoMake,"${name}(Bremsstrahlung.o) ${name}(DecayFFS.o) ${name}(DecayFFV.o) ${name}(DecaySSS.o) ${name}(DecaySSV.o) ${name}(DecaySFF.o) \\\n"];
+WriteString[sphenoMake,"${name}(CouplingsCT_"<>ModelName<>".o) \\\n"];
+WriteString[sphenoMake,"${name}(Bremsstrahlung.o) ${name}(DecayFFS.o) ${name}(DecayFFV.o) ${name}(DecaySSS.o) ${name}(DecaySSV.o) ${name}(DecaySFF.o) ${name}(DecaySVV.o) \\\n"];
 For[i=1,i<=Length[SA`ParticlesDecays1Loop],
 WriteString[sphenoMake," ${name}(LoopDecay"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>".o) "];
 i++;];
@@ -454,6 +474,7 @@ Close[sphenoMake];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateSSPtemplate:=Block[{i,j,k,l,pos,iminpar,fin},
 
 Print["  Writing SSP templates"];

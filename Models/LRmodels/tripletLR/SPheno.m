@@ -28,7 +28,7 @@ AuxiliaryHyperchargeCoupling = True;
 ExpressionAuxHypercharge = Sqrt[(gBL*gR)^2/(gBL^2 + gR^2)];
 *)
 
-BoundaryLowScaleInput={
+DEFINITION[MatchingConditions]= {
  {g3, g3SM},
  {g2, g2SM},
  {gR, g2},
@@ -37,7 +37,11 @@ BoundaryLowScaleInput={
  {v2, vSM*Sin[ArcTan[TanBeta]]},
  {vR, vRinput},
  {YQ2, -(Transpose[YdSM]*v1*vSM - Transpose[YuSM]*vSM*v2)/(v2^2-v1^2)},
- {YQ1, (-Transpose[YuSM]*vSM*v1 + Transpose[YdSM]*v2*vSM)/(v2^2-v1^2)},
+ {YQ1, (-Transpose[YuSM]*vSM*v1 + Transpose[YdSM]*v2*vSM)/(v2^2-v1^2)}
+ };
+
+BoundaryLowScaleInput={
+
  {lam1, lam1INPUT},
  {lam2, lam2INPUT},
  {lam3, lam3INPUT},

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoHiggsCS[ES_]:=Block[{i,j,temp},
 
 (*
@@ -35,6 +36,7 @@ WriteCopyRight[sphenoCS];
 
 WriteString[sphenoCS, "Module HiggsCS_"<>ModelName<>" \n \n"];
 WriteString[sphenoCS, "Use Control \n"];
+WriteString[sphenoCS, "Use Settings \n"];
 WriteString[sphenoCS, "Use Model_Data_"<>ModelName<>" \n"];
 
 WriteString[sphenoCS, "Contains \n \n"];

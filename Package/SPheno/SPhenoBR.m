@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoBR[Eigenstates_]:=Block[{i},
 (*
 Print["--------------------------------------"];
@@ -35,6 +36,7 @@ WriteCopyRight[sphenoBR];
 
 WriteString[sphenoBR, "Module BranchingRatios_"<>ModelName<>" \n \n"];
 WriteString[sphenoBR, "Use Control \n"];
+WriteString[sphenoBR, "Use Settings \n"];
 WriteString[sphenoBR, "Use Couplings_"<>ModelName<>" \n"];
 WriteString[sphenoBR, "Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoBR, "Use LoopCouplings_"<>ModelName<>" \n"];
@@ -58,6 +60,7 @@ Close[sphenoBR];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteSPhenoBR[Eigenstates_]:=Block[{i,j,pos},
 MakeSubroutineTitle["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs,listAllParameters]],SPhenoWidthBR],{"CTBD","fac3","epsI","deltaM","kont"},{},sphenoBR];
 
@@ -65,9 +68,9 @@ WriteString[sphenoBR,"Real(dp), Intent(in) :: epsI, deltaM, fac3 \n"];
 WriteString[sphenoBR,"Integer, Intent(inout) :: kont \n"];
 WriteString[sphenoBR,"Logical, Intent(in) :: CTBD \n"];
 
-MakeVariableList[listAllParameters,",Intent(in)",sphenoBR];
+MakeVariableList[listAllParameters,",Intent(inout)",sphenoBR];
 MakeVariableList[NewMassParameters,",Intent(in)",sphenoBR];
-MakeVariableList[listVEVs,",Intent(in)",sphenoBR];
+MakeVariableList[listVEVs,",Intent(inout)",sphenoBR];
 MakeVariableList[SPhenoWidthBR,",Intent(inout)",sphenoBR];
 (* MakeVariableList[namesAll,"",sphenoBR]; *)
 If[NewNumericalDependences=!={},
@@ -82,13 +85,14 @@ WriteString[sphenoBR,"Real(dp) ::  "<>ToString[SPhenoWidth[PseudoScalar]]<>"("<>
 (* i++; *)
 ];
 
+(*
 If[SA`AddOneLoopDecay === True,
 WriteString[sphenoBR,"! For the one-loop parts \n"];
-For[i=1,i<=Length[SA`ParticlesDecays1Loop],pos=Position[BR2and3,SA`ParticlesDecays1Loop[[i]]][[1,1]];
-WriteString[sphenoBR,"Real(dp) :: gP1L"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>"("<>ToString[getGen[SA`ParticlesDecays1Loop[[i]]]]<>","<>ToString[BR2and3[[pos]][[2]]]<>") \n"];
+For[i=1,i\[LessEqual]Length[SA`ParticlesDecays1Loop],pos=Position[BR2,SA`ParticlesDecays1Loop[[i]]][[1,1]];
+WriteString[sphenoBR,"Real(dp) :: gP1L"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>"("<>ToString[getGen[SA`ParticlesDecays1Loop[[i]]]]<>","<>ToString[BR2[[pos]][[2]]]<>") \n"];
 i++;];
 ];
-
+*)
 (*
 MakeVariableList[NeededRatiosLoopCouplings,"",sphenoBR];
 MakeVariableList[NeededRatiosLoopCouplingsPseudo,"",sphenoBR];
@@ -117,9 +121,10 @@ WriteString[sphenoBR,ToString[SPhenoWidth[VectorZ]]<>" = gamZ \n"];
 
 
 If[SA`AddOneLoopDecay === True,
+
 WriteString[sphenoBR,"! One-Loop Decays \n"];
 WriteString[sphenoBR,"If (OneLoopDecays) Then \n"];
-MakeCall["CalculateOneLoopDecays",Join[listVEVs,listAllParameters],StringJoin["gP1L",#]&/@SPhenoForm/@SA`ParticlesDecays1Loop,{"epsI","deltaM","kont"},sphenoBR];
+MakeCall["CalculateOneLoopDecays",Flatten[{AllMassesSPheno,Transpose[ListMixingMat][[1]],listVEVs,listAllParameters}],StringJoin["gP1L",#]&/@SPhenoForm/@SA`ParticlesDecays1Loop,{"epsI","deltaM","kont"},sphenoBR];
 WriteString[sphenoBR,"End if \n\n\n"];
 ];
 
@@ -129,7 +134,7 @@ WriteString[sphenoBR,"gT"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
 WriteString[sphenoBR,"BR"<>ToString[savedDecayInfos[[i,1]]]<>" = 0._dp \n"];
 
 If[FreeQ[Transpose[ListDecayParticles3B][[1]],savedDecayInfos[[i,1]]]==True || FreeQ[BR2and3,savedDecayInfos[[i,1]]]==True,
-If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]==False,
+(*If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]\[Equal]False,
 WriteString[sphenoBR,"If (OneLoopDecays) Then \n"];
 WriteString[sphenoBR,"gT"<>ToString[savedDecayInfos[[i,1]]]<>"= 0._dp \n"];
 WriteString[sphenoBR,"BR"<>ToString[savedDecayInfos[[i,1]]]<>"= 0._dp \n"];
@@ -139,11 +144,12 @@ WriteString[sphenoBR,"  "<>SPhenoWidth[savedDecayInfos[[i,1]],i1]<>" =Sum("<>ToS
 WriteString[sphenoBR,"    If ("<>SPhenoWidth[savedDecayInfos[[i,1]],i1]<>".Gt.0._dp) "<>ToString[SPhenoBR[savedDecayInfos[[i,1]]]]<>"(i1,: ) ="<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]] <>"(i1,:)/"<> ToString[SPhenoWidth[savedDecayInfos[[i,1]],i1]]<>" \n"];
 WriteString[sphenoBR,"End Do \n"];
 WriteString[sphenoBR,"Else \n"];
-];
+]; *)
 MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1","DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]],"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]},sphenoBR]; 
-If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]==False,
+(*
+If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]\[Equal]False,
 WriteString[sphenoBR,"End if\n"];
-];
+]; *)
 
 If[FreeQ[GoldstoneGhost,savedDecayInfos[[i,1]]]==False,
 WriteString[sphenoBR,"! Set Goldstone Widhts \n"];
@@ -164,21 +170,32 @@ length2B = "(:,1:"<>ToString[Extract[BR2and3,pos][[2]]]<>")";
 length3B = "(:,"<>ToString[Extract[BR2and3,pos][[2]]+1] <>":"<>ToString[Extract[BR2and3,pos][[3]]] <>")";
 
 
-If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]==False,
+(*
+If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]\[Equal]False,
 WriteString[sphenoBR,"If (OneLoopDecays) Then \n"];
 WriteString[sphenoBR,"gT"<>ToString[savedDecayInfos[[i,1]]]<>"= 0._dp \n"];
 WriteString[sphenoBR,"BR"<>ToString[savedDecayInfos[[i,1]]]<>"= 0._dp \n"];
 WriteString[sphenoBR,"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B<>"= gP1L"<>ToString[savedDecayInfos[[i,1]]] <>"\n"];
 WriteString[sphenoBR,"Else \n"];
 ];
+*)
 MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1", "DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B,"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]<>length2B},sphenoBR];
-If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]==False,
+(*
+If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]\[Equal]False,
 WriteString[sphenoBR,"End if\n"];
 ];
+*)
 
 WriteString[sphenoBR,"Do i1=1,"<>ToString[getGenSPheno[savedDecayInfos[[i,1]]]] <>"\n"];
 WriteString[sphenoBR,SPhenoWidth[savedDecayInfos[[i,1]],i1]<>" =Sum("<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]]<>"(i1,:)) \n"];
 WriteString[sphenoBR,"If ("<>SPhenoWidth[savedDecayInfos[[i,1]],i1]<>".Gt.0._dp) "<>ToString[SPhenoBR[savedDecayInfos[[i,1]]]]<>"(i1,: ) ="<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]] <>"(i1,:)/"<> ToString[SPhenoWidth[savedDecayInfos[[i,1]],i1]]<>" \n"];
+If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]==False,
+WriteString[sphenoBR,"If (OneLoopDecays) Then \n"];
+WriteString[sphenoBR,SPhenoWidth1L[savedDecayInfos[[i,1]],i1]<>" =Sum("<>ToString[SPhenoPartialWidth1L[savedDecayInfos[[i,1]]]]<>"(i1,:)) \n"];
+WriteString[sphenoBR,"If ("<>SPhenoWidth1L[savedDecayInfos[[i,1]],i1]<>".Gt.0._dp) "<>ToString[SPhenoBR1L[savedDecayInfos[[i,1]]]]<>"(i1,: ) ="<>ToString[SPhenoPartialWidth1L[savedDecayInfos[[i,1]]]] <>"(i1,:)/"<> ToString[SPhenoWidth1L[savedDecayInfos[[i,1]],i1]]<>" \n"];
+WriteString[sphenoBR,"End if\n"];
+];
+
 WriteString[sphenoBR,"End Do \n \n\n"];
 
 
@@ -223,8 +240,8 @@ MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParame
 *)
 
 If[getType[savedDecayInfos[[i,1]]]===F,
-WriteString[sphenoBR,"If (Enable3BDecaysF) Then \n"];,
-WriteString[sphenoBR,"If (Enable3BDecaysS) Then \n"];
+WriteString[sphenoBR,"If ((Enable3BDecaysF).and.(Calc3BodyDecay_"<>SPhenoForm[savedDecayInfos[[i,1]]]<>")) Then \n"];,
+WriteString[sphenoBR,"If ((Enable3BDecaysS).and.(Calc3BodyDecay_"<>SPhenoForm[savedDecayInfos[[i,1]]]<>")) Then \n"];
 ];
 If[getGenSPheno[savedDecayInfos[[i,1]]]>1,
 WriteString[sphenoBR,"If (MaxVal(gT"<>ToString[savedDecayInfos[[i,1]]]<>").Lt.MaxVal(fac3*Abs("<>ToString[SPhenoMass[savedDecayInfos[[i,1]]]]<>"))) Then \n"];,

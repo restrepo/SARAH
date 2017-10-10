@@ -731,6 +731,9 @@ Format[x_Adj, FortranForm]:=Format["adj"<>ToString[FortranForm[x[[1]]]],OutputFo
 Format[x_re, FortranForm]:=Format["Real("<>ToString[FortranForm[x[[1]]]]<>",dp)",OutputForm]/;SARAHFortran==True;
 Format[x_im, FortranForm]:=Format["Aimag("<>ToString[FortranForm[x[[1]]]]<>")",OutputForm]/;SARAHFortran==True;
 
+Format[MatMul[A_,B__], FortranForm]:=Format["MatMul("<>SPhenoForm[A]<>","<>ToString[FortranForm[MatMul@@{B}]]<>")",OutputForm]/;SARAHFortran==True && Length[{B}]>1;
+Format[MatMul[A_,B_], FortranForm]:=Format["MatMul("<>SPhenoForm[A]<>","<>SPhenoForm[B]<>")",OutputForm]/;SARAHFortran==True ;
+
 Unprotect[Span];
 Format[x_Span, FortranForm]:=Format[ToString[FortranForm[x[[1]]]]<>":"<>ToString[FortranForm[x[[2]]]],OutputForm]/;SARAHFortran==True;
 Protect[Span];

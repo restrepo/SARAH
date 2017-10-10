@@ -18,3 +18,7 @@ HIG = CouplingOrder(name = 'HIG',
 HIW = CouplingOrder(name = 'HIW',
                     expansion_order = 1,
                     hierarchy = 2)
+                    
+BSM = CouplingOrder(name = 'BSM',
+                    expansion_order = 1,
+                    hierarchy = 2)                    

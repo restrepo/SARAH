@@ -112,11 +112,13 @@ ind=DeleteCases[getIndizes[particle],generation];
 Return[Sum[D[term,part /.subGC[i]]  /.Flatten[(Table[sum[ind[[j]]/. subGC[i],a_,b_]->1,{j,1,Length[ind]}] )]/.Table[If[FreeQ[ind,AuxGauge[[j,3]]],(AuxGauge[[j,3]]/. subGC[i])->(AuxGauge[[j,3]]/. subGC[i+4]),1->1],{j,1,Length[UnbrokenSubgroups]}]/. subIndFinalX[i,number,name] /.subFinalX /.(Table[sum[ind[[j]],a_,b_]->1,{j,1,Length[ind]}] /. subGC[i]),{i,1,genMax}]];
 ];
 
-DPV[term_,particle_,t_,fermpos_]:=Block[{part,i},
+DPV[term_,particle_,t_,fermpos_]:=Block[{part,i,ind},
+ind=getIndizes[particle];
 If[getType[particle]===F,part=getFull[particle][fermpos];,part=getFull[particle];];
 If[Length[getIndizes[particle]]==0 && (OnesChecked==True),
 Return[D[term,part]];,
-Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
+(* Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]]; *)
+Return[Plus@@Table[D[term,part/. subGC[i]] /. Select[subIndFinal[i,t],FreeQ[ind/.subGC[i],#[[1]]]==False&] ,{i,1,genMax}]];
 ]; 
 ];
 

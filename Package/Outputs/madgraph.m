@@ -19,14 +19,16 @@
 
 
 
-Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}, IncludeEffectiveHiggsVertices->True};
+Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}, IncludeEffectiveHiggsVertices->True,BSMcouplings->{}};
 
-MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeUFO]];
+MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeUFO],BSMcouplings/.{opt}/.Options[MakeUFO]];
 
-GenerateUFO[Exclude_,effHiggsV_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor,startedtime},
+GenerateUFO[Exclude_,effHiggsV_,bsmcoups_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor,startedtime},
 Print[StyleForm["Generate UFO model files","Section"]];
 startedtime=TimeUsed[];
 CurrentEigenstates=Last[NameOfStates];
+
+UFObsmCouplings=bsmcoups;
 
 SA`CurrentStates=CurrentEigenstates;
 
@@ -406,6 +408,13 @@ Switch[StringLength[ToString[type]],
 	powerQED = 2-powerQCD;
 ];
 res="";
+If[Length[UFObsmCouplings]>0,
+If[Select[UFObsmCouplings,FreeQ[coup,#]==False&]=!={},
+powerQED=0;
+powerQCD=0;
+res=res<> "'BSM':"<>ToString[1];
+];
+];
 If[powerQED > 0,
 res=res<> "'QED':"<>ToString[powerQED];
 If[powerQCD>0,res=res<>", "];

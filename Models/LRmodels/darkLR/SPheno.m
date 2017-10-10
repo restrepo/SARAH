@@ -34,9 +34,8 @@ MINPAR={{1, gRinput},
 
 ParametersToSolveTadpoles = {mu12, lam3, mudL2, mudR2, muL2, muR2};
 
-
-BoundaryLowScaleInput={
- {g3, g3SM},
+DEFINITION[MatchingConditions]= {
+{g3, g3SM},
  {g2, g2SM},
  {gR, gRinput},
  {gBL, (g1SM*gR)/Sqrt[-g1SM^2 + gR^2]},
@@ -46,6 +45,13 @@ BoundaryLowScaleInput={
  {vHL, vHLinput},
  {v2, TanBeta*Sqrt[vSM^2 - vHL^2 - 2*vtL^2]/Sqrt[1 + TanBeta^2]},
  {v1, v2/TanBeta},
+{YQ1, Transpose[YuSM]*vSM/v2},
+ {YL1, Transpose[YeSM]*vSM/v2}
+  
+  };
+
+
+BoundaryLowScaleInput={
  {lam1, lam1INPUT},
  {rho1, rho1INPUT},
  {rho2, rho2INPUT},
@@ -66,9 +72,7 @@ BoundaryLowScaleInput={
  {betaR, betaRINPUT},
  {alp, alpINPUT},
  {xiR, xiRINPUT},
- {xiLR, xiLRINPUT},
- {YQ1, Transpose[YuSM]*vSM/v2},
- {YL1, Transpose[YeSM]*vSM/v2}
+ {xiLR, xiLRINPUT}
  };
 
 

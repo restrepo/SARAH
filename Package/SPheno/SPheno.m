@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoCoupling`;
 <<SPhenoMain`;
@@ -46,7 +47,7 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoLowEnergy`;
 <<SPhenoHiggsBoundsOutput`;
 
- <<SPhenoLoopDecays`; 
+<<SPhenoCT`; 
 
  <<SPhenoHiggsCS`; 
 <<SPhenoTadpoles`;
@@ -100,9 +101,9 @@ Include2LoopCorrections=True;,
 Include2LoopCorrections=False;
 ];
 
-If[OnlyLowEnergySPheno=!=True,
+(* If[OnlyLowEnergySPheno=!=True, *)
 GenerateMatchingConditions;
-];
+(* ]; *)
 
 If[AlwaysInclude2Loop===True,
 Include2LoopCorrections=True;
@@ -166,8 +167,12 @@ getUnmixedMassesDummy[Eigenstates]; ,
 
 
 If[OnlyLowEnergySPheno===True,
+If[SA`AddOneLoopDecay===True,
+Print[" Include 1-loop RGEs to check cancellations of divergencies"];
+ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->True,VerticesForLoops->True,TwoLoopRGEs->False];,
 MakeDummyListRGEs;
-ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->False,VerticesForLoops->True];,
+ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->False,VerticesForLoops->True];
+];,
 ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->True, VerticesForLoops->True];
 ];
 
@@ -445,6 +450,7 @@ WriteString[DirectoryNamesFile,"NumberNeutralHiggs="<>ToString[SA`NumberNeutralH
 ];
 
 
+(* ::Input::Initialization:: *)
 SolveTadpoleEquation[Eigenstates_,parameters_]:=Block[{i,j,k,off,TEquLocal, subReal,i1,i2,temp,pos,parName},
 Print["  Solve tadpole equations for: ",parameters,"  (",Dynamic[DynamicStatusSPhenoTad[parameters]],") "];
 DynamicStatusSPhenoTad[parameters]="preparing equations";
@@ -1210,6 +1216,7 @@ Return[temp];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateInformationForThresholds:=Block[{i,j,k,temp,sf,pos, gIndexNeeded,tempMasses, tempFinal,i1,i2},
 Print["Generate information for thresholds"];
 
@@ -1322,6 +1329,7 @@ Return[IndexNr];
 ];
 
 
+(* ::Input::Initialization:: *)
 CalculateIntermediateScale[nr_,readlists_]:=Block[{},
 inputfile=OpenWrite["SARAH-Intermediate.m"];
 (* $sarahMetaDir=ToFileName[{ToFileName[{$sarahModelDir,Modelname}],"Meta"}]; *)

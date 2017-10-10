@@ -19,6 +19,16 @@ MINPAR={{1,Lambda1Input},
 RealParameters = {TanBeta};
 
 ParametersToSolveTadpoles = {M112,M222};
+DEFINITION[MatchingConditions]= {
+ {v1,vSM*Cos[ArcTan[TanBeta]]},
+ {v2,vSM*Sin[ArcTan[TanBeta]]},
+ {Ye, YeSM*vSM/v2},
+ {Yd, YdSM*vSM/v2},
+ {Yu, YuSM*vSM/v2},
+ {g1, g1SM},
+ {g2, g2SM},
+ {g3, g3SM}
+ };
 
 BoundaryLowScaleInput={
  {Lambda1,Lambda1Input},
@@ -32,15 +42,7 @@ BoundaryLowScaleInput={
  {lam1D, lam1DInput},
  {lam2D, lam2DInput},
  {MQV, MQVinput},
- {MS, MSInput},
- {v1,vSM*Cos[ArcTan[TanBeta]]},
- {v2,vSM*Sin[ArcTan[TanBeta]]},
- {Ye, YeSM*vSM/v2},
- {Yd, YdSM*vSM/v2},
- {Yu, YuSM*vSM/v2},
- {g1, g1SM},
- {g2, g2SM},
- {g3, g3SM}
+ {MS, MSInput}
 };
 
 

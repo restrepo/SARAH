@@ -91,6 +91,9 @@
        hstep_pn = wert
      Case(401)
        hstep_sa = wert
+       
+     Case(410)
+       TwoLoopRegulatorMass = wert       
 
      Case(10)
        If (wert.Ne.1) Then
@@ -349,6 +352,30 @@
       Else
        WriteParametersAtQ=.False.
       End If
+      
+     Case(66)
+      If (wert.Ne.1._dp) Then
+       DecoupleAtRenScale=.False.
+      Else
+       DecoupleAtRenScale=.True.
+      End If      
+      
+     Case(67)
+      If (wert.Eq.0._dp) Then
+       Calculate_mh_within_SM=.False.
+      Else
+       Calculate_mh_within_SM=.True.
+        If (wert.Eq.2._dp) Then 
+           Force_mh_within_SM = .true. 
+        End if
+      End If   
+      
+     Case(68)
+      If (wert.Ne.1._dp) Then
+       MatchZWpoleMasses=.False.
+      Else
+       MatchZWpoleMasses=.True.
+      End If      
 
      Case(70)
       If (wert.Ne.0._dp) Then
@@ -471,16 +498,16 @@
       Else
        OneLoopFT=.True.
       End If
-
-     Case(600)  
-      Mass_Regulator_PhotonGluon = wert
-      
-     Case(610)  
-      If (wert.Ne.1._dp) Then
-       SquareFullAmplitudeDecays=.False.
-      Else
-       SquareFullAmplitudeDecays=.True.
-      End If      
+! 
+!      Case(600)  
+!       Mass_Regulator_PhotonGluon = wert
+!       
+!      Case(610)  
+!       If (wert.Ne.1._dp) Then
+!        SquareFullAmplitudeDecays=.False.
+!       Else
+!        SquareFullAmplitudeDecays=.True.
+!       End If      
 
      Case(990)
       If (wert.Ne.1._dp) Then

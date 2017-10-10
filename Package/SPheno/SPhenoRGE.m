@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoRGEs:=Block[{i, currentRegime,readRegime},
 (* $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}]; *)
 (*CreateDirectory[$sarahCurrentSPhenoDir];*)
@@ -267,7 +268,8 @@ Print["-------------------------------"];
 
 
 subSPhenoMatTr={};
-listAllParametersAndVEVs = listAllParameters;
+listAllParametersAndVEVs=listAllParameters;
+(* listAllParametersAndVEVs = Join[listAllParameters,listVEVs]; *)
 listBeta1LoopVEVs = listBeta1Loop;
 listBeta2LoopVEVs = listBeta2Loop;
 
@@ -368,6 +370,7 @@ Close[sphenoRGE];
 
 
 
+(* ::Input::Initialization:: *)
 GetNumberParameters[x_]:=Block[{i,temp,dim},
 temp=0;
 For[i=1,i<=Length[x],
@@ -380,11 +383,13 @@ Return[temp];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteRGEsHeader :=Block[{i, generationsUnitMatrix, i1, i2},
 WriteCopyRight[sphenoRGE];
 
 WriteString[sphenoRGE, "Module RGEs_"<>ModelName<>" \n \n"];
 WriteString[sphenoRGE, "Use Control \n"];
+WriteString[sphenoRGE, "Use Settings \n"];
 WriteString[sphenoRGE, "Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoRGE, "Use Mathematics \n \n"];
 
@@ -519,6 +524,7 @@ WriteString[sphenoRGE, "End Subroutine Chop2_CT \n\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteGToParameters[parameterList_, numberParameters_] :=Block[{i,i1,i2},
 
 (* Print["Write Function GToParameters"]; *)
@@ -708,6 +714,7 @@ WriteString[sphenoRGE, "End Subroutine ParametersToG" <> ToString[numberParamete
 
 
 
+(* ::Input::Initialization:: *)
 WriteSPhenoRGE[listParameters_, OneLoop_, TwoLoop_, AddInvolvedParameters_,spuren_,nr_]:=Block[{i,i1,i2},
 
 (* Print["Write RGE Function"]; *)
@@ -1045,6 +1052,7 @@ WriteString[sphenoRGE, "End Subroutine rge"<>ToString[nr]<>SubNr<>"  \n\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteBetaFunction[name_,OneLoop_,TwoLoop_,WriteSums_]:=Block[{i,dim,i1,i2, i3, j55,j1,j2,sign},
 
 WriteString[sphenoRGE,"!-------------------- \n"];
@@ -1355,6 +1363,7 @@ WriteString[sphenoRGE,"D"<>SPhenoForm[name] <> " = 0.5_dp*(D"<>SPhenoForm[name] 
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoAbbr[list1L_,list2L_]:=Block[{i,j,k, temp1L, temp2L},
 
 

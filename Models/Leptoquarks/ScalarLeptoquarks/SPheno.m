@@ -19,15 +19,18 @@ EXTPAR={
 
 ParametersToSolveTadpoles = {mu2, MS2};
 
-BoundaryLowScaleInput={
- {v, vSM},
- {vS, vSinput}, 
+DEFINITION[MatchingConditions]= {
  {Ye, YeSM},
  {Yd, YdSM},
  {Yu, YuSM},
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
+ {v, vSM}
+ };
+
+BoundaryLowScaleInput={
+ {vS, vSinput}, 
  {\[Lambda],Linput},
  {LS3, LS3input},
  {LS4, LS4input},

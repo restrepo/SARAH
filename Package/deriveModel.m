@@ -534,6 +534,10 @@ SA`VertexList[temp][Type]={};
 
 list=Intersection[Select[Intersection[COUP/@((List@@Expand[LAG[Type][Eigenstates] +1/.subNonFields /.subPar  ]/. subGeneric[Type]/. diracSubBack[Eigenstates]  )/.subPar /.A_[{x__}]->A ) /. COUP -> Cp ] /. Cp[x_Times]:>Cp@@x /. conj -> AntiField /. Cp->C /. C -> List ,(VType@@getType/@#1===Type)&]];
 
+If[FastVertexCalculation===True,
+list=Select[list,Plus@@(getElectricCharge/@(List@@#))==0&];
+];
+
 list = SortCoup/@list;
 SA`listSave=list;
 
@@ -583,7 +587,7 @@ VertexListNonCC = Join[VertexListNonCC,{{res,Type}}];
 ];
 ];
 i++;];
-progressCurrentGV[Type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
+progressCurrentGV[Type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s; "<>ToString[Length[SA`VertexList[temp][Type]]]<>" are non-vanishing";
 ];,
 SA`VertexList[temp][Type]={};
 ];

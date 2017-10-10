@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoMassShift[Eigenstates_]:=Block[{i,i1,i2,index},
 Print["--------------------------------------"];
 Print["Writing SPheno Shifts for Parameters "];
@@ -81,6 +82,7 @@ Close[sphenoLoop];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 WriteCalcShiftMasses:=Block[{i},
 
@@ -241,9 +243,11 @@ WriteString[sphenoLoop,"End Subroutine CalcShiftDownMassesRegime"<>ToString[Regi
 
 
 
+(* ::Input::Initialization:: *)
 WriteHeaderShifts:=Block[{i,dim,dim2},
 WriteString[sphenoLoop,"Module ShiftParameters_"<>ModelName<>" \n \n"];
 WriteString[sphenoLoop,"Use Control \n"];
+WriteString[sphenoLoop,"Use Settings \n"];
 WriteString[sphenoLoop,"Use Couplings_"<>ModelName<>" \n"];
 WriteString[sphenoLoop,"Use LoopFunctions \n"];
 WriteString[sphenoLoop,"Use Mathematics \n"];

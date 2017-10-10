@@ -423,7 +423,7 @@ i++;];
 ];
 j++;];
 *)
-
+listsf={};
 For[j=1,j<=Length[NameOfStates],
 If[Head[DEFINITION[NameOfStates[[j]]][VEVs]]===List,
 For[i=1,i<=Length[DEFINITION[NameOfStates[[j]]][VEVs]],
@@ -450,7 +450,12 @@ k++;
 ];
 listVEVi = Join[listVEVi,{{sf  deltaInd  deltaInd2 (*makeDelta[pos[[1,1]],1,2,{generation}]*) ,DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];
 SA`ListVEVi = Join[SA`ListVEVi,{{{sf}, {deltaInd deltaInd2 (* makeDelta[pos[[1,1]],1,2,{generation}]*) DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]],-1}}}];
-VEVi[sf /. Delta[a__]->1 /. RM[a__][b__]->1 /. subGCRule[1]]=deltaInd getFull[DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] /. subGC[1];
+If[FreeQ[listsf,sf],
+VEVi[sf /. Delta[a__]->1 /. RM[a__][b__]->1 /. subGCRule[1]]=deltaInd getFull[DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] /. subGC[1];,
+pos=Position[listsf,sf][[1,1]];
+VEVi[sf /. Delta[a__]->1 /. RM[a__][b__]->1 /. subGCRule[1]]=listsf[[pos]][[2]]+deltaInd getFull[DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] /. subGC[1];
+];
+listsf=Join[listsf,{{sf,deltaInd getFull[DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] /. subGC[1]}}];
 ];
 i++;];
 ];

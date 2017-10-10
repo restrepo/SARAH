@@ -552,6 +552,7 @@ Return[temp];
 KinScalar = 0;
 
 For[i=1,i<=AnzahlChiral,
+If[SFields[[i]]=!=0,
 DynamicKineticScalarNr=i;
 DynamicKineticScalarName=SFields[[i]];
 PrintDebug["   ",SFields[[i]]];
@@ -564,12 +565,12 @@ realF=1/2;
 realF=1;
 ];,
 realF=1/2;];
-
 temp= - g[lor4,lor3]*realF((conj[part[SFields[[i]],2]]  I KovariantDerivative[i,2,1,3]Deri[part[SFields[[i]],1],lor4])  + part[SFields[[i]],1]  (- I KovariantDerivative[i,2,1,4]) Deri[conj[part[SFields[[i]],2]],lor3]);
 KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne; 
 SumFactor=getSumFields[i,5];
 temp= g[lor4,lor3] realF SumFactor KovariantDerivative[i,5,1,4]*part[SFields[[i]],1] KovariantDerivative[i,2,5,3]*conj[part[SFields[[i]],2]];
 KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]],None,None,Fields[[i,3]]}] /.subFieldsOne; 
+];
 i++;];
 DynamicKineticScalarName="All Done";
 

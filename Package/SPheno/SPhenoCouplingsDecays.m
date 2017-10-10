@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoRunningCouplingsDecay:=Block[{i,currentRegime,readRegime},
 (*
 Print["--------------------------------------"];
@@ -42,6 +43,7 @@ WriteCopyRight[sphenoCoup];
 
 WriteString[sphenoCoup,"Module CouplingsForDecays_"<>ModelName<>"\n \n"];
 WriteString[sphenoCoup, "Use Control \n"];
+WriteString[sphenoCoup, "Use Settings \n"];
 WriteString[sphenoCoup, "Use Model_Data_"<>ModelName<>" \n"];
 If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoCoup, "Use RGEs_"<>ModelName<>" \n"];
@@ -107,6 +109,7 @@ Close[sphenoCoup];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateRunningCouplings[particle_,couplings_,suffix_]:=Block[{i,j,i1,i2,i3,temp,res,alreadyCalculated, SPhenoCouplings},
 MakeSubroutineTitle["CouplingsFor_"<>SPhenoForm[particle]<>"_decays_"<>suffix,Flatten[{Map[ToExpression[SPhenoForm[#]<>"input"]&,Join[NewMassParameters,listAllParametersAndVEVs]],couplings}],{"m_in","i1"},{"deltaM"},sphenoCoup]; 
 WriteString[sphenoCoup, "Implicit None \n\n"];

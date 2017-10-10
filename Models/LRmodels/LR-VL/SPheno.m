@@ -23,13 +23,17 @@ ExpressionAuxHypercharge = Sqrt[(gBL*gR)^2/(gBL^2 + gR^2)];*)
 
 ParametersToSolveTadpoles = {muL2,muR2,mu12}; 
 
-
-BoundaryLowScaleInput={
+DEFINITION[MatchingConditions]= {
  {g3, g3SM},
  {g2, g2SM},
  {gR, gRinput},
-(* {gBL, (gYauxt*gR)/Sqrt[-gYauxt^2 + gR^2]},*)
  {gBL, (g1SM*gR)/Sqrt[-g1SM^2 + gR^2]},
+  {vR, vRinput},
+ {vS, vSinput},
+ {vL, vSM}
+ };
+
+BoundaryLowScaleInput={
  {lamU, LHInput[lamU]},
  {lamD, LHInput[lamD]},
  {lamE, LHInput[lamE]},
@@ -41,10 +45,7 @@ BoundaryLowScaleInput={
  {lam4L, LAM4Linput},
  {lam4R, LAM4Rinput},
  {mu3L, MU3Linput},
- {mu3R, MU3Rinput},
- {vR, vRinput},
- {vS, vSinput},
- {vL, vSM}
+ {mu3R, MU3Rinput}
  };
 
 

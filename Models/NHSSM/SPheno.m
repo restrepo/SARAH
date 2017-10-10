@@ -16,7 +16,7 @@ MINPAR={{1,m0},
 RealParameters = {TanBeta, m0};
 ParametersToSolveTadpoles = {mHd2, mHu2};
 
-
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;

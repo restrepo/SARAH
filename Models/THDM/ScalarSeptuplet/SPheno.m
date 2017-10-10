@@ -18,6 +18,17 @@ RealParameters = {TanBeta};
 
 ParametersToSolveTadpoles = {M112,M222};
 
+DEFINITION[MatchingConditions]= {
+ {v1,vSM*Cos[ArcTan[TanBeta]]},
+ {v2,vSM*Sin[ArcTan[TanBeta]]},
+ {Ye, YeSM*vSM/v1- v2/v1*epsE},
+ {Yd, YdSM*vSM/v1- v2/v1*epsD},
+ {Yu, YuSM*vSM/v2- v1/v2*epsU},
+ {g1, g1SM},
+ {g2, g2SM},
+ {g3, g3SM}
+ };
+
 BoundaryLowScaleInput={
  {Lambda1,Lambda1Input},
  {Lambda2,Lambda2Input},
@@ -29,15 +40,7 @@ BoundaryLowScaleInput={
  {LambdaT3,LambdaT3Input},
  {LambdaT4,LambdaT4Input},
  {M122, M122input},
- {v1,vSM*Cos[ArcTan[TanBeta]]},
- {v2,vSM*Sin[ArcTan[TanBeta]]},
- {MT2,MTInput*MTInput},
- {Ye, YeSM*vSM/v1- v2/v1*epsE},
- {Yd, YdSM*vSM/v1- v2/v1*epsD},
- {Yu, YuSM*vSM/v2- v1/v2*epsU},
- {g1, g1SM},
- {g2, g2SM},
- {g3, g3SM}
+ {MT2,MTInput*MTInput}
 };
 
 ListDecayParticles = {Fu,Fe,Fd,hh,Ah,Hm,TP2,TP3};

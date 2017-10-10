@@ -125,7 +125,7 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 
-UseHiggs2LoopMSSM = False;
+UseHiggs2LoopMSSM = True;
 
 (*
 UseAuxiliaryMu2Loop = True;

@@ -745,7 +745,7 @@ ParameterDefinitionsMain = {
 
 {{Description -> "Bilepton 1 VEV",
                LaTeX -> "v_{\\eta}",
-             DependenceNum ->  Sin[BetaP]*vX, 
+          (*   DependenceNum ->  Sin[BetaP]*vX, *)
              OutputName -> x1,
              Real -> True,
              LesHouches -> {BL,41}   }},
@@ -753,7 +753,7 @@ ParameterDefinitionsMain = {
 
 {{Description -> "Bilepton 2 VEV",
                LaTeX -> "v_{\\bar{\\eta}}",
-             DependenceNum ->  Cos[BetaP]*vX, 
+         (*     DependenceNum ->  Cos[BetaP]*vX,  *)
              OutputName -> x2,
              Real -> True,
              LesHouches -> {BL,42}   }},
@@ -773,7 +773,7 @@ ParameterDefinitionsMain = {
 
 {{Description -> "Bilepton Pseudo Scalar Mixing Angle",
              LaTeX -> "{\\beta'}",
-             DependenceNum -> ArcTan[TBetaP], 
+             (* DependenceNum -> ArcTan[TBetaP],  *)
              Value -> None, 
              OutputName -> Bp,
              LesHouches -> {BL,10}  }},
@@ -804,9 +804,9 @@ ParameterDefinitionsMain = {
 {{Description -> "Bilepton Pseudo Scalar Mixing Matrix", 
              LaTeX -> "Z^{CA}",
              Real -> True,
-             OutputName -> ZAC,
+             OutputName -> ZAC (*,
              Dependence -> {{-Cos[BetaP],Sin[BetaP]},
-                            {Sin[BetaP],Cos[BetaP]}}, 
+                            {Sin[BetaP],Cos[BetaP]}},  *)
              LesHouches -> PSPRIMEmix      }},
 
            

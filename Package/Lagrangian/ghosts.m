@@ -55,7 +55,7 @@ gaugeT=0;
 (* If[Dimensions[SFieldsMultiplets[[i]]]=!={1}, *)
 If[Head[SFieldsMultiplets[[i]]]===List,
 (* withoutNum=Flatten[DeleteCases[SFieldsMultiplets[[i]],x_?NumberQ,4]]; *)
-withoutNum=Flatten[DeleteCases[SFieldsMultiplets[[i]],x_?NumberQ,{3,4}]] /. 0->1; (* CHECK *)
+withoutNum=Flatten[DeleteCases[SFieldsMultiplets[[i]],x_?NumberQ,{2,4}]] /. 0->1; (* changed 16/11/16: before {3,4} *)
 withNum=Flatten[SFieldsMultiplets[[i]]];
 NumFac=withNum/withoutNum;
 invF=Map[getFull,withoutNum] /. subGC[1];
@@ -75,8 +75,39 @@ GaugeTransformation=Join[GaugeTransformation,{{SFieldsMultiplets[[i]],gaugeT}}];
 ];
 ];
 i++;];
+
+GaugeTransformation=EleminateSumsOfFields[GaugeTransformation];
 DynamicGaugeTName="All Done";
 GaugeTransformation=DeleteCases[GaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
+];
+
+EleminateSumsOfFields[list_]:=Block[{i,j,tempNoSum={},tempSum={},res,field1,field2,coeff1,coeff2,pos},
+Print["Eleminate sums"];
+If[Length[list]>1,
+If[FreeQ[Transpose[list][[1]],Plus]===False,
+For[i=1,i<=Length[list],
+If[Head[list[[i,1]]]===Plus,
+tempSum=Join[tempSum,{list[[i]]}];,
+tempNoSum=Join[tempNoSum,{list[[i]]}];
+];
+i++;];
+For[i=1,i<=Length[tempSum],
+field1=DeleteCases[tempSum[[i,1,1]],x_?NumberQ,{1,4}] /. 0->1/. Delta[a__]->1; 
+coeff1=tempSum[[i,1,1]]/field1/. Delta[a__]->1;
+field2=DeleteCases[tempSum[[i,1,2]],x_?NumberQ,{1,4}] /. 0->1/. Delta[a__]->1; 
+coeff2=tempSum[[i,1,2]]/field2/. Delta[a__]->1;
+If[FreeQ[Transpose[tempNoSum][[1]],field1]===False,
+pos=Position[Transpose[tempNoSum][[1]],field1][[1,1]];
+tempNoSum=Join[tempNoSum,{{field2,(tempSum[[i,2]]-coeff1 tempNoSum[[pos]][[2]])/coeff2}}];,
+pos=Position[Transpose[tempNoSum][[1]],field2][[1,1]];
+tempNoSum=Join[tempNoSum,{{field1,(tempSum[[i,2]]-coeff2 tempNoSum[[pos]][[2]])/coeff1}}];
+];
+i++;];
+res=tempNoSum;,
+res=list;];,
+res=list;
+];
+Return[res];
 ];
 
 
@@ -104,6 +135,24 @@ GaugeTransformation=DeleteCases[NewGaugeTransformation,{_,_,0}] /.{GetGen -> get
 
 ];
 
+UpdateGaugeTransformationsTensorToVector[sub_]:=Block[{i,j,temp},
+
+Print["   Update gauge transformations"];
+PrintDebug["   Update gauge transformations"];
+
+For[j=1,j<=Length[sub],
+NewGaugeTransformation={};
+For[i=1,i<=Length[GaugeTransformation],
+If[FreeQ[GaugeTransformation[[i,1]],sub[[j,1]]],
+NewGaugeTransformation=Join[NewGaugeTransformation,{{GaugeTransformation[[i,1]],GaugeTransformation[[i,2]]/.sub[[j,2,3]]}}];,
+NewGaugeTransformation=Join[NewGaugeTransformation,{{sub[[j,2,2]],sub[[j,2,4,1]]( GaugeTransformation[[i,2]]/. sub[[j,2,4,2]])}}];
+];
+i++;];
+GaugeTransformation=DeleteCases[NewGaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
+j++;];
+
+];
+
 KovariantGhost[fieldNr_,p1_,p2_, LorNr_]:=Block[{i,temp, gauge, gaugeNr,gNr,gNr2},
 temp=0;
 For[gNr=1,gNr<=AnzahlGauge,
@@ -125,22 +174,81 @@ Return[temp];
 ];
 
 
-SumOverIndizesGhost[term_,partList_]:=Block[{j,i,temp, temp1,pos},
+(*
+SumOverIndizesGhost[term_,partList_]:=Block[{j,i,temp, temp1,pos,suffix,nr},
+IndexNames={};
+For[i=1,i\[LessEqual]Length[partList],
+If[partList[[i]]=!=None,
+pos=Position[ListFields,partList[[i]]][[1,1]];
+For[j=1,j\[LessEqual]Length[ListFields[[pos,2]]],
+(* IndexNames = Join[IndexNames,ListFields[[pos,2,2]] /. subGC[i]]; *)
+If[Head[GaugeListAux]===List,
+(* For the case that there is an unbroken Subgroup, one has not to sum over 1..4 for SU(4) instance, but only for 1..2 and 2 contains then the 3 unbroken color charges; that's checked here *)
+IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],If[GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],1]]=!=True,ListFields[[pos,2,2,j,2]],GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],2]]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];,
+IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];
+];
+(* IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]]; *)
+j++;];
+];
+i++;];
+
+temp=term;
+For[i=1, i\[LessEqual]Length[IndexNames],
+If[AuxGaugesPresent===True,
+suffix=If[StringLength[ToString[IndexNames[[i,1]]]]===4,"",StringTake[ToString[IndexNames[[i,1]]],{-1}]];
+If[FreeQ[UnbrokenSubgroups,getIndexFamilyName[ IndexNames[[i,1]]]]===False,
+temp=temp//.ReplacementRuleAux[ IndexNames[[i,1]]];
+];
+temp1=Hold[Table[temp,iter]]/.{iter\[Rule] IndexNames[[Length[IndexNames]-i+1]]};
+(* get the numbering of the field summed over *)
+nr=ToExpression[StringTake[ToString[IndexNames[[i,1]]],{4}]];
+(* temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.  UnbrokenSubgroups[[1,2]]-> (IndexNames[[i,1]] /. subNamesAux); *)
+temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.   subGC[nr] //. SUFFIX[a_]\[RuleDelayed]ToExpression[ToString[a]<>suffix]/. DELTAaux\[Rule]Delta /. EPSaux\[Rule]epsTensor/.SUMaux\[Rule]sum;,
+temp1=Hold[Table[temp,iter]]/.{iter\[Rule] IndexNames[[Length[IndexNames]-i+1]]};
+temp=ReleaseHold[temp1];
+];
+i++;];
+
+Return[temp];
+
+];
+*)
+
+SumOverIndizesGhost[term_,partList_]:=Block[{j,i,temp, temp1,pos,suffix,nr},
 IndexNames={};
 For[i=1,i<=Length[partList],
 If[partList[[i]]=!=None,
 pos=Position[ListFields,partList[[i]]][[1,1]];
 For[j=1,j<=Length[ListFields[[pos,2]]],
 (* IndexNames = Join[IndexNames,ListFields[[pos,2,2]] /. subGC[i]]; *)
+If[Head[GaugeListAux]===List,
+(* For the case that there is an unbroken Subgroup, one has not to sum over 1..4 for SU(4) instance, but only for 1..2 and 2 contains then the 3 unbroken color charges; that's checked here *)
+IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],If[GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],1]]=!=True,ListFields[[pos,2,2,j,2]],GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],2]]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];,
 IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];
+];
+(* IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]]; *)
 j++;];
 ];
 i++;];
-
 temp=term;
 For[i=1, i<=Length[IndexNames],
+If[AuxGaugesPresent===True,
+If[GaugeListAux[[Position[Gauge,getIndexFamilyName[IndexNames[[i,1]]]][[1,1]],1]]===True,
+suffix=If[StringLength[ToString[IndexNames[[i,1]]]]===4,"",StringTake[ToString[IndexNames[[i,1]]],{-1}]];
+If[FreeQ[UnbrokenSubgroups,getIndexFamilyName[ IndexNames[[i,1]]]]===False,
+temp=temp//.ReplacementRuleAux[ IndexNames[[i,1]]];
+];
+temp1=Hold[Table[temp,iter]]/.{iter-> IndexNames[[i]]};
+(* get the numbering of the field summed over *)
+nr=ToExpression[StringTake[ToString[IndexNames[[i,1]]],{4}]];
+(* temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.  UnbrokenSubgroups[[1,2]]-> (IndexNames[[i,1]] /. subNamesAux); *)
+temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.   subGC[nr] //. SUFFIX[a_]:>ToExpression[ToString[a]<>suffix]/. DELTAaux->Delta /. EPSaux->epsTensor/.SUMaux->sum;,
+temp1=Hold[Table[temp,iter]]/.{iter-> IndexNames[[i]]};
+temp=ReleaseHold[temp1];
+];,
 temp1=Hold[Table[temp,iter]]/.{iter-> IndexNames[[Length[IndexNames]-i+1]]};
 temp=ReleaseHold[temp1];
+];
 i++;];
 
 Return[temp];
@@ -306,9 +414,13 @@ num=2;(*Since these gauge fixing terms come from the bigger gauge group,they inh
 ];
 If[getEntryField[gb[[i]],Mass]=!=0,
 For[j=1,j<=Length[scalars],
-res+=DPV[DPV[kinetic /. vacuumF /. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,scalars[[j]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[a__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2 ;
+If[MemberQ[realVar,scalars[[j]]]===MemberQ[realVar,gb[[i]]], (* new in order to prevent unncessary calculations *)
+If[DeleteCases[getIndizes[scalars[[j]]],generation]===DeleteCases[DeleteCases[getIndizes[gb[[i]]],lorentz],generation],
+res+=DPV[DPV[kinetic /. vacuumF /. Select[vacuumS,FreeQ[#,scalars[[j]]]&]/. Select[vacuumV,FreeQ[#,gb[[i]]]&]/. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,scalars[[j]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[a__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2 ;
 If[conj[scalars[[j]]]=!=scalars[[j]],
-res+=DPV[DPV[kinetic /. vacuumF /. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,conj[scalars[[j]]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2;
+res+=DPV[DPV[kinetic /. vacuumF  /. Select[vacuumS,FreeQ[#,scalars[[j]]]&] /. Select[vacuumV,FreeQ[#,gb[[i]]]&]/. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,conj[scalars[[j]]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2;
+];
+];
 ];
 j++;];
 res= CalcDelta[res /. Delta[a__]/;(FreeQ[{a},gen1] ==False || FreeQ[{a},gen2] ==False)->DELTAGEN[a] ] /. DELTAGEN->Delta ;,

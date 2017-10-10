@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoMain[NameForModel_]:=Block[{i},
 
 (*
@@ -38,6 +39,7 @@ WriteString[spheno,"Program SPheno"<>NameForModel<>" \n \n"];
 WriteString[spheno,"Use Control\n"];
 WriteString[spheno,"Use InputOutput_"<>ModelName<>"\n"];
 WriteString[spheno,"Use LoopFunctions\n"];
+WriteString[spheno,"Use Settings\n"];
 If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
 WriteString[spheno,"Use RunSM_"<>ModelName<>"\n"]; 
 WriteString[spheno,"Use LowEnergy_"<>ModelName<>"\n"]; 
@@ -80,11 +82,11 @@ If[OnlyLowEnergySPheno===True,
 WriteString[spheno, "Real(dp) :: vev, sinw2, f_GMSB\n"];,
 WriteString[spheno, "Real(dp) :: vev, sinw2\n"];
 ];
-If[SupersymmetricModel===False,
+(* If[SupersymmetricModel===False, *)
 WriteString[spheno, "Complex(dp) :: YdSM(3,3), YuSM(3,3), YeSM(3,3)\n"];
 WriteString[spheno, "Real(dp) :: vSM, g1SM, g2SM, g3SM\n"];
 WriteString[spheno, "Integer :: i1 \n"];
-];
+(* ]; *)
 
 CheckSCKM;
 If[WriteCKMBasis===True,
@@ -199,16 +201,23 @@ _,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoFor
 ];
 i++;];
 
+(*
 If[SupersymmetricModel===False,
 If[AddOHDM=!=True,
 WriteString[spheno,"tanbetaMZ = tanbeta \n"];
 ];
+]; *)
+
+If[FreeQ[MINPAR,TanBeta]===False,
+WriteString[spheno,"tanbetaMZ = tanbeta \n"];
 ];
+
 WriteString[spheno,"\n \n ! Setting VEVs used for low energy constraints \n "];
 For[i=1,i<=Length[listVEVsIN],
 WriteString[spheno,StringDrop[SPhenoForm[listVEVsIN[[i]]],-2] <>"MZ = " <>StringDrop[SPhenoForm[listVEVsIN[[i]]],-2]<>" \n "];
 i++;];
 
+(*
 If[SupersymmetricModel===True,
  If[AddSMrunning=!=False && SPhenoOnlyForHM=!=True,
 WriteString[spheno,"\n \n ! RGE running for gauge and Yukawa couplings from M_Z to M_SUSY \n "];
@@ -224,11 +233,11 @@ If[AddOHDM=!=True,
 WriteString[spheno,"vd_aux =  vSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2)  \n"];
 WriteString[spheno,"vu_aux =  vd_aux*"<>SPhenoForm[TanBeta]<>"\n"];
 ];
-For[i=1,i<=Length[DEFINITION[MoreEWvevs]],
-WriteString[spheno,StringReplace[DEFINITION[MoreEWvevs][[i]],{"vev2"->"vSM**2"}] <>"\n"];
+For[i=1,i\[LessEqual]Length[DEFINITION[MoreEWvevs]],
+WriteString[spheno,StringReplace[DEFINITION[MoreEWvevs][[i]],{"vev2"\[Rule]"vSM**2"}] <>"\n"];
 i++;];
-For[i=1,i<=Length[DEFINITION[NonStandardYukawasRelations]],
-WriteString[spheno,StringReplace[DEFINITION[NonStandardYukawasRelations][[i]],{"vd"->"vd_aux","vu"->"vu_aux","Y_u"->"YuSM","Y_d"->"YdSM","Y_l"->"YeSM"}] <>"\n"];
+For[i=1,i\[LessEqual]Length[DEFINITION[NonStandardYukawasRelations]],
+WriteString[spheno,StringReplace[DEFINITION[NonStandardYukawasRelations][[i]],{"vd"\[Rule]"vd_aux","vu"\[Rule]"vu_aux","Y_u"\[Rule]"YuSM","Y_d"\[Rule]"YdSM","Y_l"\[Rule]"YeSM"}] <>"\n"];
 i++;];
 ];
 WriteString[spheno,"End if \n"];
@@ -249,9 +258,29 @@ WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
 WriteString[spheno,"    End Do \n"];
 WriteString[spheno,"End if \n"];
 ];
+*)
+
+WriteString[spheno,"If (SMrunningLowScaleInput) Then \n"];
+WriteString[spheno,"  Qin=sqrt(getRenormalizationScale()) \n"];
+WriteString[spheno,"  Call RunSMohdm(Qin,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
+WriteString[spheno,"Else \n"];
+WriteString[spheno,"   sinW2=1._dp-mW2/mZ2 \n"];
+WriteString[spheno,"   vSM=1/Sqrt((G_F*Sqrt(2._dp)))\n"];
+WriteString[spheno,"   g1SM=sqrt(4*Pi*Alpha_MZ/(1-sinW2)) \n"];
+WriteString[spheno,"   g2SM=sqrt(4*Pi*Alpha_MZ/Sinw2 ) \n"];
+WriteString[spheno,"   g3SM=sqrt(AlphaS_MZ*4*Pi) \n"];
+WriteString[spheno,"   Do i1=1,3 \n"];
+WriteString[spheno,"      YuSM(i1,i1)=sqrt(2._dp)*mf_u(i1)/vSM \n"];
+WriteString[spheno,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
+WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
+WriteString[spheno,"    End Do \n"];
+WriteString[spheno,"End if \n"];
 
 If[SPhenoOnlyForHM=!=True,
 WriteString[spheno,"\n ! Setting Boundary conditions \n "];
+
+SetMatchingConditions[spheno];
+
 For[i=1,i<=Length[BoundaryLowScaleInput],
 Switch[Head[BoundaryLowScaleInput[[i,1]]],
 re,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
@@ -367,7 +396,7 @@ WriteString[spheno,SPhenoForm[VEVSM]<>"MZ = vev\n"];
 If[SPhenoOnlyForHM=!=True,
 If[OnlyLowEnergySPheno=!=True,
 (* MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[Map[ToExpression[ToString[#]<>"MZ"]&,listVEVs],listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];, *)
-MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs/. {VEVSM1->vdMZ,VEVSM2->vuMZ},listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];,
+MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs(* /. {VEVSM1\[Rule]vdMZ,VEVSM2\[Rule]vuMZ} *),listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];,
 MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs,listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];
 ];
 
@@ -452,6 +481,7 @@ Close[spheno];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateReadingData:=Block[{},
 
 Print["  Write 'ReadingData'"];
@@ -487,6 +517,7 @@ WriteString[spheno,"End Subroutine ReadingData\n\n \n"];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateCalculateSpectrum:=Block[{i,j,temp},
 
 Print["  Write 'CalculateSpectrum'"];
@@ -536,7 +567,14 @@ WriteString[spheno,"!If (kont.ne.0) Call TerminateProgram \n \n"];
 
 WriteString[spheno,"If (SPA_Convention) Call SetRGEScale(1.e3_dp**2) \n \n"];
 
+
+WriteString[spheno,"If (.not.DecoupleAtRenScale) Then \n"];
 MakeCall["Sugra",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
+WriteString[spheno,"Else \n"];
+MakeCall["Match_and_Run",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
+WriteString[spheno,"End If \n \n"];
+
+
 WriteString[spheno,"If (kont.ne.0) Then \n"];
 WriteString[spheno," Write(*,*) \"Error appeared in calculation of masses \"\n \n"];
 WriteString[spheno," Call TerminateProgram \n"];
@@ -548,6 +586,7 @@ WriteString[spheno,"End Subroutine CalculateSpectrum \n \n\n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateCalcLowEnergy:=Block[{temp,i,j,ii,iiii,tlist,name,indlist,indvector,dimind,k,mfd,mfu,mfe},
 
 (* tlist=Join[Complement[listAllParameters,ParametersToSolveTadpoles],listVEVs]; *)

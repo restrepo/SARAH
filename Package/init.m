@@ -169,22 +169,27 @@ AuxGaugeBosons=Join[AuxGaugeBosons,{{RepGaugeBosons[[i,j,1]],{UnbrokenSubgroups[
 j++;];
 dim=Gauge[[Position[Gauge,UnbrokenSubgroups[[i,1]]][[1,1]],2]];
 vb=ToExpression["V"<>ToString[Gauge[[Position[Gauge,UnbrokenSubgroups[[i,1]]][[1,1]],1]]]];
+gh=ToExpression["g"<>ToString[Gauge[[Position[Gauge,UnbrokenSubgroups[[i,1]]][[1,1]],1]]]];
 name=UnbrokenSubgroups[[i,2]];
+realVar=Join[realVar,{gh,vb}];
 (* now the ugly part: *)
 (* generate substitutions like: sum_\alpha T^\alpha V^\alpha \[Rule] sum_x T^x V1^x + sum_y T^{y+N_x} V2^y  + sum_z T^{z+N_x + N_z} V2^z ... +  *)
 (* where T are the generators and alpha the charge indices for the full group, while x,y,.. the indices for the unbroken subgroup *)
-subGaugeBosonsAux=Join[subGaugeBosonsAux,{sum[a,___] conj[TA[dim,a,i1_,i2_]] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] conj[TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2]] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
-subGaugeBosonsAux=Join[subGaugeBosonsAux,{sum[a,___] TA[dim,a,i1_,i2_] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+subGaugeBosonsAux=Join[subGaugeBosonsAux,{sum[a,___] conj[TA[dim,a,i1_,i2_]] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] conj[TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2]] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{a,name,b}],RepGaugeBosons[[i,k,1]][{a,b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+subGaugeBosonsAux=Join[subGaugeBosonsAux,{sum[a,___] TA[dim,a,i1_,i2_] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{a,name,b}],RepGaugeBosons[[i,k,1]][{a,b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
 
 subGhostsAux=Join[subGhostsAux,{sum[a,___] conj[TA[dim,a,i1_,i2_]] gh[{a}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] conj[TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2]] If[RepGaugeBosons[[i,k,2]]>1,ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]][{name}],ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
 subGhostsAux=Join[subGhostsAux,{sum[a,___] TA[dim,a,i1_,i2_] gh[{a}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2] If[RepGaugeBosons[[i,k,2]]>1,ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]][{name}],ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
 
 
 (* and now the replacement for the terms with structure constant *)
-subGaugeBosonsAuxFabc=Join[subGaugeBosonsAuxFabc,{sum[a,___]FST[dim][i1___,a,i2___] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] FST[dim][i1,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i2] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+subGaugeBosonsAuxFabc=Join[subGaugeBosonsAuxFabc,{sum[a,___]FST[dim][i1___,a,i2___] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] FST[dim][i1,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i2] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{a,name,b}],RepGaugeBosons[[i,k,1]][{a,b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+
+(*and now the replacement for the terms with structure constant*)subGhostsAuxFabc=Join[subGhostsAuxFabc,{sum[a,___]FST[dim][ii1___,a,ii2___] gh[{a}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] FST[dim][ii1,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],ii2] If[RepGaugeBosons[[i,k,2]]>1,ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]][{name}],ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+
 
 (* for VVV we need the replacement wiht derivatives *)
-subGaugeBosonsAuxFabc=Join[subGaugeBosonsAuxFabc,{Der[sum[a,___],l_]FST[dim][i1___,a,i2___] Der[vb[{a,b}],l_]->(Sum[Der[sum[name,1,RepGaugeBosons[[i,k,2]]],l] FST[dim][i1,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i2] Der[If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],l],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+subGaugeBosonsAuxFabc=Join[subGaugeBosonsAuxFabc,{Der[sum[a,___],l_]FST[dim][i1___,a,i2___] Der[vb[{a,b}],l_]->(Sum[Der[sum[name,1,RepGaugeBosons[[i,k,2]]],l] FST[dim][i1,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i2] Der[If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{a,name,b}],RepGaugeBosons[[i,k,1]][{a,b}]],l],{k,1,Length[RepGaugeBosons[[i]]]}])}];
 i++;];
 
 (* Substitution for names of charges *)
@@ -591,7 +596,7 @@ valueDimensions=Abs[valueDimensions];
 valueCasimir= SA`Casimir[valueDyn,AuxGauge[[j2,2]]];
 valueDynkin= SA`Dynkin[valueDyn,AuxGauge[[j2,2]]];
 valueGenerator=0; (* not needed *)
-SetGroupConstants[namefield/. A_[b__Symbol]->A,AuxGauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,False,False];
+SetGroupConstants[namefield/. A_[b__Symbol]->A,AuxGauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
 j2++;
 ];
 addParticle[namefield/. A_[b__Symbol]->A,Join[absIFull,AuxRepFields[[Position[AuxRepFields,namefield /. A_[b__Symbol]->A][[1,1]]]][[2]]],Fields[[i,2]],Last[Fields[[i]]]];,
@@ -1121,29 +1126,31 @@ If[AuxGaugeBosons[[j,2,2]]==1,
 indizesT={};
 nGen=1;,
 indizesT={AuxGaugeBosons[[j,2]]};
-nGen=AuxGaugeBosons[[j,2,2]];
-];
+nGen=1(* AuxGaugeBosons[[j,2,2]] *);
+]; 
 If[nGen==1,
-indizesVBT={{lorentz,4}};,
+indizesVBT=Join[Join[{{generation,1}},indizesT],{{lorentz,4}}];,
 indizesVBT=Join[indizesT,{{lorentz,4}}];
 ];
 addParticle[ToExpression["V"<>nameBasis],indizesVBT,nGen,V];
 addParticle[ToExpression["g"<>nameBasis],indizesT,nGen,G];
 
+(*
 (*H*)(*If e.g.VX=!=conj[VX],one has to add both gX and gXC.Attention! Variables gG and VG are added to realVar by hand in the model file.*)
-If[MemberQ[realVar,ToExpression["g"<>nameBasis]]==False,
+If[MemberQ[realVar,ToExpression["g"<>nameBasis]]\[Equal]False,
 addParticle[ToExpression["g"<>nameBasis<>"C"],indizesT,nGen,G];
 ];
-
+*)
+realVar=Join[realVar,{ToExpression["V"<>nameBasis],ToExpression["g"<>nameBasis]}];
 (* Set Group constants *)
 valueDimensions=AuxGaugeBosons[[j,2,2]];
 valueDyn=getDynkinLabels[valueDimensions,AuxGauge[[1,2]]];
 valueDimensions=Abs[valueDimensions];
-valueCasimir=If[nGen==1,0, SA`Casimir[valueDyn,AuxGauge[[1,2]]]];
-valueDynkin= If[nGen==1,0,SA`Dynkin[valueDyn,AuxGauge[[1,2]]]];
+valueCasimir=If[AuxGaugeBosons[[j,2,2]]==1,0, SA`Casimir[valueDyn,AuxGauge[[1,2]]]];
+valueDynkin= If[AuxGaugeBosons[[j,2,2]]==1,0,SA`Dynkin[valueDyn,AuxGauge[[1,2]]]];
 valueGenerator=0; (* not needed *)
-SetGroupConstants[ToExpression["V"<>nameBasis],AuxGauge[[1,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,False,False];
-SetGroupConstants[ToExpression["g"<>nameBasis],AuxGauge[[1,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,False,False];
+SetGroupConstants[ToExpression["V"<>nameBasis],AuxGauge[[1,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
+SetGroupConstants[ToExpression["g"<>nameBasis],AuxGauge[[1,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
 
 j++;];
 ];
@@ -1195,31 +1202,45 @@ SA`Dynkin[ToExpression["f"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=SA`Dynkin[getD
 SA`Dynkin[ToExpression["a"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=SA`Dynkin[getDynkinLabelsAdjoint[Gauge[[i,2]]],Gauge[[i,2]]];
 ];
 
-SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],i]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
-SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],i]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
 If[SupersymmetricModel=!=False,
-SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],i]=getDynkinLabelsAdjoint[Gauge[[i,2]]];SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],i]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsAdjoint[Gauge[[i,2]]];SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
 ];
 
 For[j2=1,j2<=Length[Gauge],
 If[i=!=j2,
-SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]={0};
-SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]={0};
-SA`Dynkin[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Dynkin[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]=0;
+SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]={0};
+SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]={0};
+SA`Dynkin[ToExpression["V"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
+SA`Dynkin[ToExpression["g"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
+SA`Casimir[ToExpression["V"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
+SA`Casimir[ToExpression["g"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
 If[SupersymmetricModel=!=False,
-SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]={0};
-SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]={0};
-SA`Dynkin[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Dynkin[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=0;
+SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]={0};
+SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]={0};
+SA`Dynkin[ToExpression["f"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
+SA`Dynkin[ToExpression["a"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
+SA`Casimir[ToExpression["f"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
+SA`Casimir[ToExpression["a"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]=0;
 ];
+(*,
+SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Dynkin[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Dynkin[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Casimir[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Casimir[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+If[SupersymmetricModel=!=False,
+SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Dynkin[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Dynkin[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Casimir[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+SA`Casimir[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
+];*)
 ];
 j2++;];
-
 i++;
 ];
 
@@ -1525,27 +1546,44 @@ If[vev[[i,3,1]]=!=0,PseudoScalarHiggsFields = Join[PseudoScalarHiggsFields,{vev[
 
 For[i2=1,i2<=AnzahlGauge,
  If[FreeQ[BrokenSymmetries,i2]==True,
-
 If[vev[[i,3,1]]=!=0,
-SA`Casimir[vev[[i,3,1]],i2]=SA`Casimir[vev[[i,1]],i2];
-SA`Dynkin[vev[[i,3,1]],i2]=SA`Dynkin[vev[[i,1]],i2];
-MultiplicityFactor[vev[[i,3,1]],i2]=MultiplicityFactor[vev[[i,1]],i2];
-SA`DimensionGG[vev[[i,3,1]],i2]=SA`DimensionGG[vev[[i,1]],i2];
-SA`DynL[vev[[i,3,1]],i2]=SA`DynL[vev[[i,1]],i2];
+SA`Casimir[vev[[i,3,1]],Gauge[[i2,3]]]=SA`Casimir[vev[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[vev[[i,3,1]],Gauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],Gauge[[i2,3]]];
+MultiplicityFactor[vev[[i,3,1]],Gauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[vev[[i,3,1]],Gauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],Gauge[[i2,3]]];
+SA`DynL[vev[[i,3,1]],Gauge[[i2,3]]]=SA`DynL[vev[[i,1]],Gauge[[i2,3]]];
 ];
 If[vev[[i,4,1]]=!=0,
-SA`Casimir[vev[[i,4,1]],i2]=SA`Casimir[vev[[i,1]],i2];
-SA`Dynkin[vev[[i,4,1]],i2]=SA`Dynkin[vev[[i,1]],i2];
-MultiplicityFactor[vev[[i,4,1]],i2]=MultiplicityFactor[vev[[i,1]],i2];
-SA`DimensionGG[vev[[i,4,1]],i2]=SA`DimensionGG[vev[[i,1]],i2];
-SA`DynL[vev[[i,4,1]],i2]=SA`DynL[vev[[i,1]],i2];
+SA`Casimir[vev[[i,4,1]],Gauge[[i2,3]]]=SA`Casimir[vev[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[vev[[i,4,1]],Gauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],Gauge[[i2,3]]];
+MultiplicityFactor[vev[[i,4,1]],Gauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[vev[[i,4,1]],Gauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],Gauge[[i2,3]]];
+SA`DynL[vev[[i,4,1]],Gauge[[i2,3]]]=SA`DynL[vev[[i,1]],Gauge[[i2,3]]];
 ];
 If[Gauge[[i2,2]]===U[1],
-If[vev[[i,3,1]]=!=0,SA`ChargeGG[vev[[i,3,1]],i2]=SA`ChargeGG[vev[[i,1]],i2];];
-If[vev[[i,4,1]]=!=0,SA`ChargeGG[vev[[i,4,1]],i2]=SA`ChargeGG[vev[[i,1]],i2];];
+If[vev[[i,3,1]]=!=0,SA`ChargeGG[vev[[i,3,1]],Gauge[[i2,3]]]=SA`ChargeGG[vev[[i,1]],Gauge[[i2,3]]];];
+If[vev[[i,4,1]]=!=0,SA`ChargeGG[vev[[i,4,1]],Gauge[[i2,3]]]=SA`ChargeGG[vev[[i,1]],Gauge[[i2,3]]];];
 ];
 ];
 i2++;];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[vev[[i,3,1]],AuxGauge[[i2,3]]]=SA`Casimir[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[vev[[i,3,1]],AuxGauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[vev[[i,3,1]],AuxGauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DynL[vev[[i,3,1]],AuxGauge[[i2,3]]]=SA`DynL[vev[[i,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[vev[[i,3,1]],AuxGauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],AuxGauge[[i2,3]]];
+i2++;];
+If[vev[[i,4,1]]=!=0,
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[vev[[i,4,1]],AuxGauge[[i2,3]]]=SA`Casimir[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[vev[[i,4,1]],AuxGauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[vev[[i,4,1]],AuxGauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DynL[vev[[i,4,1]],AuxGauge[[i2,3]]]=SA`DynL[vev[[i,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[vev[[i,4,1]],AuxGauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],AuxGauge[[i2,3]]];
+i2++;];
+];
+
 
 For[i2=1,i2<=Length[Global],
 If[vev[[i,3,1]]=!=0,

@@ -19,7 +19,8 @@
 
 
 
-MakeModelData:=Block[{i,k,i2,temp,dim},
+(* ::Input::Initialization:: *)
+MakeModelData:=Block[{i,k,i2,temp,dim,pos,name,templist},
 If[Head[RegimeNr]===Integer,
 AddParametersFromOtherRegimes;
 ];
@@ -33,83 +34,34 @@ Print["-----------------------------------"];
 *)
 Print[StyleForm["Write 'ModelData'","Section",FontSize->12]];
 
+GenerateSettings;
+
+
+
+
 ModelData=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Model_Data_"<>ModelName<>".f90"]];
 
 WriteCopyRight[ModelData];
 
 WriteString[ModelData,"Module Model_Data_"<>ModelName<>" \n \n"];
 WriteString[ModelData, "Use Control \n"];
+WriteString[ModelData, "Use Settings \n"];
 WriteString[ModelData, "Use LoopFunctions \n"];
 
 
-WriteString[ModelData,"Logical, Save :: PrintPartialContributions = .False. \n"];
-WriteString[ModelData,"Logical, Save :: Enable3BDecays = .True. \n"];
-WriteString[ModelData,"Logical, Save :: Enable3BDecaysS = .True. \n"];
-WriteString[ModelData,"Logical, Save :: Enable3BDecaysF = .True. \n"];
-WriteString[ModelData,"Logical, Save :: FirstRun = .True. \n"];
-WriteString[ModelData,"Logical, Save :: RunningCouplingsDecays = .True. \n"];
-WriteString[ModelData,"Logical, Save :: WriteSLHA1 = .False. \n"];
-WriteString[ModelData,"Logical, Save :: MakeQTEST = .False. \n"];
-WriteString[ModelData,"Logical, Save :: CalculateOneLoopMasses = .True. \n"];
-WriteString[ModelData,"Logical, Save :: CalculateOneLoopMassesSave = .True. \n"];
-WriteString[ModelData,"Logical, Save :: CalculateTwoLoopHiggsMasses = .True. \n"];
-WriteString[ModelData,"Logical, Save :: SUSYrunningFromMZ = .True. \n"];
-WriteString[ModelData,"Logical, Save :: SquareFullAmplitudeDecays = .False. \n"];
-WriteString[ModelData,"Logical :: CalculateTwoLoopHiggsMassesSave = .True. \n"];
-WriteString[ModelData,"Logical, Save :: CalculateLowEnergy = .True. \n"];
-WriteString[ModelData,"Logical, Save :: WriteParametersAtQ = .False. \n"];
-WriteString[ModelData,"Logical, Save :: OutputForMO = .False. \n"];
-WriteString[ModelData,"Logical, Save :: OutputForMG = .False. \n"];
-WriteString[ModelData,"Logical, Save :: TwoLoopRGE=.True.\n"];
+
+
 If[SA`AddOneLoopDecay===True,
-WriteString[ModelData,"Logical, Save :: OneLoopDecays=.True.\n"];,
-WriteString[ModelData,"Logical, Save :: OneLoopDecays=.False.\n"];
-];
-If[SupersymmetricModel===True,
-WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.True.\n"];,
-WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.False.\n"];
+WriteString[ModelData,"Logical, Save :: CalcLoopDecay_LoopInducedOnly=.False.\n "];
+For[i=1,i<=Length[SA`ParticlesDecays1Loop],
+WriteString[ModelData,"Logical, Save :: CalcLoopDecay_"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>"=.True.\n"];
+i++;];
 ];
 
-If[SupersymmetricModel=!=False,
-WriteString[ModelData,"Real(dp), save :: rMS = 0._dp \n"];,
-WriteString[ModelData,"Real(dp), save :: rMS = 1._dp \n"];
-];
-WriteString[ModelData,"Real(dp), save :: DerrMS = 0._dp \n"];
+For[i=1,i<=Length[ListDecayParticles3B],
+WriteString[ModelData,"Logical, Save :: Calc3BodyDecay_"<>SPhenoForm[ListDecayParticles3B[[i,1]]]<>"=.True.\n"];
+i++;];
 
-WriteString[ModelData,"Real(dp), save :: Mass_Regulator_PhotonGluon = 1.0E-10_dp \n"];
-
-WriteString[ModelData,"Logical, Save :: RunningSUSYparametersLowEnergy=.True.\n"];
-WriteString[ModelData,"Logical, Save :: RunningSMparametersLowEnergy=.True.\n"];
-WriteString[ModelData,"Integer, Save :: MinimalNumberIterations = 5\n"];
-WriteString[ModelData,"Logical :: NonSUSYrunningLowScale = .false.\n"];
-WriteString[ModelData,"Logical :: SwitchToSCKM= .False. \n"];
-WriteString[ModelData,"Logical :: CalculateMSSM2Loop= .False. \n"];
-WriteString[ModelData,"Logical :: GaugelessLimit= .True. \n"];
-WriteString[ModelData,"Logical :: FoundIterativeSolution = .True.\n"];
-WriteString[ModelData,"Logical :: WriteOutputForNonConvergence=.True.\n"];
-WriteString[ModelData,"Logical :: SPA_Convention \n"];
-WriteString[ModelData,"Logical :: ForceRealMatrices = .False. \n"];
-WriteString[ModelData,"Logical :: WriteGUTvalues \n"];
-WriteString[ModelData,"Logical :: TwoLoopSafeMode \n"];
-WriteString[ModelData,"Integer :: TwoLoopMethod = 3 \n"];
-WriteString[ModelData,"Logical :: PoleMassesInLoops = .True. \n"];
-WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleParameters = .false. \n"];
-WriteString[ModelData,"Logical :: IncludeDeltaVB = .True. \n"];
-WriteString[ModelData,"Logical :: IncludeBSMdeltaVB = .True. \n"];
-WriteString[ModelData,"Real(dp) :: WidthToBeInvisible = 0._dp \n"];
-WriteString[ModelData,"Logical :: HigherOrderDiboson = .True. \n"];
-WriteString[ModelData,"Real(dp) :: nLep = 3._dp, mf_u_mz_running \n"];
-WriteString[ModelData,"Real(dp) :: nUp = 2._dp \n"];
-WriteString[ModelData,"Real(dp) :: err2L = 0._dp \n"];
-WriteString[ModelData,"Real(dp) :: nDown = 3._dp \n"];
-WriteString[ModelData,"Real(dp) :: MaxMassLoop = 1.0E16_dp \n"];
-WriteString[ModelData,"Real(dp) :: MinWidth = 1.0E-30_dp \n"];
-(* WriteString[ModelData,"Real(dp) :: hstep_pn=0.1_dp, hstep_sa=0.001_dp \n"]; *)
-WriteString[ModelData,"Real(dp) :: MaxMassNumericalZero = 1.0E-8_dp \n"];
-WriteString[ModelData,"Logical :: runningTopMZ= .False. \n"];
-WriteString[ModelData,"Logical :: PrintDebugInformation = .False. \n"];
-WriteString[ModelData,"Logical ::IncludeThresholdsAtScale \n"];
-WriteString[ModelData,"Logical :: PurelyNumericalEffPot \n"];
 If[Include2LoopCorrections===False,
 WriteString[ModelData,"Real(dp) :: hstep_pn, hstep_sa \n"];
 ];
@@ -156,6 +108,18 @@ WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleSolutions = .False. \n"];
 WriteString[ModelData,"Logical :: WriteHiggsDiphotonLoopContributions = .False. \n"];
 WriteString[ModelData,"Logical :: WriteEffHiggsCouplingRatios = .True. \n"];
 
+
+temp=Transpose[ListMixingMat][[1]];
+For[i=1,i<=Length[temp],
+If[FreeQ[realVar,temp[[i]]],
+WriteString[ModelData,"Complex(dp) :: "<>SPhenoForm[temp[[i]]]<>"OS_0"<>StringReplace[ToString[getDimSPheno[temp[[i]]]],{"{"->"(","}"->")"}]<>"\n"];
+WriteString[ModelData,"Complex(dp) :: "<>SPhenoForm[temp[[i]]]<>"OS_p2"<>StringReplace[ToString[getDimSPheno[temp[[i]]]],{"{"->"(","}"->")"}]<>"\n"];,
+WriteString[ModelData,"Real(dp) :: "<>SPhenoForm[temp[[i]]]<>"OS_0"<>StringReplace[ToString[getDimSPheno[temp[[i]]]],{"{"->"(","}"->")"}]<>"\n"];
+WriteString[ModelData,"Real(dp) :: "<>SPhenoForm[temp[[i]]]<>"OS_p2"<>StringReplace[ToString[getDimSPheno[temp[[i]]]],{"{"->"(","}"->")"}]<>"\n"];
+];
+i++;];
+
+
 For[i=1,i<=Length[SA`ListParametersFromTadpoles],
 dim="";
 If[getDimParameters[SA`ListParametersFromTadpoles[[i]]]=!={} && getDimParameters[SA`ListParametersFromTadpoles[[i]]]=!={1},
@@ -197,6 +161,7 @@ MakeVariableList[listVEVs,"",ModelData];
 MakeVariableList[listVEVsIN,"",ModelData];
 MakeVariableList[listVEVsStable,"",ModelData];
 MakeVariableList[SPhenoWidthBR,"",ModelData];
+MakeVariableList[SPhenoWidthBR1L,"",ModelData];
 MakeVariableList[NeededRatiosLoopCouplingsSave,"",ModelData];
 MakeVariableList[NeededRatiosLoopCouplingsSavePseudo,"",ModelData];
 
@@ -325,11 +290,6 @@ MakeVariableList[U1MixingParameters,"",ModelData];
 ];
 *)
 
-WriteString[ModelData,"Complex(dp) :: CKMcomplex(3,3) \n"];
-
-WriteString[ModelData,"Real(dp) :: Xi = 1._dp \n"];
-WriteString[ModelData,"Real(dp) :: RXi = 1._dp \n"];
-WriteString[ModelData,"Real(dp) :: RXiNew = 1._dp \n"];
 For[i=1,i<=Length[SA`GaugeFixingRXi],
 If[FreeQ[Particles[Current],SA`GaugeFixingRXi[[i,2]]]==False,
 If[SPhenoOnlyForHM===True,
@@ -753,7 +713,142 @@ Close[ModelData];
 
 ];
 
+GenerateSettings:=Block[{},
+ModelData=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Settings.f90"]];
 
+WriteCopyRight[ModelData];
+WriteString[ModelData,"Module Settings \n \n"];
+WriteString[ModelData, "Use Control \n"];
+WriteString[ModelData, "Use Mathematics \n"];
+WriteString[ModelData, "Use LoopFunctions \n"];
+
+WriteString[ModelData,"Logical, Save :: PrintPartialContributions = .False. \n"];
+WriteString[ModelData,"Logical, Save :: Enable3BDecays = .True. \n"];
+WriteString[ModelData,"Logical, Save :: Enable3BDecaysS = .True. \n"];
+WriteString[ModelData,"Logical, Save :: Enable3BDecaysF = .True. \n"];
+WriteString[ModelData,"Logical, Save :: FirstRun = .True. \n"];
+WriteString[ModelData,"Logical, Save :: DecoupleAtRenScale = .False. \n"];
+WriteString[ModelData,"Logical, Save :: RunningCouplingsDecays = .True. \n"];
+WriteString[ModelData,"Logical, Save :: WriteSLHA1 = .False. \n"];
+WriteString[ModelData,"Logical, Save :: MakeQTEST = .False. \n"];
+WriteString[ModelData,"Logical, Save :: CalculateOneLoopMasses = .True. \n"];
+WriteString[ModelData,"Logical, Save :: CalculateOneLoopMassesSave = .True. \n"];
+WriteString[ModelData,"Logical, Save :: CalculateTwoLoopHiggsMasses = .True. \n"];
+WriteString[ModelData,"Logical, Save :: SUSYrunningFromMZ = .True. \n"];
+WriteString[ModelData,"Logical, Save :: SquareFullAmplitudeDecays = .False. \n"];
+WriteString[ModelData,"Logical :: CalculateTwoLoopHiggsMassesSave = .True. \n"];
+WriteString[ModelData,"Logical, Save :: CalculateLowEnergy = .True. \n"];
+WriteString[ModelData,"Logical, Save :: WriteParametersAtQ = .False. \n"];
+WriteString[ModelData,"Logical, Save :: OutputForMO = .False. \n"];
+WriteString[ModelData,"Logical, Save :: OutputForMG = .False. \n"];
+WriteString[ModelData,"Logical, Save :: TwoLoopRGE=.True.\n"];
+If[SA`AddOneLoopDecay===True,
+WriteString[ModelData,"Logical, Save :: OneLoopDecays=.True.\n"];,
+WriteString[ModelData,"Logical, Save :: OneLoopDecays=.False.\n"];
+];
+
+
+
+WriteString[ModelData,"Logical, Save :: MatchZWpoleMasses=.False.\n"];
+WriteString[ModelData,"Logical, Save :: OnlyLightStates=.False.\n"];
+WriteString[ModelData,"Logical, Save :: PoleMassesForLoopDecays=.False.\n"];
+WriteString[ModelData,"Logical, Save :: OnlyHeavyStates=.False.\n"];
+
+WriteString[ModelData,"Integer :: divonly, divonly_save \n"];
+WriteString[ModelData,"Real(dp) :: divergence, divergence_save \n"];
+
+WriteString[ModelData,"Real(dp) :: TwoLoopRegulatorMass = 0.001_dp \n"];
+WriteString[ModelData,"Logical :: IRdivOnly = .false. \n"];
+WriteString[ModelData,"Character(len=3) :: IRstring=\"000\" \n"];
+
+If[SupersymmetricModel===True,
+WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.True.\n"];,
+WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.False.\n"];
+];
+
+
+If[SupersymmetricModel=!=False,
+WriteString[ModelData,"Real(dp), save :: rMS = 0._dp \n"];,
+WriteString[ModelData,"Real(dp), save :: rMS = 1._dp \n"];
+];
+WriteString[ModelData,"Real(dp), save :: epsCoup = 1.0E-10_dp \n"];
+WriteString[ModelData,"Real(dp), save :: DerrMS = 0._dp \n"];
+WriteString[ModelData,"Real(dp), save :: rMS_SM = 1._dp \n"];
+WriteString[ModelData,"Real(dp), save :: Mass_Regulator_PhotonGluon = 1.0E-10_dp \n"];
+
+WriteString[ModelData,"Logical, Save :: SimplisticLoopDecays=.False.\n"];
+WriteString[ModelData,"Logical, Save :: ShiftIRdiv=.True.\n"];
+WriteString[ModelData,"Logical, Save :: DebugLoopDecays=.True.\n"];
+WriteString[ModelData,"Logical, Save :: OnlyTreeLevelContributions= .false. \n"];
+WriteString[ModelData,"Logical, Save :: ExternalZfactors=.True.\n"];
+WriteString[ModelData,"Logical, Save :: OSkinematics=.True.\n"];
+
+WriteString[ModelData,"Logical, Save :: UseZeroRotationMatrices=.False.\n"];
+WriteString[ModelData,"Logical, Save :: UseP2Matrices=.True.\n"];
+
+WriteString[ModelData,"Logical, Save :: RunningSUSYparametersLowEnergy=.True.\n"];
+WriteString[ModelData,"Logical, Save :: RunningSMparametersLowEnergy=.True.\n"];
+WriteString[ModelData,"Integer, Save :: MinimalNumberIterations = 5\n"];
+WriteString[ModelData,"Logical :: NonSUSYrunningLowScale = .false.\n"];
+WriteString[ModelData,"Logical :: SwitchToSCKM= .False. \n"];
+WriteString[ModelData,"Logical :: CalculateMSSM2Loop= .False. \n"];
+WriteString[ModelData,"Logical :: GaugelessLimit= .True. \n"];
+WriteString[ModelData,"Logical :: Calculate_mh_within_SM = .True. \n"];
+WriteString[ModelData,"Logical :: Force_mh_within_SM= .False. \n"];
+WriteString[ModelData,"Logical :: FoundIterativeSolution = .True.\n"];
+WriteString[ModelData,"Logical :: WriteOutputForNonConvergence=.True.\n"];
+WriteString[ModelData,"Logical :: SPA_Convention \n"];
+WriteString[ModelData,"Logical :: ForceRealMatrices = .False. \n"];
+WriteString[ModelData,"Logical :: WriteGUTvalues \n"];
+WriteString[ModelData,"Logical :: TwoLoopSafeMode \n"];
+WriteString[ModelData,"Integer :: TwoLoopMethod = 3 \n"];
+WriteString[ModelData,"Logical :: PoleMassesInLoops = .True. \n"];
+WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleParameters = .false. \n"];
+WriteString[ModelData,"Logical :: IncludeDeltaVB = .True. \n"];
+WriteString[ModelData,"Logical :: IncludeBSMdeltaVB = .True. \n"];
+WriteString[ModelData,"Real(dp) :: WidthToBeInvisible = 0._dp \n"];
+WriteString[ModelData,"Logical :: HigherOrderDiboson = .True. \n"];
+WriteString[ModelData,"Real(dp) :: nLep = 3._dp, mf_u_mz_running \n"];
+WriteString[ModelData,"Real(dp) :: nUp = 2._dp \n"];
+WriteString[ModelData,"Real(dp) :: err2L = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: nDown = 3._dp \n"];
+WriteString[ModelData,"Real(dp) :: MaxMassLoop = 1.0E16_dp \n"];
+WriteString[ModelData,"Real(dp) :: MinWidth = 1.0E-30_dp \n"];
+(* WriteString[ModelData,"Real(dp) :: hstep_pn=0.1_dp, hstep_sa=0.001_dp \n"]; *)
+WriteString[ModelData,"Real(dp) :: MaxMassNumericalZero = 1.0E-8_dp \n"];
+WriteString[ModelData,"Logical :: runningTopMZ= .False. \n"];
+WriteString[ModelData,"Logical :: PrintDebugInformation = .False. \n"];
+WriteString[ModelData,"Logical ::IncludeThresholdsAtScale \n"];
+WriteString[ModelData,"Logical :: PurelyNumericalEffPot \n"];
+
+
+WriteString[ModelData,"Complex(dp) :: CKMcomplex(3,3) \n"];
+
+WriteString[ModelData,"Real(dp) :: Xi = 1._dp \n"];
+WriteString[ModelData,"Real(dp) :: RXi = 1._dp \n"];
+WriteString[ModelData,"Real(dp) :: RXiNew = 1._dp \n"];
+
+WriteString[ModelData,"\n Contains \n\n"];
+
+WriteString[ModelData,"Function InverseMatrix(M) Result(Inv) \n"];
+WriteString[ModelData,"Implicit None\n"];
+WriteString[ModelData,"Complex(dp), Intent(in) :: M(:,:) \n"];
+WriteString[ModelData,"Complex(dp) :: Inv(Size(M,1),Size(M,2)) \n"];
+WriteString[ModelData,"Integer :: kont \n\n"];
+WriteString[ModelData,"inv = M \n"];
+WriteString[ModelData,"Call gaussj(kont,inv,Size(M,1),Size(M,2)) \n"];
+WriteString[ModelData,"End Function InverseMatrix \n\n"];
+
+
+WriteString[ModelData,"End Module Settings \n \n"];
+Close[ModelData];
+
+];
+
+
+
+
+(* ::Input::Initialization:: *)
 LookForAdditionalParameter:=Block[{k,temp},
 temp={};
 If[Head[BoundaryHighScale]===List&&Flatten[BoundaryHighScale]=!={},

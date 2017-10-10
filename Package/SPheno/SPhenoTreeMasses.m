@@ -231,7 +231,7 @@ realVar = Join[realVar,DeleteCases[Flatten[{Intersection[SPhenoMass/@getBlank/@m
 AllMassesSPheno=Join[AllMassesSPheno,DeleteCases[Flatten[{Intersection[SPhenoMass/@getBlank/@mixVB[[i,2]]],Intersection[SPhenoMassSq/@getBlank/@mixVB[[i,2]]]}],0.]];
 
 If[FreeQ[subAlways,Last[mixVB[[i]]]],
-pos=Position[paraDef,Last[mixVB[[i]]]];
+pos=Position[Transpose[paraDef][[1]],Last[mixVB[[i]]]];
 If[pos=!={},
 If[(LesHouches /. Extract[paraDef,pos[[1,1]]][[2]])=!=None && (LesHouches /. Extract[paraDef,pos[[1,1]]][[2]])=!=LesHouches,
 ListMixingMat=Join[ListMixingMat,{{Last[mixVB[[i]]],LesHouches /. Extract[paraDef,pos[[1,1]]][[2]] }}];
@@ -277,6 +277,7 @@ WriteString[sphenoTree, "Module TreeLevelMasses_"<>ModelName<>" \n \n"];
 WriteString[sphenoTree, "Use Control \n"];
 WriteString[sphenoTree, "Use Mathematics \n"];
 WriteString[sphenoTree, "Use MathematicsQP \n"];
+WriteString[sphenoTree, "Use Settings \n"];
 WriteString[sphenoTree, "Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoTree, "!Use StandardModel \n \n \n"];
 
@@ -587,8 +588,7 @@ WriteString[sphenoTree, "\n ! -------------------------------- \n"];
 WriteString[sphenoTree, "! Setting Goldstone masses \n"];
 WriteString[sphenoTree, "! -------------------------------- \n \n"];
 
-(*
-For[i=1,i\[LessEqual]Length[GoldstoneGhost],
+For[i=1,i<=Length[GoldstoneGhost],
 If[Head[GoldstoneGhost[[i,2]]]===Symbol,
 WriteString[sphenoTree,SPhenoMass[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"*sqrt("<>SPhenoForm[RXi[ToExpression[StringDrop[ToString[GoldstoneGhost[[i,1]]],1]]]]<>")\n" ];
 WriteString[sphenoTree,SPhenoMassSq[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"*"<>SPhenoForm[RXi[ToExpression[StringDrop[ToString[GoldstoneGhost[[i,1]]],1]]]]<>"\n" ];,
@@ -596,7 +596,7 @@ WriteString[sphenoTree,SPhenoMass[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,
 WriteString[sphenoTree,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"*"<>SPhenoForm[RXi[ToExpression[StringDrop[ToString[GoldstoneGhost[[i,1]]],1]]]]<>"\n" ];
 ];
 i++;];
-*)
+
 ];
 ];
 If[MassesForEffpot=!=True,

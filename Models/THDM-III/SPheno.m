@@ -23,7 +23,10 @@ BoundaryLowScaleInput={
  {Lambda5,Lambda5Input},
  {Lambda6,Lambda6Input},
  {Lambda7,Lambda7Input},
- {M12, M12input},
+ {M12, M12input}
+};
+
+DEFINITION[MatchingConditions]= {
  {v1,vSM*Cos[ArcTan[TanBeta]]},
  {v2,vSM*Sin[ArcTan[TanBeta]]},
  {Ye, YeSM*vSM/v1- v2/v1*epsE},
@@ -32,8 +35,7 @@ BoundaryLowScaleInput={
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM}
-};
-
+ };
 
 
 

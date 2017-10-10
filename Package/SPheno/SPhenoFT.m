@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateFineTuning:=Block[{k},
 
 (*
@@ -35,6 +36,7 @@ WriteCopyRight[sphenoFT];
 
 WriteString[sphenoFT,"Module FineTuning_"<>ModelName<>" \n \n"];
 WriteString[sphenoFT, "Use Control \n"];
+WriteString[sphenoFT, "Use Settings \n"];
 WriteString[sphenoFT, "Use LoopFunctions \n"];
 WriteString[sphenoFT, "Use Mathematics \n"];
 WriteString[sphenoFT, "Use Model_Data_"<>ModelName<>" \n"];
@@ -69,6 +71,7 @@ Close[sphenoFT];
 
 
 
+(* ::Input::Initialization:: *)
 WriteFineTuning:=Block[{i,j,temp,pos,name,tlist},
 (* Print["Write FT routines"]; *)
 
@@ -100,8 +103,11 @@ WriteString[sphenoFT,"Logical :: NumericalProblem, GenerationMixingSave \n"];
 MakeVariableList[listAllParametersAndVEVs,"",sphenoFT];
 WriteString[sphenoFT, "Complex(dp) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>"), Tadpoles_Save("<>ToString[SA`NrTadpoleEquations]<>"), dmz2, mudim \n\n"];
 MakeVariableList[NewMassParameters,"",sphenoFT];
+(*
 MakeVariableList[Union[Flatten[{NeededCouplingsUnmixed}]],"",sphenoFT];
 MakeVariableList[Union[Flatten[{NeededCouplingsLoop}]],"",sphenoFT];
+*)
+MakeVariableList[Union[Flatten[{namesLoop}]],"",sphenoFT];
 
 WriteString[sphenoFT,"Write(*,*) \"Calculate FineTuning\" \n"];
 
@@ -357,6 +363,7 @@ WriteString[sphenoFT,"End Subroutine FineTuning \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateBoundaryFT:=Block[{i,j,k},
 
 (* Print["Write BoundaryFT"]; *)
@@ -464,6 +471,7 @@ WriteString[sphenoFT,"End Subroutine BoundaryFT \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteRunningUpFT:=Block[{i,j,k},
 
 WriteGUTnormalization[sphenoFT];
@@ -549,6 +557,7 @@ WriteRemoveGUTnormalization[sphenoFT];
 
 
 
+(* ::Input::Initialization:: *)
 
 WriteBoundaryUpFT[nr_]:=Block[{i,j,k,j2},
 k=nr;
@@ -678,6 +687,7 @@ WriteString[sphenoFT,"End Subroutine BoundaryConditionUpFT_"<>ToString[nr]<>"\n\
 
 
 
+(* ::Input::Initialization:: *)
 WriteBoundaryDownFT[nr_]:=Block[{i,j,j2,dim,k,name,name1,name2,pos,ind},
 k=nr;
 MakeSubroutineTitle["BoundaryConditionDownFT_"<>ToString[nr],{},{"gB","Shifts","variation","FTpar"},{},sphenoFT];

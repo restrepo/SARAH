@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 (* Generating Module Elements *)
 
@@ -56,6 +57,7 @@ MakeSubroutineTitle[name_,possibleParameters_, additionalParameters1_,additional
 MakeCall[name_,possibleParameters_, additionalParameters1_,additionalParameters2_,file_]:=MakeFunction[name,possibleParameters, additionalParameters1,additionalParameters2,"Call",file]
 
 
+(* ::Input::Initialization:: *)
 MakeVariableList[PossibleParameters_,string_,file_]:=Block[{i,j, NewString},
 (* Write the varaible declaration to the Fortran file: *)
 (* Takes a list of parameters and checks if they are Real or Complex and adds the dimension *)
@@ -105,6 +107,7 @@ Return[{StringReal,StringComplex}];
 ];
 
 
+(* ::Input::Initialization:: *)
 AddDim[x_]:=Block[{j,dimP,NewString},
 (* Creates a string in Fortran format for the dimension of a parameter *)
 
@@ -265,6 +268,7 @@ Return[NewString];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 (* Sums and Loops *)
 
@@ -360,6 +364,7 @@ i++];
 a_*sumSPheno[b_,c_,d_,e_] ^=sumSPheno[b,c,d,a*e];
 
 
+(* ::Input::Initialization:: *)
 
 (* Names and Indices *)
 
@@ -379,6 +384,7 @@ Return[newString];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 getSignVertex[plist_,ref_,type_]:=Block[{i,temp,res=0,found=False,per},
 temp = ref /. {A_[{b___}]->A};
@@ -408,6 +414,37 @@ i++;];
 If[found==False,Print["Error in 'getSign' for vertex ",plist," ",ref]];
 Return[res]; 
 ];
+
+
+getSignVertexFA[plist_,ref_,type_]:=Block[{i,temp,res=0,found=False,per},
+temp = ref /. {A_[{b___}]->A};
+ptemp=plist;
+Switch[type,
+VVV,per=permutationsVVV;,
+SSV,per=permutationsSSV;
+           temp = Select[temp,(getType[#]==S)&];
+           ptemp = Select[ptemp,(getType[#]==S)&];
+];
+For[i=1,i<=Length[per],
+If[found==False,
+Switch[type,
+VVV,
+   If[{ptemp[[per[[i,1,1]]]],ptemp[[per[[i,1,2]]]],ptemp[[per[[i,1,3]]]]}===temp,
+ found=True; 
+ res=per[[i,2]]
+ ];,
+SSV,
+   If[{ptemp[[per[[i,1,1]]]],ptemp[[per[[i,1,2]]]]}===temp,
+ found=True; 
+ res=-per[[i,2]];
+ ];
+];
+];
+i++;];
+If[found==False,Print["Error in 'getSign' for vertex ",plist," ",ref]];
+Return[res]; 
+];
+
 getSignVertexOLD[plist_,ref_,type_]:=Block[{i,temp,res=0,found=False,per},
 temp = ref /. {A_[{b___}]->A};
 ptemp=plist;
@@ -731,6 +768,12 @@ SPhenoMassSq[x_]:=If[getType[x]===G,
 If[FreeQ[massless,getVectorBoson[x]]==True,Return[ToExpression[ToString[SPhenoMass[x]]<>"2"]];,Return[0.]];,
 If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression[ToString[SPhenoMass[x]]<>"2"]];,Return[0.]];
 ];
+SPhenoMassSqOS[x_]:=If[getType[x]===G,
+If[FreeQ[masslessSave,getVectorBoson[x]]==True,
+Return[ToExpression[ToString[SPhenoMass[x]]<>"2OS"]];,
+Return[0.]];,
+If[FreeQ[masslessSave,getBlank[x]]==True,Return[ToExpression[ToString[SPhenoMass[x]]<>"2OS"]];,Return[0.]];
+];
 SPhenoMass[x_,nr_]:=Block[{},
 If[getType[x]===G,Return[SPhenoMass[getVectorBoson[x],nr]];];
 If[getGenSPheno[x]>1 && FreeQ[massless,getBlank[x]]==True,
@@ -738,6 +781,29 @@ Return[ToString[SPhenoMass[x]]<>"("<>ToString[nr]<>")" ];,
 Return[ToString[SPhenoMass[x]]];
 ];
 ];
+
+SPhenoZFac[x_]:=ToExpression["ZRU"<>ToString[x]];
+SPhenoZFacHead[x_]:=Block[{},
+If[Head[x]===conj,
+Return[ToExpression["ZRU"<>ToString[RE[x]]<>"c"]];,
+Return[ToExpression["ZRU"<>ToString[x]]];
+];
+];
+
+SPhenoMassOS[x_]:=If[getType[x]===G,Return[SPhenoMassOS[getVectorBoson[x]]];,If[FreeQ[masslessSave,getBlank[x]]==True,Return[ToExpression["M"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]<>"OS"]];,Return[0.]];];
+
+SPhenoMassOS[x_,nr_]:=Block[{},
+If[getType[x]===G,Return[SPhenoMassOS[getVectorBoson[x],nr]];];
+If[getGenSPheno[x]>1 && FreeQ[masslessSave,getBlank[x]]==True,
+Return[ToString[SPhenoMass[x]]<>"OS("<>ToString[nr]<>")" ];,
+ If[FreeQ[masslessSave,getBlank[x]]==True,
+Return[ToString[SPhenoMass[x]]<>"OS"];,
+Return["0."];
+];
+];
+];
+
+
 SPhenoMassFK[x_,nr_]:=Block[{},
 If[getType[x]===G,Return[SPhenoMassFK[getVectorBoson[x],nr]];];
 If[getGenSPheno[x]>1 && FreeQ[massless,getBlank[x]]==True,
@@ -747,7 +813,6 @@ Return[ToString[SPhenoMassFK[x]]];
 ];
 
 SPhenoWidth[x_]:=If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression["gT"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]]];,Return[0.]];
-
 SPhenoPartialWidth[x_]:=If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression["gP"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]]];,Return[0.]];
 SPhenoBR[x_]:=If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression["BR"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]]];,Return[0.]];
 
@@ -757,6 +822,18 @@ Return[ToString[SPhenoWidth[x]]<>"("<>ToString[nr]<>")" ];,
 Return[ToString[SPhenoWidth[x]]];
 ];
 ];
+
+SPhenoWidth1L[x_]:=If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression["gT1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]]];,Return[0.]];
+SPhenoPartialWidth1L[x_]:=If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression["gP1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]]];,Return[0.]];
+SPhenoBR1L[x_]:=If[FreeQ[massless,getBlank[x]]==True,Return[ToExpression["BR1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]]];,Return[0.]];
+
+SPhenoWidth1L[x_,nr_]:=Block[{},
+If[getGenSPheno[x]>1 && FreeQ[massless,getBlank[x]]==True,
+Return[ToString[SPhenoWidth1L[x]]<>"("<>ToString[nr]<>")" ];,
+Return[ToString[SPhenoWidth1L[x]]];
+];
+];
+
 
 SPhenoRatioPseudo[x_,nr_]:=SPhenoRatioFun[x,nr,"ratP"];
 SPhenoRatio[x_,nr_]:=SPhenoRatioFun[x,nr,"rat"];
@@ -813,6 +890,21 @@ Return["BR"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSub
 ];
 ];
 
+SPhenoPartialWidth1L[x_,nr_,nr2_]:=Block[{},
+If[getGenSPheno[x]>1,
+Return["gP1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]<>"("<>ToString[nr]<>","<>ToString[nr2]")" ];,
+Return["gP1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]<>"(1,"<>ToString[nr2]")"];
+];
+];
+
+
+SPhenoBR1L[x_,nr_,nr2_]:=Block[{},
+If[getGenSPheno[x]>1,
+Return["BR1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]<>"("<>ToString[nr]<>","<>ToString[nr2]<>")" ];,
+Return["BR1L"<>ToString[getBlank[x] /.diracSubBack1[SPheno`Eigenstates] /.diracSubBack2[SPheno`Eigenstates]]<>"(1,"<>ToString[nr2]<>")"];
+];
+];
+
 SPhenoPDG[x_,nr_]:=Block[{},
 If[getGenSPheno[x]>1,
 Return["PDG"<>ToString[getBlank[x]]<>"("<>ToString[nr]<>")" ];,
@@ -846,6 +938,17 @@ If[getGenSPheno[x]>1 && FreeQ[massless,getBlank[x]]==True,
 Return[ToString[SPhenoMass[x]]<>"2("<>ToString[nr]<>")" ];,
 If[FreeQ[massless,getBlank[x]]==True,
 Return[ToString[SPhenoMass[x]]<>"2"];,
+Return["0._dp"];
+];
+];
+];
+
+SPhenoMassSqOS[x_,nr_]:=Block[{},
+If[getType[x]===G,Return[SPhenoMassSqOS[getVectorBoson[x],nr]];];
+If[getGenSPheno[x]>1 && FreeQ[masslessSave,getBlank[x]]==True,
+Return[ToString[SPhenoMass[x]]<>"2OS("<>ToString[nr]<>")" ];,
+If[FreeQ[masslessSave,getBlank[x]]==True,
+Return[ToString[SPhenoMass[x]]<>"2OS"];,
 Return["0._dp"];
 ];
 ];
@@ -897,6 +1000,26 @@ SPhenoCouplingRight[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"R"];
 SPhenoCouplingV1[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"1"];
 SPhenoCouplingV2[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"2"];
 SPhenoCouplingV3[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"3"];
+
+SPhenoCouplingV1Q[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"1Q"];
+SPhenoCouplingV2Q[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"2Q"];
+SPhenoCouplingV3Q[x_]:=ToExpression[ShortCoup[CouplingName[x]]<>"3Q"];
+
+SPhenoCouplingColor[x_,y_]:=ToExpression[ShortCoup[CouplingName[x]]<>ShortColorForm[y]];
+
+ShortColorForm[y_]:=Switch[y,
+1,Return["1"];,
+Delta[ct1,ct2],Return["aa"];,
+Delta[ct1,ct3],Return["aa"];,
+Delta[ct1,ct4],Return["aa"];,
+Delta[ct2,ct3],Return["aa"];,
+Delta[ct2,ct4],Return["aa"];,
+Delta[ct3,ct4],Return["aa"];,
+Delta[ct1,ct2] Delta[ct3,ct4],Return["aabb"];,
+Delta[ct1,ct4] Delta[ct3,ct2],Return["abba"];,
+Delta[ct1,ct3] Delta[ct2,ct4],Return["abab"];,
+_,Return[StringReplace[SPhenoForm[y],{"("->"",")"->"",","->""," "->"","*"->""}]];
+];
 
 SPhenoCoupling[x_] :=ToExpression[ShortCoup[CouplingName[x]]];
 
@@ -957,6 +1080,7 @@ Return[{}];
 
 
 
+(* ::Input::Initialization:: *)
 
 (* Fortran Output *)
 
@@ -1205,9 +1329,11 @@ Return[newString];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 
 
+(* ::Input::Initialization:: *)
 
 (* SPhenoForm[x_String]:=StringReplace[StringReplace[x," "->""],StringReSPheno]; *)
 
@@ -1225,6 +1351,7 @@ Return[ToString[FortranForm[x]]];
 
 
 
+(* ::Input::Initialization:: *)
 MakeSPhenoCoupling[x_,name_,file_]:=Block[{temp,i,iDo2},
 temp = Expand[x];
 
@@ -1317,12 +1444,42 @@ fermionsRef=Select[vert[[2]],getType[RE[#]]==F&];
 vector=RE[Select[vert[[2]],getType[RE[#]]==V&][[1]]];
 If[fermionsIn[[1]]===(fermionsRef[[2]]/. A_[{b__}]->A) && fermionsIn[[2]]===(fermionsRef[[1]]/. A_[{b__}]->A) && fermionsIn[[1]]=!=fermionsIn[[2]],
 res[[1]]=-Reverse[res[[1]]];
-If[ind[[2]]==True,indres[[2]]=False;,indres[[2]]=True;];
+(* If[ind[[2]]\[Equal]True,indres[[2]]=False;,indres[[2]]=True;]; *)
 ];
 Return[{res,indres}];,
 Return[{res,indres}];
 ];
 ];
+
+CheckFermionFlipDecay[fields_,vert_,ind_]:=Block[{i,j,fermionsIn, fermionsRef,res,vector,indres,refind,count},
+res=vert;
+indres=ind;
+refind=ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]];
+If[getVertexType[C@@ind[[-1]]]===FFV,
+fermionsIn=Select[fields,getType[RE[#]/. A_[b_]->A]==F&];
+fermionsRef={};
+count=1;
+For[i=1,i<=Length[ind[[-1]]],
+If[getType[ind[[-1]][[i]]]===F,
+If[getGen[ind[[-1]][[i]]]>1,
+fermionsRef=Join[fermionsRef,{ind[[-1]][[i]][refind[[count]]]}];
+count++;,
+fermionsRef=Join[fermionsRef,{ind[[-1]][[i]]}];
+];
+];
+i++;];
+vector=RE[Select[vert[[2]],getType[RE[#]]==V&][[1]]];
+If[fermionsIn[[1]]===(fermionsRef[[2]]/. A_[{b__}]->A) && fermionsIn[[2]]===(fermionsRef[[1]]/. A_[{b__}]->A) && fermionsIn[[1]]=!=fermionsIn[[2]],
+res[[1]]=-Reverse[res[[1]]];
+(* If[ind[[2]]\[Equal]True,indres[[2]]=False;,indres[[2]]=True;]; *)
+];
+Return[{res,indres}];,
+Return[{res,indres}];
+];
+];
+
+
+
 
 
 WriteVertexToFile[nr_,name_,ind_,type_,file_]:=Block[{},
@@ -1353,6 +1510,7 @@ SA`SubSPhenoTeXVertex={"coup"<>ToString[nr]<>"L"->TeXOutput[name[[1,1]]]<>"_"<>T
 SA`SubSPhenoTeXVertex={"coup"<>ToString[nr]<>"R"->"("<>TeXOutput[name[[1,1]]]<>"_"<>TeXOutput[ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]] /.{i1->j1,i2->j2,i3->j3,i4->j4}]<>")^*","coup"<>ToString[nr]<>"L"->"("<>TeXOutput[name[[1,2]]]<>"_"<>TeXOutput[ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]] /.{i1->j1,i2->j2,i3->j3,i4->j4}]<>")^*"};
 	];,
 _,
+	If[Head[name]===List,
 	If[ind[[2]]==False,
 	WriteString[file,"coup"<>ToString[nr]<>" = "<>ToString[name[[1,1]]]<>ind[[1]] <>"\n"];
 	If[((name[[1,1]]/Abs[name[[1,1]]])/.Abs[x_]->x)===-1,
@@ -1363,7 +1521,19 @@ _,
 	];,
 	WriteString[file,"coup"<>ToString[nr]<>" = Conjg("<>ToString[name[[1,1]]]<>ind[[1]] <>")\n"];
 	SA`SubSPhenoTeXVertex={"coup"<>ToString[nr]->"("<>TeXOutput[name[[1,1]]]<>"_"<>TeXOutput[ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]]/.{i1->j1,i2->j2,i3->j3,i4->j4}]<>")^*"};
+	];,
+	If[ind[[2]]==False,
+	WriteString[file,"coup"<>ToString[nr]<>" = "<>ToString[name]<>ind[[1]] <>"\n"];
+	If[((name/Abs[name])/.Abs[x_]->x)===-1,
+	SA`SubSPhenoTeXVertex=
+{"coup"<>ToString[nr]->"("<>TeXOutput[name]<>"_"<>TeXOutput[ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]]/.{i1->j1,i2->j2,i3->j3,i4->j4}]<>")"};,
+	SA`SubSPhenoTeXVertex=
+{"coup"<>ToString[nr]->TeXOutput[name]<>"_"<>TeXOutput[ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]]/.{i1->j1,i2->j2,i3->j3,i4->j4}]};
+	];,
+	WriteString[file,"coup"<>ToString[nr]<>" = Conjg("<>ToString[name]<>ind[[1]] <>")\n"];
+	SA`SubSPhenoTeXVertex={"coup"<>ToString[nr]->"("<>TeXOutput[name]<>"_"<>TeXOutput[ToExpression[StringReplace[ind[[1]],{"("->"{",")"->"}"}]]/.{i1->j1,i2->j2,i3->j3,i4->j4}]<>")^*"};
 	];
+];
 
 ];
 
@@ -1459,6 +1629,7 @@ Close[copy];
 
 
 
+(* ::Input::Initialization:: *)
 MakeMassesCouplingLists[temp_]:=MakeMassesCouplingLists[temp,True,{}];
 MakeMassesCouplingLists[temp_,SM_]:=MakeMassesCouplingLists[temp,SM,{}];
 
@@ -1526,7 +1697,8 @@ WriteString[file,"! ------------------------------------------------------------
 
 ];
 
-GetCouplingsMasses[temp_]:=Block[{AllExternalParticles={},AllInternalParticles={},AllAddedCouplings={},i,j,NeededMasses,NeededCouplingsInsert,NeededCouplings},
+GetCouplingsMasses[temp_]:=GetCouplingsMasses[temp,False];
+GetCouplingsMasses[temp_,quartics_]:=Block[{AllExternalParticles={},AllInternalParticles={},AllAddedCouplings={},i,j,NeededMasses,NeededCouplingsInsert,NeededCouplings},
 AllExternalParticles={External[1],External[2],External[3],External[4]}/. temp[[1,2]];
 For[j=1,j<=Length[temp],
 AllInternalParticles=Join[AllInternalParticles,{Internal[1],Internal[2],Internal[3],Internal[4]}/. temp[[j,2]]];
@@ -1544,7 +1716,15 @@ NeededMasses =Join[NeededMasses, MakeSquaredMass/@NeededMasses];
 NeededCouplingsInsert=Intersection[AllAddedCouplings /. C[a__]->Cp[a]];
 NeededCouplings={};
 For[i=1,i<=Length[NeededCouplingsInsert],
+If[FreeQ[SPhenoCouplingsAllreallyAll,NeededCouplingsInsert[[i]]/. Cp->C]===False,
+If[quartics===True,
+If[FreeQ[SPhenoCouplingsColoredQuartics,NeededCouplingsInsert[[i]]/. Cp->C]===False,
+NeededCouplings=Join[NeededCouplings,getSPhenoCoupling[NeededCouplingsInsert[[i]],SPhenoCouplingsColoredQuartics][[1]]];,
 NeededCouplings=Join[NeededCouplings,getSPhenoCoupling[NeededCouplingsInsert[[i]],SPhenoCouplingsAllreallyAll][[1]]];
+];,
+NeededCouplings=Join[NeededCouplings,getSPhenoCoupling[NeededCouplingsInsert[[i]],SPhenoCouplingsAllreallyAll][[1]]];
+];
+];
 i++;];
 NeededCouplings = Flatten[NeededCouplings];
 Return[{NeededMasses,NeededCouplings}];

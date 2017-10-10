@@ -12,12 +12,7 @@ MINPAR={
 ParametersToSolveTadpoles = {MHD,MHU};
 RealParameters = {};
 
-BoundaryLowScaleInput={
- {Lambda1,Lambda1IN},
- {Lambda2,Lambda2IN},
- {Lambda3,Lambda3IN},
- {Lambda4,Lambda4IN},
- {Lambda5,Lambda5IN},
+DEFINITION[MatchingConditions]= {
  {v, vSM}, 
  {Ye, YeSM},
  {Yd, YdSM},
@@ -25,6 +20,15 @@ BoundaryLowScaleInput={
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM}
+ };
+
+BoundaryLowScaleInput={
+ {Lambda1,Lambda1IN},
+ {Lambda2,Lambda2IN},
+ {Lambda3,Lambda3IN},
+ {Lambda4,Lambda4IN},
+ {Lambda5,Lambda5IN}
+
 };
 
 ListDecayParticles = {Fu,Fe,Fd,hh,H0,A0,Hp};

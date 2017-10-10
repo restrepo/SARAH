@@ -74,7 +74,7 @@ WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberAllwithVEVs]<>")\n"];
 ]; 
 If[ImplementThresholds==True,
 (* temp=Intersection[getGenSF/@ThresholdParticles];
-For[i=1,i<=Length[temp],
+For[i=1,i\[LessEqual]Length[temp],
 WriteString[sphenoSugra,"Real(dp) :: EW"<> ToString[temp[[i]]]<>"("<> ToString[temp[[i]]]<>") \n"];
 WriteString[sphenoSugra,"Complex(dp) :: dummy"<> ToString[temp[[i]]]<>"("<> ToString[temp[[i]]]<>","<> ToString[temp[[i]]]<>") \n"];
 i++;];
@@ -130,6 +130,400 @@ WriteString[sphenoSugra,"Call BoundarySUSY(g1a,g1B)\n\n"];
 WriteString[sphenoSugra,"FoundUnification= .False. \n"];
 WriteString[sphenoSugra,"tz=Log(sqrt(mudim)/m_lo)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
+];
+
+WriteString[sphenoSugra,"If (kont.Ne.0) Then \n"];
+WriteString[sphenoSugra,"Iname=Iname-1 \n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Problem with RGE running. Errorcode:\", kont \n"];
+WriteString[sphenoSugra,"Call TerminateProgram \n"];
+WriteString[sphenoSugra,"End If \n"];
+
+If[ImplementThresholds==False,
+
+WriteString[sphenoSugra,"If (.Not.UseFixedGUTScale) Then\n"];
+WriteString[sphenoSugra,"tz=Log(m_lo/1.e20_dp)\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
+];
+
+
+
+WriteString[sphenoSugra,"If (kont.Eq.0) Then\n"];
+WriteString[sphenoSugra,"FoundUnification= .True. \n"];
+WriteString[sphenoSugra,"mGUT=1.e20_dp*Exp(t_out)\n"];
+WriteString[sphenoSugra,"gGUT=Sqrt(0.5_dp*(g1b(1)**2+g1b(2)**2))\n"];
+WriteString[sphenoSugra,"If (StrictUnification) g1b(3)=gGUT\n"];
+WriteString[sphenoSugra,"Else\n"];
+WriteString[sphenoSugra,"Write(ErrCan,*) \"kont\",kont,delta0,tz,dt\n"];
+WriteString[sphenoSugra,"Write (ErrCan,*) \"t_out\",t_out,1.e20_dp*Exp(t_out)\n"];
+WriteString[sphenoSugra,"Write(ErrCan,*) \" \"\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];
+WriteString[sphenoSugra,"Return\n"];
+WriteString[sphenoSugra,"End If\n"];
+WriteString[sphenoSugra,"Else\n"];
+WriteString[sphenoSugra,"  tz=Log(m_lo/GUT_scale)\n"];
+WriteString[sphenoSugra,"  mGUT=GUT_scale\n"];
+WriteString[sphenoSugra,"  dt=-tz/50._dp\n"];
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
+];
+WriteString[sphenoSugra,"If (kont.Ne.0) Then \n"];
+WriteString[sphenoSugra,"Iname=Iname-1 \n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Problem with RGE running. Errorcode:\", kont \n"];
+WriteString[sphenoSugra,"Call TerminateProgram \n"];
+WriteString[sphenoSugra,"End If \n"];
+WriteString[sphenoSugra,"End If\n\n"];
+
+WriteString[sphenoSugra,"mGUT_Save=mGUT\n"];
+
+WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1c)\n\n"];
+
+
+WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
+WriteString[sphenoSugra,"mudim=Max(mudim,mZ2)\n"];
+
+WriteString[sphenoSugra,"tz=0.5_dp*Log(mudim/mGUT_save**2)\n"];
+WriteString[sphenoSugra,"dt=tz/100._dp\n"];
+WriteString[sphenoSugra,"Call odeint(g1c,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];,
+
+For[k=1,k<=Length[Thresholds],
+
+WriteString[sphenoSugra,"Call checkGUT"<>ToString[numberLow]<>"(g1B,delta0,unified,greater) \n"];
+
+(* WriteString[sphenoSugra,"If (g1B(1).Gt.g1B(2)) Then\n"]; *)
+WriteString[sphenoSugra,"If (greater) Then\n"];
+WriteString[sphenoSugra,"If (UseFixedGUTScale) Then\n"];
+WriteString[sphenoSugra,"tz=Log(m_lo/GUT_scale)\n"];
+WriteString[sphenoSugra,"mGUT=GUT_scale\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
+];
+
+WriteString[sphenoSugra,"If (kont.Ne.0) Then\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];
+WriteString[sphenoSugra,"Return\n"];
+WriteString[sphenoSugra,"End If\n"];
+
+WriteString[sphenoSugra,"Else!.not.UseFixedGUTScale\n"];
+WriteString[sphenoSugra,"tz=Log(m_lo/1.e15_dp)\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
+];
+WriteString[sphenoSugra,"If (kont.Eq.0) Then\n"];
+WriteString[sphenoSugra,"FoundUnification= .True.\n"];
+WriteString[sphenoSugra,"mGUT=1.e15_dp*Exp(t_out)\n"];
+WriteString[sphenoSugra,"gGUT=Sqrt(0.5_dp*(g1B(1)**2+g1B(2)**2))\n"];
+WriteString[sphenoSugra,"If (StrictUnification) g1B(3)=gGUT\n"];
+WriteString[sphenoSugra,"Else\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];
+WriteString[sphenoSugra,"Return\n"];
+WriteString[sphenoSugra,"End If\n"];
+
+WriteString[sphenoSugra,"End If ! UseFixedScale \n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
+MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
+];
+
+SetBoundaryThresholdUp[k,False]; 
+
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
+MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
+];
+
+WriteString[sphenoSugra,"Else\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
+MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
+];
+
+SetBoundaryThresholdUp[k,True];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
+MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
+];
+
+
+If[k<Length[Thresholds],
+WriteString[sphenoSugra,"m_lo="<>SPhenoForm[Thresholds[[k,1]]]<>"\n"];
+WriteString[sphenoSugra,"If ("<>SPhenoForm[Thresholds[[k,1]]]<>".Ne."<>SPhenoForm[Thresholds[[k+1,1]]]<>") Then\n"];
+WriteString[sphenoSugra,"m_hi="<>SPhenoForm[Thresholds[[k+1,1]]]<>"\n"];
+WriteString[sphenoSugra,"tz=Log(m_lo/m_hi)\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
+];
+
+WriteString[sphenoSugra,"If (kont.Ne.0) Then \n"];
+WriteString[sphenoSugra,"Iname=Iname-1 \n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Problem with RGE running. Errorcode:\", kont \n"];
+WriteString[sphenoSugra,"Call TerminateProgram \n"];
+WriteString[sphenoSugra,"End If \n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
+MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
+];
+
+WriteString[sphenoSugra,"m_lo=m_hi\n"];
+WriteString[sphenoSugra,"End If\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
+MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
+];,
+
+
+
+WriteString[sphenoSugra,"If (UseFixedGUTScale) Then\n"];
+WriteString[sphenoSugra,"tz=Log(m_lo/GUT_scale)\n"];
+WriteString[sphenoSugra,"mGUT=GUT_scale\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
+];
+WriteString[sphenoSugra,"If (kont.Ne.0) Then\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];
+WriteString[sphenoSugra,"Return\n"];
+WriteString[sphenoSugra,"End If\n"];
+
+WriteString[sphenoSugra,"Else\n"];
+
+WriteString[sphenoSugra,"Call checkGUT"<>ToString[numberLow]<>"(g1B,delta0,unified,greater) \n"];
+
+(* WriteString[sphenoSugra,"If (g1B(1).Lt.g1B(2)) Then! I am still below GUT scale\n"]; *)
+WriteString[sphenoSugra,"If (.not.greater) Then! I am still below GUT scale\n"];
+
+WriteString[sphenoSugra,"tz=Log(m_lo/1.e20_dp)\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
+];
+WriteString[sphenoSugra,"If (kont.Eq.0) Then\n"];
+WriteString[sphenoSugra,"FoundUnification= .True.\n"];
+WriteString[sphenoSugra,"mGUT=1.e20_dp*Exp(t_out)\n"];
+WriteString[sphenoSugra,"gGUT=Sqrt(0.5_dp*(g1B(1)**2+g1B(2)**2))\n"];
+(* WriteString[sphenoSugra,"g1B(1)=gGUT\n"];
+WriteString[sphenoSugra,"g1B(2)=gGUT\n"]; *)
+WriteString[sphenoSugra,"If (StrictUnification) g1B(3)=gGUT\n"];
+WriteString[sphenoSugra,"Else\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];
+WriteString[sphenoSugra,"Return\n"];
+WriteString[sphenoSugra,"End If\n"];
+
+(* WriteString[sphenoSugra,"Else If (g1B(1).Eq.g1B(2)) Then\n"]; *)
+WriteString[sphenoSugra,"Else If (unified) Then\n"];
+WriteString[sphenoSugra,"FoundUnification= .True. \n"];
+WriteString[sphenoSugra,"mGUT=1.e15_dp*Exp(t_out)\n"];
+(* WriteString[sphenoSugra,"gGUT=g1B(1)\n"]; *)
+WriteString[sphenoSugra,"If (StrictUnification) g1B(3)=gGUT\n"];
+
+WriteString[sphenoSugra,"Else! I have already crossed the GUT scale\n"];
+WriteString[sphenoSugra,"tz=Log(m_lo/1.e15_dp)\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
+WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
+];
+WriteString[sphenoSugra," If (kont.Eq.0) Then\n"];
+WriteString[sphenoSugra,"  FoundUnification= .True. \n"];
+WriteString[sphenoSugra,"  mGUT=1.e15_dp*Exp(t_out)\n"];
+WriteString[sphenoSugra,"  gGUT=Sqrt(0.5_dp*(g1B(1)**2+g1B(2)**2))\n"];
+(* WriteString[sphenoSugra,"  g1B(1:2)=gGUT\n"]; *)
+WriteString[sphenoSugra,"  If (StrictUnification) g1B(3)=gGUT\n"];
+WriteString[sphenoSugra," Else\n"];
+WriteString[sphenoSugra,"  Iname=Iname-1\n"];
+WriteString[sphenoSugra,"  Return\n"];
+WriteString[sphenoSugra," End If\n"];
+WriteString[sphenoSugra,"End If\n"];
+WriteString[sphenoSugra,"End If\n"];
+
+];
+k++;];
+
+For[k=1,k<= Length[Thresholds],
+WriteString[sphenoSugra,"End If\n"];
+k++;];
+
+WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1C)\n\n"];
+
+For[i=1,i<=Length[ThresholdParticles],
+WriteString[sphenoSugra,"NumberGenerations"<>SPhenoForm[ThresholdParticles[[i]]]  <>" = " <>ToString[getGenSF[ThresholdParticles[[i]]]]<> "\n"];
+i++;];
+
+WriteString[sphenoSugra,"m_hi=mGUT \n"];
+
+For[k=Length[Thresholds],k>=1,
+WriteString[sphenoSugra,"If ("<>SPhenoForm[Thresholds[[k,1]]]<>".Lt.Abs(m_hi)) Then\n"];
+WriteString[sphenoSugra,"IncludeThresholdsAtScale = .True. \n"];
+WriteString[sphenoSugra,"m_lo="<>SPhenoForm[Thresholds[[k,1]]]<>"\n"];
+WriteString[sphenoSugra,"tz=Log(Abs(m_lo/m_hi))\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
+
+WriteString[sphenoSugra,"Call odeint(g1c,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+
+WriteString[sphenoSugra,"If (kont.Ne.0) Then \n"];
+WriteString[sphenoSugra,"Iname=Iname-1 \n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Problem with RGE running. Errorcode:\", kont \n"];
+WriteString[sphenoSugra,"Call TerminateProgram \n"];
+WriteString[sphenoSugra,"End If \n"];
+
+WriteString[sphenoSugra,"m_hi=m_lo\n"];
+WriteString[sphenoSugra,"Else \n"];
+WriteString[sphenoSugra," IncludeThresholdsAtScale = .False. \n"];
+WriteString[sphenoSugra,"Endif \n"];
+
+
+MakeCall["GToParameters"<>ToString[numberAll],listAllParameters,{"g1C"},{},sphenoSugra];
+
+SetBoundaryThresholdDown[k];
+MakeCall["ParametersToG"<>ToString[numberAll],listAllParameters,{},{"g1C"},sphenoSugra];
+k--;];
+
+
+WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
+WriteString[sphenoSugra,"mudim=Max(mudim,mZ2)\n"];
+
+WriteString[sphenoSugra,"tz=0.5_dp*Log(mudim/m_hi**2)\n"];
+WriteString[sphenoSugra,"dt=tz/100._dp\n"];
+WriteString[sphenoSugra,"Call odeint(g1c,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+WriteString[sphenoSugra,"Iname=Iname-1\n"];
+];
+(* WriteString[sphenoSugra,"Contains \n\n"]; *)
+];
+
+
+
+
+
+
+
+
+WriteString[sphenoSugra,"End Subroutine RunRGE\n\n"];
+
+];
+
+
+GenerateNewRunRGE:=Block[{i,j,k,l,j2,temp},
+
+Print["  Write new 'RunRGE'"];
+
+WriteString[sphenoSugra,"Subroutine RunRGE_new(kont, delta0, g1A, g1C, mGUT)\n"];
+
+WriteString[sphenoSugra,"Implicit None\n"];
+WriteString[sphenoSugra,"Integer,Intent(inout)::kont\n"];
+WriteString[sphenoSugra,"Real(dp),Intent(in)::delta0\n"];
+
+If[Head[RegimeNr]===Integer,
+NumberLowAllRegimes[[RegimeNr]]=numberLow;
+NumberHighAllRegimes[[RegimeNr]] = numberAll;
+NumberAllwithVEVsAllRegimes[[RegimeNr]] = numberAllwithVEVs;
+ListVEVsAllRegimes[[RegimeNr]] = listVEVs;
+LowScaleParametersAllRegimes[[RegimeNr]] = lowScaleNames;
+HighScaleParametersAllRegimes[[RegimeNr]] = listAllParameters;
+HighScaleParametersAllwithVEVsRegimes[[RegimeNr]] = listAllParametersAndVEVs;
+
+VEVsRunning=Table[False,{RegimeNr}];
+
+For[i=1,i<=RegimeNr,
+WriteString[sphenoSugra,"Real(dp) :: gAReg"<>ToString[i]<>"("<>ToString[NumberLowAllRegimes[[i]]]<>") \n" ];
+WriteString[sphenoSugra,"Real(dp) :: gBReg"<>ToString[i]<>"("<>ToString[NumberLowAllRegimes[[i]]]<>") \n" ];
+WriteString[sphenoSugra,"Real(dp) :: gCaReg"<>ToString[i]<>"("<>ToString[NumberHighAllRegimes[[i]]]<>") \n" ];
+WriteString[sphenoSugra,"Real(dp) :: gCbReg"<>ToString[i]<>"("<>ToString[NumberAllwithVEVsAllRegimes[[i]]]<>") \n" ];
+If[i<RegimeNr,
+If[Intersection[ListVEVsAllRegimes[[i]],ListVEVsAllRegimes[[i+1]]]=!={},
+VEVsRunning[[i]]=True;
+];
+];
+i++;];
+
+MakeVariableList[Union[Flatten[Delete[ListVEVsAllRegimes,RegimeNr]]],"",sphenoSugra];
+WriteString[sphenoSugra,"Real(dp) :: test \n"];
+
+
+
+];
+
+WriteString[sphenoSugra,"Integer :: i1, i2, i3, i4 \n"];
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Real(dp),Intent(inout)::g1A("<>ToString[numberLow]<>")\n"];,
+WriteString[sphenoSugra,"Real(dp),Intent(inout)::g1A("<>ToString[numberAllwithVEVs]<>")\n"];
+];
+WriteString[sphenoSugra,"Real(dp),Intent(out)::g1C("<>ToString[numberAll]<>"),mGUT\n"];
+WriteString[sphenoSugra,"Real(dp)::tz,dt,t_out \n"];
+WriteString[sphenoSugra,"Real(dp)::mudim,gGUT,gA_h("<>ToString[numberLow]<>"),g1b("<>ToString[numberLow]<>"),m_hi,m_lo\n"];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES],
+WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberLow]<>")\n"];,
+WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberAllwithVEVs]<>")\n"];
+]; 
+If[ImplementThresholds==True,
+(* temp=Intersection[getGenSF/@ThresholdParticles];
+For[i=1,i\[LessEqual]Length[temp],
+WriteString[sphenoSugra,"Real(dp) :: EW"<> ToString[temp[[i]]]<>"("<> ToString[temp[[i]]]<>") \n"];
+WriteString[sphenoSugra,"Complex(dp) :: dummy"<> ToString[temp[[i]]]<>"("<> ToString[temp[[i]]]<>","<> ToString[temp[[i]]]<>") \n"];
+i++;];
+*)
+For[i=1,i<=Length[ThresholdParticles],
+WriteString[sphenoSugra,"Real(dp) :: EW"<> ToString[ThresholdParticles[[i]]]<>"("<> ToString[getGenSF[ThresholdParticles[[i]]]]<>") \n"];
+WriteString[sphenoSugra,"Complex(dp) :: dummy"<> ToString[ThresholdParticles[[i]]]<>"("<>ToString[getGenSF[ThresholdParticles[[i]]]]<>","<> ToString[getGenSF[ThresholdParticles[[i]]]]<>") \n"];
+i++;];
+
+WriteString[sphenoSugra, "Real(dp) ::  test(2) \n\n"];
+WriteString[sphenoSugra, "Integer ::  ierr \n\n"];
+
+];
+
+
+
+WriteString[sphenoSugra,"Logical :: FoundUnification, unified, greater \n\n"];
+
+
+WriteString[sphenoSugra,"Iname=Iname+1\n"];
+WriteString[sphenoSugra,"NameOfUnit(Iname)='runRGE'\n\n"];
+
+If[Head[RegimeNr]===Integer,
+RGErunningRegime;,
+
+If[ImplementThresholds==False,
+WriteString[sphenoSugra,"If (.Not.UseFixedGUTScale) Then\n"];
+WriteString[sphenoSugra,"m_lo=5.e12_dp\n"];
+WriteString[sphenoSugra,"Else \n"];
+WriteString[sphenoSugra,"m_lo=Min(5.e12_dp,GUT_Scale)\n"];
+WriteString[sphenoSugra,"End If \n"];,
+WriteString[sphenoSugra,"m_lo="<> SPhenoForm[Thresholds[[1,1]]] <>"\n"]; 
+];
+
+WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
+WriteString[sphenoSugra,"mudim=Max(mudim,mZ2)\n"];
+
+WriteString[sphenoSugra,"FoundUnification= .False. \n"];
+WriteString[sphenoSugra,"tz=Log(sqrt(mudim)/m_lo)\n"];
+WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
+WriteString[sphenoSugra,"g1B=g1A\n\n"];
 
 If[FreeQ[BoundarySUSYScale,TADPOLES],
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
@@ -411,26 +805,19 @@ WriteString[sphenoSugra,"dt=tz/100._dp\n"];
 WriteString[sphenoSugra,"Call odeint(g1c,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
 WriteString[sphenoSugra,"Iname=Iname-1\n"];
 ];
-WriteString[sphenoSugra,"Contains \n\n"];
+(* WriteString[sphenoSugra,"Contains \n\n"]; *)
 ];
 
 
 
 
 
-WriteString[sphenoSugra,"Function InverseMatrix(M) Result(Inv) \n"];
-WriteString[sphenoSugra,"Implicit None\n"];
-WriteString[sphenoSugra,"Complex(dp), Intent(in) :: M(:,:) \n"];
-WriteString[sphenoSugra,"Complex(dp) :: Inv(Size(M,1),Size(M,2)) \n\n"];
-WriteString[sphenoSugra,"inv = M \n"];
-WriteString[sphenoSugra,"Call gaussj(kont,inv,Size(M,1),Size(M,2)) \n"];
-WriteString[sphenoSugra,"End Function InverseMatrix \n\n"];
 
 
-WriteString[sphenoSugra,"End Subroutine RunRGE\n\n"];
+
+WriteString[sphenoSugra,"End Subroutine RunRGE_new\n\n"];
 
 ];
-
 
 SetBoundaryThresholdDown[nr_]:=Block[{i,j,dim,k,name,name1,name2,pos,ind},
 For[i=1,i<=Length[ThresholdMasses[[nr]]],
@@ -453,7 +840,7 @@ WriteString[sphenoSugra,"dummy"<>name1<>"(1,1) = 1._dp \n"];
 WriteString[sphenoSugra,"dummy"<>name2<>"(1,1) = 1._dp \n"];
 ];
 
-(* For[j=ThresholdMasses[[nr,i,3]],j>= ThresholdMasses[[nr,i,3]],
+(* For[j=ThresholdMasses[[nr,i,3]],j\[GreaterEqual] ThresholdMasses[[nr,i,3]],
 WriteString[sphenoSugra,"MassOf"<>SPhenoForm[ThresholdMasses[[nr,i,1]]] <>"("<>ToString[j]<>") = EW"<>name<>"("<>ToString[getGenSF[ThresholdMasses[[nr,i,1]]]+j-ThresholdMasses[[nr,i,3]]] <>") \n"]; 
 j--;]; *)
 For[j=ThresholdMasses[[nr,i,3]],j>= ThresholdMasses[[nr,i,3]],

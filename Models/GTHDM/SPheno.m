@@ -20,18 +20,20 @@ RealParameters = {};
 
 ParametersToSolveTadpoles = {muH2,muP2,muD2};
 
-
-
-
-BoundaryLowScaleInput={ 
- {gH, gHinput},
+DEFINITION[MatchingConditions]= {
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
  {Ye, YeSM},
  {Yd, YdSM}, 
  {Yu, YuSM},
- {v, vSM},
+ {v, vSM}
+ };
+
+
+BoundaryLowScaleInput={ 
+ {gH, gHinput},
+
  {LambdaH,LambdaHinput},
  {LambdaP,LambdaPinput},
  {LambdaD,LambdaDinput},

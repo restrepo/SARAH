@@ -17,6 +17,17 @@ RealParameters = {TanBeta,etaInput};
 ParametersToSolveTadpoles = {M112,M222,im[M12]};
 Tad1Loop[4]=-Tad1Loop[3]*v1/v2;
 
+DEFINITION[MatchingConditions]= {
+ {v1,vSM*Cos[ArcTan[TanBeta]]},
+ {v2,vSM*Sin[ArcTan[TanBeta]]},
+ {Ye, YeSM*vSM/v1- v2/v1*epsE},
+ {Yd, YdSM*vSM/v1- v2/v1*epsD},
+ {Yu, YuSM*vSM/v2- v1/v2*epsU},
+ {g1, g1SM},
+ {g2, g2SM},
+ {g3, g3SM}
+ };
+
 BoundaryLowScaleInput={
  {Lambda1,Lambda1Input},
  {Lambda2,Lambda2Input},
@@ -26,14 +37,7 @@ BoundaryLowScaleInput={
  {Lambda6,Lambda6Input},
  {Lambda7,Lambda7Input},
  {re[M12], M12input},
- {v1,vSM*Cos[ArcTan[TanBeta]]},
- {v2,vSM*Sin[ArcTan[TanBeta]]},
- {Ye, YeSM*vSM/v1- v2/v1*epsE},
- {Yd, YdSM*vSM/v1- v2/v1*epsD},
- {Yu, YuSM*vSM/v2- v1/v2*epsU},
- {g1, g1SM},
- {g2, g2SM},
- {g3, g3SM},
+
  {eta, etaInput}
 };
 

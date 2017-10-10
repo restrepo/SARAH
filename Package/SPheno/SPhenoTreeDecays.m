@@ -41,6 +41,7 @@ WriteHeaderDecays;
 savedDecayInfos={};
 savedDecayInfos3Body={};
 BR2and3={};
+BR2={};
 All3BodyWidths ={};
 
 MakeWidthList;
@@ -85,10 +86,16 @@ Close[sphenoDecay];
 
 MakeWidthList :=Block[{i,particle,type},
 SPhenoWidthBR = {};
+SPhenoWidthBR1L = {};
 
 For[i=1,i<=Length[ListDecayParticles],
 SPhenoWidthBR = Join[SPhenoWidthBR,{ToExpression["gP"<>ToString[ListDecayParticles[[i]]]],ToExpression["gT"<>ToString[ListDecayParticles[[i]]]],ToExpression["BR"<>ToString[ListDecayParticles[[i]]]]}];
 realVar= Join[realVar,{ToExpression["gP"<>ToString[ListDecayParticles[[i]]]],ToExpression["gT"<>ToString[ListDecayParticles[[i]]]],ToExpression["BR"<>ToString[ListDecayParticles[[i]]]]}];
+
+SPhenoWidthBR1L = Join[SPhenoWidthBR1L,{ToExpression["gP"<>"1L"<>ToString[ListDecayParticles[[i]]]],ToExpression["gT"<>"1L"<>ToString[ListDecayParticles[[i]]]],ToExpression["BR"<>"1L"<>ToString[ListDecayParticles[[i]]]]}];
+realVar= Join[realVar,{ToExpression["gP"<>"1L"<>ToString[ListDecayParticles[[i]]]],ToExpression["gT"<>"1L"<>ToString[ListDecayParticles[[i]]]],ToExpression["BR"<>"1L"<>ToString[ListDecayParticles[[i]]]]}];
+
+
 i++;];
 
 For[i=1,i<=Length[Particles[Current]],
@@ -98,8 +105,10 @@ type=getType[particle];
 If[(type===S || type ===V || type === F) && FreeQ[massless,particle]==True && FreeQ[SPhenoParameters,SPhenoWidth[particle]]==True,
 realVar=Join[realVar,{SPhenoWidth[particle]}];
  If[getGenSPheno[particle]>1,
-SPhenoParameters=Join[SPhenoParameters,{{SPhenoWidth[particle],{generation},{getGenSPheno[particle]}}}];,
+SPhenoParameters=Join[SPhenoParameters,{{SPhenoWidth[particle],{generation},{getGenSPheno[particle]}}}];
+SPhenoParameters=Join[SPhenoParameters,{{SPhenoWidth1L[particle],{generation},{getGenSPheno[particle]}}}];,
 SPhenoParameters=Join[SPhenoParameters,{{SPhenoWidth[particle],{},{}}}];
+SPhenoParameters=Join[SPhenoParameters,{{SPhenoWidth1L[particle],{},{}}}];
 ]; 
 ];
 ];
@@ -123,6 +132,7 @@ WriteCopyRight[sphenoDecay];
 WriteString[sphenoDecay, "Module TreeLevelDecays_"<>ModelName<>"\n \n"];
 WriteString[sphenoDecay, "Use Control \n"];
 WriteString[sphenoDecay, "Use DecayFunctions \n"];
+WriteString[sphenoDecay, "Use Settings \n"];
 WriteString[sphenoDecay, "Use LoopCouplings_"<>ModelName<>" \n"];
 WriteString[sphenoDecay, "Use CouplingsForDecays_"<>ModelName<>" \n"];
 WriteString[sphenoDecay, "Use Model_Data_"<>ModelName<>" \n"];
@@ -137,7 +147,10 @@ MakeDecayLists[particle_]:=Block[{i,temp},
 
 SA`SkipFields=SkipFields=Select[Transpose[PART[S]][[1]],(getGenSPhenoStart[#]>getGenSPheno[#])&];
 
-temp = TwoBodyDecay[particle];
+If[SA`AddOneLoopDecay===True,
+temp = TwoBodyDecayAllAllowed[particle];,
+temp = TwoBodyDecay[particle]; 
+];
 ProcessList={};
 For[i=1,i<=Length[temp],
 If[Select[SA`SkipFields,(FreeQ[temp[[i]] /. conj[x_]->x,#]==False)&]==={},
@@ -147,6 +160,7 @@ i++];
 
 
 NeededMasses={SPhenoMass[particle]};
+
 
 
 If[particle=!=HiggsBoson, 
@@ -172,12 +186,15 @@ If[FreeQ[NeededMasses, SPhenoMass[ProcessList[[i,2]]]]==True && FreeQ[massless,g
 NeededMasses=Join[NeededMasses,{SPhenoMass[ProcessList[[i,2]]]}];
 ];
 
-If[FreeQ[NeededCouplingsInsert, ProcessList[[i,3]]]==True,
+If[FreeQ[NeededCouplingsInsert, ProcessList[[i,3]]]==True && ProcessList[[i,3]]=!=LOOP,
 NeededCouplingsInsert=Join[NeededCouplingsInsert,{{ProcessList[[i,3]]}}];
 NeededCouplings=Join[NeededCouplings,{getSPhenoCoupling[ProcessList[[i,3]]][[1]]}];
 ];
 
+If[ProcessList[[i,3]]===LOOP,
+FullInformation = Join[FullInformation,{{ProcessList[[i,1]],ProcessList[[i,2]],LOOP,ProcessList[[i,4]],ProcessList[[i,5]]}}];,
 FullInformation = Join[FullInformation,{{ProcessList[[i,1]],ProcessList[[i,2]],{getSPhenoCoupling[ProcessList[[i,3]]]},ProcessList[[i,4]],ProcessList[[i,5]]}}];
+];
 
 i++;];
 
@@ -198,6 +215,12 @@ SPhenoParameters= Join[SPhenoParameters,{{ToExpression["gP"<>ToString[particle]]
 SPhenoParameters= Join[SPhenoParameters,{{ToExpression["gT"<>ToString[particle]],{generation},{getGenSPheno[particle]}}}];
 SPhenoParameters = Join[SPhenoParameters,{{ToExpression["BR"<>ToString[particle]],{generation,generation},{getGenSPheno[particle],channels}}}];
 
+SPhenoParameters= Join[SPhenoParameters,{{ToExpression["gP1L"<>ToString[particle]],{generation,generation},{getGenSPheno[particle],channels}}}];
+SPhenoParameters= Join[SPhenoParameters,{{ToExpression["gT1L"<>ToString[particle]],{generation},{getGenSPheno[particle]}}}];
+SPhenoParameters = Join[SPhenoParameters,{{ToExpression["BR1L"<>ToString[particle]],{generation,generation},{getGenSPheno[particle],channels}}}];
+
+
+BR2=Join[BR2,{{particle,channels}}];
 WriteTwoBodyDecay[particle,NeededCouplings,NeededMasses,FullInformation];
 
 ];
@@ -360,6 +383,7 @@ WriteString[sphenoDecay,"  Do gt2= gt1, "<>ToString[getGenSPheno[p2]] <> "\n"];,
 WriteString[sphenoDecay,"m1out = "<>SPhenoMass[p1,gt1] <>"\n"];
 WriteString[sphenoDecay,"m2out = "<>SPhenoMass[p2,gt2] <>"\n"];
 
+If[processes[[i,3]]=!=LOOP,
 temp=MakeIndicesCoupling[{AntiField[particle],i1},{p1,gt1},{p2,gt2},processes[[i,3,1,2]]];
 ind = temp[[1]];
 checkHC=temp[[2]];
@@ -509,7 +533,9 @@ factor = 2*factor;
 
 (* If[Head[factor]===Integer,factor=SPhenoForm[1* factor];,factor=SPhenoForm[factor];]; *)
 
-factor=SPhenoForm[factor];
+factor=SPhenoForm[factor];,
+WriteString[sphenoDecay,"gam = 0._dp \n"];
+];
 
 If[getGenSPheno[particle]>1,
 WriteString[sphenoDecay, "gPartial(i1,i_count) = "<> factor <> "*gam \n"];
