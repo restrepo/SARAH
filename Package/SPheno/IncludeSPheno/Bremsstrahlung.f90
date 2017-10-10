@@ -116,7 +116,7 @@ Real(dp) Function IR_00safe(lambda,m0,m2)
  Implicit None
  Real(dp), Intent(in) :: lambda,m0,m2
 
-  IR_00safe = (m2**2*Log(m2**2/m0**2) + (m0**2 - m2**2)*(-1._dp + Log((m0**2 - m2**2)/(m0*lambda))))/(4._dp*m0**2)
+  IR_00safe = (2._dp*m2**2*Log(m2/m0) + (m0**2 - m2**2)*(-1._dp + Log((m0**2 - m2**2)/(m0*lambda))))/(4._dp*m0**4)
   
 End Function IR_00safe
 
@@ -144,6 +144,16 @@ Real(dp) Function IR_2up1safe(m0,m2)
   IR_2up1safe = (-((m0**2 - m2**2)*(5._dp*m0**2 + m2**2))/4._dp - m0**2*(-m0**2 + 2._dp*m2**2)*Log(m2/m0))/(4._dp*m0**2)
   
 End Function IR_2up1safe
+
+
+Real(dp) Function IR_0up2safe(m0,m2)
+ Implicit None
+ Real(dp), Intent(in) :: m0,m2
+
+  IR_0up2safe = (-0.25_dp*(m0**2-3._dp*m2**2)*(m0**2-m2**2) + m2**4*Log(m2/m0))/(4._dp*m0**2)
+  
+End Function IR_0up2safe
+
 
 
  Real(dp) Function IR_22(lambda,m0,m1,m2)
@@ -200,7 +210,17 @@ End Function IR_2up1safe
    & + 2._dp * m1*m1*m2*m2*Log(beta0(m0,m1,m2))
   IRwithout = IRwithout/(4._dp * m0 * m0)
   
- End Function IRwithout
+End Function IRwithout
+
+Real(dp) Function IRsafe(m0,m2)
+ Implicit None
+ Real(dp), Intent(in) :: m0,m2
+
+  IRsafe = 0.5_dp*(m0**4-m2**4)+2._dp*m0**2*m2**2*log(m2/m0)
+  IRsafe = IRsafe/(4._dp * m0 * m0)
+  
+ End Function IRsafe
+
 
  Real(dp) Function IR_0(m0,m1,m2)
  Implicit None
@@ -932,7 +952,20 @@ Subroutine hardradiationFFS(Mi,Mo,Ms,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Ca
   If ((Abs(Mi)-Abs(Mo)-Abs(Ms)).LE.(0._dp)) Then
    write(*,*) "Please have a look if the decay you are considering is kinematically"
    write(*,*) "allowed. Error message by Hard gluon emission!"
-  End If
+End If
+
+ if(abs(mo) .eq. 0._dp) then
+     call hardradiationFFSmFzero(Mi,Ms,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Cas33,CL,CR,Gammatotbrems,kont)
+     Iname = Iname - 1
+     return
+  end if
+
+  ! if(abs(mb) .eq. 0._dp) then
+  !    call hardradiationFFSmSzero(Mi,Ma,MLambda,GC,Cas11,-Cas12,Cas22,CL,CR,Gammatotbrems,kont)
+  !    Iname = Iname - 1
+  !    return
+  ! end if
+
 
   AbbCLCL11 = 0._dp
   AbbCLCL12 = 0._dp
@@ -1073,6 +1106,140 @@ AbbCLCL = Cas11*AbbCLCL11 + Cas12*AbbCLCL12 - Cas13*AbbCLCL13 + Cas22*AbbCLCL22 
 
  End Subroutine hardradiationFFS
 
+Subroutine hardradiationFFSmFzero(Mi,Ms,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Cas33,CL,CR,Gammatotbrems,kont)
+ !------------------------------------------------------------
+ !calculates the real corrections due to hard gluon or photon emission
+ !for the process Fin -> Fout Scalar-bar
+ !------------------------------------------------------------
+ !Involved particles:
+ !- Fermion F_in with mass Mi and Casimir CasR under strong interaction
+ !- Fermion F_out with mass Mo and  Casimir CasR under strong interaction
+ !   ... i.e. must be in the same rep!
+ !- Scalar S_out with mas Ms
+ !- Photon or gluon with Mass MLambda
+ !------------------------------------------------------------
+ !Necessary couplings:
+ !- \bar{F_out} (CL PL + CR PR) F_in S + h.c.
+ ! GC is the gauge couplings
+ ! Casij is the group factor for the combination where we attach 
+ ! the gauge boson on leg i of the diagram to leg j of the conjugate
+ ! Leg 1 -> Fermion in
+ ! Leg 2 -> Fermion out
+ ! Leg 3 -> Scalar
+ !------------------------------------------------------------
+ !needs Bremsstrahlung integrals IR_{ij}up{st}
+ !adapted from corrections written by Stefan Liebler, July 2010
+ !------------------------------------------------------------
+ Implicit None
+  Integer, Intent(inout) :: kont
+  Real(dp), Intent(out) :: Gammatotbrems
+  Complex(dp), Intent(in) :: CL, CR
+  Real(dp), Intent(in) :: GC, Mi, Ms, MLambda,Cas11,Cas12,Cas13,Cas22,Cas23,Cas33
+
+
+  Real(dp) :: IRf, IRf_0, IRf_1, IRf_2, IRf_00, IRf_01, IRf_02, IRf_11, IRf_22, IRf_0up1
+  Real(dp) :: IRf_1up0, IRf_0up2, IRf_2up0, IRf_1up2, IRf_2up1, IRf_22up01
+
+  real(dp) :: IRf_02up1,IRf_02up11,irf_12,irf_12up0,irf_12up00,irf_22up0,irf_22up00,irf_22up1,irf_22up11
+
+
+  Real(dp) :: AbbCLCL11, AbbCLCL12, AbbCLCL13,AbbCLCL22,AbbCLCL23,AbbCLCL33
+  real(dp) :: AbbCLCR11, AbbCLCR12, AbbCLCR13,AbbCLCR22,AbbCLCR23,AbbCLCR33
+  Real(dp) :: AbbCLCL, AbbCLCR
+  Complex(dp) :: Gammatotc, SCL, SCR
+
+  real(dp) :: Mo
+  Iname = Iname + 1
+  NameOfUnit(Iname) = 'hardradiationFFS'
+
+  If ((Abs(Mi)-Abs(Mo)-Abs(Ms)).LE.(0._dp)) Then
+   write(*,*) "Please have a look if the decay you are considering is kinematically"
+   write(*,*) "allowed. Error message by Hard gluon emission!"
+End If
+
+ 
+
+  ! if(abs(mb) .eq. 0._dp) then
+  !    call hardradiationFFSmSzero(Mi,Ma,MLambda,GC,Cas11,-Cas12,Cas22,CL,CR,Gammatotbrems,kont)
+  !    Iname = Iname - 1
+  !    return
+  ! end if
+  Mo=0._dp
+
+  AbbCLCL11 = 0._dp
+  AbbCLCL12 = 0._dp
+  AbbCLCL13 = 0._dp
+  AbbCLCL22 = 0._dp
+  AbbCLCL23 = 0._dp
+  AbbCLCL33 = 0._dp
+  
+  AbbCLCR11 = 0._dp
+  AbbCLCR12 = 0._dp
+  AbbCLCR13 = 0._dp
+  AbbCLCR22 = 0._dp
+  AbbCLCR23 = 0._dp
+  AbbCLCR33 = 0._dp
+  AbbCLCL = 0._dp
+  AbbCLCR = 0._dp
+  Gammatotbrems = 0._dp
+  Gammatotc = ZeroC
+
+  SCL = Conjg(CL)
+  SCR = Conjg(CR)
+!  SCWP = Conjg(CWP)  
+
+  IRf = IRsafe(Mi,Ms)
+!  IRf_0 = IR_0(Mi,Mo,Ms)
+!  IRf_1 = IR_1(Mi,Mo,Ms)
+!  IRf_2 = IR_2(Mi,Mo,Ms)
+
+  IRf_0 = IR_0safe(Mi,Ms)
+  
+  IRf_2 = IR_2safe(Mi,Ms)
+  IRf_00 = IR_00safe(MLambda,Mi,Ms)
+  IRf_02 = IR_02safe(MLambda,Mi,Ms)
+  IRf_22 = IR_22safe(MLambda,Mi,Ms)
+  IRf_2up1 = IR_2up1safe(Mi,Ms)
+  IRf_0up2 = IR_0up2safe(Mi,Ms)
+
+
+
+  
+AbbCLCL11 = (-4._dp*Mi**4  + 4._dp*Mi**2*Ms**2)*IRf_00+(-2._dp*Mi**2 - 2._dp*Ms**2)*IRf_0+2._dp*IRf
+
+AbbCLCL13 = (4._dp*Mi**4 + 8._dp*Mo**2*Ms**2 - 4._dp*Ms**4)*IRf_02+(2._dp*Mi**2  - 6._dp*Ms**2)*IRf_0-2._dp*IRf_0up2+4._dp*Ms**2*IRf_2+4._dp*IRf
+
+AbbCLCL33 = (-4._dp*Mi**2*Ms**2  + 4._dp*Ms**4)*IRf_22+(-4._dp*Mi**2 + 8._dp*Ms**2)*IRf_2+4._dp*IRf
+
+
+!!!!!!!!!!!
+! Minus signs because we calculate the casimirs with T(Sbar) = - T(S)
+!!!!!!!!!!!
+  
+AbbCLCL = Cas11*AbbCLCL11  - Cas13*AbbCLCL13  + Cas33*AbbCLCL33
+
+
+
+!!!!!!!!
+
+
+  Gammatotc = (CL * SCL + CR * SCR) * AbbCLCL !+ (CR * SCL + CL * SCR) * AbbCLCR 
+
+  Gammatotc = Gammatotc * GC**2/ (2._dp)
+  Gammatotc = Gammatotc / (Mi * (4._dp * Pi)**3) 
+
+
+  Gammatotbrems = Real(Gammatotc,dp)
+
+  Iname = Iname - 1
+
+ End Subroutine hardradiationFFSmFzero
+
+
+
+
+
+ 
 
 Subroutine hardradiationSFF(Mi,Ma,Mb,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Cas33,CL,CR,Gammatotbrems,kont)
  !------------------------------------------------------------
@@ -1158,6 +1325,9 @@ Subroutine hardradiationSFF(Mi,Ma,Mb,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Ca
   SCR = Conjg(CR)
 !  SCWP = Conjg(CWP)  
 
+
+
+  
   IRf = IRwithout(Mi,Ma,Mb)
   IRf_0 = IR_0(Mi,Ma,Mb)
   IRf_1 = IR_1(Mi,Ma,Mb)
@@ -1189,7 +1359,7 @@ Subroutine hardradiationSFF(Mi,Ma,Mb,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Ca
 
 
 
-!!!!!!! END MARK's DEFS
+! ! !!!!!!! END MARK's DEFS
 
 
 AbbCLCR11 = 16._dp*Ma*Mb*Mi**2*IRf_00
@@ -1219,27 +1389,62 @@ AbbCLCL23 = (8._dp*Ma**4 + 16._dp*Ma**2*Mb**2 + 8._dp*Mb**4 - 16._dp*Ma**2*Mi**2
 AbbCLCL33 = (8._dp*Ma**2*Mb**2 + 8._dp*Mb**4 - 8._dp*Mb**2*Mi**2)*IRf_22+(-4._dp*Ma**2 + 4._dp*Mb**2 + 4._dp*Mi**2)*IRf_2
 
 
-!!!!!!!!!!!!!!!
-! NB Cas13=Cas11-Cas12, Cas23=Cas21-Cas22, Cas33=Cas11-2._dp*Cas12+Cas22
-! We just compute the whole lot before passing anyway -> easier to debug
-!!!!!!!!!!!!!!!
+! !!!!!!!!!!!!!!!
+! ! NB Cas13=Cas11-Cas12, Cas23=Cas21-Cas22, Cas33=Cas11-2._dp*Cas12+Cas22
+! ! We just compute the whole lot before passing anyway -> easier to debug
+! !!!!!!!!!!!!!!!
 
-!!!!!
-! Nb minus signs here because the casimirs are calculated for T(bar(a)) = - (T(a))*
-!!!!!
+! !!!!!
+! ! Nb minus signs here because the casimirs are calculated for T(bar(a)) = - (T(a))*
+! !!!!!
 
 AbbCLCR = Cas11*AbbCLCR11 - Cas12*AbbCLCR12 + Cas13*AbbCLCR13 + Cas22*AbbCLCR22 - Cas23*AbbCLCR23 + Cas33*AbbCLCR33
 AbbCLCL = Cas11*AbbCLCL11 - Cas12*AbbCLCL12 + Cas13*AbbCLCL13 + Cas22*AbbCLCL22 - Cas23*AbbCLCL23 + Cas33*AbbCLCL33
 
 
+! !!!! USE SFOLD:
 
+! AbbCLCR11 = 16._dp*Ma*Mb*Mi**2*IRf_00+8._dp*Ma*Mb*IRf_0
+
+! AbbCLCR12 = (16._dp*Ma**3*Mb - 16._dp*Ma*Mb**3 - 16._dp*Ma*Mb*Mi**2)*IRf_01-8._dp*Ma*Mb*IRf_0-8._dp*Ma*Mb*IRf_1
+
+! AbbCLCR13 = (-16._dp*Ma**3*Mb + 16._dp*Ma*Mb**3 - 16._dp*Ma*Mb*Mi**2)*IRf_02-8._dp*Ma*Mb*IRf_0-8._dp*Ma*Mb*IRf_2
+
+! AbbCLCR22 = 16._dp*Ma*Mb**3*IRf_11+8._dp*Ma*Mb*IRf_1
+
+! AbbCLCR23 = (-16._dp*Ma**3*Mb - 16._dp*Ma*Mb**3 + 16._dp*Ma*Mb*Mi**2)*IRf_12-8._dp*Ma*Mb*IRf_1-8._dp*Ma*Mb*IRf_2
+
+! AbbCLCR33 = 16._dp*Ma**3*Mb*IRf_22+8._dp*Ma*Mb*IRf_2
+
+
+
+! AbbCLCL11 = (8._dp*Ma**2*Mi**2 + 8._dp*Mb**2*Mi**2 - 8._dp*Mi**4)*IRf_00+(4._dp*Ma**2 + 4._dp*Mb**2 - 12._dp*Mi**2)*IRf_0-4._dp*IRf
+
+! AbbCLCL12 = (-8._dp*Ma**4 + 8._dp*Mb**4 - 16._dp*Mb**2*Mi**2 + 8._dp*Mi**4)*IRf_01+(-4._dp*Ma**2 - 4._dp*Mb**2 - 4._dp*Mi**2)*IRf_0+(-8._dp*Mb**2 + 8._dp*Mi**2)*IRf_1-4._dp*IRf
+
+! AbbCLCL13 = (8._dp*Ma**4 - 8._dp*Mb**4 - 16._dp*Ma**2*Mi**2 + 8._dp*Mi**4)*IRf_02+(-4._dp*Ma**2 - 4._dp*Mb**2 - 4._dp*Mi**2)*IRf_0+(-8._dp*Ma**2 + 8._dp*Mi**2)*IRf_2-4._dp*IRf
+
+! AbbCLCL22 = (8._dp*Ma**4 + 8._dp*Ma**2*Mb**2 - 8._dp*Ma**2*Mi**2)*IRf_11+8._dp*Ma**2*IRf_1+4._dp*IRf_1up2
+
+! AbbCLCL23 = (-8._dp*Ma**4 - 16._dp*Ma**2*Mb**2 - 8._dp*Mb**4 + 16._dp*Ma**2*Mi**2 + 16._dp*Mb**2*Mi**2 - 8._dp*Mi**4)*IRf_12+(-8._dp*Mb**2 + 8._dp*Mi**2)*IRf_1+(-8._dp*Ma**2 + 8._dp*Mi**2)*IRf_2-8._dp*IRf
+
+! AbbCLCL33 = (8._dp*Ma**2*Mb**2 + 8._dp*Mb**4 - 8._dp*Mb**2*Mi**2)*IRf_22+8._dp*Mb**2*IRf_2+4._dp*IRf_2up1
+
+
+
+! AbbCLCR = Cas11*AbbCLCR11 - Cas12*AbbCLCR12 + Cas13*AbbCLCR13 + Cas22*AbbCLCR22 + Cas23*AbbCLCR23 + Cas33*AbbCLCR33
+! AbbCLCL = Cas11*AbbCLCL11 - Cas12*AbbCLCL12 + Cas13*AbbCLCL13 + Cas22*AbbCLCL22 + Cas23*AbbCLCL23 + Cas33*AbbCLCL33
+
+   
+
+ 
 
 !!!!!!!!
 
 
   Gammatotc = (CL * SCL + CR * SCR) * AbbCLCL + (CR * SCL + CL * SCR) * AbbCLCR 
-
-  Gammatotc = Gammatotc * GC**2/ (2._dp)
+  Gammatotc = Gammatotc * GC**2/ (4._dp)
+!  Gammatotc = Gammatotc * GC**2/ (2._dp)
   Gammatotc = Gammatotc / (Mi * (4._dp * Pi)**3) 
 
 !  write(*,*) "--------------Hard gluon------------------"
@@ -1457,17 +1662,31 @@ Subroutine hardradiationSSS(Mi,Ma,Mb,MLambda,GC,Cas11,Cas12,Cas13,Cas22,Cas23,Ca
 
 !!!!!!! END MARK's DEFS
 
+! Abb11 = -8._dp*Mi**2*IRf_00-4._dp*IRf_0
+
+! Abb12 = (-4._dp*Mi**2 - 4._dp*ma**2 + 4._dp*mb**2)*IRf_01-2._dp*IRf_0-2._dp*IRf_1
+
+! Abb13 = (-4._dp*Mi**2 + 4._dp*ma**2 - 4._dp*mb**2)*IRf_02-2._dp*IRf_0-2._dp*IRf_2
+
+! Abb22 = -8._dp*ma**2*IRf_11-4._dp*IRf_1
+
+! Abb23 = (-4._dp*Mi**2 + 4._dp*ma**2 + 4._dp*mb**2)*IRf_12+2._dp*IRf_2+2._dp*IRf_1
+
+  ! Abb33 = -8._dp*mb**2*IRf_22-4._dp*IRf_2
+
 Abb11 = -8._dp*Mi**2*IRf_00-4._dp*IRf_0
 
-Abb12 = (-4._dp*Mi**2 - 4._dp*ma**2 + 4._dp*mb**2)*IRf_02-2._dp*IRf_0-2._dp*IRf_2
+Abb12 = (-8._dp*Mi**2 - 8._dp*ma**2 + 8._dp*mb**2)*IRf_01-4._dp*IRf_0-4._dp*IRf_1
 
-Abb13 = (-4._dp*Mi**2 + 4._dp*ma**2 - 4._dp*mb**2)*IRf_02-2._dp*IRf_0-2._dp*IRf_2
+Abb13 = (-8._dp*Mi**2 + 8._dp*ma**2 - 8._dp*mb**2)*IRf_02-4._dp*IRf_0-4._dp*IRf_2
 
-Abb22 = -8._dp*ma**2*IRf_22-4._dp*IRf_2
+Abb22 = -8._dp*ma**2*IRf_11-4._dp*IRf_1
 
-Abb23 = (-4._dp*Mi**2 + 4._dp*ma**2 + 4._dp*mb**2)*IRf_12+4._dp*IRf_2
+Abb23 = (-8._dp*Mi**2 + 8._dp*ma**2 + 8._dp*mb**2)*IRf_12+4._dp*IRf_1+4._dp*IRf_2
 
 Abb33 = -8._dp*mb**2*IRf_22-4._dp*IRf_2
+
+  
 
 
 !!!!!!!!!!!!!!!
@@ -1476,10 +1695,10 @@ Abb33 = -8._dp*mb**2*IRf_22-4._dp*IRf_2
 !!!!!!!!!!!!!!!
 
 !!!!!
-! Nb minus signs here because the casimirs are calculated for T(bar(a)) = - (T(a))*
+! Nb no minus signs here because Sfold used S -> S_1 S_2
 !!!!!
 
-Abb = Cas11*Abb11 - Cas12*Abb12 + Cas13*Abb13 + Cas22*Abb22 - Cas23*Abb23 + Cas33*Abb33
+Abb = Cas11*Abb11 + Cas12*Abb12 + Cas13*Abb13 + Cas22*Abb22 + Cas23*Abb23 + Cas33*Abb33
 
 
 
@@ -1577,7 +1796,7 @@ Subroutine hardradiationSSV(Ma,Mb,MV,MLambda,GC,Qa,Qb,QV,CS,Gammatotbrems,kont)
 !  IRf = IRwithout(Mi,Ma,Mb)
   IRf_0 = IR_0(Ma,Mb,MV)
   IRf_1 = IR_1(Ma,Mb,MV)
-  IRf_2 = IR_2(Ma,Mb,MB)
+  IRf_2 = IR_2(Ma,Mb,MV)
   IRf_00 = IR_00(MLambda,Ma,Mb,MV)
   IRf_01 = IR_01(MLambda,Ma,Mb,MV)
   IRf_02 = - IR_01(MLambda,Ma,Mb,MV) - IR_12(MLambda,Ma,Mb,MV)
@@ -1675,6 +1894,154 @@ Abb=Abb+QV**2*Abb33+QV*(Qa+Qb)*0.5_dp*Abb34+(Qa+Qb)**2*0.25_dp*Abb44
   Iname = Iname - 1
 
  End Subroutine hardradiationSSV
+
+
+ 
+Subroutine hardphotonSVV(Mi,M1,M2,MLambda,GC,Qi,Q1,Q2,CS,Gammatotbrems,kont)
+ !------------------------------------------------------------
+ !calculates the real corrections due to hard photon emission
+ !for the process S (Mi) -> V1 (M1) + V2 (M2)
+ !------------------------------------------------------------
+ !Involved particles:
+ !- Scalar S in with mass Mi, charge Qi = Q1+Q2
+ !- Vector V1 out with mass M1, charge Q1
+ !- Vector V2 out with mass M2, charge Q2
+ !- Photon with Mass MLambda
+ !------------------------------------------------------------
+ !Necessary couplings:
+ !-CS 
+ !-GC is the gauge coupling = EL
+ ! 
+ ! Leg 1 -> S in
+ ! Leg 2 -> V1 out
+ ! Leg 3 -> V2 out
+ !
+ !------------------------------------------------------------
+ !Written by S. Liebler January 2017
+ !reproduces H->WW result of HFOLD for Qi=0,M1=M2,Q1=-Q2
+ !needs Bremsstrahlung integrals IR_{ij}up{st}
+ !------------------------------------------------------------
+ Implicit None
+  Integer, Intent(inout) :: kont
+  Real(dp), Intent(out) :: Gammatotbrems
+  Complex(dp), Intent(in) :: CS
+  Real(dp), Intent(in) :: GC,Mi,M1,M2,MLambda,Qi,Q1,Q2
+
+  Real(dp) :: IRf, IRf_0, IRf_1, IRf_2, IRf_00, IRf_01, IRf_02, IRf_11, IRf_22, IRf_12
+  Real(dp) :: IRf_1up0, IRf_2up0, IRf_1up2, IRf_2up1, IRf_11up00, IRf_22up11
+
+  Real(dp) :: Abbii,Abb1i,Abb2i,Abb12,Abb11,Abb22
+  Real(dp) :: Abb
+  Complex(dp) :: Gammatotc, SCS
+  
+  Iname = Iname + 1
+  NameOfUnit(Iname) = 'hardphotonSVV'
+
+  If ((Abs(Mi)-Abs(M1)-Abs(M2)).LE.(0._dp)) Then
+   write(*,*) "Please have a look if the decay you are considering is kinematically"
+   write(*,*) "allowed. Error message by hard photon emission in S->VV!"
+  End If
+
+  If ((Abs(Qi-Q1-Q2)).gt.(0.000001_dp)) Then
+   write(*,*) "Please choose proper charge assignments in S->VV!"
+  End If
+  
+  Abbii = 0._dp
+  Abb1i = 0._dp
+  Abb2i = 0._dp
+  Abb12 = 0._dp
+  Abb11 = 0._dp
+  Abb22 = 0._dp
+  
+  Abb = 0._dp
+
+  Gammatotbrems = 0._dp
+  Gammatotc = ZeroC
+
+  SCS = Conjg(CS)
+
+  IRf = IRwithout(Mi,M1,M2)
+  IRf_0 = IR_0(Mi,M1,M2)
+  IRf_1 = IR_1(Mi,M1,M2)
+  IRf_2 = IR_2(Mi,M1,M2)
+  IRf_00 = IR_00(MLambda,Mi,M1,M2)
+  IRf_01 = IR_01(MLambda,Mi,M1,M2)
+  IRf_02 = - IR_01(MLambda,Mi,M1,M2) - IR_12(MLambda,Mi,M1,M2)
+  IRf_11 = IR_11(MLambda,Mi,M1,M2)
+  IRf_22 = IR_22(MLambda,Mi,M1,M2)
+  IRf_1up0 = IR_1up0(Mi,M1,M2)
+  IRf_2up0 = IR_2up0(Mi,M1,M2)
+  IRf_1up2 = IR_1up2(Mi,M1,M2)
+  IRf_2up1 = IR_2up1(Mi,M1,M2)
+  IRf_11up00 = IR_11up00(Mi,M1,M2)
+  IRf_22up11 = IR_22up11(Mi,M1,M2)
+
+  IRf_12 = -IRf_01 - IRf_02
+
+  Abb1i = -4._dp*IRf*M1**2 + 2._dp*IRf_1up0*M1**2 - 2._dp*IRf_01*M1**6 &
+   & - 4._dp*IRf*M2**2 + 2._dp*IRf_1up0*M2**2 - 20._dp*IRf_1*M1**2*M2**2 &
+   & - 18._dp*IRf_01*M1**4*M2**2 - 4._dp*IRf_1*M2**4 + 18._dp*IRf_01*M1**2*M2**4 &
+   & + 2._dp*IRf_01*M2**6 + 8._dp*IRf*Mi**2 - 2._dp*IRf_1up0*Mi**2 &
+   & - 4._dp*IRf_0*M1**2*Mi**2 + 4._dp*IRf_1*M1**2*Mi**2 + 2._dp*IRf_01*M1**4*Mi**2 &
+   & - 4._dp*IRf_0*M2**2*Mi**2 + 8._dp*IRf_1*M2**2*Mi**2 - 20._dp*IRf_01*M1**2*M2**2*Mi**2 &
+   & - 6._dp*IRf_01*M2**4*Mi**2 + 4._dp*IRf_0*Mi**4 - 4._dp*IRf_1*Mi**4 &
+   & + 2._dp*IRf_01*M1**2*Mi**4 + 6._dp*IRf_01*M2**2*Mi**4 - 2._dp*IRf_01*Mi**6
+
+  Abb2i = -4._dp*IRf*M1**2 + 2._dp*IRf_2up0*M1**2 - 4._dp*IRf_2*M1**4 &
+   & + 2._dp*IRf_02*M1**6 - 4._dp*IRf*M2**2 + 2._dp*IRf_2up0*M2**2 &
+   & - 20._dp*IRf_2*M1**2*M2**2 + 18._dp*IRf_02*M1**4*M2**2 &
+   & - 18._dp*IRf_02*M1**2*M2**4 - 2._dp*IRf_02*M2**6 + 8._dp*IRf*Mi**2 &
+   & - 2._dp*IRf_2up0*Mi**2 - 4._dp*IRf_0*M1**2*Mi**2 + 8._dp*IRf_2*M1**2*Mi**2 &
+   & - 6._dp*IRf_02*M1**4*Mi**2 - 4._dp*IRf_0*M2**2*Mi**2 + 4._dp*IRf_2*M2**2*Mi**2 &
+   & - 20._dp*IRf_02*M1**2*M2**2*Mi**2 + 2._dp*IRf_02*M2**4*Mi**2 &
+   & + 4._dp*IRf_0*Mi**4 - 4._dp*IRf_2*Mi**4 + 6._dp*IRf_02*M1**2*Mi**4 &
+   & + 2._dp*IRf_02*M2**2*Mi**4 - 2._dp*IRf_02*Mi**6
+
+  Abb12 = 4._dp*IRf*M1**2 - 6._dp*IRf_1up2*M1**2 + 2._dp*IRf_2up1*M1**2 &
+   & + 4._dp*IRf_2*M1**4 + 2._dp*IRf_12*M1**6 + 4._dp*IRf*M2**2 &
+   & + 2._dp*IRf_1up2*M2**2 - 6._dp*IRf_2up1*M2**2 + 20._dp*IRf_1*M1**2*M2**2 &
+   & + 20._dp*IRf_2*M1**2*M2**2 + 22._dp*IRf_12*M1**4*M2**2 + 4._dp*IRf_1*M2**4 &
+   & + 22._dp*IRf_12*M1**2*M2**4 + 2._dp*IRf_12*M2**6 - 8._dp*IRf*Mi**2 &
+   & - 2._dp*IRf_1up2*Mi**2 - 2._dp*IRf_2up1*Mi**2 - 4._dp*IRf_1*M1**2*Mi**2 &
+   & - 8._dp*IRf_2*M1**2*Mi**2 - 6._dp*IRf_12*M1**4*Mi**2 - 8._dp*IRf_1*M2**2*Mi**2 &
+   & - 4._dp*IRf_2*M2**2*Mi**2 -  28._dp*IRf_12*M1**2*M2**2*Mi**2 &
+   & - 6._dp*IRf_12*M2**4*Mi**2 + 4._dp*IRf_1*Mi**4 + 4._dp*IRf_2*Mi**4 &
+   & + 6._dp*IRf_12*M1**2*Mi**4 + 6._dp*IRf_12*M2**2*Mi**4 - 2._dp*IRf_12*Mi**6
+
+  Abbii = 4._dp*IRf*M1**2 - 2._dp*IRf_0*M1**4 + 4._dp*IRf*M2**2 &
+   & - 20._dp*IRf_0*M1**2*M2**2 - 2._dp*IRf_0*M2**4 - 6._dp*IRf*Mi**2 &
+   & + 8._dp*IRf_0*M1**2*Mi**2 - 2._dp*IRf_00*M1**4*Mi**2 + 8._dp*IRf_0*M2**2*Mi**2 &
+   & - 20._dp*IRf_00*M1**2*M2**2*Mi**2 - 2._dp*IRf_00*M2**4*Mi**2 &
+   & - 6._dp*IRf_0*Mi**4 + 4._dp*IRf_00*M1**2*Mi**4 &
+   & + 4._dp*IRf_00*M2**2*Mi**4 - 2._dp*IRf_00*Mi**6
+
+  Abb11 = 4._dp*IRf*M1**2 + 4._dp*IRf_11up00*M1**2 + 6._dp*IRf_1up0*M1**2 &
+   & - 2._dp*IRf_1*M1**4 - 2._dp*IRf_11*M1**6 + 4._dp*IRf*M2**2 - 2._dp*IRf_1up0*M2**2 &
+   & - 20._dp*IRf_11*M1**4*M2**2 + 2._dp*IRf_1*M2**4 - 2._dp*IRf_11*M1**2*M2**4 &
+   & - 2._dp*IRf*Mi**2 + 2._dp*IRf_1up0*Mi**2 + 4._dp*IRf_11*M1**4*Mi**2 &
+   & - 4._dp*IRf_1*M2**2*Mi**2 + 4._dp*IRf_11*M1**2*M2**2*Mi**2 + 2._dp*IRf_1*Mi**4 &
+   & - 2._dp*IRf_11*M1**2*Mi**4
+
+  Abb22 = 6._dp*IRf*M1**2 + 2._dp*IRf_2up1*M1**2 + 2._dp*IRf_2*M1**4 + 2._dp*IRf*M2**2 &
+   & + 4._dp*IRf_22up11*M2**2 + 2._dp*IRf_2up1*M2**2 - 2._dp*IRf_22*M1**4*M2**2 &
+   & - 2._dp*IRf_2*M2**4 - 20._dp*IRf_22*M1**2*M2**4 - 2._dp*IRf_22*M2**6 &
+   & - 4._dp*IRf*Mi**2 - 2._dp*IRf_2up1*Mi**2 - 4._dp*IRf_2*M1**2*Mi**2 &
+   & + 4._dp*IRf_22*M1**2*M2**2*Mi**2 + 4._dp*IRf_22*M2**4*Mi**2 &
+   & + 2._dp*IRf_2*Mi**4 - 2._dp*IRf_22*M2**2*Mi**4
+
+  Abb = Qi**2*Abbii + Q1**2*Abb11 + Q2**2*Abb22
+  Abb = Abb + Qi*Q1*Abb1i + Qi*Q2*Abb2i + Q1*Q2*Abb12 
+
+  Gammatotc = CS * SCS * Abb
+
+  Gammatotc = Gammatotc * GC**2 /2._dp/M1**2/M2**2
+  Gammatotc = Gammatotc / (Mi * (4._dp * Pi)**3) 
+
+  Gammatotbrems = Real(Gammatotc,dp)
+
+  Iname = Iname - 1
+
+ End Subroutine hardphotonSVV
 
 
  

@@ -137,9 +137,9 @@ ParticleDefinitions[GaugeES] = {
        
        {fU,   { LaTeX -> "\\lambda_U" }},
                  
- {sigmaS,      {Description -> "Scalar Singlet" }}  ,
+ {phiS,      {Description -> "Scalar Singlet" }}  ,
                  
- {phiS,      { Description -> "Pseudo Scalar Singlet"}},
+ {sigmaS,      { Description -> "Pseudo Scalar Singlet"}},
 
 
        {e,    { Description -> "Right Electron Superfield" }},

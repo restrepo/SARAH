@@ -155,6 +155,7 @@ WriteString[filenames[[l]]," 65 1               # Solution tadpole equation \n"]
 WriteString[filenames[[l]]," 75 1               # Write WHIZARD files \n"];
 WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file   \n"];
 WriteString[filenames[[l]]," 77 0               # Output for MicrOmegas (running masses for light quarks; real mixing matrices)   \n"];
+WriteString[filenames[[l]]," 78 0               # Output for MadGraph (writes also vanishing blocks)   \n"];
 WriteString[filenames[[l]]," 86 0.              # Maximal width to be counted as invisible in Higgs decays; -1: only LSP \n"];
 If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          # Maximal mass of particles taken into account in loops \n"];
 ];
@@ -205,10 +206,20 @@ WriteString[filenames[[l]], ToString[1000] <>" 0     # One loop-induced decays o
 For[i=1,i<=Length[SA`ParticlesDecays1Loop],
 WriteString[filenames[[l]],ToString[1000+i]<> " 1     # Loop Decay of "<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>" \n"];
 i++;];
+(*
 WriteString[filenames[[l]], ToString[1101] <>" 0      # Only UV divergent parts of integrals \n"];
 WriteString[filenames[[l]], ToString[1102] <>" 0.     # Value used for divergence \n"];
-WriteString[filenames[[l]], ToString[1110] <>" 0.     # Use pole masses \n"];
+WriteString[filenames[[l]], ToString[1103] <>" 0.     # Debug information \n"];
+WriteString[filenames[[l]], ToString[1104] <>" 0.     #  Tree-level values only \n"];
+*)
+WriteString[filenames[[l]], ToString[1114] <>" 1.     # External Z-factors (0: off, 1:p2_i=m2_i, 2:p2=0, p3:p2_i=m2_1) \n"];
+WriteString[filenames[[l]], ToString[1115] <>" 1.     # OS kinematics \n"];
+WriteString[filenames[[l]], ToString[1116] <>" 0.     # OS values (0: off, 1:g1,g2,v 2:g1,g2,v,Y_i) \n"];
+WriteString[filenames[[l]], ToString[1117] <>" 0.     # Use defined counter terms \n"];
+WriteString[filenames[[l]], ToString[1118] <>" 1.     # OS masses for loop-induced decays \n"];
+(*
 WriteString[filenames[[l]],"1201 1.0E-5               # Photon/Gluon mass in loop decays \n"];
+*)
 ];
 
 If[l==1 && OnlyLowEnergySPheno=!=True,
@@ -414,7 +425,11 @@ If[SA`AddOneLoopDecay === True && SPhenoOnlyForHM=!=True ,
 WriteString[sphenoMake,"${name}(CouplingsCT_"<>ModelName<>".o) \\\n"];
 WriteString[sphenoMake,"${name}(Bremsstrahlung.o) ${name}(DecayFFS.o) ${name}(DecayFFV.o) ${name}(DecaySSS.o) ${name}(DecaySSV.o) ${name}(DecaySFF.o) ${name}(DecaySVV.o) \\\n"];
 For[i=1,i<=Length[SA`ParticlesDecays1Loop],
-WriteString[sphenoMake," ${name}(LoopDecay"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>".o) "];
+WriteString[sphenoMake," ${name}(LoopDecay"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>"_"<>ModelName<>".o) "];
+i++;];
+WriteString[sphenoMake,"\\\n"];
+For[i=1,i<=Length[SA`ParticlesDecays1Loop],
+WriteString[sphenoMake," ${name}(Wrapper_LoopDecay_"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>"_"<>ModelName<>".o) "];
 i++;];
 WriteString[sphenoMake,"${name}(OneLoopDecays_"<>ModelName<>".o) \\\n"];
 ];

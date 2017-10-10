@@ -269,12 +269,14 @@ WriteString[sphenoCoup,SPhenoForm[PseudoScalarMixingMatrix] <>" = "<> SPhenoForm
 ];
 *)
 
+WriteString[sphenoCoup,"If (ExternalZfactors) Then \n"];
 WriteString[sphenoCoup,"! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- \n"];
 For[i=1,i<=Length[NewMassParameters],
 If[Length[getDimSPheno[NewMassParameters[[i]]]]==2 && FreeQ[{ElectronMatrixL, ElectronMatrixR, UpMatrixR, UpMatrixL, DownMatrixR,DownMatrixL},NewMassParameters[[i]]],
 WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
 ];
 i++;];
+WriteString[sphenoCoup,"End if \n"];
 
 
 WriteString[sphenoCoup,"If (PoleMassesInLoops) Then \n"];

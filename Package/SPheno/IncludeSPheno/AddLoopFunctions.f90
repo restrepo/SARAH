@@ -22,12 +22,13 @@ Logical Function EqualMasses(x,y)
 Implicit None
 Real(dp), Intent(in) :: x,y
 Real(dp) :: epsD
-epsD = 1.0E-10_dp
+epsD = 1.0E-20_dp
 If ((Max(Abs(x),Abs(y)).lt.epsD)) Then
  EqualMasses = .True.
 Else 
  If ((Abs(x-y)/Max(Abs(x),Abs(y))).le.epsD) Then
   EqualMasses = .True.
+!   Write(*,*) x,y
  Else
   EqualMasses = .False.
  End if
@@ -82,23 +83,26 @@ Complex(dp) :: Creg
 
 
 If ((Abs((pp2/pp1)).lt.1E-8_dp).and.(Abs((pp3/pp1)).lt.1E-8_dp)) Then
-! Write(*,*) "A", pp1, pp2, pp3
- Creg=cmplx(reg,0._dp,dp) 
+  Creg=cmplx(reg,0._dp,dp) 
 !  getC_IR = ((pp1*(pp2 + pp1) + pp3*(4*pp2 + pp1))*zLog(Creg**2)*zLog(-1._dp/pp1))/pp1**3
  epsIR = zlog(Creg**2/(-pp1))
  getC_IR = epsIR/pp1*zlog(zSqrt(pp2*pp3)/(-pp1)) 
+!  Write(*,*) "A", pp1, pp2, pp3, getC_IR
 else if (Abs((pp2/pp1)).lt.1E-8_dp) Then 
  Creg=cmplx(reg,0._dp,dp) 
- epsIR = zlog(zSqrt(pp2)*(pp3-pp1))/(Creg**2*zSqrt(pp3))
+ epsIR = zlog(zSqrt(pp2)*(pp3-pp1)/(Creg**2*zSqrt(pp3)))
  getC_IR = 1._dp/(pp1-pp3)*epsIR*zLog((pp3-pp1)/zSqrt(pp2*pp3))
+!  Write(*,*) "B", pp1, pp2, pp3, getC_IR
 else if (Abs((pp3/pp1)).lt.1E-8_dp) Then 
  Creg=cmplx(reg,0._dp,dp) 
- epsIR = zlog(zSqrt(pp3)*(pp2-pp1))/(Creg**2*zSqrt(pp2))
+ epsIR = zlog(zSqrt(pp3)*(pp2-pp1)/(Creg**2*zSqrt(pp2)))
  getC_IR = 1._dp/(pp1-pp2)*epsIR*zLog((pp2-pp1)/zSqrt(pp2*pp3))
+!  Write(*,*) "C", pp1, pp2, pp3, getC_IR
 else 
  epsIR = 1._dp/log(reg**2/sqrt(pp2*pp3))
  getC_IR = zLog((-pp1 + pp2 + pp3 + zSqrt(pp1**2 + (pp2 - pp3)**2 - 2*pp1*(pp2 + pp3)))/(2.*zSqrt(pp2*pp3)))/ &
   & (epsIR*zSqrt(pp1**2 + (pp2 - pp3)**2 - 2*pp1*(pp2 + pp3)))
+!   Write(*,*) "D", pp1, pp2, pp3,getC_IR
 end if
 
 If (Abs(getC_IR).ne.Abs(getC_IR)) Then

@@ -19,7 +19,6 @@
 
 
 
-(* ::Input::Initialization:: *)
 InitInputOutput:=Block[{i},
 LowScaleList={};
 HighScaleList={};
@@ -171,7 +170,6 @@ i++;];
 ];
 
 
-(* ::Input::Initialization:: *)
 GenerateInOut:=Block[{i1,i2,i3,i4},
 
 (*
@@ -255,7 +253,6 @@ Close[sphenoInOut];
 
 
 
-(* ::Input::Initialization:: *)
 GenerateLesHouchesIn:=Block[{},
 
 Print["  Writing input routines"];
@@ -478,13 +475,13 @@ WriteString[sphenoInOut,"  ShiftIRdiv=.False. \n"];
 WriteString[sphenoInOut,"Else\n"];
 WriteString[sphenoInOut,"  ShiftIRdiv=.True.\n"];
 WriteString[sphenoInOut,"End If \n"];
-WriteString[sphenoInOut,"Case(1112) \n"];
+WriteString[sphenoInOut,"Case(1103) \n"];
 WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
 WriteString[sphenoInOut,"  DebugLoopDecays=.False. \n"];
 WriteString[sphenoInOut,"Else\n"];
 WriteString[sphenoInOut,"  DebugLoopDecays=.True.\n"];
 WriteString[sphenoInOut,"End If \n"];
-WriteString[sphenoInOut,"Case(1113) \n"];
+WriteString[sphenoInOut,"Case(1104) \n"];
 WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
 WriteString[sphenoInOut,"  OnlyTreeLevelContributions=.False. \n"];
 WriteString[sphenoInOut,"Else\n"];
@@ -512,10 +509,42 @@ WriteString[sphenoInOut,"  OSkinematics=.False. \n"];
 WriteString[sphenoInOut,"Else\n"];
 WriteString[sphenoInOut,"  OSkinematics=.True.\n"];
 WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1116) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.0._dp) Then\n"];
+WriteString[sphenoInOut,"    If (wert.eq.1._dp) Then\n"];
+WriteString[sphenoInOut,"     ewOSinDecays=.True.\n"];
+WriteString[sphenoInOut,"     yukOSinDecays=.False.\n"];
+WriteString[sphenoInOut,"    Else if (wert.eq.2._dp) Then  \n"];
+WriteString[sphenoInOut,"     ewOSinDecays=.True.\n"];
+WriteString[sphenoInOut,"     yukOSinDecays=.True.\n"];
+WriteString[sphenoInOut,"    Else  \n"];
+WriteString[sphenoInOut,"     ewOSinDecays=.False.\n"];
+WriteString[sphenoInOut,"     yukOSinDecays=.False.\n"];
+WriteString[sphenoInOut,"    End if  \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  yukOSinDecays=.False.\n"];
+WriteString[sphenoInOut,"  ewOSinDecays=.False.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1117) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  CTinLoopDecays=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  CTinLoopDecays=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+WriteString[sphenoInOut,"Case(1118) \n"];
+WriteString[sphenoInOut,"If (wert.Ne.1._dp) Then\n"];
+WriteString[sphenoInOut,"  LoopInducedDecaysOS=.False. \n"];
+WriteString[sphenoInOut,"Else\n"];
+WriteString[sphenoInOut,"  LoopInducedDecaysOS=.True.\n"];
+WriteString[sphenoInOut,"End If \n"];
+
 
 
 WriteString[sphenoInOut,"Case(1201) \n"];
 WriteString[sphenoInOut,"  Mass_Regulator_PhotonGluon=wert \n"];
+WriteString[sphenoInOut,"Case(1205) \n"];
+WriteString[sphenoInOut,"  Extra_scale_loopDecays = .true. \n"];
+WriteString[sphenoInOut,"  scale_loopdecays = wert \n"];
 ];
 WriteString[sphenoInOut,"Case Default \n"];
 WriteString[sphenoInOut," If (output_screen) Write(*,*)&\n"];
@@ -653,7 +682,6 @@ WriteString[sphenoInOut,"End Subroutine Read_"<>name<>" \n \n \n"];
 
 
 
-(* ::Input::Initialization:: *)
 GenerateLesHouchesOut:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
 
 Print["  Writing output routines"];
@@ -816,7 +844,6 @@ WriteString[sphenoInOut,"End Subroutine LesHouches_Out \n \n \n"];
 ];
 
 
-(* ::Input::Initialization:: *)
 
 
 
@@ -1041,7 +1068,6 @@ i++;];
 ];
 
 
-(* ::Input::Initialization:: *)
 GenerateMixedLHBlock:=Block[{i,temp,ParticlePhasesTEMP},
 CombindedBlock={};
 NewLHoutputBlocks={};
@@ -1150,7 +1176,6 @@ treeleveltadpolesLOW=temp2;
 ];
 
 
-(* ::Input::Initialization:: *)
 WriteReadInFunctions:=Block[{i,j,temp,temp2},
 For[i=1,i<=Length[CombindedBlock],
 temp={};
@@ -1607,9 +1632,10 @@ i++;];
 ];
 
 WriteString[sphenoInOut,"Write(io_L,100) \"Block SMINPUTS  # SM parameters\"\n"];
-If[SupersymmetricModel===True,
+(* If[SupersymmetricModel===True, 
 WriteString[sphenoInOut,"Write(io_L,102) 1,1._dp/alpha_MSbar(mZ,mW),\"# alpha_em^-1(MZ)^MSbar\"\n"]; 
-];
+ ]; *)
+WriteString[sphenoInOut,"Write(io_L,102) 1,1._dp/alpha_MZ,\"# alpha_em^-1(MZ)^MSbar\"\n"]; 
 WriteString[sphenoInOut,"Write(io_L,102) 2,G_F,\"# G_mu [GeV^-2]\"\n"];
 WriteString[sphenoInOut,"Write(io_L,102) 3,alphaS_MZ,\"# alpha_s(MZ)^MSbar\"\n"];
 WriteString[sphenoInOut,"Write(io_L,102) 4,mZ,\"# m_Z(pole)\"\n"];
@@ -1914,9 +1940,10 @@ WriteString[sphenoInOut,"Write(io_L,100) \"#   PDG code      mass          parti
 
 For[i=1,i<=Length[PDGList],
 For[i1=1,i1<=Length[PDGList[[i,2]]],
-If[PDGList[[i,2,i1]]=!=0 && FreeQ[massless,PDGList[[i,1]]]==True,
+If[PDGList[[i,2,i1]]=!=0 ,
 If[Length[PDGList[[i,2]]]>1,
 (* WriteString[sphenoInOut," Write(io_L,102) "<>ToString[Abs[PDGList[[i,2,i1]]]]<>","<>SPhenoMass[PDGList[[i,1]],i1]<>",\"# "<> ToString[PDGList[[i,1]]]<>"_"<>ToString[i1] <>"\" \n"]; *)
+If[FreeQ[massless,PDGList[[i,1]]]==True,
 WriteString[sphenoInOut," Write(io_L,102) INT(Abs("<>SPhenoPDG[PDGList[[i,1]],i1]<>")),"<>SPhenoMass[PDGList[[i,1]],i1]<>",\"# \"//Trim("<> SPhenoNameArray[PDGList[[i,1]],i1] <>")// \"\" \n"];
 If[RParityList[[i,2]]===-1,
 WriteString[sphenoInOut, "If (MassLSP(1).gt.Abs("<>SPhenoMass[PDGList[[i,1]],i1]<> ")) Then \n"];
@@ -1931,7 +1958,9 @@ WriteString[sphenoInOut ,"MassLSP(2) = Abs("<>SPhenoMass[PDGList[[i,1]],i1]<> ")
 WriteString[sphenoInOut, "End if \n"];
 WriteString[sphenoInOut, "End if \n"];
 ];,
-
+WriteString[sphenoInOut,"If (OutputForMG) Write(io_L,102) INT(Abs("<>SPhenoPDG[PDGList[[i,1]],i1]<>")),0._dp,\"# \"//Trim("<> SPhenoNameArray[PDGList[[i,1]],i1] <>")// \"\" \n"];
+];,
+If[FreeQ[massless,PDGList[[i,1]]]==True,
 WriteString[sphenoInOut," Write(io_L,102) "<>ToString[Abs[PDGList[[i,2,i1]]]]<>","<>SPhenoMass[PDGList[[i,1]],i1]<>",\"# "<> ToString[PDGList[[i,1]]] <>"\" \n"]; 
 If[RParityList[[i,2]]===-1,
 WriteString[sphenoInOut, "If (MassLSP(1).gt.Abs("<>SPhenoMass[PDGList[[i,1]],i1]<> ")) Then \n"];
@@ -1945,9 +1974,9 @@ WriteString[sphenoInOut ,"PDGLSP(2) = "<>ToString[Abs[PDGList[[i,2,i1]]]] <>" \n
 WriteString[sphenoInOut ,"MassLSP(2) = Abs("<>SPhenoMass[PDGList[[i,1]],i1]<> ")\n"];
 WriteString[sphenoInOut, "End if \n"];
 WriteString[sphenoInOut, "End if \n"];
+];,
+WriteString[sphenoInOut,"If (OutputForMG)  Write(io_L,102) "<>ToString[Abs[PDGList[[i,2,i1]]]]<>","<>SPhenoMass[PDGList[[i,1]],i1]<>",\"# "<> ToString[PDGList[[i,1]]] <>"\" \n"]; 
 ];
-
-
 ];
 ]; 
 i1++;];
@@ -2007,7 +2036,7 @@ WriteString[sphenoInOut, "!-------------------------------\n \n"];
 particle=savedDecayInfos[[i,1]];
 For[j=1,j<=getGenSPheno[particle],
 If[FreeQ[GoldstoneGhost,particle[{j}]],
-WriteString[sphenoInOut,"If("<>SPhenoWidth[particle,j] <>".gt.MinWidth) Then \n"]; 
+WriteString[sphenoInOut,"If (("<>SPhenoWidth[particle,j] <>".gt.MinWidth).or.(OutputForMG)) Then \n"]; 
 If[getPDG[particle,j]<0,
 sign=-1;
 sign2="-";
@@ -2216,6 +2245,31 @@ k++;];
 WriteString[sphenoInOut,"End if \n"];
 ];
 j++;]; 
+i++;];
+
+
+WriteString[sphenoInOut, "! Information needed by MadGraph \n"];
+
+For[i=1,i<=Length[PART[V]],
+If[FreeQ[Transpose[savedDecayInfos][[1]],PART[V][[i,1]]],
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[V][[i,1]],1]<>"),"<>SPhenoForm[getWidthNumerical[PART[V][[i,1]],1,1]/.External->0]<>", \""<>SPhenoForm[PART[V][[i,1]]]<>"\" \n"];
+];
+i++;];
+
+For[i=1,i<=Length[PART[F]],
+If[FreeQ[Transpose[savedDecayInfos][[1]],PART[F][[i,1]]],
+For[j=1,j<=getGen[PART[F][[i,1]]],
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[F][[i,1]],j]<>"),"<>SPhenoForm[getWidthNumerical[PART[F][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[F][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
+j++;];
+];
+i++;];
+
+For[i=1,i<=Length[PART[S]],
+If[FreeQ[Transpose[savedDecayInfos][[1]],PART[S][[i,1]]],
+For[j=1,j<=getGen[PART[S][[i,1]]],
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[S][[i,1]],j]<>"),"<>SPhenoForm[getWidthNumerical[PART[S][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[S][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
+j++;];
+];
 i++;];
 ];
 

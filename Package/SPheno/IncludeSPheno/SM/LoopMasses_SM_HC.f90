@@ -257,6 +257,7 @@ NameOfUnit(Iname) = 'OneLoopMasses'
 kont = 0 
 
 
+Mu = 0.5_dp*Lam*v**2 
  
 Call TreeMasses_SM(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,           & 
 & MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,g1,g2,g3,Lam,Yu,Yd,Ye,               & 
@@ -264,13 +265,13 @@ Call TreeMasses_SM(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,  
 
 ! mh_SM = Mhh
 
-MuTree  = Mu
+! MuTree  = Mu
 
 
 ! pi_SM = 0._dp
 
  
- If (CalculateOneLoopMasses) Then 
+!  If (CalculateOneLoopMasses) Then 
  
 ! Call CouplingsForVectorBosons_SM(g2,g1,TW,v,ZDL,ZUL,ZEL,cplAhcHpVWp,cplhhcHpVWp,         & 
 ! & cplHpcHpVZ,cplcHpVPVWp,cplcHpVWpVZ,cplHpcHpcVWpVWp,cplHpcHpVZVZ,cplAhhhVZ,             & 
@@ -293,9 +294,9 @@ MuTree  = Mu
 ! ! v=vSM 
 ! Call SolveTadpoleEquations_SM(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,(/ ZeroC /))
 
-Call TreeMasses_SM(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,           & 
-& MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,g1,g2,g3,Lam,Yu,Yd,Ye,               & 
-& Mu,GenerationMixing,kont)
+! Call TreeMasses_SM(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,           & 
+! & MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,g1,g2,g3,Lam,Yu,Yd,Ye,               & 
+! & Mu,GenerationMixing,kont)
 
 Call CouplingsForLoopMasses_SM(Yd,ZDL,ZDR,g3,g1,g2,TW,Yu,ZUL,ZUR,Ye,ZEL,ZER,             & 
 & v,Lam,cplcUFdFdAhL,cplcUFdFdAhR,cplcUFdFdhhL,cplcUFdFdhhR,cplcUFdFdVGL,cplcUFdFdVGR,   & 
@@ -327,25 +328,25 @@ Call OneLoopTadpoleshh_SM(v,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,   
 & MHp2,MVWp,MVWp2,MVZ,MVZ2,cplAhAhhh,cplcFdFdhhL,cplcFdFdhhR,cplcFeFehhL,cplcFeFehhR,    & 
 & cplcFuFuhhL,cplcFuFuhhR,cplcgWpgWphh,cplcgWCgWChh,cplcgZgZhh,cplhhhhhh,cplhhHpcHp,     & 
 & cplhhcVWpVWp,cplhhVZVZ,Tad1Loop(1:1))
-
-MuTree  = Mu
-If (CalculateTwoLoopHiggsMasses) Then 
-Call CalculatePi2S_SM(0._dp,v,0._dp*g1,0._dp*g2,g3,Lam,Yu,Yd,Ye,Mu,kont,ti_ep2L_SM,Pi2S_EffPot_SM,         & 
-& PiP2S_EffPot_SM)
-Else ! Two loop turned off 
-Pi2S_EffPot_SM = 0._dp 
-ti_ep2L_SM = 0._dp 
-End if 
-
-
-
-Call SolveTadpoleEquations_SM(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,Tad1Loop)
-
-Mu1L = Mu
-Tad1Loop(1:1) = Tad1Loop(1:1) - ti_ep2L_SM 
-Call SolveTadpoleEquations_SM(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,Tad1Loop)
-
-Mu2L = Mu
+! 
+! MuTree  = Mu
+! If (CalculateTwoLoopHiggsMasses) Then 
+! Call CalculatePi2S_SM(0._dp,v,0._dp*g1,0._dp*g2,g3,Lam,Yu,Yd,Ye,Mu,kont,ti_ep2L_SM,Pi2S_EffPot_SM,         & 
+! & PiP2S_EffPot_SM)
+! Else ! Two loop turned off 
+! Pi2S_EffPot_SM = 0._dp 
+! ti_ep2L_SM = 0._dp 
+! End if 
+! 
+! 
+! 
+! Call SolveTadpoleEquations_SM(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,Tad1Loop)
+! 
+! Mu1L = Mu
+! Tad1Loop(1:1) = Tad1Loop(1:1) - ti_ep2L_SM 
+! Call SolveTadpoleEquations_SM(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,Tad1Loop)
+! 
+! Mu2L = Mu
 
 
 Call Pi1Loophh_SM(mh_pole,MAh,MAh2,MVZ,MVZ2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,              & 
@@ -358,7 +359,7 @@ Call Pi1Loophh_SM(mh_pole,MAh,MAh2,MVZ,MVZ2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,
 
 pi_SM = Real(PiSf,dp) - Pi2S_EffPot_SM(1,1) - Tad1Loop(1)/v
 
-End If 
+! End If 
 
 
 Iname = Iname -1 
@@ -495,11 +496,6 @@ Call Pi1LoopVWp_SM(0._dp,MHp,MHp2,MAh,MAh2,MFd,MFd2,MFu,MFu2,MFe,MFe2,Mhh,      
 & cplcVWpcVWpVWpVWp2,cplcVWpcVWpVWpVWp3,cplcVWpcVWpVWpVWp1,cplcVWpVWpVZVZ1,              & 
 & cplcVWpVWpVZVZ2,cplcVWpVWpVZVZ3,kont,dmW2_0)
 
-! Write(*,*) "dmZ2", dmz2, dmw2, dmw2_0
-
-! dmZ2=0._dp
-! dmW2=0._dp
-! dmW2_0=0._dp
 
 Iname = Iname -1 
 End Subroutine OneLoop_Z_W_SM 
@@ -724,7 +720,7 @@ A0m = 1._dp*SA_A0(MVWp2)
     coup = cplcgWCgWChh
     sumI(gO1) = coup*A0m 
   End Do 
- 
+!  
 tadpoles =  tadpoles + 1._dp*sumI 
 ! End if 
 !------------------------ 
@@ -999,9 +995,9 @@ res = res +3._dp* SumI
       End Do 
      End Do 
  ! End ! If 
-!------------------------ 
-! bar[gWp], gWp 
-!------------------------ 
+! !------------------------ 
+! ! bar[gWp], gWp 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopgWp).and.(Include_in_loopgWp)) Then 
@@ -1010,10 +1006,10 @@ F0m2 =  -Real(SA_B0(p2,MVWp2,MVWp2),dp)
 coup2 =  cplcgWpgWphh 
     SumI = coup1*coup2*F0m2 
 res = res +1._dp* SumI  
-! End ! If 
-!------------------------ 
-! bar[gWpC], gWpC 
-!------------------------ 
+! ! End ! If 
+! !------------------------ 
+! ! bar[gWpC], gWpC 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopgWC).and.(Include_in_loopgWC)) Then 
@@ -1022,34 +1018,35 @@ F0m2 =  -Real(SA_B0(p2,MVWp2,MVWp2),dp)
 coup2 =  cplcgWCgWChh 
     SumI = coup1*coup2*F0m2 
 res = res +1._dp* SumI  
-! End ! If 
-!------------------------ 
-! bar[gZ], gZ 
-!------------------------ 
-sumI = 0._dp 
- 
-! If ((Include_in_loopgZ).and.(Include_in_loopgZ)) Then 
+! ! End ! If 
+! !------------------------ 
+! ! bar[gZ], gZ 
+! !------------------------ 
+! sumI = 0._dp 
+!  
+! ! If ((Include_in_loopgZ).and.(Include_in_loopgZ)) Then 
 F0m2 =  -Real(SA_B0(p2,MVZ2,MVZ2),dp) 
  coup1 = cplcgZgZhh
 coup2 =  cplcgZgZhh 
     SumI = coup1*coup2*F0m2 
 res = res +1._dp* SumI  
-! End ! If 
-!------------------------ 
-! hh, hh 
-!------------------------ 
-sumI = 0._dp 
- 
-! If ((Include_in_loophh).and.(Include_in_loophh)) Then 
+! ! End ! If 
+! !------------------------ 
+! ! hh, hh 
+! !------------------------ 
+! sumI = 0._dp 
+!  
+! ! If ((Include_in_loophh).and.(Include_in_loophh)) Then 
 B0m2 = SA_B0(p2,Mhh2,Mhh2) 
 coup1 = cplhhhhhh
 coup2 = Conjg(cplhhhhhh)
     SumI = coup1*coup2*B0m2 
+
 res = res +1._dp/2._dp* SumI  
-! End ! If 
-!------------------------ 
-! conj[Hp], Hp 
-!------------------------ 
+! ! End ! If 
+! !------------------------ 
+! ! conj[Hp], Hp 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopHp).and.(Include_in_loopHp)) Then 
@@ -1058,10 +1055,10 @@ coup1 = cplhhHpcHp
 coup2 = Conjg(cplhhHpcHp)
     SumI = coup1*coup2*B0m2 
 res = res +1._dp* SumI  
-! End ! If 
-!------------------------ 
-! conj[VWp], Hp 
-!------------------------ 
+! ! End ! If 
+! !------------------------ 
+! ! conj[VWp], Hp 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopVWp).and.(Include_in_loopHp)) Then 
@@ -1070,10 +1067,10 @@ coup1 = cplhhHpcVWp
 coup2 =  Conjg(cplhhHpcVWp)
     SumI = coup1*coup2*F0m2 
 res = res +2._dp* SumI  
-! End ! If 
-!------------------------ 
-! conj[VWp], VWp 
-!------------------------ 
+! ! End ! If 
+! !------------------------ 
+! ! conj[VWp], VWp 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopVWp).and.(Include_in_loopVWp)) Then 
@@ -1082,55 +1079,55 @@ coup1 = cplhhcVWpVWp
 coup2 =  Conjg(cplhhcVWpVWp)
     SumI = coup1*coup2*F0m2 
 res = res +1._dp* SumI  
-! End ! If 
-!------------------------ 
-! VZ, VZ 
-!------------------------ 
-sumI = 0._dp 
- 
-! If ((Include_in_loopVZ).and.(Include_in_loopVZ)) Then 
+! ! End ! If 
+! !------------------------ 
+! ! VZ, VZ 
+! !------------------------ 
+! sumI = 0._dp 
+!  
+! ! If ((Include_in_loopVZ).and.(Include_in_loopVZ)) Then 
 F0m2 = SVVloop(p2,MVZ2,MVZ2) 
 coup1 = cplhhVZVZ
 coup2 =  Conjg(cplhhVZVZ)
     SumI = coup1*coup2*F0m2 
 res = res +1._dp/2._dp* SumI  
-! End ! If 
-!------------------------ 
-! Ah, Ah 
-!------------------------ 
-sumI = 0._dp 
- 
-! If ((Include_in_loopAh).and.(Include_in_loopAh)) Then 
+! ! End ! If 
+! !------------------------ 
+! ! Ah, Ah 
+! !------------------------ 
+! sumI = 0._dp 
+!  
+! ! If ((Include_in_loopAh).and.(Include_in_loopAh)) Then 
 A0m2 = SA_A0(MAh2) 
 coup1 = cplAhAhhhhh
     SumI = -coup1*A0m2 
-res = res +1._dp/2._dp* SumI  
-! End ! If 
-!------------------------ 
-! hh, hh 
-!------------------------ 
-sumI = 0._dp 
- 
-! If ((Include_in_loophh).and.(Include_in_loophh)) Then 
+res = res + 1._dp/2._dp* SumI   
+! ! End ! If 
+! !------------------------ 
+! ! hh, hh 
+! !------------------------ 
+! sumI = 0._dp 
+!  
+! ! If ((Include_in_loophh).and.(Include_in_loophh)) Then 
 A0m2 = SA_A0(Mhh2) 
 coup1 = cplhhhhhhhh
     SumI = -coup1*A0m2 
 res = res +1._dp/2._dp* SumI  
-! End ! If 
-!------------------------ 
-! conj[Hp], Hp 
-!------------------------ 
+! ! End ! If 
+! !------------------------ 
+! ! conj[Hp], Hp 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopHp).and.(Include_in_loopHp)) Then 
 A0m2 = SA_A0(MHp2) 
 coup1 = cplhhhhHpcHp
     SumI = -coup1*A0m2 
-res = res +1._dp* SumI  
-! End ! If 
-!------------------------ 
-! conj[VWp], VWp 
-!------------------------ 
+res = res +1._dp* SumI 
+! ! End ! If 
+! !------------------------ 
+! ! conj[VWp], VWp 
+! !------------------------ 
 sumI = 0._dp 
  
 ! If ((Include_in_loopVWp).and.(Include_in_loopVWp)) Then 
@@ -1138,18 +1135,18 @@ A0m2 =  0.75_dp*SA_A0(MVWp2) + 0.25_dp*SA_A0(MVWp2) - 0.5_dp*MVWp2
 coup1 = cplhhhhcVWpVWp
     SumI = coup1*A0m2 
 res = res +4._dp* SumI  
-! End ! If 
-!------------------------ 
-! VZ, VZ 
-!------------------------ 
-sumI = 0._dp 
- 
-! If ((Include_in_loopVZ).and.(Include_in_loopVZ)) Then 
+! ! End ! If 
+! !------------------------ 
+! ! VZ, VZ 
+! !------------------------ 
+! sumI = 0._dp 
+!  
+! ! If ((Include_in_loopVZ).and.(Include_in_loopVZ)) Then 
 A0m2 =  0.75_dp*SA_A0(MVZ2) + 0.25_dp*SA_A0(MVZ2) - 0.5_dp*MVZ2
 coup1 = cplhhhhVZVZ
     SumI = coup1*A0m2 
 res = res +2._dp* SumI  
-! End ! If 
+! ! End ! If 
 
 res = oo16pi2*res 
  
@@ -1718,7 +1715,7 @@ A0m2 = 3._dp/4._dp*SA_A0(MVWp2) +RXi/4._dp*SA_A0(MVWp2)
 coup1 = cplcVWpcVWpVWpVWp2
 coup2 = cplcVWpcVWpVWpVWp3
 coup3 = cplcVWpcVWpVWpVWp1
-SumI = ((2._dp*1._dp*coup1+(1-RXi**2)/8._dp*(coup2+coup3))*MVWp2-(4._dp*coup1+coup2+coup3)*A0m2)
+SumI = ((2._dp*rMS_SM*coup1+(1-RXi**2)/8._dp*(coup2+coup3))*MVWp2-(4._dp*coup1+coup2+coup3)*A0m2)
 res = res +1* SumI  
 ! End if 
 !------------------------ 
@@ -2322,6 +2319,8 @@ Else
 B1m2 = - Real(SA_B1(p2,MFu2(i2),MVZ2)+ 0.5_dp*rMS_SM,dp) 
 B0m2 = -4._dp*MFu(i2)*Real(SA_B0(p2,MFu2(i2),MVZ2)-0.5_dp*rMS_SM,dp) 
 End If 
+
+
 coupL1 = cplcUFuFuVZL(gO1,i2)
 coupR1 = cplcUFuFuVZR(gO1,i2)
 coupL2 =  Conjg(cplcUFuFuVZL(gO2,i2))
@@ -2330,6 +2329,9 @@ SumSR(gO1,gO2) = coupL1*coupR2*B0m2
 SumSL(gO1,gO2) = coupR1*coupL2*B0m2 
 sumR(gO1,gO2) = coupL1*coupL2*B1m2 
 sumL(gO1,gO2) = coupR1*coupR2*B1m2 
+
+
+
    End Do 
 End Do 
 SigL = SigL +1._dp* sumL
@@ -2412,12 +2414,12 @@ Real(dp),Intent(in):: g_SM(62), mudim, mh2
 Integer :: i1, kont
 Real(dp) :: g1,g2,g3,v
 Complex(dp) :: Lam,Yu(3,3),Yd(3,3),Ye(3,3),Mu
-Real(dp) ::  mh_SM, pi_SM
+Real(dp) ::  mh_SM, pi_SM, pi2_SM
 
 
 Call GToParameters62_SM(g_SM,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v)
 
-
+Yu = - Yu
 
  lambda=(mh2)/v**2
 !  
@@ -2426,9 +2428,15 @@ If (CalculateOneLoopMasses) Then
 
 Do i1=1,100
 
-Call Pih_SM(mh2, Real(Yu(3,3),dp), g1, g2, g3, Real(lambda,dp), v, pi_SM)
+! Call Pih_SM(mh2, Real(Yu(3,3),dp), g1, g2, g3, Real(lambda,dp), v, pi_SM)
 
-mh_SM = sqrt(lambda*v**2 + pi_SM)
+! mh_SM = sqrt(lambda*v**2 + pi_SM)
+
+Call Pi1Loop_Mh_SM(v,g1,g2,g3,lambda,Yu,Yd,Ye,Mu,mh2,pi_SM,kont)
+Call Pih_2L_SM(mh2,  Real(Yu(3,3),dp), g1, g2, g3, Real(lambda,dp), v, pi2_SM )
+
+mh_SM = sqrt(lambda*v**2 - pi_SM + pi2_SM)
+
 
 
 If ((Abs(mh_SM-sqrt(mh2))/sqrt(mh2)).lt.1.0E-6_dp) Then
@@ -2452,19 +2460,20 @@ Integer :: i1, kont
 Real(dp) :: g1,g2,g3,v
 Complex(dp) :: Lam,Yu(3,3),Yd(3,3),Ye(3,3),Mu
 Real(dp), Intent(out) ::  mh_SM
-Real(dp) :: tz, dt, q2
+Real(dp) :: tz, dt, q2, mh_SM_old, pi_SM, pi2_SM
 
 Call GToParameters62_SM(g_SM,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v)
 
 Call ParametersToG62_SM(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,g_SM)
-
+! 
 
 ! Get eff lambda at ren-scale
 Call GetLambdaSM(g_SM,mudim,mh2,Lam)
 
+
 ! Run to m_top~160 GeV
 
-tz=0.5_dp*Log(160._dp**2/mudim)
+tz=0.5_dp*Log(mf_u2(3)/mudim)
 dt=tz/100._dp 
 g_SM(1)=g_SM(1)*sqrt(5._dp/3._dp) 
 g_SM(4)=Real(Lam,dp)
@@ -2484,18 +2493,75 @@ g_SM(1)=g_SM(1)/sqrt(5._dp/3._dp)
 Call GToParameters62_SM(g_SM,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v)
 
 
-q2 = SetRenormalizationScale(160._dp**2)
+Yu = - Yu
 
-CalculateOneLoopMasses=.false.
-Call OneLoop_Mh_SM(v,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,mh_SM,kont)
 
-CalculateOneLoopMasses=.true.
-Call OneLoop_Mh_SM(v,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,mh_SM,kont)
+q2 = SetRenormalizationScale(mf_u2(3))
+
+! CalculateOneLoopMasses=.false.
+! Call OneLoop_Mh_SM(v,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,mh_SM,kont)
+! 
+! CalculateOneLoopMasses=.true.
+! Call OneLoop_Mh_SM(v,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,mh_SM,kont)
+
+mh_SM_old=sqrt(mh2)
+
+
+Do i1=1,100
+! 
+! Call Pih_SM(mh_SM_old**2, Real(Yu(3,3),dp), g1, g2, g3, Real(Lam,dp), v, pi_SM)
+! mh_SM = sqrt(Lam*v**2  + pi_SM)
+
+Call Pi1Loop_Mh_SM(v,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,mh2,pi_SM,kont)
+Call Pih_2L_SM(mh_SM,  Real(Yu(3,3),dp), g1, g2, g3, Real(Lam,dp), v, pi2_SM )
+! 
+mh_SM = sqrt(Lam*v**2  - pi_SM + pi2_SM)
+
+
+If ((Abs(mh_SM-mh_SM_old)/sqrt(mh2)).lt.1.0E-6_dp) Then
+ Exit
+Else 
+ mh_SM_old=mH_SM
+End if
+
+End do
 
 q2 = SetRenormalizationScale(mudim)
 
 
 End Subroutine Get_mh_pole_SM
+
+
+Subroutine Pih_2L_SM(mh2, Yu, g1, g2, g3, Lam, v, pi_SM )
+Implicit None 
+Real(dp), Intent(in) :: Yu, g1, g2,g3, v, Lam, mh2
+Real(dp), Intent(out) :: pi_SM
+Real(dp) :: yt2, mt2, lambda,lambda2,v2,g22,g24,gp2,G2_s,G4_s,mW2_run,mZ2_run, &
+& mH2_run,logW,logZ,logH,q2, p2, LogT, LogT2, g32
+
+
+   yt2 = Yu**2
+   mt2 = yt2/2._dp*v**2;
+   q2 = getrenormalizationscale()
+ 
+ 
+!  Write(*,*) "q2", q2
+ 
+   v2 = v**2
+   g32 = g3**2
+ 
+    LogT = Log(mt2 / Q2);
+   LogT2 = LogT**2;
+ 
+ pi_SM = 0._dp
+ 
+If (CalculateTwoLoopHiggsMasses) Then 
+pi_SM= pi_SM + oo16pi2**2*(2._dp*mt2 * 16._dp*g32*yt2*(3._dp*LogT2 + LogT) + &
+ & 2._dp*mt2*(-3._dp*yt2**2*(3._dp*LogT2 - 7._dp*LogT + 2._dp + pi**2/3._dp)))
+End if
+
+
+End Subroutine Pih_2L_SM
 
 Subroutine Pih_SM(mh2, Yu, g1, g2, g3, Lam, v, pi_SM )
 Implicit None 
@@ -2526,20 +2592,20 @@ yt2 = Yu**2
    LogZ = Log(mZ2_run / Q2);
    LogH = Log(mH2_run / Q2);
 
-pi_SM = oo16pi2*(+3*yt2*(4*mt2 - p2)*B0(p2,mt2,mt2) &
-&       +6*lambda2*v2*(3*LogH-6+Pi*Sqrt(3._dp)) &
-&       -v2/4.*(3*g24-8*lambda*g22+16*lambda2)*B0(p2,mW2_run,mW2_run) &
-&       -v2/8.*(3*G4_s-8*lambda*G2+16*lambda2)*B0(p2,mZ2_run,mZ2_run) &
-&       +2*mW2*(g22-2*lambda*(LogW-1)) &
-&       +mZ2*(G2_s-2*lambda*(LogZ-1)) &
+pi_SM = oo16pi2*(+3*yt2*((4*mt2 - p2)*B0(p2,mt2,mt2)) &
+! &       +6*lambda2*v2*(3*LogH-6+Pi*Sqrt(3._dp)) &
+!   & - (4.5_dp*v2*Lam**2*B0(p2,mH2_run,mH2_run)) &
+&       -v2/4._dp*(3._dp*g24-8._dp*lambda*g22+16._dp*lambda2)*B0(mW2_run,mW2_run,p2) &
+&       -v2/8._dp*(3._dp*G4_s-8._dp*lambda*G2+16._dp*lambda2)*B0(mZ2_run,mZ2_run,p2) &
+&       +2._dp*mW2*(g22-2*lambda*(LogW-1._dp)) &
+&       +mZ2_run*(G2_s-2._dp*lambda*(LogZ-1._dp)) &
 & )
-
    LogT = Log(mt2 / Q2);
    LogT2 = LogT**2;
 
 
 If (CalculateTwoLoopHiggsMasses) Then 
-pi_SM= pi_SM + oo16pi2**2*(2*mt2 * 16*g32*yt2*(3*LogT2 + LogT) + &
+pi_SM= pi_SM + 0*oo16pi2**2*(2*mt2 * 16*g32*yt2*(3*LogT2 + LogT) + &
  & 2*mt2*(-3*yt2**2*(3*LogT2 - 7*LogT + 2 + pi**2/3.)))
 End if
 

@@ -150,6 +150,16 @@ MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParame
 If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]\[Equal]False,
 WriteString[sphenoBR,"End if\n"];
 ]; *)
+WriteString[sphenoBR,"Do i1=1,"<>ToString[getGenSPheno[savedDecayInfos[[i,1]]]] <>"\n"];
+WriteString[sphenoBR,SPhenoWidth[savedDecayInfos[[i,1]],i1]<>" =Sum("<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]]<>"(i1,:)) \n"];
+WriteString[sphenoBR,"If ("<>SPhenoWidth[savedDecayInfos[[i,1]],i1]<>".Gt.0._dp) "<>ToString[SPhenoBR[savedDecayInfos[[i,1]]]]<>"(i1,: ) ="<>ToString[SPhenoPartialWidth[savedDecayInfos[[i,1]]]] <>"(i1,:)/"<> ToString[SPhenoWidth[savedDecayInfos[[i,1]],i1]]<>" \n"];
+If[SA`AddOneLoopDecay === True && FreeQ[SA`ParticlesDecays1Loop,savedDecayInfos[[i,1]]]==False,
+WriteString[sphenoBR,"If (OneLoopDecays) Then \n"];
+WriteString[sphenoBR,SPhenoWidth1L[savedDecayInfos[[i,1]],i1]<>" =Sum("<>ToString[SPhenoPartialWidth1L[savedDecayInfos[[i,1]]]]<>"(i1,:)) \n"];
+WriteString[sphenoBR,"If ("<>SPhenoWidth1L[savedDecayInfos[[i,1]],i1]<>".Gt.0._dp) "<>ToString[SPhenoBR1L[savedDecayInfos[[i,1]]]]<>"(i1,: ) ="<>ToString[SPhenoPartialWidth1L[savedDecayInfos[[i,1]]]] <>"(i1,:)/"<> ToString[SPhenoWidth1L[savedDecayInfos[[i,1]],i1]]<>" \n"];
+WriteString[sphenoBR,"End if\n"];
+];
+WriteString[sphenoBR,"End Do \n \n\n"];
 
 If[FreeQ[GoldstoneGhost,savedDecayInfos[[i,1]]]==False,
 WriteString[sphenoBR,"! Set Goldstone Widhts \n"];

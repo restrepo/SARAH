@@ -19,7 +19,6 @@
 
 
 
-(* ::Input::Initialization:: *)
 MakeModelData:=Block[{i,k,i2,temp,dim,pos,name,templist},
 If[Head[RegimeNr]===Integer,
 AddParametersFromOtherRegimes;
@@ -289,6 +288,8 @@ If[U1MixingParameters=!={},
 MakeVariableList[U1MixingParameters,"",ModelData];
 ];
 *)
+
+WriteString[ModelData, "Real (dp) :: vSM_Q \n"];
 
 For[i=1,i<=Length[SA`GaugeFixingRXi],
 If[FreeQ[Particles[Current],SA`GaugeFixingRXi[[i,2]]]==False,
@@ -746,7 +747,11 @@ If[SA`AddOneLoopDecay===True,
 WriteString[ModelData,"Logical, Save :: OneLoopDecays=.True.\n"];,
 WriteString[ModelData,"Logical, Save :: OneLoopDecays=.False.\n"];
 ];
-
+WriteString[ModelData,"Logical, Save :: ewOSinDecays=.True.\n"];
+WriteString[ModelData,"Logical, Save :: yukOSinDecays=.False.\n"];
+WriteString[ModelData,"Logical, Save :: LoopInducedDecaysOS=.True.\n"];
+WriteString[ModelData,"Logical, Save :: CTinLoopDecays=.False.\n"];
+WriteString[ModelData,"Logical, Save :: Extra_scale_loopDecays=.False.\n"];
 
 
 WriteString[ModelData,"Logical, Save :: MatchZWpoleMasses=.False.\n"];
@@ -755,9 +760,9 @@ WriteString[ModelData,"Logical, Save :: PoleMassesForLoopDecays=.False.\n"];
 WriteString[ModelData,"Logical, Save :: OnlyHeavyStates=.False.\n"];
 
 WriteString[ModelData,"Integer :: divonly, divonly_save \n"];
-WriteString[ModelData,"Real(dp) :: divergence, divergence_save \n"];
+WriteString[ModelData,"Real(dp) :: divergence, divergence_save, scale_loopdecays  \n"];
 
-WriteString[ModelData,"Real(dp) :: TwoLoopRegulatorMass = 0.001_dp \n"];
+WriteString[ModelData,"Real(dp) :: TwoLoopRegulatorMass = 0._dp \n"];
 WriteString[ModelData,"Logical :: IRdivOnly = .false. \n"];
 WriteString[ModelData,"Character(len=3) :: IRstring=\"000\" \n"];
 
@@ -848,7 +853,6 @@ Close[ModelData];
 
 
 
-(* ::Input::Initialization:: *)
 LookForAdditionalParameter:=Block[{k,temp},
 temp={};
 If[Head[BoundaryHighScale]===List&&Flatten[BoundaryHighScale]=!={},

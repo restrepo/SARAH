@@ -47,6 +47,7 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoLowEnergy`;
 <<SPhenoHiggsBoundsOutput`;
 
+ <<SPhenoLoopDecays`; 
 <<SPhenoCT`; 
 
  <<SPhenoHiggsCS`; 
@@ -1798,7 +1799,8 @@ equTemp=equ;
 For[i=1,i<=Length[equTemp],
 If[(Select[inputpar,FreeQ[equTemp[[i]],#]==False&])==={},
 equ=equTemp[[i]];];
-i++;];
+i++;];,
+equ=equ[[1]];
 ];
 sol=Select[Solve[equ[[1]]==equ[[2]],{g1SM}],FreeQ[#,-a_]&][[1]];
 ExpressionAuxHypercharge=g1SM /.sol[[1]]; 

@@ -100,7 +100,7 @@ WriteString[sphenoSugra, "Real(dp), save :: Lambda, MlambdaS,F_GMSB \n"];
 WriteString[sphenoSugra, "Real(dp),save::mGUT_save,sinW2_Q_mZ&\n"];
 WriteString[sphenoSugra, "&, mf_l_Q_SM(3),mf_d_Q_SM(3),mf_u_Q_SM(3) & \n"];
 WriteString[sphenoSugra, "&, mf_l_MS_SM(3),mf_d_MS_SM(3),mf_u_MS_SM(3) \n"];
-WriteString[sphenoSugra, "Complex(dp),save::Yl_mZ(3,3),Yu_mZ(3,3),Yd_mZ(3,3)\n"];
+WriteString[sphenoSugra, "Complex(dp),save::Yl_mZ(3,3),Yu_mZ(3,3),Yd_mZ(3,3),Yl_Q(3,3),Yu_Q(3,3),Yd_Q(3,3)\n"];
 WriteString[sphenoSugra, "Real(dp),Save::vevs_DR_save(2), vSM_save\n"];
 
 
@@ -1654,7 +1654,7 @@ WriteString[sphenoSugra,"mudim=Max(mudim,mZ2)\n"];
 WriteString[sphenoSugra,"tz=0.5_dp*Log(mZ2/mudim)\n"];
 WriteString[sphenoSugra,"dt=tz/100._dp \n"];
 WriteString[sphenoSugra,"g_SM(1)=g_SM(1)*sqrt(5._dp/3._dp) \n"];
-WriteString[sphenoSugra,"g_SM(4)=mhh2(1)/g_SM(62)**2 \n"];
+WriteString[sphenoSugra,"g_SM(4)="<>SPhenoMassSq[HiggsBoson,1]<>"/g_SM(62)**2 \n"];
 WriteString[sphenoSugra,"Call odeint(g_SM,62,0._dp,tz,delta0,dt,0._dp,rge62_SM,kont) \n"];
 WriteString[sphenoSugra,"g_SM(1)=g_SM(1)/sqrt(5._dp/3._dp) \n"];
 WriteString[sphenoSugra,"Lambda_MZ=g_SM(4) \n"];

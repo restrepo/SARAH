@@ -19,7 +19,6 @@
 
 
 
-(* ::Input::Initialization:: *)
 
 GenerateBoundaryBSM:=Block[{i,j, posZ, posW, massW, massZ, couplingsW, couplingsZ,pos, gSd, gSe, gSu,i1,i2,dim},
 
@@ -182,7 +181,9 @@ i++;];
 
 
 WriteString[sphenoSugra,"Iname=Iname+1\n"];
-WriteString[sphenoSugra,"NameOfUnit(Iname)='BoundaryEW'\n"];
+WriteString[sphenoSugra,"NameOfUnit(Iname)='BoundaryBSM'\n"];
+
+WriteString[sphenoSugra,"rMS_SM = rMS \n"];
 
 WriteString[sphenoSugra,"tanb = tanbetaMZ \n"];
 If[(ThetaW /.subNumDependences)===ThetaW,
@@ -270,11 +271,19 @@ WriteString[sphenoSugra,SPhenoForm[leftCoupling]<>" = gSU2 \n"];
 WriteString[sphenoSugra,"g1SM =gSU2*Sqrt(sinW2_Q/(1._dp-sinW2_Q)) \n"];
 WriteString[sphenoSugra,"g2SM =gSU2 \n"];
 
-WriteString[sphenoSugra,"YeSM=Yl_MZ\n"];
-WriteString[sphenoSugra,"YdSM=Yd_MZ\n"];
-WriteString[sphenoSugra,"YuSM=Yu_MZ\n"];
+WriteString[sphenoSugra,"If (i_run.eq.1) Then \n"];
+WriteString[sphenoSugra," YeSM=Yl_MZ\n"];
+WriteString[sphenoSugra," YdSM=Yd_MZ\n"];
+WriteString[sphenoSugra," YuSM=Yu_MZ\n"];
+WriteString[sphenoSugra,"Else \n"];
+WriteString[sphenoSugra," YeSM=Yl_Q\n"];
+WriteString[sphenoSugra," YdSM=Yd_Q\n"];
+WriteString[sphenoSugra," YuSM=Yu_Q\n"];
+WriteString[sphenoSugra,"End if \n"];
 
 SetMatchingConditions[sphenoSugra];
+
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoSugra];
 
 WriteString[sphenoSugra,SPhenoForm[Weinberg]<>"= Asin(Sqrt(sinw2_Q)) \n"];
 
@@ -294,7 +303,7 @@ MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoSug
 
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoSugra];
 
-MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lam_MS","YuSM","YdSM","YeSM"},{"kont","dmZ2_SM","dmW2_SM","dmW2_0_SM"},sphenoSugra];
+MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lam_MS","-YuSM","YdSM","YeSM"},{"kont","dmZ2_SM","dmW2_SM","dmW2_0_SM"},sphenoSugra];
 WriteString[sphenoSugra,"dmZ2 = dmZ2 - dmZ2_SM\n"];
 
 WriteString[sphenoSugra,"mZ2_Q = Real(dmZ2 + mZ2_MS,dp) \n"];
@@ -334,7 +343,7 @@ AddExtraEWvevDefinition[sphenoSugra];
 MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoSugra];
 
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoSugra];
-MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lam_MS","YuSM","YdSM","YeSM"},{"kont","dmZ2_SM","dmW2_SM","dmW2_0_SM"},sphenoSugra];
+MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lam_MS","-YuSM","YdSM","YeSM"},{"kont","dmZ2_SM","dmW2_SM","dmW2_0_SM"},sphenoSugra];
 WriteString[sphenoSugra,"dmZ2 = dmZ2 - dmZ2_SM\n"];
 
 
@@ -378,7 +387,7 @@ MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoSug
 MakeCall["Pi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{"mW2"},{"kont","dmW2"},sphenoSugra];
 MakeCall["Pi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{"0._dp"},{"kont","dmW2_0"},sphenoSugra];
 
-MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lam_MS","YuSM","YdSM","YeSM"},{"kont","dmZ2_SM","dmW2_SM","dmW2_0_SM"},sphenoSugra];
+MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lam_MS","-YuSM","YdSM","YeSM"},{"kont","dmZ2_SM","dmW2_SM","dmW2_0_SM"},sphenoSugra];
 WriteString[sphenoSugra,"dmW2 = dmW2 - dmW2_SM\n"];
 WriteString[sphenoSugra,"dmW2_0 = dmW2_0 - dmW2_0_SM\n"];
 
@@ -486,6 +495,7 @@ WriteString[sphenoSugra,"sinW2=1._dp-cosW2\n"];
 WriteString[sphenoSugra,"g1SM=Sqrt(4._dp*pi*alphaQ/(1._dp-sinW2_Q))\n"];
 WriteString[sphenoSugra,"g2SM=Sqrt(4._dp*pi*alphaQ/sinW2_Q)\n"];
 WriteString[sphenoSugra,"g3SM=Sqrt(4._dp*pi*alpha3)\n"];
+WriteString[sphenoSugra,"vSM_Q = vSM\n"];
 SetMatchingConditions[sphenoSugra];
 SetMatchingConditionsMZ[sphenoSugra];
 
@@ -597,11 +607,11 @@ WriteBoundaryConditionsEWSB[sphenoSugra];
 WriteString[sphenoSugra,"\n\n! Full one-loop corrections\n"];
 MakeCall["CouplingsForSMfermions" , Join[parametersEBT,namesEBT],{},{},sphenoSugra];
 
-MakeCall["Sigma1Loop"<>ToString[Electron]<>"MZ",Flatten[{massesE,couplingsE}],{"p2"},{"sigR_l","sigL_l","sigSR_l","sigSL_l"},sphenoSugra];
-MakeCall["Sigma1Loop"<>ToString[BottomQuark]<>"MZ",Flatten[{massesB,couplingsB}],{"p2"},{"sigR_d","sigL_d","sigSR_d","sigSL_d"},sphenoSugra];
-MakeCall["Sigma1Loop"<>ToString[TopQuark]<>"MZ",Flatten[{massesT,couplingsT}],{"p2"},{"sigR_u","sigL_u","sigSR_u","sigSL_u"},sphenoSugra];
+MakeCall["Sigma1Loop"<>ToString[Electron]<>"MZ",Flatten[{massesE,couplingsE}],{"p2"},{"sigR_l","sigL_l","sigSL_l","sigSR_l"},sphenoSugra];
+MakeCall["Sigma1Loop"<>ToString[BottomQuark]<>"MZ",Flatten[{massesB,couplingsB}],{"p2"},{"sigR_d","sigL_d","sigSL_d","sigSR_d"},sphenoSugra];
+MakeCall["Sigma1Loop"<>ToString[TopQuark]<>"MZ",Flatten[{massesT,couplingsT}],{"p2"},{"sigR_u","sigL_u","sigSL_u","sigSR_u"},sphenoSugra];
 
-MakeCall["OneLoop_d_u_e_SM",{},{"vSM","g1SM","g2SM","g3SM","Lam_MS","YuSM","YdSM","YeSM"},{"sigR_d_SM","sigL_d_SM","sigSR_d_SM","sigSL_d_SM","sigR_u_SM","sigL_u_SM","sigSR_u_SM","sigSL_u_SM","sigR_l_SM","sigL_l_SM","sigSR_l_SM","sigSL_l_SM","kont"},sphenoSugra];
+MakeCall["OneLoop_d_u_e_SM",{},{"vSM","g1SM","g2SM","g3SM","Lam_MS","-YuSM","YdSM","YeSM"},{"sigR_d_SM","sigL_d_SM","sigSR_d_SM","sigSL_d_SM","sigR_u_SM","sigL_u_SM","sigSR_u_SM","sigSL_u_SM","sigR_l_SM","sigL_l_SM","sigSR_l_SM","sigSL_l_SM","kont"},sphenoSugra];
 
 WriteString[sphenoSugra,"sigR_l(1:3,1:3) = sigR_l(1:3,1:3) - sigR_l_SM\n"];
 WriteString[sphenoSugra,"sigL_l(1:3,1:3) = sigL_l(1:3,1:3) - sigL_l_SM\n"];
@@ -840,11 +850,11 @@ WriteString[sphenoSugra,"!------------------------------------------------------
 WriteString[sphenoSugra,"!Transpose Yukawas if necessary\n"];
 WriteString[sphenoSugra,"!----------------------------------------------------------------\n"];
 *)
-(*
-WriteString[sphenoSugra,"Yl_MZ=YeSM\n"];
-WriteString[sphenoSugra,"Yd_MZ=YdSM\n"];
-WriteString[sphenoSugra,"Yu_MZ=YuSM\n"];
 
+WriteString[sphenoSugra,"Yl_Q=YeSM\n"];
+WriteString[sphenoSugra,"Yd_Q=YdSM\n"];
+WriteString[sphenoSugra,"Yu_Q=YuSM\n"];
+(*
 If[TransposedYukawaScheme=!=True,
 WriteString[sphenoSugra,"Y_u=Transpose(Y_u)\n"];
 WriteString[sphenoSugra,"Y_d=Transpose(Y_d)\n"];
@@ -889,6 +899,8 @@ If[FreeQ[BoundarySUSYScale,TADPOLES],
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"gMZ"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gMZ"},sphenoSugra];
 ];
+
+WriteString[sphenoSugra,"rMS_SM = 1._dp \n"];
 
 WriteString[sphenoSugra,"Iname=Iname-1\n\n"];
 
@@ -1188,7 +1200,7 @@ WriteString[sphenoSugra,SPhenoForm[Weinberg]<>"= Asin(Sqrt(sinw2_Q)) \n"];
 
 WriteString[sphenoSugra,"mHiggs= sqrt(Lambda_SM)*vSM \n"];
 WriteString[sphenoSugra,"MuSM = 0.5_dp*Lambda_SM*vSM**2 \n"];
-MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
+MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
 
 WriteString[sphenoSugra,"mZ2_mZ = Real(dmZ2 + mZ2,dp) \n"];
 WriteString[sphenoSugra,"If (mZ2_mZ.Lt.0._dp) Then\n"];
@@ -1207,7 +1219,7 @@ WriteString[sphenoSugra,"vev2=mZ2_mZ*CosW2SinW2/(pi*alphamZ) -"<>SPhenoForm[SA`A
 WriteString[sphenoSugra,"vSM=Sqrt(vev2)\n"];
 
 WriteString[sphenoSugra,"MuSM = 0.5_dp*Lambda_SM*vSM**2 \n"];
-MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
+MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
 
 WriteString[sphenoSugra,"mZ2_mZ = Real(dmZ2 + mZ2,dp) \n"];
 WriteString[sphenoSugra,"If (mZ2_mZ.Lt.0._dp) Then\n"];
@@ -1229,7 +1241,7 @@ WriteString[sphenoSugra,"vSM=sqrt(vev2) \n"];
 
 WriteString[sphenoSugra,"mHiggs= sqrt(Lambda_SM)*vSM \n"];
 WriteString[sphenoSugra,"MuSM = 0.5_dp*Lambda_SM*vSM**2 \n"];
-MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
+MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
 
 WriteString[sphenoSugra,"rho=(1._dp+Real(dmZ2,dp)/mZ2)/(1._dp+Real(dmW2,dp)/mW2)  \n"];
 (* WriteString[sphenoSugra,"rho=(1._dp+Real(dmZ2,dp)/mZ2)/(1._dp+Real(dmW2,dp)/mW2) +"<>SPhenoForm[RhoParTree]<>"\n"]; *)
@@ -1368,7 +1380,7 @@ WriteString[sphenoSugra,"p2=0._dp! for off-diagonal elements\n"];
 
 WriteString[sphenoSugra,"\n\n! Full one-loop corrections\n"];
 
-MakeCall["OneLoop_d_u_e_SM",{},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","YuSM","YdSM","YeSM"},{"sigR_d","sigL_d","sigSR_d","sigSL_d","sigR_u","sigL_u","sigSR_u","sigSL_u","sigR_l","sigL_l","sigSR_l","sigSL_l","kont"},sphenoSugra];
+MakeCall["OneLoop_d_u_e_SM",{},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"sigR_d","sigL_d","sigSR_d","sigSL_d","sigR_u","sigL_u","sigSR_u","sigSL_u","sigR_l","sigL_l","sigSR_l","sigSL_l","kont"},sphenoSugra];
 
 WriteString[sphenoSugra,"\n\n"];
 
@@ -1643,7 +1655,6 @@ SetMatchingConditionsMZ[file_]:=MakeCall["SetMatchingConditions",Join[listVEVs,l
 
 
 
-(* ::Input::Initialization:: *)
 
 CheckYukawaScheme:=Block[{pos,i,j,temp,qn={},strongI},
 pos=Position[SuperPotential,UpYukawa];
@@ -1663,7 +1674,6 @@ TransposedYukawaScheme=False;
 ];
 
 
-(* ::Input::Initialization:: *)
 GenerateBoundaryEWnonSUSY:=Block[{i,j, posZ, posW, massW, massZ, couplingsW, couplingsZ},
 Print["  Write 'BoundaryEW'"];
 
@@ -2250,9 +2260,9 @@ WriteBoundaryConditionsEWSB[sphenoSugra];
 WriteString[sphenoSugra,"\n\n! Full one-loop corrections\n"];
 MakeCall["CouplingsForSMfermions" , Join[parametersEBT,namesEBT],{},{},sphenoSugra];
 
-MakeCall["Sigma1Loop"<>ToString[Electron]<>"MZ",Flatten[{massesE,couplingsE}],{"p2"},{"sigR_l","sigL_l","sigSR_l","sigSL_l"},sphenoSugra];
-MakeCall["Sigma1Loop"<>ToString[BottomQuark]<>"MZ",Flatten[{massesB,couplingsB}],{"p2"},{"sigR_d","sigL_d","sigSR_d","sigSL_d"},sphenoSugra];
-MakeCall["Sigma1Loop"<>ToString[TopQuark]<>"MZ",Flatten[{massesT,couplingsT}],{"p2"},{"sigR_u","sigL_u","sigSR_u","sigSL_u"},sphenoSugra];
+MakeCall["Sigma1Loop"<>ToString[Electron]<>"MZ",Flatten[{massesE,couplingsE}],{"p2"},{"sigR_l","sigL_l","sigSL_l","sigSR_l"},sphenoSugra];
+MakeCall["Sigma1Loop"<>ToString[BottomQuark]<>"MZ",Flatten[{massesB,couplingsB}],{"p2"},{"sigR_d","sigL_d","sigSL_d","sigSR_d"},sphenoSugra];
+MakeCall["Sigma1Loop"<>ToString[TopQuark]<>"MZ",Flatten[{massesT,couplingsT}],{"p2"},{"sigR_u","sigL_u","sigSL_u","sigSR_u"},sphenoSugra];
 
 WriteString[sphenoSugra,"\n\n"];
 
