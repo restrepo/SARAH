@@ -63,11 +63,6 @@ If[AddFIU1=!={},
 AddParametersToList[Transpose[BetaFIi][[1]]];
 ];
 
-(*
-If[NonSUSYModel===True,
-AddParametersToList[Transpose[Transpose[SA`ListGaugeMixedAll][[2]]][[2]]];
-];
-*)
 ListAllInputParameters=Join[LowScaleList,HighScaleList];
 
 lowScaleNames={};
@@ -142,11 +137,6 @@ realVar = Join[realVar,{ToExpression[SPhenoForm[listVEVs[[i]]]<>"Fix"]}];
 ];
 i++;];
 
- (*
-If[NonSUSYModel\[Equal]True,
-listAllParameters = LowScaleParameter;
-listAllParametersAndVEVs = Join[LowScaleParameter,listVEVs];
-]; *)
 listAllParametersAndVEVs = Join[LowScaleParameter,listVEVs];
 
 ListAllInputParameters=Join[ListAllInputParameters,Replace[DeleteCases[DeleteCases[DeleteCases[listVEVs,VEVSM],VEVSM1],VEVSM2] , a_Symbol:>{a,getDimParameter[a],a,TrueQ[a===conj[a]]} ,{1}]/. {1}->{}];
@@ -158,7 +148,7 @@ list=If[Head[listIn]===List,DeleteDuplicates[listIn],listIn];
 For[i=1,i<=Length[list],
 par=DeleteCases[DeleteCases[DeleteCases[DeleteCases[list[[i]],gen1,3],gen2,3],gen3,3],gen4,3] /. XX_[]->XX;
 dim = getDimParameters[par];
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 If[FreeQ[LowScaleParameter,par]==True,
 If[FreeQ[HighScaleParameter,par]==True,
 If[FreeQ[AdditionalParametersLagrange,par],
@@ -204,7 +194,7 @@ WriteString[sphenoInOut,"Use Control \n"];
 WriteString[sphenoInOut,"!Use Experiment \n"];
 WriteString[sphenoInOut,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoInOut,"Use LoopFunctions \n"];
-If[NonSUSYModel,
+If[OnlyLowEnergySPheno===True,
 WriteString[sphenoInOut,"Use StandardModel \n"];
 WriteString[sphenoInOut,"Use LoopCouplings_"<>ModelName<>" \n \n"];,
 WriteString[sphenoInOut,"Use Boundaries_"<>ModelName<>" \n \n"];
@@ -249,9 +239,7 @@ AppendSourceCode["ReadFLHA.f90",sphenoInOut];,
 WriteFLHAroutines;
 ];
 WriteReadInFunctions;
-If[NonSUSYModel=!=True,
 AppendSourceCode["SwitchToSCKM.f90",sphenoInOut];
-];
 
 AppendSourceCode["SLHA1converter.f90",sphenoInOut];
 
@@ -1253,7 +1241,7 @@ CheckSCKM:=Block[{},
 SLHA1Possible = False;
 WriteCKMBasis=False;
 If[SupersymmetricModel===True,
-If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || NonSUSYModel===True,
+If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || OnlyLowEnergySPheno===True,
 WriteCKMBasis=False;
 SLHA1Possible = False;,
 WriteCKMBasis=True;
@@ -1269,7 +1257,7 @@ WriteInOutSCKM:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2}
 SLHA1Possible = False;
 WriteCKMBasis=False;
 If[SupersymmetricModel===True,
-If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || NonSUSYModel===True,
+If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || OnlyLowEnergySPheno===True,
 WriteCKMBasis=False;
 SLHA1Possible = False;,
 WriteCKMBasis=True;
@@ -1390,13 +1378,13 @@ WriteString[sphenoInOut,"&+i_errors(10)+i_errors(12)+Sum(i_errors(14:19))).Gt.0)
 WriteString[sphenoInOut,"& Write(io_L,100)&\n"];
 WriteString[sphenoInOut,"& \"     3               # potential numerical problem, check file Messages.out\"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"Block MODSEL  # Input parameters\"\n"];
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoInOut,"If (HighScaleModel.Eq.\"LOW\") Then \n "];
 WriteString[sphenoInOut,"Write(io_L,110)  1,0, \" "<> StringScaleOut <>" input\"\n"];
 WriteString[sphenoInOut,"Else  \n "];
 ];
 WriteString[sphenoInOut,"Write(io_L,110)  1, 1, \" GUT scale input\"\n"];
-If[NonSUSYModel=!=True,WriteString[sphenoInOut,"End If  \n "]; ];
+If[OnlyLowEnergySPheno=!=True,WriteString[sphenoInOut,"End If  \n "]; ];
 WriteString[sphenoInOut,"Write(io_L,110) 2, BoundaryCondition, \" Boundary conditions \"\n"];
 WriteString[sphenoInOut,"If (i_cpv.Gt.0) Write(io_L,110) 5,i_cpv,\" switching on CP violation\"\n"];
 If[SLHA1Possible==True, WriteString[sphenoInOut, "If (.not.WriteSLHA1) Then \n"]; ];
@@ -1518,7 +1506,7 @@ WriteString[sphenoInOut,"Write(io_L,102) 5,mf_d(3),\"# m_b(m_b), MSbar\"\n"];
 WriteString[sphenoInOut,"Write(io_L,102) 6,mf_u(3),\"# m_t(pole)\"\n"];
 WriteString[sphenoInOut,"Write(io_L,102) 7,mf_l(3),\"# m_tau(pole)\"\n \n"];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoInOut,"If (SwitchToSCKM) Then\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"Block VCKMIN  # CKM matrix, Wolfenstein parameterization\"\n"];
 WriteString[sphenoInOut,"Write(io_L,102) 1,lam_wolf,\"# lambda\"\n"];

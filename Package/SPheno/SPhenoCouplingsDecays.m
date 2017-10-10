@@ -43,7 +43,7 @@ WriteCopyRight[sphenoCoup];
 WriteString[sphenoCoup,"Module CouplingsForDecays_"<>ModelName<>"\n \n"];
 WriteString[sphenoCoup, "Use Control \n"];
 WriteString[sphenoCoup, "Use Model_Data_"<>ModelName<>" \n"];
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoCoup, "Use RGEs_"<>ModelName<>" \n"];
 ];
 WriteString[sphenoCoup, "Use Couplings_"<>ModelName<>" \n"];
@@ -117,7 +117,7 @@ MakeVariableList[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndV
 MakeVariableList[Map[ToExpression[SPhenoForm[#]<>"input"]&,NewMassParameters],",Intent(in)",sphenoCoup];
 MakeVariableList[listAllParametersAndVEVs,"",sphenoCoup];
 MakeVariableList[couplings,",Intent(out)",sphenoCoup];
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoCoup,"Real(dp) ::  g1D("<>ToString[numberAllwithVEVs]<>") \n"];
 ];
 WriteString[sphenoCoup,"Integer :: i2, i3, gt1, gt2, gt3, kont \n"];
@@ -148,7 +148,7 @@ i++;];
 
 WriteString[sphenoCoup,"Qin=sqrt(getRenormalizationScale()) \n"];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteGUTnormalization[sphenoCoup];
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1D"},sphenoCoup];
 

@@ -46,7 +46,7 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoLowEnergy`;
 <<SPhenoHiggsBoundsOutput`;
 
-
+ 
  <<SPhenoHiggsCS`; 
 <<SPhenoTadpoles`;
 
@@ -94,9 +94,9 @@ If[SA`Version === "SARAHVERSION",FlagLoopContributions=True;];
 If[EXTPAR==={},
 Clear[EXTPAR];
 ];
-If[OnlyLowEnergySPheno===True,
-Include2LoopCorrections=False;,
-Include2LoopCorrections=True;
+If[SupersymmetricModel===True,
+Include2LoopCorrections=True;,
+Include2LoopCorrections=False;
 ];
 
 If[OnlyLowEnergySPheno=!=True,
@@ -123,8 +123,6 @@ ParametersToSolveTadpolesLowScaleInput=ParametersToSolveTadpolesLowScaleInputHM 
 ParametersToSolveTadpoles=ParametersToSolveTadpolesHM ;
 ];
 
-If[OnlyLowEnergySPheno ==True, NonSUSYModel=True;];
-(* If[NonSUSYModel,AddLowEnergyConstraint=False;]; *)
 
 NameForModel = ModelName;
 
@@ -164,12 +162,7 @@ If[Head[HeavyFields]===List,
 getUnmixedMassesDummy[Eigenstates]; ,
  ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->False,IncludeRGEs->True, VerticesForLoops->False,IncludeVertices->False]; 
 ];,
-(*
-If[NonSUSYModel\[Equal]True,
-ModelOutput[Eigenstates, ReadLists\[Rule]ReadL, IncludeLoopCorrections \[Rule]True,IncludeRGEs\[Rule]False,VerticesForLoops\[Rule]True];,
-ModelOutput[Eigenstates, ReadLists\[Rule]ReadL, IncludeLoopCorrections \[Rule]True,IncludeRGEs\[Rule]True, VerticesForLoops\[Rule]True];
-];
-*)
+
 
 If[OnlyLowEnergySPheno===True,
 MakeDummyListRGEs;
@@ -279,8 +272,9 @@ SubSolutionsTadpolesLoopLowScale = SubSolutionsTadpolesTree;
 CheckSMrges;
 
 If[IntermediateScale =!=True, InitSMParameters[Eigenstates];];
-If[NonSUSYModel=!=True,InitInfoForSPheno[Eigenstates];];
-
+If[OnlyLowEnergySPheno=!=True,
+InitInfoForSPheno[Eigenstates];
+];
 
 
 If[Head[RealParameters]===List,
@@ -344,10 +338,8 @@ AdditionalFortranForm;
 CheckDefinitionParameters;
 
 InitInputOutput;
-
-(* If[NonSUSYModel=!=True, *)
 GenerateSPhenoRGEs; 
-(* ]; *)
+
 
 GenerateSPhenoTreeMasses[Eigenstates];
 If[IntermediateScale=!= True,
@@ -373,7 +365,7 @@ GenerateSPhenoHiggsCS[Eigenstates];
 
 MakePDGList[Eigenstates];
 MakeModelData;
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 GenerateBoundaries;
 ];
 
@@ -733,7 +725,7 @@ i++;];
 
 (* checking for deviations of Z and W mass from SM *)
 
-If[IntermediateScale=!=True && NonSUSYModel=!=True,
+If[IntermediateScale=!=True  &&OnlyLowEnergySPheno=!=True,
 If[AddOHDM=!=True,
 MZ2sm=(VEVSM1^2+VEVSM2^2)/4*(hyperchargeCoupling Sin[Weinberg]+leftCoupling Cos[Weinberg])^2;
 MW2sm=(VEVSM1^2+VEVSM2^2)/4*(leftCoupling)^2;,
@@ -1573,12 +1565,14 @@ Close[sphenoHiggs2Loopasat];
 
 
 CheckDefinitionParameters:=Block[{i,j,k,temp, down, up, pRunningDown},
-If[NonSUSYModel===True,
+
+If[OnlyLowEnergySPheno===True,
 realVar = Join[realVar,{RealParameters}];
 LowScaleParameter={};
 listAllParameters = {};
 Return[];
 ];
+
 
 If[IntermediateScale =!= True && Head[RegimeNr] =!= Integer,
 If[Head[ConditionGUTscale]=!=Equal,

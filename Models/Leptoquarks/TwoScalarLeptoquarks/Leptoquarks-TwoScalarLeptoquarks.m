@@ -6,7 +6,7 @@ Model`Authors = "F.Staub";
 Model`Date = "2016-01-26";
 
 
-
+SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
 
 (*-------------------------------------------*)
 (*   Particle Content*)

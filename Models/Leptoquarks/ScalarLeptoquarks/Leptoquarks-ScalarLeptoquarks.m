@@ -5,6 +5,8 @@ Model`NameLaTeX ="Scalar Leptoquarks";
 Model`Authors = "T.Opferkuch";
 Model`Date = "2016-12-01";
 
+SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
+
 (* Implementing the model based on 1511.01900 and 1512.06828 *)
 
 

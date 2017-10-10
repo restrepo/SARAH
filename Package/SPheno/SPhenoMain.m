@@ -50,7 +50,7 @@ WriteString[spheno,"Use FlavorKit_Observables_"<>ModelName<>"\n"];
 WriteString[spheno,"Use Mathematics\n"];
 WriteString[spheno,"Use Model_Data_"<>ModelName<>"\n"];
 WriteString[spheno,"Use Tadpoles_"<>ModelName<>" \n "];
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"Use RGEs_"<>ModelName<>"\n"];
 WriteString[spheno,"!Use StandardModel\n"];
 WriteString[spheno,"Use Boundaries_"<>ModelName<>"\n "];
@@ -76,7 +76,7 @@ WriteString[spheno, "Real(dp) :: mGut = -1._dp, ratioWoM = 0._dp\n"];
 WriteString[spheno, "Integer :: kont \n \n"];
 WriteString[spheno, "Integer,Parameter :: p_max=100\n"];
 WriteString[spheno, "Real(dp) :: Ecms(p_max),Pm(p_max),Pp(p_max), dt, tz, Qin, gSM(11) \n"];
-If[NonSUSYModel===True,
+If[OnlyLowEnergySPheno===True,
 WriteString[spheno, "Real(dp) :: vev, sinw2, f_GMSB\n"];,
 WriteString[spheno, "Real(dp) :: vev, sinw2\n"];
 ];
@@ -171,7 +171,7 @@ temp2=Join[temp2,{temp1[[i]]/. subLowEnergyParameters}];
 ];
 i++;];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then ! No longer used by default \n "];
 ];
 WriteString[spheno,"! Setting values \n "];
@@ -199,7 +199,7 @@ _,WriteString[spheno,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoFor
 ];
 i++;];
 
-If[NonSUSYModel=!=True,
+If[SupersymmetricModel===False,
 If[AddOHDM=!=True,
 WriteString[spheno,"tanbetaMZ = tanbeta \n"];
 ];
@@ -331,7 +331,7 @@ WriteString[spheno,"  kont=0 \n"];
 WriteString[spheno," End If \n"];
 WriteString[spheno,"End If \n\n"];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"Else \n "];
 MakeCall["CalculateSpectrum",Join[NewMassParameters,Join[listVEVs,listAllParameters ]],{"n_run","delta_mass","WriteOut","kont"},{"mGUT"},spheno];
 WriteString[spheno,"End If \n "];
@@ -352,7 +352,7 @@ WriteSetDependentParameters[spheno];
 
 WriteString[spheno,"If ((L_BR).And.(kont.Eq.0)) Then \n "];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"sinW2=1._dp-mW2/mZ2 \n"];
 WriteString[spheno,"vev=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha_mZ))\n"];
 If[AddOHDM=!=True,
@@ -365,7 +365,7 @@ WriteString[spheno,SPhenoForm[VEVSM]<>"MZ = vev\n"];
 ];
 
 If[SPhenoOnlyForHM=!=True,
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 (* MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[Map[ToExpression[ToString[#]<>"MZ"]&,listVEVs],listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];, *)
 MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs/. {VEVSM1->vdMZ,VEVSM2->vuMZ},listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];,
 MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs,listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];
@@ -437,7 +437,7 @@ If[WriteCKMBasis===True,
 AppendSourceCode["SwitchFromSCKM.f90",spheno];
 ];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 GenerateCalculateSpectrum;
 ];
 GenerateReadingData;

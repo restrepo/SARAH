@@ -181,7 +181,6 @@ FullInformation = Join[FullInformation,{{ProcessList[[i,1]],ProcessList[[i,2]],{
 
 i++;];
 
-(* If[(particle===HiggsBoson || particle===PseudoScalar) && NonSUSYModel=!=True,  *)
 If[(particle===HiggsBoson || particle===PseudoScalar) && AddSMrunning=!=False && coupAlphaStrong=!={}, 
 NeededMasses = Intersection[Join[NeededMasses,SPhenoMass/@Transpose[coupAlphaStrong][[1]]]];
 ];
@@ -305,7 +304,6 @@ WriteString[sphenoDecay,"m_in = "<> SPhenoMass[particle,i1]<>" \n"];
 MakeCall["CouplingsFor_"<>SPhenoForm[particle]<>"_decays_"<>"2B",Flatten[{NewMassParameters,listAllParametersAndVEVs,couplings}],{"m_in","i1"},{"deltaM"},sphenoDecay];
 
 
-(*  If[NonSUSYModel=!=True,  *)
 If[AddSMrunning=!=False, 
 If[particle === HiggsBoson || particle === PseudoScalar,
 WriteString[sphenoDecay,"!alpha3 = AlphaSDR(m_in,"];
@@ -373,8 +371,7 @@ FFS,
 	WriteString[sphenoDecay, "coupL = "<>ToString[processes[[i,3,1,1,1]]]<>ind <> "\n"];
 	WriteString[sphenoDecay, "coupR = "<>ToString[processes[[i,3,1,1,2]]]<>ind <> "\n"];
 	WriteString[sphenoDecay,"Call ScalarToTwoFermions(m_in,m1out,m2out,coupL,coupR,gam) \n"];
-	(* If[NonSUSYModel=!=True, *)
-	If[AddSMrunning=!=False,
+		If[AddSMrunning=!=False,
 	If[(particle === HiggsBoson || particle === PseudoScalar) &&  (getBlank[p1]===TopQuark || getBlank[p1]===BottomQuark),
 	WriteString[sphenoDecay,"gam = gam * FFqcd(m1out,m_in,alpha3) \n"];
 	];

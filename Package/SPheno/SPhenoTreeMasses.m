@@ -554,7 +554,7 @@ MakeCall["SortGoldstones",NewMassParameters,{},{"kont"},sphenoTree];
 
 If[IntermediateScale =!= True,
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoTree,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then \n "];
 ];
 WriteString[sphenoTree,"If (SignOfMassChanged) Then  \n"];
@@ -575,7 +575,7 @@ WriteString[sphenoTree,"  SignOfMuChanged= .False. \n"];
 WriteString[sphenoTree,"  kont=0 \n"];
 WriteString[sphenoTree," End If \n"];
 WriteString[sphenoTree,"End If \n"];
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoTree,"End if \n "];
 ];
 

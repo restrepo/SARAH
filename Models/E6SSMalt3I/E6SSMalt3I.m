@@ -5,6 +5,8 @@ Model`NameLaTeX ="E6SSMalt";
 Model`Authors = "G.Hellwig, P.Diessner, P.Athron, A.Voigt";
 Model`Date = "2014-03-10";
 
+SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
+
 (*-------------------------------------------*)
 (*   Particle Content*)
 (*-------------------------------------------*)

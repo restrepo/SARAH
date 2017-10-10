@@ -363,9 +363,7 @@ WriteString[sphenoMake,"\t ${F90} -o SPheno"<>NameForModel<>" ${LFlagsB} SPheno"
 WriteString[sphenoMake,"\t mv SPheno"<>NameForModel<>" ../bin\n"];
 WriteString[sphenoMake,"\t rm SPheno"<>NameForModel<>".o  \n"];
 WriteString[sphenoMake,"${name}:  ${name}(Model_Data_"<>ModelName<>".o)  \\\n"]; 
-(* If[NonSUSYModel=!=True, *)
 WriteString[sphenoMake," ${name}(RGEs_"<>ModelName<>".o)   \\\n"];  
-(* ]; *)
 WriteString[sphenoMake," ${name}(Couplings_"<>ModelName<>".o) ${name}(TreeLevelMasses_"<>ModelName<>".o) ${name}(TadpoleEquations_"<>ModelName<>".o) \\\n"];  
 If[SPhenoOnlyForHM=!=True,
 WriteString[sphenoMake," ${name}(LoopCouplings_"<>ModelName<>".o) ${name}(CouplingsForDecays_"<>ModelName<>".o) \\\n"];,
@@ -414,7 +412,7 @@ If[SkipFlavorKit=!=True,WriteString[sphenoMake,"${name}(FlavorKit_LFV_"<>ModelNa
 ];
 ];
 
-If[NonSUSYModel=!=True,
+If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoMake," ${name}(Boundaries_"<>ModelName<>".o)  ${name}(InputOutput_"<>ModelName<>".o) \n"];,
 WriteString[sphenoMake,"${name}(InputOutput_"<>ModelName<>".o) \n"];
 ];

@@ -299,13 +299,12 @@ WriteString[varsFile, "|"];
 WriteString[varsFile, InsString[ToString[N[Pi,15]],lVV]];
 WriteString[varsFile, "|  \n"];
 
-If[RunningCoup==True,
+
 WriteString[varsFile, InsString["Q",lVN]<>"|"];
 WriteString[varsFile, InsString["100",lVV]<> "|  \n"];
-
+If[RunningCoup==True,
 WriteString[varsFile, InsString["alfSMZ",lVN]<>"|"];
 WriteString[varsFile, InsString["0.1172",lVV]<> "|  \n"];
-
 ];
 
 

@@ -514,26 +514,6 @@ For[i=1,i<=Length[MatchingForVEVs],
 WriteString[sphenoLoop,SPhenoForm[MatchingForVEVs[[i,1]]]<>"="<>SPhenoForm[MatchingForVEVs[[i,2]]/. subRunningAngles]<>" \n"];
 i++;];
 
-(* If[NonSUSYModel=!=True, *)
-(*
-If[(Select[{"Hypercharge-Coupling","Left-Coupling"},FreeQ[ParameterDefinitions,#]&]==={}) && (Select[{"Down-VEV","Up-VEV"},FreeQ[ParameterDefinitions,#]&]==={}|| FreeQ[ParameterDefinitions,"EW-VEV"]\[Equal]False),
-MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoLoop];
-If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLoop,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge] <>" \n"];];
-WriteString[sphenoLoop,"vev2=4._dp*Real(mZ2+dmz2,dp)/("<>SPhenoForm[hyperchargeCoupling] <>"**2+"<>SPhenoForm[leftCoupling] <>"**2) -"<>SPhenoForm[SA`AdditionalDoubletVEVs]<>" \n"];
-If[AddOHDM=!=True,
-WriteString[sphenoLoop,SPhenoForm[VEVSM1]<> "=Sqrt(vev2/(1._dp+tanbQ**2))\n"];
-WriteString[sphenoLoop,SPhenoForm[VEVSM2]<> "=tanbQ*"<>SPhenoForm[VEVSM1]<> "\n"];,
-WriteString[sphenoLoop,SPhenoForm[VEVSM]<> "= sqrt(vev2)\n"];
-];
-];
-
-If[DEFINITION[NonStandardVEVs1L]===True,
-MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoLoop];
-For[i=1,i\[LessEqual]Length[DEFINITION[NonStandardVEVs1Lrelations]],
-WriteString[sphenoLoop,DEFINITION[NonStandardVEVs1Lrelations][[i]]<>"\n"];
-i++;];
-];
-*)
 
 WriteTadpoleSolution[sphenoLoop];
 
@@ -2509,21 +2489,23 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 
 WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionPropNonSymmSingle[Name,particle,masses,couplings,contributions,""];
 WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sig"},sphenoLoop];
+MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigS"},sphenoLoop];
 
 dimString = ToString[getGenSPheno[particle]];
 
 WriteString[sphenoLoop, "Implicit None \n"];
 MakeVariableList[masses,", Intent(in)",sphenoLoop];
 MakeVariableList[couplings,", Intent(in)",sphenoLoop];
-WriteString[sphenoLoop, "Complex(dp), Intent(out) :: Sig \n"];
+WriteString[sphenoLoop, "Complex(dp), Intent(out) :: SigL, SigR, SigS \n"];
 WriteString[sphenoLoop, "Complex(dp) :: coupL1, coupR1, coupL2,coupR2, coup1,coup2,temp, sumL, sumR, sumS \n"];
 WriteString[sphenoLoop, "Real(dp) :: B0m2, F0m2, G0m2,B1m2, m1, m2 \n"];
 WriteString[sphenoLoop, "Real(dp), Intent(in) :: p2 \n"];
 WriteString[sphenoLoop, "Complex(dp) :: A0m2 \n"];
 WriteString[sphenoLoop, "Integer :: i1,i2,i3,i4, gO1, gO2, ierr \n \n \n"];
 
-WriteString[sphenoLoop,"Sig = Cmplx(0._dp,0._dp,dp) \n"];
+WriteString[sphenoLoop,"SigL = Cmplx(0._dp,0._dp,dp) \n"];
+WriteString[sphenoLoop,"SigR = Cmplx(0._dp,0._dp,dp) \n"];
+WriteString[sphenoLoop,"SigS = Cmplx(0._dp,0._dp,dp) \n"];
 
 For[i=1,i<=Length[contributions],
 WriteString[sphenoLoop,"!------------------------ \n"];
@@ -2590,7 +2572,10 @@ WriteString[sphenoLoop,"sumL = coupR1*coupR2*B1m2 \n"];
 
 factor =SPhenoForm[1. contributions[[i,6]]*contributions[[i,5]]];
 
-WriteString[sphenoLoop,"Sig = Sig +"<>factor<>"*(sumS + "<>ToString[SPhenoMass[particle]]<>"*(sumL+sumR))\n"];
+(* WriteString[sphenoLoop,"Sig = Sig +"<>factor<>"*(sumS + "<>ToString[SPhenoMass[particle]]<>"*(sumL+sumR))\n"]; *)
+WriteString[sphenoLoop,"SigL = SigL +"<>factor<>"*sumL \n"];
+WriteString[sphenoLoop,"SigR = SigR +"<>factor<>"*sumR \n"];
+WriteString[sphenoLoop,"SigS = SigS +"<>factor<>"*sumS \n"];
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"End If \n"]];
 If[dim1 > 1, WriteString[sphenoLoop,"      End Do \n "];];
 If[dim2 > 1, WriteString[sphenoLoop,"    End Do \n "];];
@@ -2603,7 +2588,9 @@ i++;];
 
 WriteString[sphenoLoop,"\n\n"];
 
-WriteString[sphenoLoop,"Sig = oo16pi2*Sig \n \n"];
+WriteString[sphenoLoop,"SigS = oo16pi2*SigS \n \n"];
+WriteString[sphenoLoop,"SigR = oo16pi2*SigR \n \n"];
+WriteString[sphenoLoop,"SigL = oo16pi2*SigL \n \n"];
 
 
 
