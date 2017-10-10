@@ -10,12 +10,12 @@ Real(dp) ::  GF
 
 c7NP = (CC7(3,2) - CC7SM(3,2))
 c7p = CC7p(3,2)
-c9NP = (OddllVLL(3,2,1,1)+OddllVLR(3,2,1,1) - &
+c9NP = 0.5_dp*(OddllVLL(3,2,1,1)+OddllVLR(3,2,1,1) - &
             & (OddllVLLSM(3,2,1,1)+OddllVLRSM(3,2,1,1)))
-c9p =  (OddllVRR(3,2,1,1)+OddllVRL(3,2,1,1))
-c10NP = (OddllVLL(3,2,1,1)-OddllVLR(3,2,1,1) - &
+c9p =  0.5_dp*(OddllVRR(3,2,1,1)+OddllVRL(3,2,1,1))
+c10NP = -0.5_dp*(OddllVLL(3,2,1,1)-OddllVLR(3,2,1,1) - &
             &  (OddllVLLSM(3,2,1,1)-OddllVLRSM(3,2,1,1)))
-c10p = (OddllVRR(3,2,1,1)-OddllVRL(3,2,1,1))
+c10p = 0.5_dp*(OddllVRR(3,2,1,1)-OddllVRL(3,2,1,1))
 
 
 ! running GF
@@ -23,7 +23,7 @@ GF = (Alpha_160*4._dp*Pi/sinW2_160)/mw**2*sqrt2/8._dp
 
 ! normalization of our Wilson coefficients
 ! relative to the ones used in arXiv:1308.1501
-norm = - oo16pi2*4._dp*GF/sqrt2*CKM_160(3,3)*Conjg(CKM_160(3,2))
+norm = - Alpha_160/Pi*GF/sqrt2*CKM_160(3,3)*Conjg(CKM_160(3,2))
 
 ! Branching ratio in the high-q^2 region
 ! q^2 in [14.18,22] GeV^2

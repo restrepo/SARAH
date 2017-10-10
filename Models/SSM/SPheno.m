@@ -6,7 +6,7 @@ MINPAR={{1,Lambdainput},
         {3,MSinput},
         {4,K1input},
         {5,K2input},
-        {6,KappaInput},
+        {6,KappaInput}
         };
 
 
