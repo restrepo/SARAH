@@ -21,6 +21,11 @@
 
 MakeDecayLists3Body[particle_,file_]:=Block[{i,temp, channels,addedDecays},
 
+$sarahSPheno3BodyDecays=ToFileName[{$sarahCurrentSPhenoDir,"3-Body-Decays"}];
+If[FileExistsQ[$sarahSPheno3BodyDecays]=!=True,
+CreateDirectory[$sarahSPheno3BodyDecays];
+];
+
 (* Print["Decay of ", particle]; *)
 
 Switch[getType[particle],
@@ -114,7 +119,7 @@ NeededMassesComplete=Intersection[Flatten[NeededMasses]];
 NeededWidthsComplete=Intersection[Flatten[NeededWidths]];
 NeededCouplingsComplete=Intersection[Flatten[NeededCouplings]];
 
-SPhenoThreeBody=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,file]];
+SPhenoThreeBody=OpenWrite[ToFileName[$sarahSPheno3BodyDecays,file]];
 
 WriteCopyRight[SPhenoThreeBody];
 

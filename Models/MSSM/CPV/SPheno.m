@@ -37,8 +37,8 @@ BoundaryHighScale={
 
 BoundaryLowScaleInput={
  {eta,etaInput},
- {vd,Sqrt[2 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
- {vu,Sqrt[2 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+ {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
 
 
@@ -50,5 +50,5 @@ ListDecayParticles3B = Automatic;
 (* Example for mSugra input values *)
 DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 10, SignumMu -> 1, Azero->-2000 };
 
-
+DEFINITION[MatchingConditions]=Default[THDMII];
 

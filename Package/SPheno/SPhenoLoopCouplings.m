@@ -35,7 +35,7 @@ InitSPhenoLoopCouplings[Eigenstates];
 
 WriteLoopCouplingsHeader;
 
-If[SupersymmetricModel===True,
+If[OnlyLowEnergySPheno=!=True,
 WriteAlphaMS;
 WriteAlphaEWSB;
 WriteAlphaStrong;
@@ -230,8 +230,9 @@ WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 
 WriteString[sphenoLoopCoup,"If (MZ_input) then \n"];
 WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp-Alpha/Alpha_MZ_MS! MSbar value^=mW+light fermions \n"];
-WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+alpha/(6._dp*Pi)! conversion to DRbar \n"];
-(* WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-16._dp*Log(mf_u(3)/Q)/9._dp * Alpha / (2._dp * pi) \n"]; *)
+
+WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+alpha/(6._dp*Pi)*(1._dp-rMS)! conversion to DRbar if necessary \n"];
+
 For[i=1,i<=Length[coupAlphaEWSB],
 If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,
 WriteString[sphenoLoopCoup, "Do i1="<> ToString[getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
@@ -244,10 +245,8 @@ WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-"<>SPhenoForm[coupAlphaEWSB[[i
 WriteString[sphenoLoopCoup, "End if \n"];
 ];
 i++;];
-
-
 WriteString[sphenoLoopCoup,"Else \n"];
-WriteString[sphenoLoopCoup,"DeltaAlpha=7._dp*Log(Q/mW) !+16._dp*Log(mf_u(3)/Q)/9._dp \n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha=7._dp*Log(Q/mW)\n"];
 For[i=1,i<=Length[coupAlphaEWSB],
 If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,
 WriteString[sphenoLoopCoup, "Do i1="<> ToString[getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
@@ -311,7 +310,12 @@ WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-"<>SPhenoForm[coupAlphaStrong[
 i++;];
 
 WriteString[sphenoLoopCoup,"DeltaAlpha=AlphaS_mZ*DeltaAlpha/(2._dp*Pi) \n"];
-WriteString[sphenoLoopCoup,"   AlphaSDR=AlphaS_mZ/(1._dp-DeltaAlpha)\n \n"];
+WriteString[sphenoLoopCoup,"AlphaSDR=AlphaS_mZ/(1._dp-DeltaAlpha)\n \n"];
+
+WriteString[sphenoLoopCoup,"! Conversion to MS bar if necessary \n"];
+WriteString[sphenoLoopCoup,"If (rMS.gt.0.5_dp) Then \n"];
+WriteString[sphenoLoopCoup,"AlphaSDR = AlphaSDR*(1._dp - oo4pi*AlphaSDR-5._dp/4._dp*(AlphaSDR/Pi)**2) \n"];
+WriteString[sphenoLoopCoup,"End if \n"];
 
 WriteString[sphenoLoopCoup,"End Function AlphaSDR \n"];
 

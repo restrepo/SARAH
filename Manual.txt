@@ -1,0 +1,2 @@
+The SARAH manual has been replaced by a more up-to-date wiki page:
+http://stauby.de/sarah_wiki/

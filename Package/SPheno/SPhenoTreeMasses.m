@@ -29,7 +29,7 @@ Print[StyleForm["Write Tree Level-Masses","Section",FontSize->12]];
  
 (* $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}]; *)
 (* CreateDirectory[$sarahCurrentSPhenoDir]; *)
-sphenoTree=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SusyMasses_"<>ModelName<>".f90"]];
+sphenoTree=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"TreeLevelMasses_"<>ModelName<>".f90"]];
 
 listRGEparameters = listAllParameters;
 
@@ -42,11 +42,13 @@ WriteCalcTreeMassesDummy;,
 InitSPhenoTreeMasses[Eigenstates];
 
 If[IntermediateScale =!=True,
-WriteSusyMassesHeader;
+WriteTreeMassesHeader;
 ];
 
 MassesForEffpot=False;
 WriteCalcAllTreeMasses;
+
+WriteRunningFermionMasses;
 
 If[IntermediateScale =!= True,
 MassesForEffpot=True;
@@ -66,7 +68,7 @@ If[IntermediateScale =!= True && Head[RegimeNr]===Integer,
 currentRegime = "Regime-"<>ToString[RegimeNr];
 For[i=1,i<RegimeNr,
 readRegime = "Regime-"<>ToString[i];
-AppendSourceCode[ToFileName[StringReplace[$sarahCurrentSPhenoDir,{currentRegime->readRegime,ToString[EigenstateName]->ToString[ListOfRegimeEigenstates[[i]]]}],"SusyMasses_"<>ModelName<>".f90"],sphenoTree];
+AppendSourceCode[ToFileName[StringReplace[$sarahCurrentSPhenoDir,{currentRegime->readRegime,ToString[EigenstateName]->ToString[ListOfRegimeEigenstates[[i]]]}],"TreeMasses_"<>ModelName<>".f90"],sphenoTree];
 i++;];
 ];
 
@@ -74,7 +76,7 @@ GenerateSortGoldstones[Eigenstates];
 
 If[IntermediateScale =!= True,
 WriteString[sphenoTree,"\n"];
-WriteString[sphenoTree, "End Module SusyMasses_"<>ModelName<>" \n \n"];
+WriteString[sphenoTree, "End Module TreeLevelMasses_"<>ModelName<>" \n \n"];
 ];
 ];
 
@@ -265,13 +267,13 @@ ExistingParameters = Complement[ExistingParameters,NewMassParameters];
 
 
 
-WriteSusyMassesHeader :=Block[{},
+WriteTreeMassesHeader :=Block[{},
 
 Print["  Writing header"];
 
 WriteCopyRight[sphenoTree];
 
-WriteString[sphenoTree, "Module SusyMasses_"<>ModelName<>" \n \n"];
+WriteString[sphenoTree, "Module TreeLevelMasses_"<>ModelName<>" \n \n"];
 WriteString[sphenoTree, "Use Control \n"];
 WriteString[sphenoTree, "Use Mathematics \n"];
 WriteString[sphenoTree, "Use MathematicsQP \n"];
@@ -287,6 +289,44 @@ WriteString[sphenoTree, "Contains \n \n"];
 
 
 
+];
+
+WriteRunningFermionMasses:=Block[{i,pos,fields,names,j},
+SA`SMfermionmasses ={};
+SA`SMfermionmassesIN ={};
+fields={Electron,DownQuark,UpQuark};
+names={"Leptons","Down-Quarks","Up-Quarks"};
+For[i=1,i<=3,
+If[FreeQ[ParticleDefinitions[EWSB],names[[i]]]===False,
+SA`SMfermionmasses =Join[SA`SMfermionmasses,{SPhenoMass[fields[[i]]],SPhenoMassSq[fields[[i]]]}];
+pos=Position[SPhenoParameters,SPhenoMass[fields[[i]]]][[1,1]];
+SPhenoParameters=Join[SPhenoParameters,{SPhenoParameters[[pos]]/.SPhenoMass[fields[[i]]]->ToExpression[ToString[SPhenoMass[fields[[i]]]]<>"IN"]}];
+SPhenoParameters=Join[SPhenoParameters,{SPhenoParameters[[pos]]/.SPhenoMass[fields[[i]]]->ToExpression[ToString[SPhenoMassSq[fields[[i]]]]<>"IN"]}];
+SA`SMfermionmassesIN =Join[SA`SMfermionmassesIN,{ToExpression[ToString[SPhenoMass[fields[[i]]]]<>"IN"],ToExpression[ToString[SPhenoMassSq[fields[[i]]]]<>"IN"]}];
+realVar=Join[realVar,{ToExpression[ToString[SPhenoMass[fields[[i]]]]<>"IN"],ToExpression[ToString[SPhenoMassSq[fields[[i]]]]<>"IN"]}];
+];
+i++;];
+
+
+MakeSubroutineTitle["RunningFermionMasses",Join[Join[listVEVs,listAllParameters]],SPhenoForm/@SA`SMfermionmassesIN,{"kont"},sphenoTree];
+WriteString[sphenoTree, "Implicit None \n \n"];
+WriteString[sphenoTree, "Integer, Intent(inout) :: kont \n"];
+MakeVariableList[listAllParameters,",Intent(in)",sphenoTree];
+MakeVariableList[listVEVs,",Intent(in)",sphenoTree];
+MakeVariableList[SA`SMfermionmassesIN ,",Intent(inout)",sphenoTree];
+MakeVariableList[SA`SMfermionmasses ,"",sphenoTree];
+
+For[j=1,j<=3,
+If[FreeQ[ParticleDefinitions[EWSB],names[[j]]]===False,
+i=Position[ListTree,SPhenoMass[fields[[j]]]][[1,1]];
+MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2,1]],ListTree[[i,2,2]],ListTree[[i,6]]}],{},{"kont"},sphenoTree]; 
+WriteString[sphenoTree,SPhenoForm[ListTree[[i,7]]] <>" = "<>SPhenoForm[ListTree[[i,6]]]  <>"**2 \n"];
+WriteString[sphenoTree,ToString[SPhenoMass[fields[[j]]]]<>"IN(1:2) = "<>ToString[SPhenoMass[fields[[j]]]]<>"(1:2) \n"];
+WriteString[sphenoTree,ToString[SPhenoMassSq[fields[[j]]]]<>"IN(1:2) = "<>ToString[SPhenoMassSq[fields[[j]]]]<>"(1:2) \n"];
+];
+j++;];
+
+WriteString[sphenoTree,"End Subroutine RunningFermionMasses \n\n"];
 ];
 
 
@@ -742,7 +782,7 @@ WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUni
 WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,"<>Name<>"2(i1) \n"];
 WriteString[sphenoTree, "    End If \n"];
 ];
-WriteString[sphenoTree, "  "<>Name <>" = 1._dp \n"];
+WriteString[sphenoTree, "  "<>Name <>"(i1) = 1._dp \n"];
 If[MassesForEffpot===False,
 WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
@@ -929,7 +969,7 @@ WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUni
 WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,"<>Name<>"2(i1) \n"];
 WriteString[sphenoTree, "    End If \n"];
 ];
-WriteString[sphenoTree, "  "<>Name <>" = 1._dp \n"];
+WriteString[sphenoTree, "  "<>Name <>"(i1) = 1._dp \n"];
 If[MassesForEffpot===False,
 WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];

@@ -93,6 +93,8 @@ BoundaryHighScale={
 {MassG, M3input}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 
 
 ListDecayParticles = Automatic;

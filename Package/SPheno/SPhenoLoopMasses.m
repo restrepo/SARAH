@@ -57,13 +57,16 @@ Switch[ListTree[[i,4]],
 ScalarMass,
 AddTadpoles=False;
 WriteLoopMassScalar[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],ListTree[[i,5]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]], ListTree[[i,3]], AddTadpoles,True];
-WriteScalarProp[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]]];,
+WriteScalarProp[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]]];
+If[SA`AddOneLoopDecay ===True,WriteScalarProp[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]],"Der"];];,
 FermionMassSymm,
 WriteLoopMassFermionSymm[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],ListTree[[i,5]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]], ListTree[[i,3]],ToString[ListTree[[i,1]]],ToString[ListTree[[i,2]]],True];
-WriteFermionProp[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]]];,
+WriteFermionProp[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]]];
+If[SA`AddOneLoopDecay ===True,WriteFermionProp[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]],"Der"];];,
 FermionMassNonSymm,
 WriteLoopMassFermionNonSymm[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],ListTree[[i,5]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]], ListTree[[i,3]],ToString[ListTree[[i,1]]],ToString[ListTree[[i,2,1]]],ToString[ListTree[[i,2,2]]],True];
 WriteFermionPropNonSymm[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]],False];
+If[SA`AddOneLoopDecay ===True,WriteFermionPropNonSymm[ToString[ListMassES[[i,1]]],ListMassES[[i,1]],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]],loopContribution[[k]],False,"Der"];];
 ];
 k++;];
 
@@ -85,44 +88,96 @@ If[Length[Dimensions[listNotMixedMasses[[i,5]]]]===2,
 Switch[listNotMixedMasses[[i,6]],
 ScalarMass,
 WriteLoopMassScalar[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,False,False];
-WriteScalarProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];,
+WriteScalarProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteScalarProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
 
 FermionMassSymm,
 WriteLoopMassFermionSymm[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,nameMass,mixing1,False];
-WriteFermionProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];,
+WriteFermionProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteFermionProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
 
 FermionMassNonSymm,
 WriteLoopMassFermionNonSymm[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,nameMass,mixing1,mixing2,False];
  WriteFermionPropNonSymm[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],False];
+If[SA`AddOneLoopDecay ===True, WriteFermionPropNonSymm[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],False,"Der"];];
 ];,
 
 Switch[listNotMixedMasses[[i,6]],
 ScalarMass,
 WriteLoopMassSingle[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,False];
-WriteScalarPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];,
+WriteScalarPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteScalarPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
 
 FermionMassSymm,
 WriteLoopMassSingle[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,False];
-WriteFermionPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];,
+WriteFermionPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteFermionPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
 
 FermionMassNonSymm,
 WriteLoopMassSingle[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,False];
- WriteFermionPropNonSymmSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];,
+ WriteFermionPropNonSymmSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True, WriteFermionPropNonSymmSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
 
 VectorMass,
 WriteLoopMassSingle[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,False];
 WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]]; 
+If[SA`AddOneLoopDecay ===True,WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];]; 
+];
 ];
 
+(*,
 
+
+(* massless states *)
+
+nameCurrent=ToString[listNotMixedMasses[[i,1]]];
+particleCurrent=listNotMixedMasses[[i,1]];
+parametersCurrent=listNotMixedMasses[[i,3]];
+treeMassCurrent=listNotMixedMasses[[i,5]]/. subSolution;
+mixing1="None1";
+mixing2="None2";
+
+If[Length[Dimensions[listNotMixedMasses[[i,5]]]]===2,
+Switch[listNotMixedMasses[[i,6]],
+ScalarMass,
+WriteScalarProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteScalarProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
+
+FermionMassSymm,
+WriteFermionProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteFermionProp[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
+
+FermionMassNonSymm,
+ WriteFermionPropNonSymm[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],False];
+If[SA`AddOneLoopDecay ===True, WriteFermionPropNonSymm[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],False,"Der"];];
+];,
+
+Switch[listNotMixedMasses[[i,6]],
+ScalarMass,
+WriteScalarPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteScalarPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
+
+FermionMassSymm,
+WriteFermionPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True,WriteFermionPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
+
+FermionMassNonSymm,
+WriteFermionPropNonSymmSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]];
+If[SA`AddOneLoopDecay ===True, WriteFermionPropNonSymmSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];];,
+
+VectorMass,
+WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]]; 
+If[SA`AddOneLoopDecay ===True,WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];]; 
 ];
+];
+*)
 ];
 i++;]; 
 
 SMFermion={Electron,BottomQuark,TopQuark};
 WithPhotonGluonQ[x_]:=If[FreeQ[x,VectorP]==True && FreeQ[x,VectorG]==True, Return[False];,Return[True];];
 
-If[SupersymmetricModel=!=False,
+If[OnlyLowEnergySPheno=!=True,
 For[i=1,i<=Length[SMFermion],
 If[FreeQ[SA`LoopMassesParticle,SMFermion[[i]]]==False,
 pos=Position[ListMassES,SMFermion[[i]]][[1,1]];
@@ -130,7 +185,7 @@ pos2=Position[SA`LoopMassesParticle,SMFermion[[i]]][[1,1]];
  WriteFermionPropNonSymm[ToString[ListMassES[[pos,1]]]<>"MZ",ListMassES[[pos,1]],NeededMassesLoop[[pos2]],NeededCouplingsLoop[[pos2]],DeleteCases[loopContribution[[pos2]],x_?WithPhotonGluonQ],True];
 ];
 i++;];
-];
+]; 
 
 If[SA`AddOneLoopDecay === True,
 (*
@@ -141,11 +196,14 @@ i++;];
 list=CorrectionListVectorVector[Eigenstates];
 For[i=1,i<=Length[list],
 WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesVV[[i]],NeededCouplingsVV[[i]],list[[i,2]]];
+If[SA`AddOneLoopDecay ===True,
+WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesVV[[i]],NeededCouplingsVV[[i]],list[[i,2]],"Der"];
+];
 i++;];
 ];
 DynamicMass1LoopName="All Done";
 
-WriteRXiLoopFunctions;
+WriteRXiLoopFunctions; 
 
 WriteString[sphenoLoop,"End Module LoopMasses_"<>ModelName<>" \n"];
 
@@ -312,7 +370,7 @@ MakeVariableList[HiggsSoftBreakingMassesTemp,"",sphenoLoop];
 MakeVariableList[Union[Flatten[{NeededCouplingsUnmixed,NeededCouplingsLoop}]],"",sphenoLoop];
 WriteString[sphenoLoop, "Integer , Intent(inout):: kont \n"];
 WriteString[sphenoLoop, "Integer :: i1,i2,i3,i4,j1, j2, j3, j4, il, i_count, ierr \n"];
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 WriteString[sphenoLoop, "Integer :: i2L, iFin \n"];
 WriteString[sphenoLoop, "Logical :: Convergence2L \n"];
 WriteString[sphenoLoop, "Real(dp) :: Pi2S_EffPot_save("<>ToString[getGen[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>"), diff("<>ToString[getGen[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>")\n"];
@@ -322,7 +380,7 @@ If[SPhenoOnlyForHM===True,
 WriteString[sphenoLoop, "Complex(dp) :: Tad1Loop("<>ToString[Length[SA`VEVsHOMreal]+Length[SA`VEVsHOMcomplex]]<>"), dmz2  \n"];,
 WriteString[sphenoLoop, "Complex(dp) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>"), dmz2  \n"];
 ];
-WriteString[sphenoLoop, "Real(dp) :: comp("<>ToString[Length[SubSolutionsTadpolesLoop]]<>"), tanbQ, vev2\n"];
+WriteString[sphenoLoop, "Real(dp) :: comp("<>ToString[Length[SubSolutionsTadpolesLoop]]<>"), tanbQ, vev2, vSM\n"];
 
 If[UseHiggs2LoopMSSM==True,
 higgsdim=Min[4,getGenSPheno[hh]];(*at least two higgses,but maximum 4 allowed here!*)
@@ -412,9 +470,18 @@ WriteString[sphenoLoop,SPhenoForm[SA`GaugeFixingRXi[[i,1]]]<>" = RXi \n"];
 ];
 i++;];
 
-If[AddOHDM=!=True && FreeQ[parameters,VEVSM1]==False && FreeQ[parameters,VEVSM2]==False,
+(*
+If[AddOHDM=!=True && FreeQ[parameters,VEVSM1]\[Equal]False && FreeQ[parameters,VEVSM2]\[Equal]False,
 WriteString[sphenoLoop,"tanbQ="<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1]<> "\n"];
 ];
+*)
+
+WriteString[sphenoLoop,"\n ! Running angles \n"];
+For[i=1,i<=Length[AnglesInMatching],
+WriteString[sphenoLoop,ToString[AnglesInMatchingQ[[i]]]<>" = "<>SPhenoForm[AnglesInMatching[[i]]/. SolutionForRunningAngles]<>"\n"];
+i++;];
+WriteString[sphenoLoop,"\n \n"];
+
 MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLoop];
 
 
@@ -439,8 +506,17 @@ i++;];
 
 MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoLoop];
 
+MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoLoop];
+If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLoop,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge] <>" \n"];];
+WriteString[sphenoLoop,"vev2=4._dp*Real(mZ2+dmz2,dp)/("<>SPhenoForm[hyperchargeCoupling] <>"**2+"<>SPhenoForm[leftCoupling] <>"**2) -"<>SPhenoForm[SA`AdditionalDoubletVEVs]<>" \n"];
+WriteString[sphenoLoop,"vSM=sqrt(vev2) \n"];
+For[i=1,i<=Length[MatchingForVEVs],
+WriteString[sphenoLoop,SPhenoForm[MatchingForVEVs[[i,1]]]<>"="<>SPhenoForm[MatchingForVEVs[[i,2]]/. subRunningAngles]<>" \n"];
+i++;];
+
 (* If[NonSUSYModel=!=True, *)
-If[(Select[{"Hypercharge-Coupling","Left-Coupling"},FreeQ[ParameterDefinitions,#]&]==={}) && (Select[{"Down-VEV","Up-VEV"},FreeQ[ParameterDefinitions,#]&]==={}|| FreeQ[ParameterDefinitions,"EW-VEV"]==False),
+(*
+If[(Select[{"Hypercharge-Coupling","Left-Coupling"},FreeQ[ParameterDefinitions,#]&]==={}) && (Select[{"Down-VEV","Up-VEV"},FreeQ[ParameterDefinitions,#]&]==={}|| FreeQ[ParameterDefinitions,"EW-VEV"]\[Equal]False),
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoLoop];
 If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLoop,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge] <>" \n"];];
 WriteString[sphenoLoop,"vev2=4._dp*Real(mZ2+dmz2,dp)/("<>SPhenoForm[hyperchargeCoupling] <>"**2+"<>SPhenoForm[leftCoupling] <>"**2) -"<>SPhenoForm[SA`AdditionalDoubletVEVs]<>" \n"];
@@ -453,10 +529,11 @@ WriteString[sphenoLoop,SPhenoForm[VEVSM]<> "= sqrt(vev2)\n"];
 
 If[DEFINITION[NonStandardVEVs1L]===True,
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoLoop];
-For[i=1,i<=Length[DEFINITION[NonStandardVEVs1Lrelations]],
+For[i=1,i\[LessEqual]Length[DEFINITION[NonStandardVEVs1Lrelations]],
 WriteString[sphenoLoop,DEFINITION[NonStandardVEVs1Lrelations][[i]]<>"\n"];
 i++;];
 ];
+*)
 
 WriteTadpoleSolution[sphenoLoop];
 
@@ -482,7 +559,7 @@ WriteString[sphenoLoop, SPhenoForm[SA`ListParametersFromTadpoles[[i]]]<>"Tree  =
 i++;];
 
 
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 WriteString[sphenoLoop, "If (CalculateTwoLoopHiggsMasses) Then \n"];
 (*
 WriteString[sphenoLoop, "  If (.not.CalculateMSSM2Loop) Then \n"];
@@ -509,7 +586,7 @@ WriteShiftTadpoleSolution[sphenoLoop];
 *)
 WriteString[sphenoLoop,"     Else \n"];
 For[i=1,i<=Length[listVEVsStable],
-WriteString[sphenoLoop,"  "<>ToString[listVEVsStable[[i]]]<>" = "<>ToString[listVEVs[[i]]]<>" \n"];
+WriteString[sphenoLoop,"  "<>ToString[listVEVsStable[[i]]]<>" = "<>SPhenoForm[listVEVs[[i]]]<>" \n"];
 i++;];
 (* WriteShiftTadpoleSolution[sphenoLoop]; *)
 WriteString[sphenoLoop,"     End if \n\n"];
@@ -853,7 +930,7 @@ WriteString[sphenoLoop,"End if \n"];
 
 subTadpolesHiggs2Loop = {};
 subTadpolesHiggs2Loop2L = {};
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 WriteShiftTadpoleSolution[sphenoLoop];
 For[i=1,i<=Length[SA`ListParametersFromTadpoles1L],
 If[FreeQ[parametersSave,SA`ListParametersFromTadpoles1L[[i]]]==False,
@@ -950,7 +1027,7 @@ Switch[ListMassES[[i,1]],
 HiggsBoson,
 MakeCall["OneLoop"<>ToString[ListMassES[[i,1]]],Flatten[{If[ListMassES[[i,1]]===HiggsBoson ,ListTree[[i,5]]/. subTadpolesHiggs2Loop2L,ListTree[[i,5]]/. subTadpolesHiggs2Loop],NeededMassesLoop[[k]],NeededCouplingsLoop[[k]]}],{},{"0.1_dp*delta_mass",SPhenoForm[ListTree[[i,1]]]<>"_1L",SPhenoForm[ListTree[[i,1]]]<>"2_1L",SPhenoForm[ListTree[[i,2]]]<>"_1L","kont"},sphenoLoop];,
 _,
-If[ListMassES[[i,1]]===PseudoScalar && SupersymmetricModel===True,
+If[ListMassES[[i,1]]===PseudoScalar && Include2LoopCorrections===True,
 WriteString[sphenoLoop,"If (TwoLoopMethod.gt.2) Then \n"];
 MakeCall["OneLoop"<>ToString[ListMassES[[i,1]]],Flatten[{ListTree[[i,5]]/. subTadpolesHiggs2Loop2L,NeededMassesLoop[[k]],NeededCouplingsLoop[[k]]}],{},{"0.1_dp*delta_mass",SPhenoForm[ListTree[[i,1]]]<>"_1L",SPhenoForm[ListTree[[i,1]]]<>"2_1L",SPhenoForm[ListTree[[i,2]]]<>"_1L","kont"},sphenoLoop];
 WriteString[sphenoLoop,"Else \n"];
@@ -1152,7 +1229,7 @@ WriteString[sphenoLoop,"End Do \n"];
 
 (* WriteString[sphenoLoop,"Do i1="<>dimMatrix <>","<>ToString[getGenSPhenoStart[particle]]<>",-1 \n"]; *)
 WriteString[sphenoLoop,"Do i1="<>dimMatrix <>",1,-1 \n"];
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 If[particle===HiggsBoson,
 WriteString[sphenoLoop,"PiSf(i1,:,:) = PiSf(i1,:,:) - Pi2S_EffPot \n"];,
 If[particle===PseudoScalar,
@@ -1232,7 +1309,7 @@ WriteString[sphenoLoop,"End Do \n"];
 (* WriteString[sphenoLoop,"Do i1="<>dimMatrix <>","<>ToString[getGenSPhenoStart[particle]]<>",-1 \n"]; *)
 WriteString[sphenoLoop,"Do i1="<>dimMatrix <>",1,-1 \n"];
 
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 If[particle===HiggsBoson,
 WriteString[sphenoLoop,"PiSf(i1,:,:) = PiSf(i1,:,:) - Pi2S_EffPot \n"];,
 If[particle===PseudoScalar,
@@ -1658,8 +1735,9 @@ WriteString[sphenoLoop,"End Subroutine OneLoop"<>NameP <> "\n \n \n"];
 ];
 
 
-WriteScalarProp[Name_,particle_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
+WriteScalarProp[Name_,particle_,masses_,couplings_,contributions_]:=WriteScalarProp[Name,particle,masses,couplings,contributions,""];
+WriteScalarProp[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
 
 dimString = ToString[getGenSPheno[particle]];
 
@@ -1711,8 +1789,8 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 ];
 
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
-WriteString[sphenoLoop, "G0m2 = Gloop(p2,"<>m12<>","<>m22<>") \n"];
-WriteString[sphenoLoop, "B0m2 = -2._dp*"<>m1<>"*"<>m2<>"*B0(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "G0m2 = "<>pre<>"Gloop(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = -2._dp*"<>m1<>"*"<>m2<>"*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
 WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -1753,14 +1831,7 @@ indexScalar=i2;
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
 Switch[type,
 SSV,
-(* If[FreeQ[GoldstoneGhost,particle]\[Equal]True ||  FreeQ[GoldstoneGhost,scalarpart]\[Equal]True, *)
-	WriteString[sphenoLoop, "F0m2 = FloopRXi(p2,"<>m12<>","<>m22<>") \n"]; (*,
-	WriteString[sphenoLoop, "If ("<>ToString[indexScalar]<>".eq.1) Then \n"];
-	WriteString[sphenoLoop, "F0m2 = Floop(p2,0._dp,"<>m22<>") \n"];
-	WriteString[sphenoLoop, "Else \n"];
-	WriteString[sphenoLoop, "F0m2 = Floop(p2,"<>m12<>","<>m22<>") \n"];
-			WriteString[sphenoLoop, "End If \n"];
-];*)
+	WriteString[sphenoLoop, "F0m2 = "<>pre<>"FloopRXi(p2,"<>m12<>","<>m22<>") \n"]; 
    WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
    WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -1773,7 +1844,7 @@ factor =2*contributions[[i,6]]*contributions[[i,5]];,
 factor =contributions[[i,6]]*contributions[[i,5]];
 ];,
 SSS,
-   WriteString[sphenoLoop, "B0m2 = B0(p2,"<>m12<>","<>m22<>") \n"];
+   WriteString[sphenoLoop, "B0m2 = "<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
    WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -1786,12 +1857,7 @@ factor =2*contributions[[i,6]]*contributions[[i,5]];,
 factor = contributions[[i,6]]*contributions[[i,5]];
 ];,
 SVV, 
-  (*  WriteString[sphenoLoop, "F0m2 =  7._dp/2._dp*Real(B0(p2,"<>m12<>","<>m22<>"),dp) \n"]; *)
-(*
-   WriteString[sphenoLoop, "F0m2 = 4._dp*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp)  \n "];
-   WriteString[sphenoLoop, "F0m2 = F0m2 -0.25_dp*(A0("<>m22<>")/"<>m12<>"*(-1+RXi)+A0("<>m12<>")/"<>m22<>"*(-1+RXi))   \n "];
-*)
-  WriteString[sphenoLoop, "F0m2 = SVVloop(p2,"<>m12<>","<>m22<>")   \n "];
+  WriteString[sphenoLoop, "F0m2 = "<>pre<>"SVVloop(p2,"<>m12<>","<>m22<>")   \n "];
    WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
    WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -1805,7 +1871,7 @@ factor = contributions[[i,6]]*contributions[[i,5]];
 ];,
 GGS, 
   (*  WriteString[sphenoLoop, "F0m2 = Real(B0(p2,"<>m12<>","<>m22<>"),dp) \n"]; *)
-   WriteString[sphenoLoop, "F0m2 = -Real(B0(p2,"<>m12<>"*RXi,"<>m22<>"*RXi),dp) \n "];
+   WriteString[sphenoLoop, "F0m2 = -Real("<>pre<>"B0(p2,"<>m12<>"*RXi,"<>m22<>"*RXi),dp) \n "];
    WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
    WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -1840,22 +1906,23 @@ ind1=MakeIndicesCoupling[{particle,gO1},{particle,gO2},{contributions[[i,1]],i1}
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop)) Then \n"];];
 Switch[type,
 SSVV,
-	  WriteString[sphenoLoop, "A0m2 = 0.75_dp*A0("<>m12<>") + 0.25_dp*RXi*A0("<>m12<>"*RXi) - 0.5_dp*"<>m12<>"*rMS \n"];
-   WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
-  WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
+WriteString[sphenoLoop, "A0m2 = 0.75_dp*"<>pre<>"A0("<>m12<>") + 0.25_dp*RXi*"<>pre<>"A0("<>m12<>"*RXi) - 0.5_dp*"<>m12<>"*"<>pre<>"rMS \n"];
+WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
+WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"];
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
-   WriteString[sphenoLoop,"    SumI(gO1,gO2) = coup1*A0m2 \n"];
+WriteString[sphenoLoop,"    SumI(gO1,gO2) = coup1*A0m2 \n"];
 WriteString[sphenoLoop,"   End Do \n"]; 
-   WriteString[sphenoLoop,"End Do \n"];
+WriteString[sphenoLoop,"End Do \n"];
 factor = 4contributions[[i,6]]*contributions[[i,5]];,
+
 SSSS,
-   WriteString[sphenoLoop, "A0m2 = A0("<>m12<>") \n"];
-   WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
-  WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"]; 
+WriteString[sphenoLoop, "A0m2 = "<>pre<>"A0("<>m12<>") \n"];
+WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
+WriteString[sphenoLoop, "  Do gO2 = gO1, "<> dimString <>"\n"]; 
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
-   WriteString[sphenoLoop,"    SumI(gO1,gO2) = -coup1*A0m2 \n"];
-  WriteString[sphenoLoop,"   End Do \n"];
-   WriteString[sphenoLoop,"End Do \n"];
+WriteString[sphenoLoop,"    SumI(gO1,gO2) = -coup1*A0m2 \n"];
+WriteString[sphenoLoop,"   End Do \n"];
+WriteString[sphenoLoop,"End Do \n"];
 factor=contributions[[i,6]];
 ];
 
@@ -1889,13 +1956,14 @@ WriteString[sphenoLoop,"End Do \n \n"];
 WriteString[sphenoLoop,"res = oo16pi2*res \n \n"];
 
 
-WriteString[sphenoLoop, "End Subroutine Pi1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Pi1Loop"<>Name  <>" \n \n"];
 
 ];
 
 
-WriteScalarPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
+WriteScalarPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteScalarPropSingle[Name,particle,masses,couplings,contributions,""];
+WriteScalarPropSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
 
 WriteString[sphenoLoop, "Implicit None \n"];
 MakeVariableList[masses,", Intent(in)",sphenoLoop];
@@ -1943,8 +2011,8 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 ];
 
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
-WriteString[sphenoLoop, "G0m2 = Gloop(p2,"<>m12<>","<>m22<>") \n"];
-WriteString[sphenoLoop, "B0m2 = -2._dp*"<>m1<>"*"<>m2<>"*B0(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "G0m2 = "<>pre<>"Gloop(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = -2._dp*"<>m1<>"*"<>m2<>"*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -1974,7 +2042,7 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
 Switch[type,
 SSV,
-   WriteString[sphenoLoop, "F0m2 = FloopRXi(p2,"<>m12<>","<>m22<>") \n"];
+   WriteString[sphenoLoop, "F0m2 = "<>pre<>"FloopRXi(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"coup2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
    WriteString[sphenoLoop,"    SumI = coup1*coup2*F0m2 \n"];
@@ -1983,7 +2051,7 @@ factor =2*contributions[[i,6]]*contributions[[i,5]];,
 factor =contributions[[i,6]]*contributions[[i,5]];
 ];,
 SSS,
-   WriteString[sphenoLoop, "B0m2 = B0(p2,"<>m12<>","<>m22<>") \n"];
+   WriteString[sphenoLoop, "B0m2 = "<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"coup2 = Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
    WriteString[sphenoLoop,"    SumI = coup1*coup2*B0m2 \n"];
@@ -1992,7 +2060,7 @@ factor =2*contributions[[i,6]]*contributions[[i,5]];,
 factor =contributions[[i,6]]*contributions[[i,5]];
 ];,
 SVV, 
-   WriteString[sphenoLoop, "F0m2 = SVVloop(p2,"<>m12<>","<>m22<>") \n"];
+   WriteString[sphenoLoop, "F0m2 = "<>pre<>"SVVloop(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
   WriteString[sphenoLoop,"coup2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
    WriteString[sphenoLoop,"    SumI = coup1*coup2*F0m2 \n"];
@@ -2001,7 +2069,7 @@ factor =2*contributions[[i,6]]*contributions[[i,5]];,
 factor =contributions[[i,6]]*contributions[[i,5]];
 ];,
 GGS, 
-   WriteString[sphenoLoop, "F0m2 =  -Real(B0(p2,"<>m12<>"*RXi,"<>m22<>"*RXi),dp) \n "];
+   WriteString[sphenoLoop, "F0m2 =  -Real("<>pre<>"B0(p2,"<>m12<>"*RXi,"<>m22<>"*RXi),dp) \n "];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
                    WriteString[sphenoLoop,"coup2 =  " <>ToString[getSPhenoCoupling[AntiField/@contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> " \n"];
                    WriteString[sphenoLoop,"    SumI = coup1*coup2*F0m2 \n"];
@@ -2033,12 +2101,12 @@ ind1=MakeIndicesCoupling[{particle,gO1},{particle,gO2},{contributions[[i,1]],i1}
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop)) Then \n"];];
 Switch[type,
 SSVV,
-	  WriteString[sphenoLoop, "A0m2 =  0.75_dp*A0("<>m12<>") + 0.25_dp*RXi*A0("<>m12<>"*RXi) - 0.5_dp*"<>m12<>"*rMS \n"];
+	  WriteString[sphenoLoop, "A0m2 =  0.75_dp*"<>pre<>"A0("<>m12<>") + 0.25_dp*RXi*"<>pre<>"A0("<>m12<>"*RXi) - 0.5_dp*"<>m12<>"*"<>pre<>"rMS \n"];
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"    SumI = coup1*A0m2 \n"];
 factor = 4contributions[[i,6]]*contributions[[i,5]];,
 SSSS,
-   WriteString[sphenoLoop, "A0m2 = A0("<>m12<>") \n"];
+   WriteString[sphenoLoop, "A0m2 = "<>pre<>"A0("<>m12<>") \n"];
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"    SumI = -coup1*A0m2 \n"];
 factor=1 contributions[[i,6]];
@@ -2067,7 +2135,7 @@ WriteString[sphenoLoop,"\n\n"];
 WriteString[sphenoLoop,"res = oo16pi2*res \n \n"];
 
 
-WriteString[sphenoLoop, "End Subroutine Pi1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Pi1Loop"<>Name  <>" \n \n"];
 
 ];
 
@@ -2075,8 +2143,9 @@ WriteString[sphenoLoop, "End Subroutine Pi1Loop"<>Name  <>" \n \n"];
 
 
 
-WriteFermionProp[Name_,particle_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigS"},sphenoLoop];
+WriteFermionProp[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionProp[Name,particle,masses,couplings,contributions,""];
+WriteFermionProp[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigS"},sphenoLoop];
 
 dimString = ToString[getGenSPheno[particle]];
 
@@ -2141,8 +2210,8 @@ WriteString[sphenoLoop, "Do gO1 = 1, "<> dimString <>"\n"];
 WriteString[sphenoLoop, "  Do gO2 = 1, "<> dimString <>"\n"];
 
 If[type ===FFS,
-WriteString[sphenoLoop, "B1m2 = -1._dp*B1(p2,"<>m12<>","<>m22<>") \n"];
-WriteString[sphenoLoop, "B0m2 = 2._dp*"<>m1<>"*B0(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B1m2 = -1._dp*"<>pre<>"B1(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = 2._dp*"<>m1<>"*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -2150,8 +2219,8 @@ WriteString[sphenoLoop,"coupR2 =  Conjg(" <>ToString[getSPhenoCoupling[contribut
 WriteString[sphenoLoop,"SumS(gO1,gO2) = coupR1*coupL2*B0m2 \n"];
 WriteString[sphenoLoop,"sumR(gO1,gO2) = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL(gO1,gO2) = coupL1*coupL2*B1m2 \n"];,
-WriteString[sphenoLoop, "B1m2 = -2._dp*(B1(p2,"<>m12<>","<>m22<>") + 0.5_dp*rMS) \n"];
-WriteString[sphenoLoop, "B0m2 = -8._dp*"<>m1<>"*(B0(p2,"<>m12<>","<>m22<>") - 0.5_dp*rMS) \n"];
+WriteString[sphenoLoop, "B1m2 = -2._dp*("<>pre<>"B1(p2,"<>m12<>","<>m22<>") + 0.5_dp*"<>pre<>"rMS) \n"];
+WriteString[sphenoLoop, "B0m2 = -8._dp*"<>m1<>"*("<>pre<>"B0(p2,"<>m12<>","<>m22<>") - 0.5_dp*"<>pre<>"rMS) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -2191,26 +2260,29 @@ WriteString[sphenoLoop,"SigS = oo16pi2*SigS \n \n"];
 
 
 
-WriteString[sphenoLoop, "End Subroutine Sigma1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 
 ];
 
 
-WriteFermionPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sig"},sphenoLoop];
+WriteFermionPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionPropSingle[Name,particle,masses,couplings,contributions,""];
+WriteFermionPropSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"SigL","SigR","SigS"},sphenoLoop];
 
 
 WriteString[sphenoLoop, "Implicit None \n"];
 MakeVariableList[masses,", Intent(in)",sphenoLoop];
 MakeVariableList[couplings,", Intent(in)",sphenoLoop];
-WriteString[sphenoLoop, "Complex(dp), Intent(out) :: Sig \n"];
+WriteString[sphenoLoop, "Complex(dp), Intent(out) :: SigL, SigR, SigS \n"];
 WriteString[sphenoLoop, "Complex(dp) :: coupL1, coupR1, coupL2,coupR2, coup1,coup2,temp, sumS,sumR,sumL \n"];
 WriteString[sphenoLoop, "Real(dp) :: B0m2, F0m2, G0m2,B1m2, m1, m2 \n"];
 WriteString[sphenoLoop, "Real(dp), Intent(in) :: p2 \n"];
 WriteString[sphenoLoop, "Complex(dp) :: A0m2 \n"];
 WriteString[sphenoLoop, "Integer :: i1,i2,i3,i4, gO1, gO2, ierr \n \n \n"];
 
-WriteString[sphenoLoop,"Sig = Cmplx(0._dp,0._dp,dp) \n"];
+WriteString[sphenoLoop,"SigL = Cmplx(0._dp,0._dp,dp) \n"];
+WriteString[sphenoLoop,"SigR = Cmplx(0._dp,0._dp,dp) \n"];
+WriteString[sphenoLoop,"SigS = Cmplx(0._dp,0._dp,dp) \n"];
 
 For[i=1,i<=Length[contributions],
 WriteString[sphenoLoop,"!------------------------ \n"];
@@ -2251,8 +2323,8 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
 If[type ===FFS,
-WriteString[sphenoLoop, "B1m2 = -1._dp*B1(p2,"<>m12<>","<>m22<>") \n"];
-WriteString[sphenoLoop, "B0m2 = -2._dp*"<>m1<>"*B0(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B1m2 = -1._dp*"<>pre<>"B1(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = -2._dp*"<>m1<>"*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -2260,8 +2332,8 @@ WriteString[sphenoLoop,"coupR2 =  Conjg(" <>ToString[getSPhenoCoupling[contribut
 WriteString[sphenoLoop,"SumS = coupR1*coupL2*B0m2 \n"];
 WriteString[sphenoLoop,"sumR = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL = coupL1*coupL2*B1m2 \n"];,
-WriteString[sphenoLoop, "B1m2 = -2._dp*(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS) \n"];
-WriteString[sphenoLoop, "B0m2 = -8._dp*"<>m1<>"*(B0(p2,"<>m12<>","<>m22<>") - 0.5_dp*rMS) \n"];
+WriteString[sphenoLoop, "B1m2 = -2._dp*("<>pre<>"B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*"<>pre<>"rMS) \n"];
+WriteString[sphenoLoop, "B0m2 = -8._dp*"<>m1<>"*("<>pre<>"B0(p2,"<>m12<>","<>m22<>") - 0.5_dp*"<>pre<>"rMS) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -2277,7 +2349,9 @@ If[Head[factor]===Integer, factor=1. factor;];
 
 factor=SPhenoForm[factor];
 
-WriteString[sphenoLoop,"Sig = Sig +"<>factor<>"*(sumS + "<>ToString[SPhenoMass[particle]]<>"*(sumL+sumR))\n"];
+WriteString[sphenoLoop,"SigL = SigL +"<>factor<>"*sumL\n"];
+WriteString[sphenoLoop,"SigR = SigR +"<>factor<>"*sumR\n"];
+WriteString[sphenoLoop,"SigS = SigS +"<>factor<>"*sumS\n"];
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"End If \n"]];
 If[dim1 > 1, WriteString[sphenoLoop,"      End Do \n "];];
 If[dim2 > 1, WriteString[sphenoLoop,"    End Do \n "];];
@@ -2289,15 +2363,18 @@ i++;];
 
 WriteString[sphenoLoop,"\n\n"];
 
-WriteString[sphenoLoop,"Sig = oo16pi2*Sig \n \n"];
+WriteString[sphenoLoop,"SigL = oo16pi2*SigL \n "];
+WriteString[sphenoLoop,"SigR = oo16pi2*SigR \n"];
+WriteString[sphenoLoop,"SigS = oo16pi2*SigS \n \n"];
 
-WriteString[sphenoLoop, "End Subroutine Sigma1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 
 ];
 
 
-WriteFermionPropNonSymm[Name_,particle_,masses_,couplings_,contributions_,setOnShell_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigS"},sphenoLoop];
+WriteFermionPropNonSymm[Name_,particle_,masses_,couplings_,contributions_,setOnShell_]:=WriteFermionPropNonSymm[Name,particle,masses,couplings,contributions,setOnShell,""];
+WriteFermionPropNonSymm[Name_,particle_,masses_,couplings_,contributions_,setOnShell_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigS"},sphenoLoop];
 
 dimString = ToString[getGenSPheno[particle]];
 
@@ -2360,14 +2437,14 @@ WriteString[sphenoLoop, "  Do gO2 = 1, "<> dimString <>"\n"];
 
 If[type ===FFS,
 If[setOnShell==False,
-WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real(B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
-WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>"),dp) \n"];,
+WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real("<>pre<>"B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real("<>pre<>"B0(p2,"<>m12<>","<>m22<>"),dp) \n"];,
 WriteString[sphenoLoop, "If(gO1.eq.gO2) Then \n"];
-WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real(B1("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
-WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real(B0("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real("<>pre<>"B1("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real("<>pre<>"B0("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
 WriteString[sphenoLoop, "Else \n"];
-WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real(B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
-WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real("<>pre<>"B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real("<>pre<>"B0(p2,"<>m12<>","<>m22<>"),dp) \n"];
 WriteString[sphenoLoop, "End If \n"];
 ];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -2379,14 +2456,14 @@ WriteString[sphenoLoop,"sumR(gO1,gO2) = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL(gO1,gO2) = coupL1*coupL2*B1m2 \n"];,
 
 If[setOnShell==False,
-WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS,dp) \n"];
-WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];,
+WriteString[sphenoLoop, "B1m2 = - Real("<>pre<>"B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*"<>pre<>"rMS,dp) \n"];
+WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real("<>pre<>"B0(p2,"<>m12<>","<>m22<>")-0.5_dp*"<>pre<>"rMS,dp) \n"];,
 WriteString[sphenoLoop, "If(gO1.eq.gO2) Then \n"];
-WriteString[sphenoLoop, "B1m2 = - Real(B1("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
-WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];
+WriteString[sphenoLoop, "B1m2 = - Real("<>pre<>"B1("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real("<>pre<>"B0("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>")-0.5_dp*"<>pre<>"rMS,dp) \n"];
 WriteString[sphenoLoop, "Else \n"];
-WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS,dp) \n"];
-WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];
+WriteString[sphenoLoop, "B1m2 = - Real("<>pre<>"B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*"<>pre<>"rMS,dp) \n"];
+WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real("<>pre<>"B0(p2,"<>m12<>","<>m22<>")-0.5_dp*"<>pre<>"rMS,dp) \n"];
 WriteString[sphenoLoop, "End If \n"];
 ];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
@@ -2425,13 +2502,14 @@ WriteString[sphenoLoop,"SigS = oo16pi2*SigS \n \n"];
 
 
 
-WriteString[sphenoLoop, "End Subroutine Sigma1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 
 ];
 
 
-WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sig"},sphenoLoop];
+WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionPropNonSymmSingle[Name,particle,masses,couplings,contributions,""];
+WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sig"},sphenoLoop];
 
 dimString = ToString[getGenSPheno[particle]];
 
@@ -2489,8 +2567,8 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
 If[type ===FFS,
-WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real(B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
-WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B1m2 = -0.5_dp*Real("<>pre<>"B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B0m2 = "<>m1<>"*Real("<>pre<>"B0(p2,"<>m12<>","<>m22<>"),dp) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -2498,8 +2576,8 @@ WriteString[sphenoLoop,"coupR2 =  Conjg(" <>ToString[getSPhenoCoupling[contribut
 WriteString[sphenoLoop,"SumS = coupR1*coupL2*B0m2 \n"];
 WriteString[sphenoLoop,"sumR = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL = coupL1*coupL2*B1m2 \n"];,
-WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS,dp) \n"];
-WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];
+WriteString[sphenoLoop, "B1m2 = - Real("<>pre<>"B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*"<>pre<>"rMS,dp) \n"];
+WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real("<>pre<>"B0(p2,"<>m12<>","<>m22<>")-0.5_dp*"<>pre<>"rMS,dp) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 =  Conjg(" <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind2<> ")\n"];
@@ -2530,27 +2608,35 @@ WriteString[sphenoLoop,"Sig = oo16pi2*Sig \n \n"];
 
 
 
-WriteString[sphenoLoop, "End Subroutine Sigma1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 
 ];
 
 
-WriteHeaderLoopMasses:=Block[{i,dim,dim2},
+WriteHeaderLoopMasses:=Block[{i,dim,dim2,files},
+
+files={"AddLoopFunctions.f90","Kinematics.f90"};
+For[i=1,i<=Length[files],
+If[FileExistsQ[ToFileName[$sarahCurrentSPhenoDir,files[[i]]]],DeleteFile[ToFileName[$sarahCurrentSPhenoDir,files[[i]]]]];
+CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],files[[i]]],ToFileName[$sarahCurrentSPhenoDir,files[[i]]]];
+i++;];
+
 WriteCopyRight[sphenoLoop];
 WriteString[sphenoLoop,"Module LoopMasses_"<>ModelName<>" \n \n"];
 WriteString[sphenoLoop,"Use Control \n"];
 WriteString[sphenoLoop,"Use Couplings_"<>ModelName<>" \n"];
 WriteString[sphenoLoop,"Use LoopFunctions \n"];
+WriteString[sphenoLoop,"Use AddLoopFunctions \n"];
 WriteString[sphenoLoop,"Use Mathematics \n"];
 WriteString[sphenoLoop,"Use MathematicsQP \n"];
 WriteString[sphenoLoop,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoLoop,"Use StandardModel \n"];
 WriteString[sphenoLoop,"Use Tadpoles_"<>ModelName<>" \n "];
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 WriteString[sphenoLoop,"Use EffectivePotential_"<>ModelName<>" \n "];
 WriteString[sphenoLoop,"Use Pole2L_"<>ModelName<>" \n "];
 ];
-WriteString[sphenoLoop,"Use SusyMasses_"<>ModelName<>" \n \n"];
+WriteString[sphenoLoop,"Use TreeLevelMasses_"<>ModelName<>" \n \n"];
 
 
 If[UseHiggs2LoopMSSM==True,
@@ -2592,12 +2678,9 @@ i++;];
 
 (* WriteString[sphenoLoop,"Logical::SPA_Convention \n"]; *)
 
-If[SupersymmetricModel=!=False,
-WriteString[sphenoLoop,"Real(dp), save :: rMS = 0._dp \n"];,
-WriteString[sphenoLoop,"Real(dp), save :: rMS = 1._dp \n"];
-];
 
-If[SupersymmetricModel=!=False,
+
+If[Include2LoopCorrections=!=False,
 WriteString[sphenoLoop, "Real(dp) :: pi2A0  \n"];
 WriteString[sphenoLoop, "Real(dp) :: ti_ep2L("<>ToString[getGen[HiggsBoson]]<>")  \n"];
 WriteString[sphenoLoop, "Real(dp) :: pi_ep2L("<>ToString[getGen[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>")\n"];
@@ -2722,8 +2805,9 @@ WriteString[sphenoLoop,"End Subroutine OneLoopTadpoles"<>ToString[particle]<>" \
 
 
 
-WriteVectorPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
-MakeSubroutineTitle["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
+WriteVectorPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteVectorPropSingle[Name,particle,masses,couplings,contributions,""];
+WriteVectorPropSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+MakeSubroutineTitle[pre<>"Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
 
 WriteString[sphenoLoop, "Implicit None \n"];
 MakeVariableList[masses,", Intent(in)",sphenoLoop];
@@ -2773,8 +2857,8 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 ];
 
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
-WriteString[sphenoLoop, "H0m2 = Hloop(p2,"<>m12<>","<>m22<>") \n"];
-WriteString[sphenoLoop, "B0m2 = 4._dp*"<>m1<>"*"<>m2<>"*B0(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "H0m2 = "<>pre<>"Hloop(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = 4._dp*"<>m1<>"*"<>m2<>"*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"    SumI = (Abs(coupL1)**2+Abs(coupR1)**2)*H0m2 & \n"];
@@ -2802,7 +2886,7 @@ If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMa
 Switch[type,
 SSV,
  (*  WriteString[sphenoLoop, "B22m2 = -4._dp*B00(p2,"<>m12<>","<>m22<>")  \n"]; *)
-   WriteString[sphenoLoop, "B22m2 = VSSloop(p2,"<>m12<>","<>m22<>")  \n"];
+   WriteString[sphenoLoop, "B22m2 = "<>pre<>"VSSloop(p2,"<>m12<>","<>m22<>")  \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"    SumI = Abs(coup1)**2*B22m2 \n"];
    If[conj[particle]===particle,
@@ -2819,14 +2903,14 @@ VVV,
    WriteString[sphenoLoop,"    SumI = -SumI*coup1*coup2 \n"]; *)
        WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
        WriteString[sphenoLoop,"coup2 = Conjg(coup1) \n"];
-       WriteString[sphenoLoop,"    SumI = -VVVloop(p2,"<>m12<>","<>m22<>")*coup1*coup2 \n"];
+       WriteString[sphenoLoop,"    SumI = -"<>pre<>"VVVloop(p2,"<>m12<>","<>m22<>")*coup1*coup2 \n"];
  If[conj[particle]===particle,
 factor = SPhenoForm[2.*contributions[[i,6]]*contributions[[i,5]]];,
 factor = SPhenoForm[1.*contributions[[i,6]]*contributions[[i,5]]];
 ];,
 SVV, 
   (*  WriteString[sphenoLoop, "B0m2 = B0(p2,"<>m12<>","<>m22<>") \n"]; *)
- WriteString[sphenoLoop, "B0m2 = VVSloop(p2,"<>m12<>","<>m22<>") \n"];
+ WriteString[sphenoLoop, "B0m2 = "<>pre<>"VVSloop(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"    SumI = Abs(coup1)**2*B0m2 \n"];
  If[conj[particle]===particle,
@@ -2836,7 +2920,7 @@ factor = SPhenoForm[1.*contributions[[i,6]]*contributions[[i,5]]];
 GGV,
 WriteString[sphenoLoop,"SumI = 0._dp \n"]; 
 (* WriteString[sphenoLoop, "B0m2 = B00(p2,"<>m12<>","<>m22<>")\n"]; *)
-WriteString[sphenoLoop, "B0m2 = VGGloop(p2,"<>m12<>","<>m22<>")\n"];
+WriteString[sphenoLoop, "B0m2 = "<>pre<>"VGGloop(p2,"<>m12<>","<>m22<>")\n"];
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coup2 = Conjg(coup1) \n"];
 WriteString[sphenoLoop,"   SumI = coup1*coup2*B0m2 \n"]; 
@@ -2872,17 +2956,17 @@ If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMa
 Switch[type,
 SSVV,
            WriteString[sphenoLoop,"SumI = 0._dp \n"]; 
-	  WriteString[sphenoLoop," A0m2 = A0("<>m12<>")\n"];
+	  WriteString[sphenoLoop," A0m2 = "<>pre<>"A0("<>m12<>")\n"];
            WriteString[sphenoLoop," coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
            WriteString[sphenoLoop," SumI = coup1*A0m2 \n"];
            factor = SPhenoForm[contributions[[i,6]]*contributions[[i,5]]];,
 VVVV,
          WriteString[sphenoLoop,"SumI = 0._dp \n"]; 
-	WriteString[sphenoLoop, "A0m2 = 3._dp/4._dp*A0("<>m12<>") +RXi/4._dp*A0("<>m12<>"*RXi) \n"];
+	WriteString[sphenoLoop, "A0m2 = 3._dp/4._dp*"<>pre<>"A0("<>m12<>") +RXi/4._dp*"<>pre<>"A0("<>m12<>"*RXi) \n"];
          WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
          WriteString[sphenoLoop,"coup2 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
          WriteString[sphenoLoop,"coup3 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,3]]] <>ind1<> "\n"];
-         WriteString[sphenoLoop,"SumI = ((2._dp*rMS*coup1+(1-RXi**2)/8._dp*(coup2+coup3))*"<>m12<>"-(4._dp*coup1+coup2+coup3)*A0m2)\n"];
+         WriteString[sphenoLoop,"SumI = ((2._dp*"<>pre<>"rMS*coup1+(1-RXi**2)/8._dp*(coup2+coup3))*"<>m12<>"-(4._dp*coup1+coup2+coup3)*A0m2)\n"];
         factor = SPhenoForm[contributions[[i,6]]*contributions[[i,5]]];
 ];
 WriteString[sphenoLoop,"res = res +"<>factor<>"* SumI  \n"];
@@ -2897,7 +2981,7 @@ i++;];
 WriteString[sphenoLoop,"res = oo16pi2*res \n \n"];
 
 
-WriteString[sphenoLoop, "End Subroutine Pi1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Pi1Loop"<>Name  <>" \n \n"];
 
 ];
 
@@ -2920,7 +3004,7 @@ WriteString[sphenoLoop, "Integer , Intent(inout):: kont \n"];
 WriteString[sphenoLoop, "Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr \n"];
 WriteString[sphenoLoop, "Real(dp), Intent(in) :: delta \n"];
 WriteString[sphenoLoop, "Real(dp) :: mi, mi2, p2, test_m2 \n"];
-WriteString[sphenoLoop, "Complex(dp) :: PiSf, sig \n"];
+WriteString[sphenoLoop, "Complex(dp) :: PiSf, SigL, SigR, SigS \n"];
 WriteString[sphenoLoop, "Real(dp), Intent(out) :: mass, mass2 \n"];
 
 If[addTad==True,
@@ -2946,9 +3030,11 @@ WriteString[sphenoLoop, "p2 = 0._dp \n"];
 ];
 
 If[getType[particle]===F,
-WriteString[sphenoLoop, "sig = ZeroC \n"];
-MakeCall["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sig"},sphenoLoop];
-WriteString[sphenoLoop,"mass = mi - sig \n"];
+WriteString[sphenoLoop, "sigL = ZeroC \n"];
+WriteString[sphenoLoop, "sigR = ZeroC \n"];
+WriteString[sphenoLoop, "sigS = ZeroC \n"];
+MakeCall["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL", "sigR","sigS"},sphenoLoop];
+WriteString[sphenoLoop,"mass = mi - sigS-"<>ToString[SPhenoMass[particle]]<>"*(SigR+SigL) \n"];
 WriteString[sphenoLoop,"mass2= mass**2 \n"];,
 WriteString[sphenoLoop, "PiSf = ZeroC \n"];
 MakeCall["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","PiSf"},sphenoLoop];
@@ -2968,8 +3054,8 @@ WriteString[sphenoLoop, "p2 =  mass2 \n"];
 
 If[getType[particle]===F,
 WriteString[sphenoLoop, "sig = ZeroC \n"];
-MakeCall["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sig"},sphenoLoop];
-WriteString[sphenoLoop,"mass = mi - sig \n"];
+MakeCall["Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL", "sigR","sigS"},sphenoLoop];
+WriteString[sphenoLoop,"mass = mi - sigS-"<>ToString[SPhenoMass[particle]]<>"*(SigR+SigL) \n"];
 WriteString[sphenoLoop,"mass2= mass**2 \n"];,
 WriteString[sphenoLoop, "PiSf = ZeroC \n"];
 MakeCall["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","PiSf"},sphenoLoop];
@@ -3023,11 +3109,12 @@ WriteString[sphenoLoop,"End Subroutine OneLoop"<>Name <> "\n \n \n"];
 ];
 
 
-WriteVectorScalarMixedSE[Name_,particle1_,particle2_,masses_,couplings_,contributions_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
+WriteVectorScalarMixedSE[Name_,particle1_,particle2_,masses_,couplings_,contributions_]:=WriteVectorScalarMixedSE[Name,particle1,particle2,masses,couplings,contributions,""];
+WriteVectorScalarMixedSE[Name_,particle1_,particle2_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 
 If[PrintDebug,Print["Write self-energy for ",particle1," - ",particle2];];
 
-MakeSubroutineTitle["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
+MakeSubroutineTitle[pre<>"Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
 
 WriteString[sphenoLoop, "Implicit None \n"];
 MakeVariableList[masses,", Intent(in)",sphenoLoop];
@@ -3074,8 +3161,8 @@ m12 = SPhenoMassSq[contributions[[i,2]],i2];
 ];
 
 If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMassLoop).and.("<>m22<>".lt.MaxMassLoop)) Then \n"];];
-WriteString[sphenoLoop, "H0m2 = Hloop(p2,"<>m12<>","<>m22<>") \n"];
-WriteString[sphenoLoop, "B0m2 = 4._dp*"<>m1<>"*"<>m2<>"*B0(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "H0m2 = "<>pre<>"Hloop(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = 4._dp*"<>m1<>"*"<>m2<>"*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,2]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupL2 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind2<> "\n"];
@@ -3105,7 +3192,7 @@ If[AddCheckMaxMassInLoops===True,WriteString[sphenoLoop,"If (("<>m12<>".lt.MaxMa
 If[getType[particle2]===V,
 Switch[type,
 SSV,
-   WriteString[sphenoLoop, "B22m2 = -4._dp*B22(p2,"<>m12<>","<>m22<>") \n"];
+   WriteString[sphenoLoop, "B22m2 = -4._dp*"<>pre<>"B22(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"coup2 = " <>ToString[getSPhenoCoupling[contributions[[i,4]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind2<> "\n"];
    WriteString[sphenoLoop,"    SumI = coup1*coup2*B22m2 \n"];
@@ -3115,11 +3202,11 @@ factor = SPhenoForm[1.*contributions[[i,6]]*contributions[[i,7]]];
 ];,
 VVV,
 If[FreeQ[massless,contributions[[i,1]]]==True && FreeQ[massless,contributions[[i,2]]]==True,
-WriteString[sphenoLoop, "B0m2 = - (4._dp*p2+"<>m12<>" +"<>m22<>" )*B0(p2,"<>m12<>","<>m22<>") - 8._dp*B22(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = - (4._dp*p2+"<>m12<>" +"<>m22<>" )*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") - 8._dp*"<>pre<>"B22(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coup2 = " <>ToString[getSPhenoCoupling[contributions[[i,4]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind2<> "\n"];
 WriteString[sphenoLoop,"    SumI = coup1*coup2*B0m2 \n"];,
-WriteString[sphenoLoop, "B0m2 = - 4._dp*p2*B0(p2,"<>m12<>","<>m22<>") - 8._dp*B22(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B0m2 = - 4._dp*p2*"<>pre<>"B0(p2,"<>m12<>","<>m22<>") - 8._dp*"<>pre<>"B22(p2,"<>m12<>","<>m22<>") \n"];
 WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coup2 = " <>ToString[getSPhenoCoupling[contributions[[i,4]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind2<> "\n"];
 WriteString[sphenoLoop,"    SumI = coup1*coup2*B0m2 \n"];
@@ -3130,7 +3217,7 @@ factor = SPhenoForm[1.*contributions[[i,6]]*contributions[[i,7]]];
 ];,
 SVV, 
 If[FreeQ[massless,contributions[[i,1]]]==True && FreeQ[massless,contributions[[i,2]]]==True,
-   WriteString[sphenoLoop, "B0m2 = B0(p2,"<>m12<>","<>m22<>") \n"];
+   WriteString[sphenoLoop, "B0m2 = "<>pre<>"B0(p2,"<>m12<>","<>m22<>") \n"];
    WriteString[sphenoLoop,"coup1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind1<> "\n"];
    WriteString[sphenoLoop,"coup2 = " <>ToString[getSPhenoCoupling[contributions[[i,4]],SPhenoCouplingsAllreallyAll][[1,1]]] <>ind2<> "\n"];
    WriteString[sphenoLoop,"    SumI = coup1*coup2*B0m2 \n"];
@@ -3167,9 +3254,10 @@ i++;];
 
 WriteString[sphenoLoop,"res = oo16pi2*res \n \n"];
 
-WriteString[sphenoLoop, "End Subroutine Pi1Loop"<>Name  <>" \n \n"];
+WriteString[sphenoLoop, "End Subroutine "<>pre<>"Pi1Loop"<>Name  <>" \n \n"];
 
 ];
+
 
 WriteRXiLoopFunctions:=Block[{},
 AppendSourceCode["RXiLoopFunctions.f90",sphenoLoop];

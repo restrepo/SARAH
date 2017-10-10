@@ -43,6 +43,7 @@ RenormalizationScale = mSUSY^2;
 
 ParametersToSolveTadpoles = {mHd2, mHu2, mC12, lw,mS2};
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 BoundaryHighScale={
 {gX, gXinput},

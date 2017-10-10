@@ -77,6 +77,8 @@ ListDecayParticles3B = Automatic;
 
 QuadruplePrecision = {Chi};
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 ConditionForMassOrdering={
 {Chi,
 "If ((Abs(UV(1,2)).gt.Abs(UV(2,1))).And.(MChi(1).lt.1.0E-15_dp).And.(MChi(2).lt.1.0E-15_dp)) Then \n

@@ -55,7 +55,7 @@ BoundaryHighScale={
 };
 
 
-
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;

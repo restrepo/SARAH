@@ -505,10 +505,16 @@ temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]][a__],CForm],Format[CHNa
 ReleaseHold[temp];
 ];
 If[CPV==True && FreeQ[realVar,parameters[[i,1]]],
+If[parameters[[i,3,1]]>9,
+temp=ReplaceAll[Hold[SetDelayed[Format[ToExpression["Im"<>ToString[parameters[[i,1]]]][a__],CForm],Format["I"<>CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"k","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->(5-Length[parameters[[i,2]]])}];
+ReleaseHold[temp];
+temp=ReplaceAll[Hold[SetDelayed[Format[ToExpression["Re"<>ToString[parameters[[i,1]]]][a__],CForm],Format["R"<>CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"k","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->(5-Length[parameters[[i,2]]])}];
+ReleaseHold[temp];,
 temp=ReplaceAll[Hold[SetDelayed[Format[ToExpression["Im"<>ToString[parameters[[i,1]]]][a__],CForm],Format["I"<>CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->(5-Length[parameters[[i,2]]])}];
 ReleaseHold[temp];
 temp=ReplaceAll[Hold[SetDelayed[Format[ToExpression["Re"<>ToString[parameters[[i,1]]]][a__],CForm],Format["R"<>CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->(5-Length[parameters[[i,2]]])}];
 ReleaseHold[temp];
+];
 ];,
 temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]],CForm],Format[CHName[parameters[[nr,1]],maxLength],OutputForm]]], {nr->i,maxLength->(6-Length[(parameters[[i,2]] /. {1}->{})])}];
 ReleaseHold[temp];
@@ -724,6 +730,10 @@ i++;];
 Format[x_Adj, FortranForm]:=Format["adj"<>ToString[FortranForm[x[[1]]]],OutputForm]/;SARAHFortran==True;
 Format[x_re, FortranForm]:=Format["Real("<>ToString[FortranForm[x[[1]]]]<>",dp)",OutputForm]/;SARAHFortran==True;
 Format[x_im, FortranForm]:=Format["Aimag("<>ToString[FortranForm[x[[1]]]]<>")",OutputForm]/;SARAHFortran==True;
+
+Unprotect[Span];
+Format[x_Span, FortranForm]:=Format[ToString[FortranForm[x[[1]]]]<>":"<>ToString[FortranForm[x[[2]]]],OutputForm]/;SARAHFortran==True;
+Protect[Span];
 
 For[i=1,i<=Length[threeIndexParameter],
 For[j=1,j<=5,

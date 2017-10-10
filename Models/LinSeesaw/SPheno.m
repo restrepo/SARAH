@@ -51,6 +51,7 @@ InitializationValues = {
 
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 QuadruplePrecision = {Fv};
 

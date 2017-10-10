@@ -51,7 +51,7 @@ i++;];
 
 
 subGenInd={};
-(* If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
+(* If[FreeQ[NameOfStates,InitalizedVertexCalculaton]\[Equal]True,
 Message[ModelFile::NoVertices];,
 *)
 
@@ -214,7 +214,7 @@ i++;];
 
 
 FAIndizes[x_,add_]:=Block[{ind},
-(* ind=DeleteCases[getIndizes[x],lorentz,2] //. adjcolor->Gluon; *)
+(* ind=DeleteCases[getIndizes[x],lorentz,2] //. adjcolor\[Rule]Gluon; *)
 ind=DeleteCases[TransposeChecked[getIndizesWI[x] //. {color,8}->{Gluon,8}][[1]],lorentz,2] ;
 
 If[FreeQ[ind,generation]==False || FreeQ[ind,flavor]==False,
@@ -714,8 +714,8 @@ M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[VVVV][[i,1]]//.subFA
 i++;];
 
 (*
-For[i=1,i<=Length[SA`VertexList[SSVV]],
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]=={{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms}}}];
+For[i=1,i\[LessEqual]Length[SA`VertexList[SSVV]],
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]\[Equal]{{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms}}}];
 i++;];
 *)
 
@@ -737,7 +737,7 @@ i++;];
 For[j=1,j<=Length[VList1],
 If[SA`FAgenericVertices=!=True,
 M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList1[[j,1]]//. subFA//. subFAFields]=={{VList1[[j,2,1]]}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList1[[j,1]]//. subFA//. subFAFields]=={{MakeGenericCouplingFA[VList1names[[i,1]],""]}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList1[[j,1]]//. subFA//. subFAFields]=={{MakeGenericCouplingFA[VList1names[[j,1]],""]}}}];
 ];
 j++;];
 

@@ -97,6 +97,8 @@ BoundaryHighScale={
 {MDGoc,MDOinput}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 
 
 ListDecayParticles = Automatic;

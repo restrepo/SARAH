@@ -53,7 +53,7 @@ BoundarySUSYScale={
 {vS, vSInput}
 };
 
-
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 QuadruplePrecision = {Fv};
 

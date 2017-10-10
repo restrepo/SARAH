@@ -59,9 +59,9 @@ BoundaryLowScaleInput={
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 UseHiggs2LoopMSSM = True;
-(* UseHiggs2LoopMSSM = False; *)
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;

@@ -46,6 +46,7 @@ WriteString[sphenoSM, "Logical,Private,Save::OnlyDiagonal \n"];
 
 WriteString[sphenoSM, "Contains \n \n "];
 
+
 MakeSubroutineTitle["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"Qout"},{"CKMout","sinW2_out", "Alpha_out","AlphaS_out", "realCKM"},sphenoSM];
 WriteString[sphenoSM,"Implicit None \n"];
 MakeVariableList[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],",Intent(in)",sphenoSM];
@@ -77,6 +78,7 @@ WriteRunSMRGEs[sphenoSM];
 
 
 WriteString[sphenoSM,"Qin = SetRenormalizationScale(Qout**2) \n"];
+
 
 If[WriteCKMBasis===True,
 WriteString[sphenoSM,"\n Contains \n\n" ];
@@ -287,7 +289,12 @@ WriteString[file, "AlphaS_out = g3SM**2/(4._dp*Pi) \n \n"];
 WriteString[file,"Else \n\n"];
 WriteString[sphenoSM,"! Don't run SM RGEs separately \n"];
 If[FreeQ[ParameterDefinitions,"Up-Yukawa-Coupling"]==False,
-WriteString[file, "Call FermionMass("<>SPhenoForm[UpYukawa]<>",1._dp,test,dummy,CKMout,kont) \n"];,
+WriteString[file, "If (YukawaScheme.Eq.1) Then \n"];
+WriteString[file, "  Call FermionMass("<>SPhenoForm[UpYukawa]<>",1._dp,test,dummy,CKMout,kont) \n"];
+WriteString[file, "Else \n"];
+WriteString[file, "  Call FermionMass("<>SPhenoForm[DownYukawa]<>",1._dp,test,dummy,CKMout,kont) \n"];
+WriteString[file, "  CKMout=Conjg(Transpose(CKMout)) \n"];
+WriteString[file, "End if \n"];,
 WriteString[file, "CKMout = CKMcomplex \n"];
 ];
 If[FreeQ[ParameterDefinitions,"Hypercharge-Coupling"]==False && FreeQ[ParameterDefinitions,"Left-Coupling"]==False,

@@ -93,7 +93,7 @@ ParameterDefinitions = {
 
 {ZVL,	    {Description -> "Neutrino-Mixing-Matrix",
              LaTeX->"Z^{V_L}", 
-             LesHouches ->  SNUMIX,
+             LesHouches ->  SNULMIX,
              OutputName-> ZVL             
              }},
 {ZVR,	    {LaTeX -> "Z^{V_R}",

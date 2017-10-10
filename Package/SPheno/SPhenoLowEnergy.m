@@ -58,10 +58,15 @@ realVar=Join[realVar,{BRBtoSGamma,ae,amu,atau,BrMu3e,BrTau3e,BrTau3mu,EDMe,EDMmu
 
 
 (* open the file to write *)
-sphenoLow=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"LowEnergy_"<>ModelName<>".f90"]];
-sphenoFlavorKitLFV=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FlavorKit_LFV_"<>ModelName<>".f90"]];
-sphenoFlavorKitQFV=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FlavorKit_QFV_"<>ModelName<>".f90"]];
-sphenoFlavorKitObs=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FlavorKit_Observables_"<>ModelName<>".f90"]];
+$sarahSPhenoObservablesDir=ToFileName[{$sarahCurrentSPhenoDir,"Observables"}];
+If[FileExistsQ[$sarahSPhenoObservablesDir]=!=True,
+CreateDirectory[$sarahSPhenoObservablesDir];
+];
+
+sphenoLow=OpenWrite[ToFileName[$sarahSPhenoObservablesDir,"LowEnergy_"<>ModelName<>".f90"]];
+sphenoFlavorKitLFV=OpenWrite[ToFileName[$sarahSPhenoObservablesDir,"FlavorKit_LFV_"<>ModelName<>".f90"]];
+sphenoFlavorKitQFV=OpenWrite[ToFileName[$sarahSPhenoObservablesDir,"FlavorKit_QFV_"<>ModelName<>".f90"]];
+sphenoFlavorKitObs=OpenWrite[ToFileName[$sarahSPhenoObservablesDir,"FlavorKit_Observables_"<>ModelName<>".f90"]];
 
 LowEnergyConstraintsParameterList={};
 

@@ -958,24 +958,59 @@ Return[CG[group,dyn]@@inds];
 
 
 SumOverExpandedIndizes[term_,partList_]:=SumOverExpandedIndizes[term,partList,False];
+getFundamentalIndex[ind_]:=Block[{},
+If[FreeQ[Gauge,ind]===False || FreeQ[AuxGauge,ind]===False,
+Return[ind];,
+Return[ToExpression[StringDrop[ToString[ind],{-1}]]];
+];
+];
 
-SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos,IndexNames={},IndexNamesSub={},iter,fin,SUB},
+ReplacementRuleAux[ind_]:={Delta[a_, ind]:>DELTAaux[a,ind],Delta[ind,a_]:>DELTAaux[a,ind],epsTensor[a_,ind]:>EPSaux[a,ind],epsTensor[a_,ind]:>EPSaux[a,ind],sum[ind,a__]:>SUMaux[ind,a]};
+
+SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos,IndexNames={},IndexNamesSub={},iter,fin,SUB,posGauge,nr,suffix},
 For[i=1,i<=Length[partList],
 If[partList[[i]]=!=None,
 pos=Position[ListFields,partList[[i]]][[1,1]];
+If[Head[GaugeListAux]===List,
+(* For the case that there is an unbroken Subgroup, one has not to sum over 1..4 for SU(4) instance, but only for 1..2 and 2 contains then the 3 unbroken color charges; that's checked here *)
+IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],If[GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],1]]=!=True,ListFields[[pos,2,2,j,2]],GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],2]]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];,
 IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];
-(* IndexNamesSub = Join[IndexNamesSub,Table[(ListFields[[pos,2,1,j]] /. subGC[i])\[Rule]IndexNR[ListFields[[pos,2,1,j]],i,ListFields[[pos,2,1,j]] /. subGC[i]],{j,1,Length[ListFields[[pos,2,2]]]}]]; *)
+];
 ];
 i++;];
 
-
+If[AuxGaugesPresent===True,
+(* Perform the sum over the indices of the broken group; but replace at the same time the names of charge indices of the unbroken group by the names of the broken group *)
+(* Make also use of the replacement rules of the generators *)
 If[Matrix==False,
 temp=term;
-(*
-For[i=1, i\[LessEqual]Length[IndexNames],
-temp1 =Hold[Sum[TEMP,{iter,1,fin}]] /. {iter \[Rule] IndexNames[[i,1]], fin \[Rule] IndexNames[[i,2]],TEMP->(temp /. IndexNamesSub[[i]])};
-temp = ReleaseHold[temp1]/. Extract[a_,{IndexNR[b_,c_]}]\[RuleDelayed]Extract[a,c]; 
-i++;]; *)
+For[i=1, i<=Length[IndexNames],
+(* get the numbering of the field summed over as well as the suffix *)
+nr=ToExpression[StringTake[ToString[IndexNames[[i,1]]],{4}]];
+suffix=If[StringLength[ToString[IndexNames[[i,1]]]]===4,"",StringTake[ToString[IndexNames[[i,1]]],{-1}]];
+(* Replace also the delta's and eps's which involve the current variable summed over *)
+If[FreeQ[UnbrokenSubgroups,getIndexFamilyName[IndexNames[[i,1]]]]===False,
+temp=sum[ IndexNames[[i,1]],1,n]temp//.ReplacementRuleAux[ IndexNames[[i,1]]];
+];
+temp1 =Hold[Sum[temp,{iter,1,fin}]] /. {iter -> IndexNames[[i,1]], fin -> IndexNames[[i,2]]}  ;
+(* temp = ReleaseHold[ReleaseHold[temp1]] /. subGeneratorAux//. UnbrokenSubgroups[[1,2]]-> (IndexNames[[i,1]] /. subNamesAux);  *)
+temp = ReleaseHold[ReleaseHold[temp1]] (*/. UnbrokenSubgroups[[1,2]]\[Rule]SUFFIX[UnbrokenSubgroups[[1,2]]]/. SUFFIX[SUFFIX[x_]]\[Rule]SUFFIX[x] *)/. subGeneratorAux//. subGC[nr]//. SUFFIX[a_]:>ToExpression[ToString[a]<>suffix] /. DELTAaux->Delta /. EPSaux->epsTensor /.SUMaux->sum; 
+i++;];,
+temp=term;
+For[i=1, i<=Length[IndexNames],
+suffix=If[StringLength[ToString[IndexNames[[i,1]]]]===4,"",StringTake[ToString[IndexNames[[i,1]]],{-1}]];
+If[FreeQ[UnbrokenSubgroups,getIndexFamilyName[ IndexNames[[i,1]]]]===False,
+temp=temp//.ReplacementRuleAux[ IndexNames[[i,1]]];
+];
+temp1=Hold[Table[temp,iter]]/.{iter-> IndexNames[[Length[IndexNames]-i+1]]};
+(* get the numbering of the field summed over *)
+nr=ToExpression[StringTake[ToString[IndexNames[[i,1]]],{4}]];
+(* temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.  UnbrokenSubgroups[[1,2]]-> (IndexNames[[i,1]] /. subNamesAux); *)
+temp=ReleaseHold[ReleaseHold[ temp1]](*/. UnbrokenSubgroups[[1,2]]\[Rule]SUFFIX[UnbrokenSubgroups[[1,2]]]/. SUFFIX[SUFFIX[x_]]\[Rule]SUFFIX[x]*)/. subGeneratorAux//.   subGC[nr] //. SUFFIX[a_]:>ToExpression[ToString[a]<>suffix]/. DELTAaux->Delta /. EPSaux->epsTensor/.SUMaux->sum;
+i++;];
+];,
+If[Matrix==False,
+temp=term;
 For[i=1, i<=Length[IndexNames],
 temp1 =Hold[Sum[temp,{iter,1,fin}]] /. {iter -> IndexNames[[i,1]], fin -> IndexNames[[i,2]]};
 temp = ReleaseHold[temp1]; 
@@ -987,11 +1022,44 @@ temp1=Hold[Table[temp,iter]]/.{iter-> IndexNames[[Length[IndexNames]-i+1]]};
 temp=ReleaseHold[temp1];
 i++;];
 ];
+];
+
+If[AuxGaugesPresent===True,
+(* Function to decompose the gauge bosons of the broken group *)
+temp=SplitGaugeBosonsAux[temp];
+];
 
 Return[ReleaseHold[temp]];
 
 ];
 
+SplitGaugeBosonsAux[term_]:=Block[{i,j,temp},
+temp=Expand[term];
+For[i=1,i<=Length[GaugeListAux],
+If[GaugeListAux[[i,1]]==True,
+For[j=1,j<=4,
+If[FreeQ[term,SGauge[[i]]/. subGC[j]]==False,
+temp=temp /. (subGaugeBosonsAux /. {a->(generation/. subGC[j]), b->(lorentz/.subGC[j])}) /. {color -> (( Gauge[[i,3]] /. subGC[j]) /. subNamesAux)};
+];
+j++;];
+];
+i++;];
+Return[temp];
+];
+
+SplitGaugeBosonsAuxFabc[term_]:=Block[{i,j,temp},
+temp=Expand[term];
+For[i=1,i<=Length[GaugeListAux],
+If[GaugeListAux[[i,1]]==True,
+For[j=1,j<=5,
+If[FreeQ[term,SGauge[[i]]/. subGC[j]]==False,
+temp=Expand[temp] //. (subGaugeBosonsAuxFabc /. {a->(generation/. subGC[j]), b->(lorentz/.subGC[j])}) /. {color -> (( Gauge[[i,3]] /. subGC[j]) /. subNamesAux)};
+];
+j++;];
+];
+i++;];
+Return[temp];
+];
 
 
 
@@ -1024,6 +1092,11 @@ Return[generation];
 ];
 ];
 
+getIndexFamilyName[x_]:=Block[{i,j,pos},
+pos=Position[Table[StringTake[ToString[Gauge[[i,3]]],{1,3}],{i,1,Length[Gauge]}],StringTake[ToString[x],{1,3}]];
+Return[Gauge[[pos[[1,1]],3]]];
+
+];
 
 getCoeff[doub_,k_,lNr_,p1_,p2_]:=FieldDim[doub,k];
 
@@ -2373,6 +2446,25 @@ Return[factors];
 NM[a_][b__Integer]:=a[[b]];
 NM[{1,1}][b__]=1;
 NM[{1,1,1}][b__]=1;
+
+
+SetGroupConstants[field_,group_,casimir_,dynkin_,generator_,mul_,dim_,dynL_,addInd_,addInd2_]:=Block[{},
+SA`Casimir[field,group]=casimir;
+SA`Dynkin[field,group]=dynkin;
+Generator[field,group]=generator;
+SA`MulFactor[field,group]=mul;
+SA`DimensionGG[field,group]=dim;
+SA`DynL[field,group]=dynL;
+If[addInd===True,
+SA`Casimir[field[a__],group]=casimir;
+SA`Dynkin[field[a__],group]=dynkin;
+];
+If[addInd2===True,
+SA`Casimir[field[a__][b__],group]=casimir;
+SA`Dynkin[field[a__][b__],group]=dynkin;
+];
+
+];
 
 
 

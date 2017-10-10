@@ -157,7 +157,7 @@ Return[NewString];
 
 getSPhenoCoupling[x_]:=getSPhenoCoupling[x,SPhenoCouplingsAll];
 
-getSPhenoCoupling[x_,SPhenoCouplings_]:=Block[{},
+getSPhenoCoupling[x_,SPhenoCouplings_]:=Block[{pos,cList,pList},
 (* Take a coupling of the form C[A,B,C] or Cp[A,B,C] involving specific fielda A,B,C (or D) and returns the variable names used in SPheno *)
 (* The second argument gives the list of couplings which contains the coupling under considerations. The main possibilites are *)
 (*  - SPhenoCouplingsAll: all tree level couplings *) 
@@ -440,6 +440,9 @@ Return[res];
 permutationsVVV={{{1,2,3},1},{{2,1,3},-1},{{2,3,1},1},{{1,3,2},-1},{{3,1,2},1},{{3,2,1},-1}};
 (* permutationsSSV={{{1,2,3},1},{{2,1,3},-1},{{3,1,2},1},{{3,2,1},-1},{{1,3,2},1},{{2,3,1},-1}}; *)
  permutationsSSV={{{1,2},1},{{2,1},-1}}; 
+
+MakeIndicesCouplingWrapper[{a_,b_,c_,d_},proc_]:=MakeIndicesCoupling4[a,b,c,d,proc];
+MakeIndicesCouplingWrapper[{a_,b_,c_},proc_]:=MakeIndicesCoupling[a,b,c,proc];
 
 MakeIndicesCoupling[{p1_,in1_},{p2_,in2_},{p3_,in3_},proc_]:=MakeIndicesCoupling[{p1,in1},{p2,in2},{p3,in3},proc,False]
 
@@ -1521,6 +1524,30 @@ WriteString[file,"! File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on
 WriteString[file,"! ----------------------------------------------------------------------  \n \n \n"];
 
 
+];
+
+GetCouplingsMasses[temp_]:=Block[{AllExternalParticles={},AllInternalParticles={},AllAddedCouplings={},i,j,NeededMasses,NeededCouplingsInsert,NeededCouplings},
+AllExternalParticles={External[1],External[2],External[3],External[4]}/. temp[[1,2]];
+For[j=1,j<=Length[temp],
+AllInternalParticles=Join[AllInternalParticles,{Internal[1],Internal[2],Internal[3],Internal[4]}/. temp[[j,2]]];
+AllAddedCouplings = Join[AllAddedCouplings,temp[[j,1]]];
+ (* ];  *)
+j++;];
+AllExternalParticles=DeleteCases[AllExternalParticles,External[_]];
+AllInternalParticles=DeleteCases[AllInternalParticles,Internal[_]];
+
+NeededMasses=Intersection[SPhenoMass/@Join[AllExternalParticles,AllInternalParticles]];
+NeededMasses =DeleteCases[NeededMasses,0.];
+NeededMasses =Join[NeededMasses, MakeSquaredMass/@NeededMasses];
+
+
+NeededCouplingsInsert=Intersection[AllAddedCouplings /. C[a__]->Cp[a]];
+NeededCouplings={};
+For[i=1,i<=Length[NeededCouplingsInsert],
+NeededCouplings=Join[NeededCouplings,getSPhenoCoupling[NeededCouplingsInsert[[i]],SPhenoCouplingsAllreallyAll][[1]]];
+i++;];
+NeededCouplings = Flatten[NeededCouplings];
+Return[{NeededMasses,NeededCouplings}];
 ];
 
 

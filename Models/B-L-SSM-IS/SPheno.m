@@ -17,6 +17,8 @@ UseHiggs2LoopMSSM = True;
 
 ConditionGUTscale = (g1*gBL-g1BL*gBL1)/Sqrt[gBL^2-gBL1^2] == g2;
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 
 BoundaryHighScale={
 {g1,(g1*gBL-g1BL*gBL1)/Sqrt[gBL^2-gBL1^2]},

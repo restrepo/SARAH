@@ -7,7 +7,6 @@ Module TwoLoopHiggsMass_SARAH
 use Control
 Use Loopfunctions
 Use Mathematics
-!Use SusyMasses
 
 
 Interface SfermionMass

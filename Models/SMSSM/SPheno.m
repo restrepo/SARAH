@@ -29,6 +29,8 @@ BoundarySUSYScale = {
 {vS, vSInput}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 
 BoundaryHighScale={
 {T[Ye], Azero*Ye},

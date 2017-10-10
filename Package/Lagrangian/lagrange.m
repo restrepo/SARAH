@@ -926,8 +926,10 @@ DynamicVectorName= "All Done";
 GaugeTri=-GaugeTri-GaugeBi;
 GaugeQuad=-GaugeQuad;
 
-
-
+If[AuxGaugesPresent===True,
+GaugeTri=SplitGaugeBosonsAuxFabc/@Expand[GaugeTri];
+GaugeQuad=SplitGaugeBosonsAuxFabc/@Expand[GaugeQuad];
+];
 
 ];
 

@@ -193,11 +193,7 @@ ListDecayParticles3B = Automatic;
 
 UseHiggs2LoopMSSM = False;
 
-(*
-UseAuxiliaryMu2Loop = True;
-AuxiliaryMu2Loop = vS*\[Lambda]/Sqrt[2];
-*)
-
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 (* --------- Examples for input values ---------- *)
 

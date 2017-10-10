@@ -17,6 +17,8 @@ RenormalizationScale = Sqrt[(mq2[3, 3] + (vu^2*conj[Yu[3, 3]]*Yu[3, 3])/2)*(mu2[
 
 ConditionGUTscale = g1 == g2;
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 (* GUT conditions CMSSM *)
 
 BoundaryHighScale={

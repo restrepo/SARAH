@@ -364,18 +364,31 @@ SetAttributes[FinalStatesNO,Orderless];
 
 TwoBodyDecay[p_]:=Block[{i,res1,res2,addedP},
 process={};
-res1=ThreeParticleVertex[p];
+res1=ThreeParticleVertex[p]/.{a_,b_,Cp[c___]}:>Flatten[{SortFieldExternalDecay[a,b],Cp[c]}];
 addedP={};
 
 For[i=1,i<=Length[res1],
 If[(FreeQ[addedP,C[res1[[i,1]],res1[[i,2]]]] && FreeQ[addedP,C[AntiField[res1[[i,1]]],AntiField[res1[[i,2]]]]]) || AntiField[p]=!=p,
-If[((FreeQ[massless,getBlank[res1[[i,1]]]]==True || getType[res1[[i,1]]]=!=V) &&  (FreeQ[massless,getBlank[res1[[i,2]]]]==True || getType[res1[[i,1]]]=!=V)) || (FreeQ[AllowDecaysMasslessVectors,RE[p]]==False),
+If[((FreeQ[massless,getBlank[res1[[i,1]]]]==True || getType[res1[[i,1]]]=!=V) &&  (FreeQ[massless,getBlank[res1[[i,2]]]]==True || getType[res1[[i,2]]]=!=V)) || (FreeQ[AllowDecaysMasslessVectors,RE[p]]==False),
 process=Join[process,{{res1[[i,1]],res1[[i,2]],res1[[i,3]],CalculateColorFactorDecay[AntiField[p],res1[[i,1]],res1[[i,2]]],SymmFactor2BodyDecay[p,res1[[i,1]],res1[[i,2]]]}}];
 addedP=Join[addedP,{C[res1[[i,1]],res1[[i,2]]]}];
 ];
 ];
 i++;];
 Return[process];
+];
+
+SortFieldExternalDecay[a_,b_]:=Switch[getType/@{a,b},
+{F,S},Return[{a,b}],
+{F,V},Return[{a,b}],
+{S,F},Return[{b,a}],
+{V,F},Return[{b,a}],
+{S,S},Return[{a,b}],
+{S,V},Return[{a,b}],
+{V,S},Return[{b,a}],
+{V,V},Return[{a,b}],
+{F,F},Return[{a,b}],
+_,Return[{a,b}]
 ];
 
 
@@ -571,6 +584,7 @@ norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],Position[Gauge,allind[[
 CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,
 CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,
 CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,
+CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,
 CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
 CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
 CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]}; 

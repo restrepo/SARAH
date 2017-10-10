@@ -40,7 +40,7 @@ WriteString[sphenoFT, "Use Mathematics \n"];
 WriteString[sphenoFT, "Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoFT, "Use RGEs_"<>ModelName<>" \n"];
 WriteString[sphenoFT, "Use LoopMasses_"<>ModelName<>" \n"];
-WriteString[sphenoFT, "Use SusyMasses_"<>ModelName<>" \n"];
+WriteString[sphenoFT, "Use TreeLevelMasses_"<>ModelName<>" \n"];
 WriteString[sphenoFT, "Use Couplings_"<>ModelName<>" \n"];
 WriteString[sphenoFT,"Use Tadpoles_"<>ModelName<>" \n "];
 If[Head[RegimeNr]===Integer,

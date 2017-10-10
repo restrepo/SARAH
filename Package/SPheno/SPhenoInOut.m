@@ -207,7 +207,7 @@ WriteString[sphenoInOut,"Use LoopFunctions \n"];
 If[NonSUSYModel,
 WriteString[sphenoInOut,"Use StandardModel \n"];
 WriteString[sphenoInOut,"Use LoopCouplings_"<>ModelName<>" \n \n"];,
-WriteString[sphenoInOut,"Use SugraRuns_"<>ModelName<>" \n \n"];
+WriteString[sphenoInOut,"Use Boundaries_"<>ModelName<>" \n \n"];
 ];
 If[SupersymmetricModel=!=False,
 WriteString[sphenoInOut,"Use EffPotFunctions \n"];

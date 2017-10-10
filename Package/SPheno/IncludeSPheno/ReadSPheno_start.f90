@@ -129,7 +129,13 @@
 
      Case(15) ! run SUSY couplings to scale of decaying particle
       MinWidth = wert    
-
+      
+     Case(16) ! run SUSY couplings to scale of decaying particle
+       If (wert.Ne.0) Then
+        OneLoopDecays=.true.
+       Else
+        OneLoopDecays=.false.
+       End If
 !      Case(21)  ! whether to calculate cross sections or not
 !       If (Int(wert).Eq.1) L_CS = .True.
 !       If (Int(wert).Eq.0) L_CS = .False.
@@ -359,7 +365,13 @@
       If (wert.Eq.1) Write_WHIZARD = .True.     
 
      Case(76) ! Writes input files for HiggsBounfs
-      If (wert.Eq.1) Write_HiggsBounds = .True.      
+      If (wert.Eq.1) Write_HiggsBounds = .True.  
+      
+     Case(77) ! Use conventions for MO
+      If (wert.Eq.1) Then 
+        OutputForMO = .True.  
+        RotateNegativeFermionMasses = .false.
+      End if
 
 
      Case(80) ! exit for sure with non-zero value if a problem occurs
@@ -417,7 +429,15 @@
        HigherOrderDiboson=.False.
       Else
        HigherOrderDiboson=.True.
+      End If    
+      
+     Case(522)
+      If (wert.Ne.1._dp) Then
+       PoleMassesInLoops=.False.
+      Else
+       PoleMassesInLoops=.True.
       End If      
+      
 
      Case(525)
       If (wert.Ne.1._dp) Then
@@ -447,7 +467,15 @@
        OneLoopFT=.True.
       End If
 
-
+     Case(600)  
+      Mass_Regulator_PhotonGluon = wert
+      
+     Case(610)  
+      If (wert.Ne.1._dp) Then
+       SquareFullAmplitudeDecays=.False.
+      Else
+       SquareFullAmplitudeDecays=.True.
+      End If      
 
      Case(990)
       If (wert.Ne.1._dp) Then

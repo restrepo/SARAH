@@ -40,6 +40,8 @@ RenormalizationScale = MSu[1]*MSu[6];
 
 (* Moronic GUT conditions Quiver *)
  ConditionGUTscale = {gB1 == -gB2, g1 == 10 };
+ 
+ DEFINITION[MatchingConditions]=Default[THDMII];
 
 BoundaryHighScale={
     {YK,     YKInput},

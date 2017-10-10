@@ -54,14 +54,28 @@ WriteString[ModelData,"Logical, Save :: CalculateOneLoopMasses = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMassesSave = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateTwoLoopHiggsMasses = .True. \n"];
 WriteString[ModelData,"Logical, Save :: SUSYrunningFromMZ = .True. \n"];
+WriteString[ModelData,"Logical, Save :: SquareFullAmplitudeDecays = .False. \n"];
 WriteString[ModelData,"Logical :: CalculateTwoLoopHiggsMassesSave = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateLowEnergy = .True. \n"];
 WriteString[ModelData,"Logical, Save :: WriteParametersAtQ = .False. \n"];
+WriteString[ModelData,"Logical, Save :: OutputForMO = .False. \n"];
 WriteString[ModelData,"Logical, Save :: TwoLoopRGE=.True.\n"];
+If[SA`AddOneLoopDecay===True,
+WriteString[ModelData,"Logical, Save :: OneLoopDecays=.True.\n"];,
+WriteString[ModelData,"Logical, Save :: OneLoopDecays=.False.\n"];
+];
 If[SupersymmetricModel===True,
 WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.True.\n"];,
 WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.False.\n"];
 ];
+
+If[SupersymmetricModel=!=False,
+WriteString[ModelData,"Real(dp), save :: rMS = 0._dp \n"];,
+WriteString[ModelData,"Real(dp), save :: rMS = 1._dp \n"];
+];
+WriteString[ModelData,"Real(dp), save :: DerrMS = 0._dp \n"];
+
+WriteString[ModelData,"Real(dp), save :: Mass_Regulator_PhotonGluon = 1.0E-10_dp \n"];
 
 WriteString[ModelData,"Logical, Save :: RunningSUSYparametersLowEnergy=.True.\n"];
 WriteString[ModelData,"Logical, Save :: RunningSMparametersLowEnergy=.True.\n"];
@@ -77,6 +91,7 @@ WriteString[ModelData,"Logical :: ForceRealMatrices = .False. \n"];
 WriteString[ModelData,"Logical :: WriteGUTvalues \n"];
 WriteString[ModelData,"Logical :: TwoLoopSafeMode \n"];
 WriteString[ModelData,"Integer :: TwoLoopMethod = 3 \n"];
+WriteString[ModelData,"Logical :: PoleMassesInLoops = .True. \n"];
 WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleParameters = .false. \n"];
 WriteString[ModelData,"Logical :: IncludeDeltaVB = .True. \n"];
 WriteString[ModelData,"Logical :: IncludeBSMdeltaVB = .True. \n"];
@@ -94,7 +109,7 @@ WriteString[ModelData,"Logical :: runningTopMZ= .False. \n"];
 WriteString[ModelData,"Logical :: PrintDebugInformation = .False. \n"];
 WriteString[ModelData,"Logical ::IncludeThresholdsAtScale \n"];
 WriteString[ModelData,"Logical :: PurelyNumericalEffPot \n"];
-If[SupersymmetricModel===False,
+If[Include2LoopCorrections===False,
 WriteString[ModelData,"Real(dp) :: hstep_pn, hstep_sa \n"];
 ];
 If[IncludeFlavorKit=!=True||SkipFlavorKit===True,
@@ -186,6 +201,11 @@ MakeVariableList[NeededRatiosLoopCouplingsSavePseudo,"",ModelData];
 
 For[i=1,i<=Length[AuxiliaryParametersSPheno],
 WriteString[ModelData,AuxiliaryParametersSPheno[[i]]<>"\n"];
+i++;
+];
+
+For[i=1,i<=Length[AnglesInMatchingQ],
+WriteString[ModelData,"Real(dp) :: "<>ToString[AnglesInMatchingQ[[i]]]<>"\n"];
 i++;
 ];
 
@@ -540,6 +560,8 @@ k++;];
 WriteString[ModelData,"Contains \n \n"];
 
 
+
+
 WriteThetaDelta[ModelData];
 
 
@@ -712,6 +734,17 @@ WriteClebschGordan[ModelData];
 WriteString[ModelData,"End Subroutine Set_All_Parameters_0 \n \n"];
 
 (* AppendSourceCode["SwitchToSCKM.f90",ModelData]; *)
+
+WriteString[ModelData,"\n\n"];
+If[Head[DEFINITION[MatchingConditions]]===List &&DEFINITION[MatchingConditions]=!={},
+WriteMatchingConditions[ModelData];
+];
+
+(*
+If[WriteCKMBasis===True,
+AppendSourceCode["SwitchFromSCKM.f90",ModelData];
+];
+*)
 
 WriteString[ModelData,"End Module Model_Data_"<>ModelName<>""];
 
@@ -940,7 +973,35 @@ WriteString[ModelData," & 2._dp*yQ**2*Log(1._dp+xQ))/(2._dp*xQ**2*yQ**2)\n"];
 WriteString[ModelData,"End Function SQuiver \n \n"];
 ];
 
-
+WriteMatchingConditions[file_]:=Block[{i,j,k,suffix},
+MakeSubroutineTitle["SetMatchingConditions",Join[listVEVs,listAllParameters],{"g1SM","g2SM","g3SM","YuSM","YdSM","YeSM","vSM"},{"MZsuffix"},file];
+MakeVariableList[listAllParameters,",Intent(inout)",file];
+MakeVariableList[listVEVs,",Intent(inout)",file];
+WriteString[file,"Logical,Intent(in)::MZsuffix \n"];
+WriteString[file,"Real(dp), Intent(in) :: g1SM, g2SM, g3SM, vSM \n"];
+WriteString[file,"Complex(dp),Intent(in) :: YuSM(3,3),YdSM(3,3),YeSM(3,3) \n"];
+For[k=1,k<=2,
+If[k===1,
+WriteString[file,"If (MZsuffix) Then \n"];
+suffix="MZ";,
+WriteString[file,"Else \n"];
+suffix="";
+];
+For[i=1,i<=Length[DEFINITION[MatchingConditions]],
+WriteString[file,"  "<>AddSuffix[DEFINITION[MatchingConditions][[i,1]],suffix]<>" = " <>SPhenoForm[DEFINITION[MatchingConditions][[i,2]]] <>" \n"];
+i++;];
+k++;];
+WriteString[file,"End if \n"];
+WriteString[file,"End Subroutine SetMatchingConditions \n"];
+];
+AddSuffix[name_,suffix_]:=Block[{},
+Switch[Head[name],
+Symbol|T|B|Q,
+Return[SPhenoForm[name]<>suffix];,
+_,
+Return[SPhenoForm[name[[0]]]<>suffix<>StringDrop[SPhenoForm[name],{1,StringLength[SPhenoForm[name[[0]]]]}]];
+];
+];
 
 WriteInitClebschGordan[file_]:=Block[{i,j,temp},
 For[i=1,i<=Length[SA`ClebschGordon],

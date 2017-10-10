@@ -804,6 +804,17 @@ il++;];
 i2++;];
 i1++;];
  i3++;]; 
+
+
+per2=Intersection[Permutations[(getBlank/@Flatten[{PART[S],PART[S],PART[S]}]),{3}]];
+comp=Complement[per2,per];
+For[i3=1,i3<=Length[comp],
+Print["i3", i3];
+For[il=1,il<=Length[list1b],
+ list1b[[il,1]][_,_,getFullNS[comp[[i3,1]]]/. subGCRule[3],getFullNS[comp[[i3,2]]]/. subGCRule[4],getFullNS[comp[[i3,3]]]/. subGCRule[5]]=0; 
+il++;];
+ i3++;]; 
+
 ];
 
 (*

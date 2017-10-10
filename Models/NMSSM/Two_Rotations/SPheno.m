@@ -31,6 +31,7 @@ Three different sets of boundary conditions are used:
 Switch in SPheno happens by flag 2 in MODSEL 
 *)
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 BoundaryEWSBScale = Table[{},{3}];
 BoundarySUSYScale = Table[{},{3}];

@@ -49,7 +49,7 @@ WriteString[sphenoCoup, "Use RGEs_"<>ModelName<>" \n"];
 WriteString[sphenoCoup, "Use Couplings_"<>ModelName<>" \n"];
 WriteString[sphenoCoup, "Use LoopCouplings_"<>ModelName<>" \n"];
 WriteString[sphenoCoup,"Use Tadpoles_"<>ModelName<>" \n "];
-WriteString[sphenoCoup, "Use SusyMasses_"<>ModelName<>" \n"];
+WriteString[sphenoCoup, "Use TreeLevelMasses_"<>ModelName<>" \n"];
 (* WriteString[sphenoCoup, "Use LoopMasses_"<>ModelName<>" \n"]; *)
 WriteString[sphenoCoup, "Use Mathematics, Only: CompareMatrices, Adjungate \n \n"];
 
@@ -257,12 +257,31 @@ WriteString[sphenoCoup,"! --- Calculate running tree-level masses for loop induc
 
 MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{".True.","kont"},sphenoCoup];
 
-If[FreeQ[ParameterDefinitions,"Scalar-Mixing-Matrix"]==False,
+(*
+If[FreeQ[ParameterDefinitions,"Scalar-Mixing-Matrix"]\[Equal]False,
 WriteString[sphenoCoup,SPhenoForm[HiggsMixingMatrix] <>" = "<> SPhenoForm[HiggsMixingMatrix]<>"input \n"];
 ];
-If[FreeQ[ParameterDefinitions,"Pseudo-Scalar-Mixing-Matrix"]==False,
+If[FreeQ[ParameterDefinitions,"Pseudo-Scalar-Mixing-Matrix"]\[Equal]False,
 WriteString[sphenoCoup,SPhenoForm[PseudoScalarMixingMatrix] <>" = "<> SPhenoForm[PseudoScalarMixingMatrix]<>"input \n"];
 ];
+*)
+
+WriteString[sphenoCoup,"! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- \n"];
+For[i=1,i<=Length[NewMassParameters],
+If[Length[getDimSPheno[NewMassParameters[[i]]]]==2 && FreeQ[{ElectronMatrixL, ElectronMatrixR, UpMatrixR, UpMatrixL, DownMatrixR,DownMatrixL},NewMassParameters[[i]]],
+WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
+];
+i++;];
+
+
+WriteString[sphenoCoup,"If (PoleMassesInLoops) Then \n"];
+WriteString[sphenoCoup,"! --- Use the pole masses --- \n"];
+For[i=1,i<=Length[NewMassParameters],
+If[Length[getDimSPheno[NewMassParameters[[i]]]]==1,
+WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
+];
+i++;];
+WriteString[sphenoCoup,"End if \n"];
 
 If[(particle===HiggsBoson || particle == PseudoScalar) && suffix ==="2B",
 SPhenoCouplings= Select[SPhenoCouplingsAll,(FreeQ[couplings,#[[2,2]]]==False)&];
@@ -357,9 +376,9 @@ WriteHiggsBoundsRatiosScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplings
 
 WriteString[sphenoCoup,"If (i1.eq.1) Then \n"];
 If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]==False && (getGenSPhenoStart[PseudoScalar]<=getGenSPheno[PseudoScalar]),
-WriteString[sphenoCoup,"CPL_A_H_Z = Abs(Transpose("<>ToString[SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]<>")**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp)))\n"];,
+WriteString[sphenoCoup,"CPL_A_H_Z = Abs(Transpose("<>ToString[SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]<>")**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")**2*4._dp)))\n"];,
 If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]==False && getGen[PseudoScalar]>1 && (getGenSPhenoStart[PseudoScalar]<=getGenSPheno[PseudoScalar]),
-WriteString[sphenoCoup,"CPL_A_H_Z = Abs("<>ToString[SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp)))\n"];,
+WriteString[sphenoCoup,"CPL_A_H_Z = Abs("<>ToString[SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")**2*4._dp)))\n"];,
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False && FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
 WriteString[sphenoCoup,"CPL_A_H_Z = 0 \n"];
 ];
@@ -399,7 +418,7 @@ MakeCall["CoupHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"gNLO
 WriteString[sphenoCoup,"ratioPPP"<>addgen<>" = Abs(cplPseudoHiggsPP"<>addgen<>"/(coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2))**2 \n"];
 
 WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
-MakeCall["CoupPseudoHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluonPseudo,NeededMassesLoopGluon}],{SPhenoMass[HiggsBoson,i1],"i1"},{"gNLO","coup"},sphenoCoup];
+MakeCall["CoupPseudoHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluonPseudo,NeededMassesLoopGluon}],{"m_in","i1"},{"gNLO","coup"},sphenoCoup];
 
 
 WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
@@ -433,7 +452,7 @@ WriteHiggsBoundsRatiosPseudoScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCou
 WriteString[sphenoCoup, "If (i1.eq."<>ToString[getGenSPhenoStart[PseudoScalar]]<>") Then \n"];
 If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]==False,
 (* CHANGED 03.05.15 *)
-WriteString[(*sphenoBR,*)sphenoCoup,"CPL_A_A_Z = Abs("<>ToString[SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp)))\n"];,
+WriteString[(*sphenoBR,*)sphenoCoup,"CPL_A_A_Z = Abs("<>ToString[SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")**2*4._dp)))\n"];,
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
 WriteString[(*sphenoBR,*)sphenoCoup,"CPL_A_A_Z = 0._dp \n"];
 ];
@@ -450,12 +469,7 @@ WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[N
 ];
 i++;]; *)
 
-WriteString[sphenoCoup,"! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- \n"];
-For[i=1,i<=Length[NewMassParameters],
-If[Length[getDimSPheno[NewMassParameters[[i]]]]==2 && FreeQ[{ElectronMatrixL, ElectronMatrixR, UpMatrixR, UpMatrixL, DownMatrixR,DownMatrixL},NewMassParameters[[i]]],
-WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
-];
-i++;];
+
 
 SPhenoCouplings= Select[SPhenoCouplingsAll,(FreeQ[couplings,#[[2,2]]]==False)&];
 

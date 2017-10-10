@@ -83,6 +83,8 @@ BoundaryLowScaleInput={
  {vL[3], vL3Input}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;

@@ -2,20 +2,14 @@
 
 GenerateSPheno2LPole:=
 Block[{},
-(*
-Print["------------------------------------------------"];
-Print["Writing SPheno two loop diagrammatic Higgs mass "];
-Print["  by Mark Goodsell (goodsell@lpthe.jussieu.fr)  "];
-Print["  See arxiv 15xx.xxxx                           "];                         
-Print["------------------------------------------------"];
-*)
+
 
 Print[StyleForm["Writing SPheno two loop diagrammatic Higgs mass","Section",FontSize->12]];
 Print["by Mark Goodsell (goodsell@lpthe.jussieu.fr), arxiv:1503.03098"];
 
 (* $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}]; *)
 
-spheno2LP=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"2LPole_"<>ModelName<>".f90"]];
+spheno2LP=OpenWrite[ToFileName[$sarahSPhenoTwoLoopDir,"2LPole_"<>ModelName<>".f90"]];
 
 Write2LPoleHeader;
 
@@ -25,10 +19,16 @@ WriteString[spheno2LP,"End Subroutine CalculatePi2S\n"];
 WriteString[spheno2LP,"End Module Pole2L_"<>ModelName<>" \n \n"];
 Close[spheno2LP];
 
-If[FileExistsQ[ToFileName[$sarahCurrentSPhenoDir,"2LPoleFunctions.f90"]]===True,
-DeleteFile[ToFileName[$sarahCurrentSPhenoDir,"2LPoleFunctions.f90"]];
-];
-CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"2LPoleFunctions.f90"],ToFileName[$sarahCurrentSPhenoDir,"2LPoleFunctions.f90"]];
+If[FileExistsQ[ToFileName[$sarahSPhenoTwoLoopDir,"2LPoleFunctions.f90"]]===True,
+DeleteFile[ToFileName[$sarahSPhenoTwoLoopDir,"2LPoleFunctions.f90"]];
+  ];
+
+      If[SupersymmetricModel=!=False,
+	 CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"2LPoleFunctions.f90"],ToFileName[$sarahCurrentSPhenoDir,"2LPoleFunctions.f90"]];
+	 ,
+	 CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"2LPoleFunctionsMSbar.f90"],ToFileName[$sarahCurrentSPhenoDir,"2LPoleFunctions.f90"]];
+	];
+
 
 
 ];
@@ -43,7 +43,7 @@ WriteString[spheno2LP,"Use Mathematics \n"];
 WriteString[spheno2LP,"Use MathematicsQP \n"];
 WriteString[spheno2LP,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[spheno2LP,"Use StandardModel \n"];
-WriteString[spheno2LP,"Use SusyMasses_"<>ModelName<>" \n"];
+WriteString[spheno2LP,"Use TreeLevelMasses_"<>ModelName<>" \n"];
 WriteString[spheno2LP,"Use Pole2LFunctions\n"];
 
 WriteString[spheno2LP,"Contains \n \n"];

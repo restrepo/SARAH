@@ -69,4 +69,6 @@ DefaultInputValues ={LambdaHINPUT -> -0.09,
                      threeTimesU1QmINPUT -> 1,
                      U1QkINPUT -> 1
                      };
+                     
+DEFINITION[MatchingConditions]=Default[THDMII];                     
 

@@ -42,13 +42,13 @@ Else ! Delta M_Bs
 End if
 
 ! normalization factor
-norm = GF**2*mw2/(16._dp*Pi**2)*Veff2
+norm = GF**2*mw2/(8._dp*Pi**2)*Veff2 ! Note the relative factor of 2
 
 ! Wilson coefficients
 CVLLnew = (O4dVLL(3,i1,3,i1)-O4dVLLSM(3,i1,3,i1))/norm ! we remove the SM contribution
 C1VRR = O4dVRR(3,i1,3,i1)/norm
-C1LR = (O4dVLR(3,i1,3,i1)+O4dVRL(3,i1,3,i1))/norm
-C2LR = (O4dSLR(3,i1,3,i1)+O4dSRL(3,i1,3,i1))/norm
+C1LR = 2._dp*(O4dVLR(3,i1,3,i1)+O4dVRL(3,i1,3,i1))/norm
+C2LR = 2._dp*(O4dSLR(3,i1,3,i1)+O4dSRL(3,i1,3,i1))/norm
 C1SLL = O4dSLL(3,i1,3,i1)/norm
 C1SRR = O4dSRR(3,i1,3,i1)/norm
 C2SLL  = O4dTLL(3,i1,3,i1)/norm

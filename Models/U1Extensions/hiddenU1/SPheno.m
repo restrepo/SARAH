@@ -52,6 +52,8 @@ BoundaryLowScaleInput={
 ListDecayParticles = {Fu,Fe,Fd,hh,VZp};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fd,"Fd.f90"}};
 
+DEFINITION[MatchingConditions]=Default[OHDM];
+
 
 DefaultInputValues ={LambdaHINPUT -> -0.085,  
                      gXINPUT->0.5, 

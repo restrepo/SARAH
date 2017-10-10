@@ -140,6 +140,7 @@ Lambda={{{0,1,0},{1,0,0},{0,0,0}},{{0,-I,0},{I,0,0},{0,0,0}},{{1,0,0},{0,-1,0},{
 Lambda={{{0,1,0},{1,0,0},{0,0,0}},{{0,0,0},{0,0,1},{0,1,0}},{{0,0,I},{0,0,0},{-I,0,0}},{{0,-I,0},{I,0,0},{0,0,0}},{{0,0,0},{0,0,-I},{0,I,0}},{{0,0,-1},{0,0,0},{-1,0,0}},{{2/Sqrt[3],0,0},{0,-(1/Sqrt[3]),0},{0,0,-(1/Sqrt[3])}},{{0,0,0},{0,1,0},{0,0,-1}}};
 
 Lam[a_Integer,b_Integer,c_Integer] :=Lambda[[a,b,c]];
+LamPS[a_Integer,b_Integer,c_Integer] :=LambdaPS[[a,b,c]]/2;
 
 SetAttributes[LambdaProd,Orderless];
 SetAttributes[SigmaProd,Orderless];
@@ -150,6 +151,7 @@ conj[Lam[a_,ct3,ct2]]:=Lam[a,ct2,ct3];
 
 (* conj[Lam][a___]:=conj[Lam[a]]; *)
 
+GeneratorMatrices[SU[4]]=LambdaPS;
 GeneratorMatrices[SU[3]]=Lambda;
 GeneratorMatrices[SU[2]]=Sigma;
 
@@ -157,6 +159,7 @@ conj[Lam[a_,b_,c_]]:=Lam[a,c,b];
 conj[fSU3[a__]]:=fSU3[a];
 conj[fSU2[a__]]:=fSU2[a];
 
+fSU4[a_Integer,b_Integer,c_Integer]:=fPS[[a,b,c]];
 fSU3[a_Integer,b_Integer,c_Integer]:=Levi[[a,b,c]];
 fSU2[a_Integer,b_Integer,c_Integer]:=Signature[{a,b,c}];
 fSU2[a_,b_,b_]:=0;
@@ -474,10 +477,11 @@ TA[3,a_,b_,c_]:=Lam[a,b,c]/2;
 TA[2,a_,b_,c_]:=Sig[a,b,c]/2;
 *)
 
+TA[SU[4],a_,b_,c_]:=LamPS[a,b,c]; 
 TA[SU[3],a_,b_,c_]:=Lam[a,b,c]/2;
 TA[SU[2],a_,b_,c_]:=Sig[a,b,c]/2;
 
-TA[SU[n_],a_Integer,b_Integer,c_Integer]:=GeneratorMatrices[SU[n]][[a,b,c]]/2 /;n>3;
+TA[SU[n_],a_Integer,b_Integer,c_Integer]:=GeneratorMatrices[SU[n]][[a,b,c]]/2 /;n>4;
 
 (* Generator[a_,_,1,_,_,_]:=0 /; a>1; *)
 Generator[a_,_,1,_,_,_]:=0 /; a[[1]]>1;
@@ -487,6 +491,7 @@ fU1[a__]:=0;
 FST[U[1]][a__]:=0;
 FST[SU[2]][a__]:=fSU2[a];
 FST[SU[3]][a__]:=fSU3[a];
+FST[SU[4]][a__]:=fSU4[a];
 
 MakeMatricesSUN[N_,old_]:=Block[{i,j,n1,n2,generators,sum},
 generators = Table[0,{N^2-1},{N},{N}];

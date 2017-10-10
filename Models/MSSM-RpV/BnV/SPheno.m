@@ -39,6 +39,8 @@ InitializationValues = {
  {B[\[Mu]],0}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 (*----------------------------------*)
 (* Information for SUSY scale input *)
 (*----------------------------------*)

@@ -15,6 +15,8 @@ RenormalizationScale = MSu[1]*MSu[6];
 
 ConditionGUTscale = (g1*gBL-g1BL*gBL1)/Sqrt[gBL^2+gBL1^2] == g2;
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 BoundaryHighScale={
 {g1,(g1*gBL-g1BL*gBL1)/Sqrt[gBL^2+gBL1^2]},
 {g1,Sqrt[(g1^2+g2^2)/2]},

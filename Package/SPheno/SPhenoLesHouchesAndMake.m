@@ -42,11 +42,16 @@ defv={};
 ];
 ];
 
+$SPhenoInputFilesDir=ToFileName[{$sarahCurrentSPhenoDir,"Input_Files"}];
+If[FileExistsQ[$SPhenoInputFilesDir]=!=True,
+CreateDirectory[$SPhenoInputFilesDir];
+];
+
 If[Head[MINPAR[[1,1]]]=!=List || iminpar==1,
-sphenoLH=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"LesHouches.in."<>NameForModel]];
-sphenoLHlow=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"LesHouches.in."<>NameForModel<>"_low"]];,
-sphenoLH=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"LesHouches.in."<>NameForModel<>"_"<>ToString[iminpar]]];
-sphenoLHlow=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"LesHouches.in."<>NameForModel<>"_low_"<>ToString[iminpar]]];
+sphenoLH=OpenWrite[ToFileName[$SPhenoInputFilesDir,"LesHouches.in."<>NameForModel]];
+sphenoLHlow=OpenWrite[ToFileName[$SPhenoInputFilesDir,"LesHouches.in."<>NameForModel<>"_low"]];,
+sphenoLH=OpenWrite[ToFileName[$SPhenoInputFilesDir,"LesHouches.in."<>NameForModel<>"_"<>ToString[iminpar]]];
+sphenoLHlow=OpenWrite[ToFileName[$SPhenoInputFilesDir,"LesHouches.in."<>NameForModel<>"_low_"<>ToString[iminpar]]];
 ];
 filenames= {sphenoLH, sphenoLHlow};
 
@@ -112,7 +117,7 @@ i++;];
 WriteString[filenames[[l]],"Block SPhenoInput   # SPheno specific input \n"];
 WriteString[filenames[[l]],"  1 -1              # error level \n"];
 WriteString[filenames[[l]],"  2  0              # SPA conventions \n"];
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 WriteString[filenames[[l]],"  7  0              # Skip 2-loop Higgs corrections \n"];
 WriteString[filenames[[l]],"  8  3              # Method used for two-loop calculation \n"];
 WriteString[filenames[[l]],"  9  1              # Gaugeless limit used at two-loop \n"];
@@ -123,6 +128,9 @@ WriteString[filenames[[l]]," 13 1               # 3-Body decays: none (0), fermi
 WriteString[filenames[[l]]," 14 0               # Run couplings to scale of decaying particle \n"];
 WriteString[filenames[[l]]," 12 1.000E-04       # write only branching ratios larger than this value \n"];
 WriteString[filenames[[l]]," 15 1.000E-30       # write only decay if width larger than this value \n"];
+If[SA`AddOneLoopDecay === True,
+WriteString[filenames[[l]]," 16 1              # One-loop decays \n"];
+];
 WriteString[filenames[[l]]," 31 -1              # fixed GUT scale (-1: dynamical GUT scale) \n"];
 WriteString[filenames[[l]]," 32 0               # Strict unification \n"];
 WriteString[filenames[[l]]," 34 1.000E-04       # Precision of mass calculation \n"];
@@ -145,6 +153,7 @@ WriteString[filenames[[l]]," 65 1               # Solution tadpole equation \n"]
 ];
 WriteString[filenames[[l]]," 75 1               # Write WHIZARD files \n"];
 WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file   \n"];
+WriteString[filenames[[l]]," 77 0               # Output for MicrOmegas (running masses for light quarks; real mixing matrices)   \n"];
 WriteString[filenames[[l]]," 86 0.              # Maximal width to be counted as invisible in Higgs decays; -1: only LSP \n"];
 If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          # Maximal mass of particles taken into account in loops \n"];
 ];
@@ -155,7 +164,11 @@ WriteString[filenames[[l]],"521 1.              # Diphoton/Digluon widths includ
 WriteString[filenames[[l]],"525 0.              # Write loop contributions to diphoton decay of Higgs \n"];
 WriteString[filenames[[l]],"530 1.              # Write Blocks for Vevacious \n"];
 If[IncludeFineTuning===True,
-WriteString[filenames[[l]],"550 1.              # Calculate Fine-Tuning \n"];
+WriteString[filenames[[l]],"550 1.             # Calculate Fine-Tuning \n"];
+];
+If[SA`AddOneLoopDecay === True,
+WriteString[filenames[[l]],"600 0.1             # Photon/Gluon mass in loop decays \n"];
+WriteString[filenames[[l]],"610 0               # Calculate (Tree+Wave+Vertex)^2 instead of Tree*(Tree+2*Wave+2*Vertex) \n"];
 ];
 
 If[FlagLoopContributions===True,
@@ -281,6 +294,7 @@ WriteString[sphenoMake,"PreDef = -DGENERATIONMIXING -DONLYDOUBLE\n"];
 WriteString[sphenoMake,"# setting various paths  \n"];
 WriteString[sphenoMake,"InDir = ../include\n"];
 WriteString[sphenoMake,"Mdir = ${InDir}\n"];
+WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables\n"];
 WriteString[sphenoMake,"name = ../lib/libSPheno"<>NameForModel<>".a\n \n"];
 WriteString[sphenoMake,"# check if SARAH module and SPheno are compatibel  \n"];
 WriteString[sphenoMake,"minV=330.00 \n"];
@@ -342,7 +356,7 @@ WriteString[sphenoMake,"\t ${MAKE} F90=${F90} ${name} \n"];
 WriteString[sphenoMake,"\t ${MAKE} F90=${F90} SPheno"<>NameForModel<>".o \n"];
 
 If[UseHiggs2LoopMSSM===True,
-WriteString[sphenoMake,"\t ${F90} -c effpotasat.f \n"];
+WriteString[sphenoMake,"\t ${F90} -c TwoLoopMasses/effpotasat.f \n"];
 WriteString[sphenoMake,"\t ${F90} -o SPheno"<>NameForModel<>" ${LFlagsB} SPheno"<>NameForModel<>".o effpotasat.o ../lib/libSPheno"<>NameForModel<>".a ../lib/libSPheno.a\n"];,(*otherwise do not include the fortran file*)WriteString[sphenoMake,"\t ${F90} -o SPheno"<>NameForModel<>" ${LFlagsB} SPheno"<>NameForModel<>".o ../lib/libSPheno"<>NameForModel<>".a ../lib/libSPheno.a\n"];
 ];
 
@@ -352,14 +366,13 @@ WriteString[sphenoMake,"${name}:  ${name}(Model_Data_"<>ModelName<>".o)  \\\n"];
 (* If[NonSUSYModel=!=True, *)
 WriteString[sphenoMake," ${name}(RGEs_"<>ModelName<>".o)   \\\n"];  
 (* ]; *)
-WriteString[sphenoMake," ${name}(Couplings_"<>ModelName<>".o) ${name}(SusyMasses_"<>ModelName<>".o) ${name}(TadpoleEquations_"<>ModelName<>".o) \\\n"];  
+WriteString[sphenoMake," ${name}(Couplings_"<>ModelName<>".o) ${name}(TreeLevelMasses_"<>ModelName<>".o) ${name}(TadpoleEquations_"<>ModelName<>".o) \\\n"];  
 If[SPhenoOnlyForHM=!=True,
 WriteString[sphenoMake," ${name}(LoopCouplings_"<>ModelName<>".o) ${name}(CouplingsForDecays_"<>ModelName<>".o) \\\n"];,
 WriteString[sphenoMake," ${name}(LoopCouplings_"<>ModelName<>".o)  \\\n"];  
 ];  
 
-If[SPhenoOnlyForHM=!=True,
-WriteString[sphenoMake," ${name}(SusyDecays_"<>ModelName<>".o) \\\n"]; 
+WriteString[sphenoMake," ${name}(TreeLevel_Decays_"<>ModelName<>".o) \\\n"]; 
 If[Length[ListDecayParticles3B]>0,
 For[i=1,i<=Length[ListDecayParticles3B],
 WriteString[sphenoMake," ${name}("<>StringDrop[ToString[ListDecayParticles3B[[i,2]]],-4]<>".o) "];
@@ -367,46 +380,43 @@ i++;];
 WriteString[sphenoMake ," \\\n"];
 ];
 
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 WriteString[sphenoMake," ${name}(EffPotFunctions.o) ${name}(DerivativesEffPotFunctions.o) ${name}(EffectivePotential_"<>ModelName<>".o) \\\n"];
 WriteString[sphenoMake," ${name}(2LPoleFunctions.o) ${name}(2LPole_"<>ModelName<>".o) \\\n"];
 If[UseHiggs2LoopMSSM===True,
-WriteString[sphenoMake," ${name}(BranchingRatios_"<>ModelName<>".o) ${name}(TwoLoopHiggsMass_SARAH.o) ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];,
-WriteString[sphenoMake," ${name}(BranchingRatios_"<>ModelName<>".o) ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
-];,
-WriteString[sphenoMake," ${name}(BranchingRatios_"<>ModelName<>".o) ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
-];,
-WriteString[sphenoMake," ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
+WriteString[sphenoMake," ${name}(TwoLoopHiggsMass_SARAH.o) \\\n"];
 ];
+];
+WriteString[sphenoMake,"${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \\\n"];
+WriteString[sphenoMake," ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
 If[Head[RegimeNr]===Integer,
 WriteString[sphenoMake," ${name}(Shifts_"<>ModelName<>".o) \\\n"];
 ];
 
 If[SA`AddOneLoopDecay === True && SPhenoOnlyForHM=!=True ,
-stringOneLoopDecay="${name}(OneLoopDecays_"<>ModelName<>".o) ";,stringOneLoopDecay="";
+WriteString[sphenoMake,"${name}(Bremsstrahlung.o) ${name}(DecayFFS.o) ${name}(DecayFFV.o) ${name}(DecaySSS.o) ${name}(DecaySSV.o) ${name}(DecaySFF.o) \\\n"];
+For[i=1,i<=Length[SA`ParticlesDecays1Loop],
+WriteString[sphenoMake," ${name}(LoopDecay"<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>".o) "];
+i++;];
+WriteString[sphenoMake,"${name}(OneLoopDecays_"<>ModelName<>".o) \\\n"];
 ];
-If[SPhenoOnlyForHM=!=True,
-WriteString[sphenoMake," ${name}(HiggsCS_"<>ModelName<>".o) ${name}(RunSM_"<>ModelName<>".o) \\\n"];
-];
+
+WriteString[sphenoMake," ${name}(BranchingRatios_"<>ModelName<>".o) ${name}(HiggsCS_"<>ModelName<>".o) ${name}(RunSM_"<>ModelName<>".o) \\\n"];
 
 If[IncludeFineTuning===True,
 WriteString[sphenoMake," ${name}(FineTuning_"<>ModelName<>".o) \\\n"];
 ];
 
 
-If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True ,
+If[AddLowEnergyConstraint ===True,
 WriteString[sphenoMake," ${name}(LowEnergy_"<>ModelName<>".o) \\\n"];
 If[SkipFlavorKit=!=True,WriteString[sphenoMake,"${name}(FlavorKit_LFV_"<>ModelName<>".o) ${name}(FlavorKit_QFV_"<>ModelName<>".o) ${name}(FlavorKit_Observables_"<>ModelName<>".o)\\\n"];
 ];
+];
 
 If[NonSUSYModel=!=True,
-WriteString[sphenoMake," ${name}(SugraRuns_"<>ModelName<>".o) "<>stringOneLoopDecay <>" ${name}(InputOutput_"<>ModelName<>".o) \n"];,
-WriteString[sphenoMake,stringOneLoopDecay <>"${name}(InputOutput_"<>ModelName<>".o) \n"];
-];,
-If[NonSUSYModel=!=True,
-WriteString[sphenoMake," ${name}(SugraRuns_"<>ModelName<>".o) "<>stringOneLoopDecay <>"${name}(InputOutput_"<>ModelName<>".o) \n"];,
-WriteString[sphenoMake," ${name}(InputOutput_"<>ModelName<>".o) "<>stringOneLoopDecay <>"\n"];
-];
+WriteString[sphenoMake," ${name}(Boundaries_"<>ModelName<>".o)  ${name}(InputOutput_"<>ModelName<>".o) \n"];,
+WriteString[sphenoMake,"${name}(InputOutput_"<>ModelName<>".o) \n"];
 ];
 WriteString[sphenoMake,"else \n"];
 WriteString[sphenoMake,"\t @echo -------------------------------------------------------------------  \n"];
@@ -450,15 +460,21 @@ GenerateSSPtemplate:=Block[{i,j,k,l,pos,iminpar,fin},
 
 Print["  Writing SSP templates"];
 
+$sarahSSPtemplates=ToFileName[{$sarahCurrentSPhenoDir,"SSP_Templates"}];
+If[FileExistsQ[$sarahSSPtemplates]=!=True,
+CreateDirectory[$sarahSSPtemplates];
+];
+
+
 If[Head[MINPAR[[1,1]]]=!=List,fin=1;,fin=Length[MINPAR];];
 
 For[iminpar=1,iminpar<=fin,
 
 If[Head[MINPAR[[1,1]]]=!=List || iminpar ==1,
-SSPfile=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SSP_Template.m."<>NameForModel]];
-SSPfileLOW=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SSP_Template_lowScaleInput.m."<>NameForModel]];,
-SSPfile=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SSP_Template.m."<>NameForModel<>"_"<>ToString[iminpar]]];
-SSPfileLOW=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SSP_Template_lowScaleInput.m."<>NameForModel<>"_"<>ToString[iminpar]]];
+SSPfile=OpenWrite[ToFileName[$sarahSSPtemplates,"SSP_Template.m."<>NameForModel]];
+SSPfileLOW=OpenWrite[ToFileName[$sarahSSPtemplates,"SSP_Template_lowScaleInput.m."<>NameForModel]];,
+SSPfile=OpenWrite[ToFileName[$sarahSSPtemplates,"SSP_Template.m."<>NameForModel<>"_"<>ToString[iminpar]]];
+SSPfileLOW=OpenWrite[ToFileName[$sarahSSPtemplates,"SSP_Template_lowScaleInput.m."<>NameForModel<>"_"<>ToString[iminpar]]];
 ];
 
 filenames= {SSPfile, SSPfileLOW};

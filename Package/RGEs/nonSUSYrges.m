@@ -348,6 +348,15 @@ i++;];
 j++;];
 *)
 
+temp={};
+For[i=1,i<=Length[lW3],
+If[FreeQ[temp,lW3[[i,1]]],
+temp=Join[temp,{lW3[[i]]}];,
+pos=Position[temp,lW3[[i,1]]][[1,1]];
+temp[[pos,2]]=temp[[pos,2]]+lW3[[i,2]];
+];
+i++;];
+lW3=temp;
 
 For[j=1,j<=Length[per],
 For[i=1,i<=Length[lW3],
@@ -965,10 +974,10 @@ factor=DeleteCases[DeleteCases[fakeFac coup /. CGCBroken[{a___}]:>CGCBroken[{a}/
 DynamicCoupProgess[type]=1/factor*CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] ;
 If[SuperpositionNeeded=!=True,
 betaFunction =Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction /. subNonZero /. SA`gCoup[a__]->0] ,False]];
-betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0 /. subNonZero],False]];,
+betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0 /. subNonZero /. YcYYcY4[__]->0],False]];,
 (* factor=coup/. CGCBroken[{a___}]:>CGCBroken[{a}/. Conj\[Rule]conj]; *)
 betaFunction =Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction /. SA`gCoup[a__]->0 ],False]];
-betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0] ,False]];
+betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[__]->0] ,False]];
 ];
 If[type===VEVI,
 betaFunction=-betaFunction /. Delta2->Delta /. Delta[a_[{b1_,d1___}][{c1__}],a_[{b2_,d2___}][{c2__}]]->Delta[a[{b1}],a[{b2}]]/. Delta[a__]->0;
@@ -1228,7 +1237,7 @@ SA`ListGC={};
 For[i=1,i<=Length[Gauge],SA`ListGC=Join[SA`ListGC,{{{i,i},{Gauge[[i,4]],1}}}];
 If[Gauge[[i,2]]=!=U[1],SA`CheckU1[i]=0;
 GUTren[i]=1;,SA`CheckU1[i]=1;];
-For[j=1,j<=Length[Gauge],If[Gauge[[i,2]]=!=U[1],If[i===j,SA`gCoup[i,j]=Gauge[[i,4]];,SA`gCoup[i,j]=0;];,If[Gauge[[j,2]]=!=U[1],SA`gCoup[i,j]=0;,If[i===j,SA`gCoup[i,j]=Gauge[[i,4]];,SA`ListGC=Join[SA`ListGC,{{{i,j},{GaugesU1[i,j],1}}}];
+For[j=1,j<=Length[Gauge],If[Gauge[[i,2]]=!=U[1],If[i===j,SA`gCoup[i,j]=Gauge[[i,4]];,SA`gCoup[i,j]=0;];,If[Gauge[[j,2]]=!=U[1]|| NoU1Mixing===True,SA`gCoup[i,j]=0;,If[i===j,SA`gCoup[i,j]=Gauge[[i,4]];,SA`ListGC=Join[SA`ListGC,{{{i,j},{GaugesU1[i,j],1}}}];
 SA`gCoup[i,j]=GaugesU1[i,j];];];];
 j++;];
 i++;];

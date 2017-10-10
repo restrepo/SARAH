@@ -37,6 +37,8 @@ RealParameters = {TanBeta, mSUSY};
 
 ParametersToSolveTadpoles = {mHd2, mHu2, mS2, mT2, mRd2, mRu2};
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 
 RealParameters = {TanBeta,mSUSY};
 UseParameterAsGUTscale = {mSUSY};  

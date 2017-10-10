@@ -67,6 +67,7 @@ BoundaryLowScaleInput={
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 IncludeFineTuning = True;
 FineTuningParameters={

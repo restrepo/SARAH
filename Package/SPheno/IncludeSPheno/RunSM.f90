@@ -139,12 +139,24 @@ sinw2 = g1**2/(g1**2 + g2**2)
 !g1 = g2*Sqrt(sinW2/(1._dp-sinW2)) 
 
 If (GenerationMixing) Then 
-If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
- Yu= Matmul(Transpose(CKM),Transpose(Yu))
-Else 
- Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
-End if 
-End If
+
+If (YukawaScheme.Eq.1) Then ! CKM into Yu
+ If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
+   Yu= Matmul(Transpose(CKM),Transpose(Yu))
+ Else 
+   Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
+ End if 
+
+Else ! CKM into Yd 
+ 
+ If (TransposedYukawa) Then ! 
+  Yd= Matmul(Conjg(CKM),Transpose(Yd))
+ Else 
+  Yd=Transpose(Matmul(Conjg(CKM),Transpose(Yd)))
+ End if 
+
+End if ! Yukawa scheme
+End If ! Generatoin mixing
 
 
 End Subroutine RunSM
@@ -289,12 +301,25 @@ g2=gSM(1)/sqrt(sinW2)
 g1 = g2*Sqrt(sinW2/(1._dp-sinW2)) 
 
 If (GenerationMixing) Then 
-If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
- Yu= Matmul(Transpose(CKM),Transpose(Yu))
-Else 
- Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
-End if 
-End If
+
+If (YukawaScheme.Eq.1) Then ! CKM into Yu
+ If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
+   Yu= Matmul(Transpose(CKM),Transpose(Yu))
+ Else 
+   Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
+ End if 
+
+Else ! CKM into Yd 
+ 
+ If (TransposedYukawa) Then ! 
+  Yd= Matmul(Conjg(CKM),Transpose(Yd))
+ Else 
+  Yd=Transpose(Matmul(Conjg(CKM),Transpose(Yd)))
+ End if 
+
+End if ! Yukawa scheme
+End If ! Generation mixing
+
 
 
 End Subroutine RunSMohdm

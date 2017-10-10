@@ -289,6 +289,34 @@ CG[Gauge[[i,2]],{rep,crep}][a__]=Delta[a];
 j++;];
 i++;];
 
+
+If[AuxGaugesPresent===True,
+For[i=1,i<=Length[AuxGauge],
+If[AuxGauge[[i,2]]=!=U[1],
+CG[AuxGauge[[i,2]],{{0},{0}}][a_,b_]:=1;
+SA`KnonwCG=Join[SA`KnonwCG,{CG[AuxGauge[[i,2]],{{0},{0}}]}];
+reps=Join[{getDynkinLabelsAdjoint[AuxGauge[[i,2]]]},DeleteCases[getDynkinLabels[#,AuxGauge[[i,2]]]&/@Intersection[Transpose[Transpose[AuxDimFields][[2]]][[2]]],{0}]];
+(* reps=Abs[reps]; *)
+GenerateDynkinCasimir[AuxGauge[[i,2]] ,#]&/@reps;
+];
+(* Initialize Deltas for N^* N *)
+For[j=1,j<=Length[reps],
+rep=reps[[j]];
+crep=ConjugatedRep[rep,AuxGauge[[i,2]]];
+If[rep=!=crep && crep=!={},
+If[FreeQ[SA`KnonwCG,CG[AuxGauge[[i,2]],{crep,rep}]],
+SA`KnonwCG = Join[SA`KnonwCG,{CG[AuxGauge[[i,2]],{crep,rep}]}];
+CG[AuxGauge[[i,2]],{crep,rep}][a__]=Delta[a];
+];
+If[FreeQ[SA`KnonwCG,CG[AuxGauge[[i,2]],{rep,crep}]],
+SA`KnonwCG = Join[SA`KnonwCG,{CG[AuxGauge[[i,2]],{rep,crep}]}];
+CG[AuxGauge[[i,2]],{rep,crep}][a__]=Delta[a];
+];
+];
+j++;];
+i++;];
+];
+
 InitStandardSU2;
 InitStandardSU3;
 
@@ -444,6 +472,7 @@ SA`DynL[a_,b_Integer]:=SA`DynL[a,Gauge[[b,3]]];
 SA`Casimir[a_,b_Integer]:=SA`Casimir[a,Gauge[[b,3]]];
 SA`Dynkin[a_,b_Integer]:=SA`Dynkin[a,Gauge[[b,3]]];
 SA`MulFactor[a_,b_Integer]:=SA`MulFactor[a,Gauge[[b,3]]];
+SA`DimensionGG[a_,b_Integer]:=SA`DimensionGG[a,Gauge[[b,3]]];
 Generator[a_,b_Integer]:=Generator[a,Gauge[[b,3]]];
 SA`Casimir[conj[a_],b_Integer]:=SA`Casimir[a,Gauge[[b,3]]];
 SA`Dynkin[conj[a_],b_Integer]:=SA`Dynkin[a,Gauge[[b,3]]];

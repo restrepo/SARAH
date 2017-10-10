@@ -250,7 +250,7 @@ WriteString[sphenoLoop,"Use Mathematics \n"];
 WriteString[sphenoLoop,"Use MathematicsQP \n"];
 WriteString[sphenoLoop,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoLoop,"Use Tadpoles_"<>ModelName<>" \n "];
-WriteString[sphenoLoop,"Use SusyMasses_"<>ModelName<>" \n \n"];
+WriteString[sphenoLoop,"Use TreeLevelMasses_"<>ModelName<>" \n \n"];
 
 WriteString[sphenoLoop,"Contains \n \n"];
 

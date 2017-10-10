@@ -179,7 +179,7 @@ Print["    ... processing: ",Dynamic[DynamicOneLoopNameNM],"(",Dynamic[DynamicOn
 For[i=1,i<=Length[particles],
 DynamicOneLoopNrNM=i;
 DynamicOneLoopNameNM=particles[[i,1]];
-If[FreeQ[massless,particles[[i,1]]]==True,
+If[FreeQ[massless,particles[[i,1]]]==True, 
 particle=particles[[i,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
 (* Print["    Calculate One Loop Self Energy of ",particle]; *)
 
@@ -869,7 +869,7 @@ OneLoopDifferentExternal[Eigenstates_]:=Block[{i,j,k, particles,temp2},
 CorrectionListVS ={};
 CorrectionListVV ={};
 
-particles=Select[Transpose[PART[V]][[1]],(getGen[#]==1)&];
+particles=DeleteCases[Select[Transpose[PART[V]][[1]],(getGen[#]==1)&],VectorG];
 For[i=1,i<=Length[particles],
 For[j=i+1,j<=Length[particles],
 temp=InsFields[{{C[particles[[i]],AntiField[FieldToInsert[1]],FieldToInsert[2]],C[AntiField[particles[[j]]],AntiField[FieldToInsert[2]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],External[1]->particles[[i]], External[2]->particles[[j]],Index[1]->gO1,Index[2]->gO2,Index[3]->gI1,Index[4]->gI2}}];

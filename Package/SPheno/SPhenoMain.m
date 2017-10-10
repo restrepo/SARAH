@@ -53,7 +53,7 @@ WriteString[spheno,"Use Tadpoles_"<>ModelName<>" \n "];
 If[NonSUSYModel=!=True,
 WriteString[spheno,"Use RGEs_"<>ModelName<>"\n"];
 WriteString[spheno,"!Use StandardModel\n"];
-WriteString[spheno,"Use SugraRuns_"<>ModelName<>"\n "];
+WriteString[spheno,"Use Boundaries_"<>ModelName<>"\n "];
 ];
 
 
@@ -62,12 +62,10 @@ WriteString[spheno,"Use FineTuning_"<>ModelName<>"\n"];
 ];
 
 If[SPhenoOnlyForHM=!=True,WriteString[spheno,"Use HiggsCS_"<>ModelName<>"\n"];];
+WriteString[spheno,"Use TreeLevelMasses_"<>ModelName<>"\n"];
 WriteString[spheno,"Use LoopMasses_"<>ModelName<>"\n \n"];
 If[SPhenoOnlyForHM=!=True, WriteString[spheno,"Use BranchingRatios_"<>ModelName<>"\n \n"];];
 
-If[SA`AddOneLoopDecay === True && SPhenoOnlyForHM=!=True,
-WriteString[spheno,"Use OneLoopDecays_"<>ModelName<>"\n \n"];
-];
 
 
 
@@ -86,6 +84,12 @@ If[SupersymmetricModel===False,
 WriteString[spheno, "Complex(dp) :: YdSM(3,3), YuSM(3,3), YeSM(3,3)\n"];
 WriteString[spheno, "Real(dp) :: vSM, g1SM, g2SM, g3SM\n"];
 WriteString[spheno, "Integer :: i1 \n"];
+];
+
+CheckSCKM;
+If[WriteCKMBasis===True,
+WriteString[spheno,"Complex(dp) :: Yd_ckm(3,3), Yu_ckm(3,3), Tu_ckm(3,3), Td_ckm(3,3), mq2_ckm(3,3), mu2_ckm(3,3), md2_ckm(3,3) \n"];
+WriteString[spheno,"Complex(dp) :: Yd_out(3,3), Yu_out(3,3), Tu_out(3,3), Td_out(3,3), mq2_out(3,3), mu2_out(3,3), md2_out(3,3) \n"];
 ];
 
 If[DEFINITION[UseNonStandardYukwas]===True,
@@ -277,6 +281,30 @@ j++;];
 i++;];
 ];
 
+If[WriteCKMBasis===True,
+WriteString[spheno,"\n\n\n"];
+WriteString[spheno,"! Translate input form SCKM to electroweak basis \n"];
+WriteString[spheno,"If (SwitchToSCKM) Then\n"];
+WriteString[spheno,"Yd_ckm = "<>SPhenoForm[DownYukawa]<>"(1:3,1:3) \n"];
+WriteString[spheno,"Yu_ckm = "<>SPhenoForm[UpYukawa]<>"(1:3,1:3) \n"];
+WriteString[spheno,"Td_ckm = "<>SPhenoForm[TrilinearDown]<>"(1:3,1:3) \n"];
+WriteString[spheno,"Tu_ckm = "<>SPhenoForm[TrilinearUp]<>"(1:3,1:3) \n"];
+WriteString[spheno,"mq2_ckm = "<>SPhenoForm[SoftSquark]<>"(1:3,1:3) \n"];
+WriteString[spheno,"md2_ckm = "<>SPhenoForm[SoftDown]<>"(1:3,1:3) \n"];
+WriteString[spheno,"mu2_ckm = "<>SPhenoForm[SoftUp]<>"(1:3,1:3) \n"];
+
+WriteString[spheno,"Call Switch_from_superCKM(Yd_ckm, Yu_ckm, Td_ckm, Tu_ckm, md2_ckm, mq2_ckm, mu2_ckm& \n"];
+WriteString[spheno,"&, Td_out, Tu_out, md2_out, mq2_out, mu2_out,.True.) \n"];
+
+WriteString[spheno,"If (InputValuefor"<>SPhenoForm[TrilinearDown] <>") "<>SPhenoForm[TrilinearDown] <>" = Td_out \n"];
+WriteString[spheno,"If (InputValuefor"<>SPhenoForm[TrilinearUp] <>") "<>SPhenoForm[TrilinearUp] <>" = Tu_out \n"];
+WriteString[spheno,"If (InputValuefor"<>SPhenoForm[SoftSquark] <>") "<>SPhenoForm[SoftSquark] <>" = mq2_out \n"];
+WriteString[spheno,"If (InputValuefor"<>SPhenoForm[SoftDown] <>") "<>SPhenoForm[SoftDown] <>" = md2_out \n"];
+WriteString[spheno,"If (InputValuefor"<>SPhenoForm[SoftUp] <>") "<>SPhenoForm[SoftUp] <>" = mu2_out \n"];
+WriteString[spheno,"End If \n"];
+WriteString[spheno,"\n\n\n"];
+];
+
 If[SPhenoOnlyForHM=!=True,
 WriteTadpoleSolutionOnlyLow[spheno];,
 WriteString[spheno,"\n\n ! Put here the equations for delta_vi  (as check, should all be zero!) \n\n"];
@@ -376,9 +404,11 @@ If[SPhenoForm[NeutrinoMM]=!="Delta",WriteString[spheno,SPhenoForm[NeutrinoMM]<>"
 WriteString[spheno,"End if \n \n"];
 ]; 
 
+(*
 If[SA`AddOneLoopDecay === True,
 MakeCall["CalculateOneLoopDecays",Join[listVEVs,listAllParameters],{},{"epsI","deltaM","kont"},spheno];
 ];
+*)
 
 If[IncludeFineTuning===True,
 WriteString[spheno,"If (HighScaleModel.ne.\"LOW\") Then \n "];
@@ -390,13 +420,22 @@ WriteString[spheno,"End If \n"];
 
 
 WriteString[spheno,"If ((FoundIterativeSolution).or.(WriteOutputForNonConvergence)) Then \n"];
+WriteString[spheno,"If (OutputForMO) Then \n"];
+MakeCall["RunningFermionMasses",Join[Join[listVEVs,listAllParameters]],SPhenoForm/@SA`SMfermionmasses ,{"kont"},spheno];
+WriteString[spheno,"End if \n"];
+
 WriteString[spheno,"Write(*,*) \"Writing output files\" \n"];
+
 MakeCall["LesHouches_Out",Transpose[ListOfLowEnergyNames][[1]],{"67","11","kont","MGUT"},{"GenerationMixing"},spheno];
 WriteString[spheno, "End if \n"];
 
 WriteString[spheno,"Write(*,*) \"Finished!\" \n"];
 
 WriteString[spheno, "Contains \n \n"];
+
+If[WriteCKMBasis===True,
+AppendSourceCode["SwitchFromSCKM.f90",spheno];
+];
 
 If[NonSUSYModel=!=True,
 GenerateCalculateSpectrum;
@@ -486,6 +525,10 @@ WriteString[spheno,"End Select \n\n"];
 ];,
 temp=Select[Transpose[EXTPAR][[2]],(FreeQ[UseParameterAsGUTscale,#]==False)&];
 WriteString[spheno,"Call SetGUTscale("<>SPhenoForm[temp[[1]]]<>") \n"];];
+];
+
+If[Head[SetParametersAt]===List && SetParametersAt=!={},
+WriteString[spheno,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>".gt.0_dp))) Call SetGUTscale(Abs("<>ToString[SetParametersAt[[1]]]<>") \n "];
 ];
 
 MakeCall["FirstGuess",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},spheno];

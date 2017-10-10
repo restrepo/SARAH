@@ -62,7 +62,7 @@ colorconstraint=ColorFlow/. ColorDelta[a_,b_]ColorDelta[c_,d_]\[Rule]Delta[Index
 (* Calculate the color factor *)
 cfactor = getChargeFactor[box[[i]],{{{External[1],ex1},{AntiField[Internal[1]],in1},{Internal[4],in4}},
 {{External[2],ex2},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[3],ex3},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{External[4],ex4},{Internal[3],in3},{AntiField[Internal[4]],in4}}} /. box[[i,2]],colorconstraint];
+{{External[3],ex3},{Internal[3],in3},{AntiField[Internal[4]],in4}},{{External[4],ex4},{Internal[2],in2},{AntiField[Internal[3]],in3}}} /. box[[i,2]],colorconstraint];
 
 If[cfactor===0,
 WriteString[file,"! Vanishing contribution because of color flow \n\n"];
@@ -92,35 +92,58 @@ c4=getSPhenoCoupling2[box[[i,1,4]],SPhenoCouplingsAll];
 
 ind1 =MakeIndicesCouplingPS[{External[1],Index[1]}/.box[[i,2]],{AntiField[Internal[1]],i1}/.box[[i,2]],{Internal[4],i4}/.box[[i,2]],c1[[2]]];
 ind2 =MakeIndicesCouplingPS[{External[2],Index[2]}/.box[[i,2]],{Internal[1],i1}/.box[[i,2]],{AntiField[Internal[2]],i2}/.box[[i,2]],c2[[2]]]; 
-ind3 =MakeIndicesCouplingPS[{External[3],Index[3]}/.box[[i,2]],{Internal[2],i2}/.box[[i,2]],{AntiField[Internal[3]],i3}/.box[[i,2]],c3[[2]]];
-ind4 =MakeIndicesCouplingPS[{External[4],Index[4]}/.box[[i,2]],{AntiField[Internal[4]],i4}/.box[[i,2]],{Internal[3],i3}/.box[[i,2]],c4[[2]]];
+ind3 =MakeIndicesCouplingPS[{External[3],Index[3]}/.box[[i,2]],{Internal[3],i3}/.box[[i,2]],{AntiField[Internal[4]],i4}/.box[[i,2]],c3[[2]]];
+ind4 =MakeIndicesCouplingPS[{External[4],Index[4]}/.box[[i,2]],{AntiField[Internal[3]],i3}/.box[[i,2]],{Internal[2],i2}/.box[[i,2]],c4[[2]]];
+
 
 FKv1=ind1[[3]];
 FKv2=ind2[[3]];
 FKv3=ind3[[3]];
 FKv4=ind4[[3]];
 
+
 Switch[InsertionOrder /. box[[i,2]],
 1,
 	c1=CheckFermionFlipPS[{AntiField[Internal[1]],Internal[4],External[1]}/.box[[i,2]],c1, ind1]; (* NEW Flip *)
 	c2=CheckFermionFlipPS[{External[2],Internal[1],AntiField[Internal[2]]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
-	c3=CheckFermionFlipPS[{ Internal[2],AntiField[Internal[3]],External[3]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
-	c4=CheckFermionFlipPS[{External[4],AntiField[Internal[4]],Internal[3]}/.box[[i,2]],c4, ind4]; (* NEW Flip *),
+	c3=CheckFermionFlipPS[{AntiField[Internal[4]],Internal[3],External[3]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
+	c4=CheckFermionFlipPS[{External[4],AntiField[Internal[3]],Internal[2]}/.box[[i,2]],c4, ind4]; (* NEW Flip *),
 2,
+	(*
 	c1=CheckFermionFlipPS[{AntiField[Internal[1]],Internal[4],External[1]}/.box[[i,2]],c1, ind1]; (* NEW Flip *)
 	c2=CheckFermionFlipPS[{External[2],Internal[1],AntiField[Internal[2]]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
 	c3=CheckFermionFlipPS[{External[3], Internal[2],AntiField[Internal[3]]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
-	c4=CheckFermionFlipPS[{AntiField[Internal[4]],Internal[3],External[4]}/.box[[i,2]],c4, ind4]; (* NEW Flip *),
+	c4=CheckFermionFlipPS[{AntiField[Internal[4]],Internal[3],External[4]}/.box[[i,2]],c4, ind4]; (* NEW Flip *)
+*)
+	c1=CheckFermionFlipPS[{AntiField[Internal[1]],Internal[4],External[1]}/.box[[i,2]],c1, ind1]; (* NEW Flip *)
+	c2=CheckFermionFlipPS[{External[2],Internal[1],AntiField[Internal[2]]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
+	c3=CheckFermionFlipPS[{External[3],AntiField[Internal[4]],Internal[3]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
+	c4=CheckFermionFlipPS[{AntiField[Internal[3]],Internal[2],External[4]}/.box[[i,2]],c4, ind4]; (* NEW Flip *),
+
 3,
+	(* 
+c1=CheckFermionFlipPS[{AntiField[Internal[1]],Internal[4],External[1]}/.box[[i,2]],c1, ind1]; (* NEW Flip *)
+	c2=CheckFermionFlipPS[{Internal[2],AntiField[Internal[3]],External[2]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
+	c3=CheckFermionFlipPS[{ External[3],Internal[3],AntiField[Internal[4]]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
+	c4=CheckFermionFlipPS[{External[4],AntiField[Internal[2]],Internal[1]}/.box[[i,2]],c4, ind4]; (* NEW Flip *) *)
 	c1=CheckFermionFlipPS[{AntiField[Internal[1]],Internal[4],External[1]}/.box[[i,2]],c1, ind1]; (* NEW Flip *)
 	c2=CheckFermionFlipPS[{Internal[1],AntiField[Internal[2]],External[2]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
-	c3=CheckFermionFlipPS[{ External[3],Internal[2],AntiField[Internal[3]]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
-	c4=CheckFermionFlipPS[{External[4],AntiField[Internal[4]],Internal[3]}/.box[[i,2]],c4, ind4]; (* NEW Flip *)
-           c2temp=c2;c4temp=c4; 
+	c3=CheckFermionFlipPS[{External[3],AntiField[Internal[4]],Internal[3]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
+	c4=CheckFermionFlipPS[{External[4],AntiField[Internal[3]],Internal[2]}/.box[[i,2]],c4, ind4]; (* NEW Flip *)
+         (* 
+	c2temp=c2;c4temp=c4; 
           c2=c4temp; c4=c2temp; 
           c3temp=c3;c4temp=c4; 
           c3=c4temp; c4=c3temp; 
-       ];
+*)
+       ]; 
+
+(*
+c1=CheckFermionFlipPS[{AntiField[Internal[1]],Internal[4],External[1]}/.box[[i,2]],c1, ind1]; (* NEW Flip *)
+c2=CheckFermionFlipPS[{External[2],Internal[1],AntiField[Internal[2]]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
+c3=CheckFermionFlipPS[{AntiField[Internal[4]],Internal[3],External[3]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
+c4=CheckFermionFlipPS[{External[4],AntiField[Internal[3]],Internal[2]}/.box[[i,2]],c4, ind4]; (* NEW Flip *)
+*)
 
 ind1=c1[[2]];c1=c1[[1]];
 ind2=c2[[2]];c2=c2[[1]];
@@ -1464,38 +1487,18 @@ SA`CheckSameVertices=False;
 (* Make sure that the order of vertices fits to the topologies generates by FeynArts! *)
 
 
-currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f2,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f3,AntiField[FieldToInsert[3]],FieldToInsert[2]],C[f4,AntiField[FieldToInsert[4]],FieldToInsert[3]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f2,External[3]->f3,External[4]->f4,Index[1]->gt1,Index[2]->gt2,Index[3]->gt3,Index[4]->gt4, InsertionOrder ->1}};
+currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f2,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f3,AntiField[FieldToInsert[4]],FieldToInsert[3]],C[f4,AntiField[FieldToInsert[3]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f2,External[3]->f3,External[4]->f4,Index[1]->gt1,Index[2]->gt2,Index[3]->gt3,Index[4]->gt4, InsertionOrder ->1}};
 temp=InsFields[currentTop];
 
-currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f2,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f4,AntiField[FieldToInsert[3]],FieldToInsert[2]],C[f3,AntiField[FieldToInsert[4]],FieldToInsert[3]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f2,External[3]->f4,External[4]->f3,Index[1]->gt1,Index[2]->gt2,Index[3]->gt4,Index[4]->gt3, InsertionOrder ->2}};
+currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f2,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f4,AntiField[FieldToInsert[4]],FieldToInsert[3]],C[f3,AntiField[FieldToInsert[3]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f2,External[3]->f4,External[4]->f3,Index[1]->gt1,Index[2]->gt2,Index[3]->gt4,Index[4]->gt3, InsertionOrder ->2}};
 temp=Join[temp,InsFields[currentTop]];
 
-currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f3,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f2,AntiField[FieldToInsert[3]],FieldToInsert[2]],C[f4,AntiField[FieldToInsert[4]],FieldToInsert[3]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f3,External[3]->f2,External[4]->f4,Index[1]->gt1,Index[2]->gt3,Index[3]->gt2,Index[4]->gt4, InsertionOrder ->3}}; 
+currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f4,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f3,AntiField[FieldToInsert[4]],FieldToInsert[3]],C[f2,AntiField[FieldToInsert[3]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f4,External[3]->f3,External[4]->f2,Index[1]->gt1,Index[2]->gt4,Index[3]->gt3,Index[4]->gt2, InsertionOrder ->3}}; 
 temp=Join[temp,InsFields[currentTop]]; 
 
 SA`CheckSameVertices=True;
 
-(*
-currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f4,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f3,AntiField[FieldToInsert[3]],FieldToInsert[2]],C[f2,AntiField[FieldToInsert[4]],FieldToInsert[3]]},{Internal[1]\[Rule]FieldToInsert[1],Internal[2]\[Rule]FieldToInsert[2],Internal[3]\[Rule]FieldToInsert[3],Internal[4]\[Rule]FieldToInsert[4],External[1]\[Rule]f1,External[2]\[Rule]f4,External[3]\[Rule]f3,External[4]\[Rule]f2,Index[1]\[Rule]gt1,Index[2]\[Rule]gt4,Index[3]\[Rule]gt3,Index[4]\[Rule]gt2, InsertionOrder \[Rule]1}};
-temp=InsFields[currentTop];
 
-currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f4,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f2,AntiField[FieldToInsert[3]],FieldToInsert[2]],C[f3,AntiField[FieldToInsert[4]],FieldToInsert[3]]},{Internal[1]\[Rule]FieldToInsert[1],Internal[2]\[Rule]FieldToInsert[2],Internal[3]\[Rule]FieldToInsert[3],Internal[4]\[Rule]FieldToInsert[4],External[1]\[Rule]f1,External[2]\[Rule]f4,External[3]\[Rule]f2,External[4]\[Rule]f3,Index[1]\[Rule]gt1,Index[2]\[Rule]gt4,Index[3]\[Rule]gt2,Index[4]\[Rule]gt3, InsertionOrder \[Rule]2}};
-temp=Join[temp,InsFields[currentTop]];
-
-currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f3,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f4,AntiField[FieldToInsert[3]],FieldToInsert[2]],C[f2,AntiField[FieldToInsert[4]],FieldToInsert[3]]},{Internal[1]\[Rule]FieldToInsert[1],Internal[2]\[Rule]FieldToInsert[2],Internal[3]\[Rule]FieldToInsert[3],Internal[4]\[Rule]FieldToInsert[4],External[1]\[Rule]f1,External[2]\[Rule]f3,External[3]\[Rule]f4,External[4]\[Rule]f2,Index[1]\[Rule]gt1,Index[2]\[Rule]gt3,Index[3]\[Rule]gt4,Index[4]\[Rule]gt2, InsertionOrder \[Rule]3}}; 
-temp=Join[temp,InsFields[currentTop]]; 
-*)
-
-(*
-currentTop={{C[f1,FieldToInsert[1],AntiField[FieldToInsert[4]]],C[f2,AntiField[FieldToInsert[1]],FieldToInsert[2]],C[f3,AntiField[FieldToInsert[2]],FieldToInsert[3]],C[f4,AntiField[FieldToInsert[3]],FieldToInsert[4]]},{Internal[1]\[Rule]FieldToInsert[1],Internal[2]\[Rule]FieldToInsert[2],Internal[3]\[Rule]FieldToInsert[3],Internal[4]\[Rule]FieldToInsert[4],External[1]\[Rule]f1,External[2]\[Rule]f2,External[3]\[Rule]f3,External[4]\[Rule]f4,Index[1]\[Rule]gt1,Index[2]\[Rule]gt2,Index[3]\[Rule]gt3,Index[4]\[Rule]gt4, InsertionOrder \[Rule]1}};
-temp=InsFields[currentTop];
-
-currentTop={{C[f1,FieldToInsert[1],AntiField[FieldToInsert[4]]],C[f2,AntiField[FieldToInsert[1]],FieldToInsert[2]],C[f4,AntiField[FieldToInsert[2]],FieldToInsert[3]],C[f3,AntiField[FieldToInsert[3]],FieldToInsert[4]]},{Internal[1]\[Rule]FieldToInsert[1],Internal[2]\[Rule]FieldToInsert[2],Internal[3]\[Rule]FieldToInsert[3],Internal[4]\[Rule]FieldToInsert[4],External[1]\[Rule]f1,External[2]\[Rule]f2,External[3]\[Rule]f4,External[4]\[Rule]f3,Index[1]\[Rule]gt1,Index[2]\[Rule]gt2,Index[3]\[Rule]gt4,Index[4]\[Rule]gt3, InsertionOrder \[Rule]2}};
-temp=Join[temp,InsFields[currentTop]];
-
-currentTop={{C[f1,FieldToInsert[1],AntiField[FieldToInsert[4]]],C[f3,AntiField[FieldToInsert[1]],FieldToInsert[2]],C[f2,AntiField[FieldToInsert[2]],FieldToInsert[3]],C[f4,AntiField[FieldToInsert[3]],FieldToInsert[4]]},{Internal[1]\[Rule]FieldToInsert[1],Internal[2]\[Rule]FieldToInsert[2],Internal[3]\[Rule]FieldToInsert[3],Internal[4]\[Rule]FieldToInsert[4],External[1]\[Rule]f1,External[2]\[Rule]f3,External[3]\[Rule]f2,External[4]\[Rule]f4,Index[1]\[Rule]gt1,Index[2]\[Rule]gt3,Index[3]\[Rule]gt2,Index[4]\[Rule]gt4, InsertionOrder \[Rule]3}}; 
-temp=Join[temp,InsFields[currentTop]]; 
-*)
 Return[temp];
 ];
 

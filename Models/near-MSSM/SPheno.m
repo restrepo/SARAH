@@ -19,6 +19,8 @@ ParametersToSolveTadpoles = {mHd2,mHu2,ms2};
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 ConditionGUTscale = g1 == g2;
 
 BoundarySUSYScale = {

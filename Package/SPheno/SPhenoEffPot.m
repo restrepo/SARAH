@@ -29,7 +29,14 @@ Print[StyleForm["Write two-loop corrections","Section",FontSize->12]];
 
 (* $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}]; *)
 (* CreateDirectory[$sarahCurrentSPhenoDir]; *)
-sphenoEP=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"EffectivePotential_"<>ModelName<>".f90"]];
+
+$sarahSPhenoTwoLoopDir=ToFileName[{$sarahCurrentSPhenoDir,"TwoLoopMasses"}];
+If[FileExistsQ[$sarahSPhenoTwoLoopDir]=!=True,
+CreateDirectory[$sarahSPhenoTwoLoopDir];
+];
+
+
+sphenoEP=OpenWrite[ToFileName[$sarahSPhenoTwoLoopDir,"EffectivePotential_"<>ModelName<>".f90"]];
 
 InitMassCoupsDerivatives;
 
@@ -59,15 +66,15 @@ WriteGToMassesCoups;
 WriteString[sphenoEP,"End Module EffectivePotential_"<>ModelName<>" \n \n"];
 Close[sphenoEP];
 
-If[FileExistsQ[ToFileName[$sarahCurrentSPhenoDir,"EffPotFunctions.f90"]]===True,
-DeleteFile[ToFileName[$sarahCurrentSPhenoDir,"EffPotFunctions.f90"]];
+If[FileExistsQ[ToFileName[$sarahSPhenoTwoLoopDir,"EffPotFunctions.f90"]]===True,
+DeleteFile[ToFileName[$sarahSPhenoTwoLoopDir,"EffPotFunctions.f90"]];
 ];
-CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"EffPotFunctions.f90"],ToFileName[$sarahCurrentSPhenoDir,"EffPotFunctions.f90"]];
+CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"EffPotFunctions.f90"],ToFileName[$sarahSPhenoTwoLoopDir,"EffPotFunctions.f90"]];
 
-If[FileExistsQ[ToFileName[$sarahCurrentSPhenoDir,"DerivativesEffPotFunctions.f90"]]===True,
-DeleteFile[ToFileName[$sarahCurrentSPhenoDir,"DerivativesEffPotFunctions.f90"]];
+If[FileExistsQ[ToFileName[$sarahSPhenoTwoLoopDir,"DerivativesEffPotFunctions.f90"]]===True,
+DeleteFile[ToFileName[$sarahSPhenoTwoLoopDir,"DerivativesEffPotFunctions.f90"]];
 ];
-CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"DerivativesEffPotFunctions.f90"],ToFileName[$sarahCurrentSPhenoDir,"DerivativesEffPotFunctions.f90"]];
+CopyFile[ToFileName[ToFileName[{$sarahSPhenoPackageDir,"IncludeSPheno"}],"DerivativesEffPotFunctions.f90"],ToFileName[$sarahSPhenoTwoLoopDir,"DerivativesEffPotFunctions.f90"]];
 ];
 
 InitMassCoupsDerivatives:=Block[{i,j},
@@ -118,7 +125,7 @@ WriteString[sphenoEP,"Use Mathematics \n"];
 WriteString[sphenoEP,"Use MathematicsQP \n"];
 WriteString[sphenoEP,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoEP,"Use StandardModel \n"];
-WriteString[sphenoEP,"Use SusyMasses_"<>ModelName<>" \n"];
+WriteString[sphenoEP,"Use TreeLevelMasses_"<>ModelName<>" \n"];
 WriteString[sphenoEP,"Use EffPotFunctions\n"];
 WriteString[sphenoEP,"Use DerivativesEffPotFunctions\n \n"];
 
@@ -189,7 +196,7 @@ WriteString[sphenoEP,"Real(dp) :: err, vevs("<>ToString[NrVEVs]<>") \n"];
 WriteString[sphenoEP,"Integer :: iout \n"];
 WriteString[sphenoEP,"Integer, Intent(in) :: i1,i2 \n"];
 
-WriteString[sphenoEP,"vevs = (/"<>StringJoin@Riffle[ToString/@listVEVs,","]<>"/) \n"];
+WriteString[sphenoEP,"vevs = (/"<>StringJoin@Riffle[SPhenoForm/@listVEVs,","]<>"/) \n"];
 WriteString[sphenoEP,"gout = partialDiffXY_RiddersMulDim(AllMassesCouplings,"<>ToString[NumberAllMassesCouplings]<>",vevs,i1,i2,"<>ToString[NrVEVs]<>",err) \n"];
 WriteString[sphenoEP, "If (err.gt.err2L) err2L = err \n"];
 
@@ -204,7 +211,7 @@ WriteString[sphenoEP,"Real(dp) :: err, vevs("<>ToString[NrVEVs]<>") \n"];
 WriteString[sphenoEP,"Integer :: iout \n"];
 WriteString[sphenoEP,"Integer, Intent(in) :: i1 \n"];
 
-WriteString[sphenoEP,"vevs = (/"<>StringJoin@Riffle[ToString/@listVEVs,","]<>"/) \n"];
+WriteString[sphenoEP,"vevs = (/"<>StringJoin@Riffle[SPhenoForm/@listVEVs,","]<>"/) \n"];
 WriteString[sphenoEP,"gout = partialDiff_RiddersMulDim(AllMassesCouplings,"<>ToString[NumberAllMassesCouplings]<>",vevs,i1,"<>ToString[NrVEVs]<>",err) \n"];
 WriteString[sphenoEP, "If (err.gt.err2L) err2L = err \n"];
 WriteString[sphenoEP,"End Subroutine FirstDerivativeMassesCoups\n\n"];
@@ -469,7 +476,7 @@ WriteString[sphenoEP, "epsM = 1.0E-6_dp \n"];
 WriteString[sphenoEP, "epsD = 1.0E-6_dp \n"];
 (* Write function to get first derivative of eff. pot to calculate ti_ep (ti_ep2L) *)
 (* WriteString[sphenoEP,"h_start= 0.9*min("<>StringJoin@Riffle[ToString/@listVEVs,","]<>")\n"]; *)
-WriteString[sphenoEP,"vevs = (/"<>StringJoin@Riffle[ToString/@listVEVs,","]<>"/) \n"];
+WriteString[sphenoEP,"vevs = (/"<>StringJoin@Riffle[SPhenoForm/@listVEVs,","]<>"/) \n"];
 WriteString[sphenoEP,"! Calculate 1st (ti_ep) and 2nd derivatives (pi_ep)\n"];
 For[i=1,i<=NrVEVs,i++;,
 (* WriteString[sphenoEP,"ti_ep("<>ToString[i]<>") = partialDiff_Ridders(EffPotFunction,vevs,"<>ToString[i]<>","<>ToString[NrVEVs]<>",err,h_start,iout) \n"]; *)

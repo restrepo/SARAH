@@ -23,12 +23,12 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoCoupling`;
 <<SPhenoMain`;
 <<SPhenoFunc`;
-<<SPhenoSusyDecays`;
+<<SPhenoTreeDecays`;
 <<SPheno3BodyDecay`;
 <<SPhenoTreeMasses`;
 <<SPhenoRGE`;
 <<SPhenoInOut`;
-<<SPhenoSugra`;
+<<SPhenoBoundaries`;
 <<SPhenoRunRGE`;
 <<SPhenoBoundaryEW`;
 <<SPhenoBR`;
@@ -46,7 +46,6 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoLowEnergy`;
 <<SPhenoHiggsBoundsOutput`;
 
- <<SPhenoLoopDecays`; 
 
  <<SPhenoHiggsCS`; 
 <<SPhenoTadpoles`;
@@ -94,6 +93,18 @@ If[SA`Version === "SARAHVERSION",FlagLoopContributions=True;];
 
 If[EXTPAR==={},
 Clear[EXTPAR];
+];
+If[OnlyLowEnergySPheno===True,
+Include2LoopCorrections=False;,
+Include2LoopCorrections=True;
+];
+
+If[OnlyLowEnergySPheno=!=True,
+GenerateMatchingConditions;
+];
+
+If[AlwaysInclude2Loop===True,
+Include2LoopCorrections=True;
 ];
 
 If[UseHiggs2LoopMSSM===True || Use2LoopFromLiterature===True,
@@ -179,6 +190,8 @@ $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
 
 
 If[FileExistsQ[$sarahCurrentSPhenoDir]=!=True,
+CreateDirectory[$sarahCurrentSPhenoDir];,
+DeleteDirectory[$sarahCurrentSPhenoDir,DeleteContents->True];
 CreateDirectory[$sarahCurrentSPhenoDir];
 ];
 
@@ -342,16 +355,17 @@ GenerateSPhenoCouplingList;
 GenerateSPhenoLoopCouplings[Eigenstates];
 
 
-If[SPhenoOnlyForHM=!=True,
-GenerateSPhenoSusyDecays[Eigenstates];
-GenerateSPhenoBR[Eigenstates];
-];
-
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 GenerateSPhenoEffPot;
 GenerateSPheno2LPole;
 ];
 GenerateSPhenoLoopMasses[Eigenstates];
+
+GenerateSPhenoTreeLevelDecays[Eigenstates];
+If[SA`AddOneLoopDecay === True,
+GenerateSPhenoOneLoopDecays[Eigenstates];
+];
+GenerateSPhenoBR[Eigenstates];
 
 If[SPhenoOnlyForHM=!=True,
 GenerateSPhenoHiggsCS[Eigenstates];
@@ -360,7 +374,7 @@ GenerateSPhenoHiggsCS[Eigenstates];
 MakePDGList[Eigenstates];
 MakeModelData;
 If[NonSUSYModel=!=True,
-GenerateSugraRuns;
+GenerateBoundaries;
 ];
 
 If[SPhenoOnlyForHM=!=True,
@@ -382,13 +396,9 @@ If[IntermediateScale=!= True,
 GenerateSPhenoMain[NameForModel];
 WriteRunRGEsSM;
 
-If[SPhenoOnlyForHM=!=True,
 GenerateSPhenoRunningCouplingsDecay;
 
-If[SA`AddOneLoopDecay === True,
-GenerateSPhenoOneLoopDecays[Eigenstates];
-];
-];
+
 
 GenerateLesHouchesFile;
 GenerateMakeFile[NameForModel,scompiler];
@@ -672,7 +682,7 @@ SubSolutionsTadpolesTree=Join[#,AftermathTadpoles]&/@SubSolutionsTadpolesTree;
 
 InitInfoForSPheno[Eigenstates_]:=Block[{i,pos,tempName,i1,i2,neededParameters,neededParameterNames,namelist,length},
 If[IntermediateScale=!=True,
-If[AuxiliaryHyperchargeCoupling=!=True,
+(*If[AuxiliaryHyperchargeCoupling=!=True,
 If[AddOHDM=!=True,
 neededParameters={UpYukawa,DownYukawa,ElectronYukawa,hyperchargeCoupling,leftCoupling,strongCoupling,ElectronMatrixL,ElectronMatrixR,DownMatrixL,DownMatrixR,UpMatrixL,UpMatrixR,VEVSM1,VEVSM2,HiggsMixingMatrix};
 neededParameterNames={"Up-Yukawa-Coupling","Down-Yukawa-Coupling","Lepton-Yukawa-Coupling","Hypercharge-Coupling","Left-Coupling","Strong-Coupling","Left-Lepton-Mixing-Matrix","Right-Lepton-Mixing-Matrix","Left-Down-Mixing-Matrix","Right-Down-Mixing-Matrix","Left-Up-Mixing-Matrix","Right-Up-Mixing-Matrix","Down-VEV","Up-VEV","Scalar-Mixing-Matrix"};,
@@ -698,6 +708,10 @@ If[Head[DEFINITION[MoreEWvevs]]===List,
 neededParameters=DeleteCases[neededParameters,VEVSM|VEVSM1|VEVSM2];
 neededParameterNames=DeleteCases[neededParameterNames,"EW-VEV"|"Down-VEV"|"Up-VEV"];
 ];
+*)
+
+neededParameters={ElectronMatrixL,ElectronMatrixR,DownMatrixL,DownMatrixR,UpMatrixL,UpMatrixR,HiggsMixingMatrix};
+neededParameterNames={"Left-Lepton-Mixing-Matrix","Right-Lepton-Mixing-Matrix","Left-Down-Mixing-Matrix","Right-Down-Mixing-Matrix","Left-Up-Mixing-Matrix","Right-Up-Mixing-Matrix","Scalar-Mixing-Matrix"};
 
 For[i=1,i<=Length[neededParameters],
 If[FreeQ[parameters,neededParameters[[i]]],
@@ -706,8 +720,8 @@ Message[SPheno::UndefinedParameter,neededParameterNames[[i]]];
 i++;];
 
 neededParameters={Electron,BottomQuark,TopQuark,VectorP,VectorG,VectorW,VectorZ,HiggsBoson,Neutrino};
-
 neededParameterNames={"Leptons","Down-Quarks","Up-Quarks","Photon","Gluon","W-Boson","Z-Boson","Higgs","Neutrinos"};
+
 
 namelist=getParticleNameDirac /@ Table[Particles[Eigenstates][[i,1]],{i,1,Length[Particles[EWSB]]}];
 For[i=1,i<=Length[neededParameters],
@@ -850,6 +864,7 @@ NeededParametersForRGEs = {};
 If[IntermediateScale ===True,
 MakeListOfAllParameters;
 LowScaleParameter=Select[ListAllInputParameters,(FreeQ[BCup,#]==False)&];,
+(*
 If[AuxiliaryHyperchargeCoupling=!=True,
 LowScaleParameter = {hyperchargeCoupling,leftCoupling,strongCoupling,ElectronYukawa,DownYukawa,UpYukawa};,
 LowScaleParameter = Flatten[{hyperchargeAuxParameters,leftCoupling,strongCoupling,ElectronYukawa,DownYukawa,UpYukawa}];
@@ -857,8 +872,11 @@ LowScaleParameter = Flatten[{hyperchargeAuxParameters,leftCoupling,strongCouplin
 If[DEFINITION[UseNonStandardYukwas]==True,
 LowScaleParameter=DeleteCases[LowScaleParameter,ElectronYukawa|DownYukawa|UpYukawa];
 LowScaleParameter=Join[LowScaleParameter,DEFINITION[NonStandardYukawas]];
+]; *)
+LowScaleParameter=DimensionlessParametersInMatching;
 ];
-];
+
+
 NeededForTracesTemp={};
 NeededForTraces={};
 
@@ -1542,11 +1560,11 @@ Return[temp];
 
 
 CreateHiggs2Loop :=Block[{i1,i2},
-sphenoHiggs2Loop=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"TwoLoopHiggsMass_SARAH.f90"]];
+sphenoHiggs2Loop=OpenWrite[ToFileName[$sarahSPhenoTwoLoopDir,"TwoLoopHiggsMass_SARAH.f90"]];
 AppendSourceCode["TwoLoopHiggsMass.f90",sphenoHiggs2Loop];
 Close[sphenoHiggs2Loop];
 
-sphenoHiggs2Loopasat=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"effpotasat.f"]];
+sphenoHiggs2Loopasat=OpenWrite[ToFileName[$sarahSPhenoTwoLoopDir,"effpotasat.f"]];
 AppendSourceCode["effpotasat.f",sphenoHiggs2Loopasat];
 Close[sphenoHiggs2Loopasat];
 
@@ -1580,18 +1598,19 @@ Message[SPheno::NoBoundaryGUT,temp[[i]]];
 i++;];
 
 temp=Select[LowScaleParameter,(MemberQ[TransposeChecked[BoundaryHighScale[[k]]][[1]]/. A_[b__Integer]->A,#]==False && MemberQ[TransposeChecked[BoundaryEWSBScale[[k]]][[1]]/. A_[b__Integer]->A,#]==False && MemberQ[TransposeChecked[BoundarySUSYScale[[k]]][[1]] /. A_[b__Integer]->A,#]==False)&];
+(*
 If[AuxiliaryHyperchargeCoupling=!=True,
 temp=Select[temp,(FreeQ[{UpYukawa,DownYukawa,ElectronYukawa,hyperchargeCoupling,leftCoupling,strongCoupling},#])&];,
 temp=Select[temp,(FreeQ[Flatten[{UpYukawa,DownYukawa,ElectronYukawa,hyperchargeAuxParameters,leftCoupling,strongCoupling}],#])&];
 ];
-
 If[DEFINITION[UseNonStandardYukwas]===True,
 temp=Select[temp,(FreeQ[DEFINITION[NonStandardYukawas],#])&];
 ];
-
+*)
+temp=Select[temp,(FreeQ[Transpose[DEFINITION[MatchingConditions]][[1]],#])&];
 
 For[i=1,i<=Length[temp],
-If[MemberQ[ParametersToSolveTadpoles /.{re[x_]->x,im[x_]->x},temp[[i]]]==False,
+If[MemberQ[ParametersToSolveTadpoles /.{re[x_]->x,im[x_]->x,A_[b__Integer]->A},temp[[i]]]==False,
 Message[SPheno::NoConditionForParameter,temp[[i]]];
 ];
 i++;];
@@ -1700,5 +1719,86 @@ If[Length[listGM]!= 0,tempList=Transpose[listGM][[2]] /. Delta[a__]->1 /. epsTen
 If[Length[listW4]!= 0,tempList=Transpose[Transpose[listW4One/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1][[2]]][[2]];];
 If[Length[BetaGauge]!= 0,tempList=Transpose[BetaGauge][[1]]/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1;];
 ListAllInputParameters=tempList;
+];
+
+GenerateMatchingConditions:=Block[{i,equ,sol,inputpar,equTemp},
+If[Head[DEFINITION[MatchingConditions]]===List,
+If[Length[DEFINITION[MatchingConditions]]<7,
+Matching::TooShort="Matching conditions too short: not all SM parameters involved. This might cause problems.";
+Message[Matching::TooShort];
+];,
+If[Head[DEFINITION[MatchingConditions]]===DEFINITION,
+Matching::NotDefined="No matching conditions defined: The ones for a THDM type-II are used by default. ";
+Message[Matching::NotDefined];
+DEFINITION[MatchingConditions]=Default[THDMII]
+];
+Switch[DEFINITION[MatchingConditions],
+Default[THDMII],
+DEFINITION[MatchingConditions]={
+{hyperchargeCoupling,g1SM},
+{leftCoupling,g2SM},
+{strongCoupling,g3SM},
+{VEVSM1,vSM/Sqrt[1+TanBeta^2]},
+{VEVSM2,VEVSM1*TanBeta},
+{UpYukawa,YuSM vSM/VEVSM2},
+{DownYukawa,YdSM vSM/VEVSM1},
+{ElectronYukawa,YeSM vSM/VEVSM1}
+};,
+Default[OHDM],
+DEFINITION[MatchingConditions]={
+{hyperchargeCoupling,g1SM},
+{leftCoupling,g2SM},
+{strongCoupling,g3SM},
+{VEVSM,vSM},
+{UpYukawa,YuSM},
+{DownYukawa,YdSM},
+{ElectronYukawa,YeSM}
+};,
+_,
+Matching::Unknown="Unknown matching condtions: ``";
+Message[Matching::Unknown,DEFINITION[MatchingConditions]];
+Interrupt[];
+];
+];
+
+
+
+
+DimensionlessParametersInMatching=Select[Transpose[parameters][[1]],FreeQ[Transpose[DEFINITION[MatchingConditions]][[1]],#]==False&];
+
+listVEVs={};
+For[i=1,i<=Length[Particles[Current]],If[Particles[Current][[i,4]]===VEV,listVEVs=Join[listVEVs,{Particles[Current][[i,1]]}];];
+i++;];
+VEVsInMatching=Select[DimensionlessParametersInMatching,FreeQ[listVEVs,#]===False&];
+DimensionlessParametersInMatching=Select[DimensionlessParametersInMatching,FreeQ[listVEVs,#]===True&];
+
+inputpar=Join[Transpose[If[Depth[MINPAR]===4,Flatten[MINPAR,1],MINPAR]][[2]],If[Head[EXTPAR]===List && EXTPAR=!={},Transpose[If[Depth[EXTPAR]===4,Flatten[EXTPAR,1],EXTPAR]][[2]],{}]];
+AnglesInMatching=Intersection[Select[inputpar,FreeQ[Select[DEFINITION[MatchingConditions] /.{A_[b_Integer],c__}->{A,c},FreeQ[VEVsInMatching,#[[1]]]==False&],#]==False&]];
+AnglesInMatchingQ=Table[ToExpression[ToString[AnglesInMatching[[i]]]<>"Q"],{i,1,Length[AnglesInMatching]}];
+subRunningAngles=Table[AnglesInMatching[[i]]->AnglesInMatchingQ[[i]],{i,1,Length[AnglesInMatching]}];
+
+(* Getting the relations to shift the angles *)
+MatchingForVEVs=Select[DEFINITION[MatchingConditions],FreeQ[VEVsInMatching,#[[1]]/.A_[b_Integer]->A]==False&];
+equ=Table[MatchingForVEVs[[i,1]]==MatchingForVEVs[[i,2]],{i,1,Length[MatchingForVEVs]}];
+SolutionForRunningAngles=Select[Solve[equ,Join[{vSM},AnglesInMatching]],FreeQ[#,-a_]&][[1]];
+
+
+(* Check if auxiliary hypercharge is needed *)
+
+If[FreeQ[DEFINITION[MatchingConditions],hyperchargeCoupling]===False,
+AuxiliaryHyperchargeCoupling=False;,
+AuxiliaryHyperchargeCoupling=True;
+(* get expression *)
+equ=Select[DEFINITION[MatchingConditions],FreeQ[#,g1SM]==False&];
+If[Length[equ]>1,
+equTemp=equ;
+For[i=1,i<=Length[equTemp],
+If[(Select[inputpar,FreeQ[equTemp[[i]],#]==False&])==={},
+equ=equTemp[[i]];];
+i++;];
+];
+sol=Select[Solve[equ[[1]]==equ[[2]],{g1SM}],FreeQ[#,-a_]&][[1]];
+ExpressionAuxHypercharge=g1SM /.sol[[1]]; 
+];
 ];
 

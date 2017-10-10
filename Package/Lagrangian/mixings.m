@@ -173,6 +173,7 @@ j++;];
 LagInput[NameOfStates[[rotNr]]]=sumLagInput;
 ];
 
+
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][VEVs]]]=!=DEFINITION,
 GenerateVEVs[NameOfStates[[rotNr]]];,
 vevSub={};
@@ -206,6 +207,7 @@ LagrangianAux=replaceGen[ReleaseHold[LagrangianAux/.decomposeSub],rgNr];
 LagReDef=replaceGen[ReleaseHold[LagReDef/.decomposeSub],rgNr];
 decomposeSub={};,
 decomposeSub={};];
+
 
 
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][Phases]]]=!=DEFINITION,
@@ -482,6 +484,14 @@ SA`DynL[RE[mixES[[i,2,1]]],i2]=SA`DynL[mixES[[i,1,1]],i2];
 MultiplicityFactor[mixES[[i,2,1]],i2]=MultiplicityFactor[mixES[[i,1,1]],i2];
 i2++;];
 
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[RE[mixES[[i,2,1]]],AuxGauge[[i2,3]]]=SA`Casimir[mixES[[i,1,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[RE[mixES[[i,2,1]]],AuxGauge[[i2,3]]]=SA`Dynkin[mixES[[i,1,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[RE[mixES[[i,2,1]]],AuxGauge[[i2,3]]]=SA`DimensionGG[mixES[[i,1,1]],AuxGauge[[i2,3]]];
+SA`DynL[RE[mixES[[i,2,1]]],AuxGauge[[i2,3]]]=SA`DynL[mixES[[i,1,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[mixES[[i,2,1]],AuxGauge[[i2,3]]]=MultiplicityFactor[mixES[[i,1,1]],AuxGauge[[i2,3]]];
+i2++;];
+
 For[i2=1,i2<=Length[Global],
 If[Length[Intersection[SA`ChargeGlobal[#,Global[[i2,2]]]&/@mixES[[i,1]]]]=!=1,
 PrintAll["Problem with deriving global charges for ",mixES[[i,2,1]]];,
@@ -516,6 +526,15 @@ SA`DynL[mixESnoFV[[i,2,1]],i2]=SA`DynL[mixESnoFV[[i,1,1]],i2];
 ]; 
 MultiplicityFactor[mixESnoFV[[i,2,1]],i2]=MultiplicityFactor[mixESnoFV[[i,1,1]],i2];
 i2++;];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[RE[mixESnoFV[[i,2,1]]],AuxGauge[[i2,3]]]=SA`Casimir[mixESnoFV[[i,1,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[RE[mixESnoFV[[i,2,1]]],AuxGauge[[i2,3]]]=SA`Dynkin[mixESnoFV[[i,1,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[RE[mixESnoFV[[i,2,1]]],AuxGauge[[i2,3]]]=SA`DimensionGG[mixESnoFV[[i,1,1]],AuxGauge[[i2,3]]];
+SA`DynL[RE[mixESnoFV[[i,2,1]]],AuxGauge[[i2,3]]]=SA`DynL[mixESnoFV[[i,1,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[mixESnoFV[[i,2,1]],AuxGauge[[i2,3]]]=MultiplicityFactor[mixESnoFV[[i,1,1]],AuxGauge[[i2,3]]];
+i2++;];
+
 For[i2=1,i2<=Length[Global],
 If[Length[Intersection[SA`ChargeGlobal[#,Global[[i2,2]]]&/@mixES[[i,1]]]]=!=1,
 PrintAll["Problem with deriving global charges for ",mixES[[i,2,1]]];,
@@ -767,7 +786,7 @@ i++;];
 Particles[Current]=allGenerations;
 
 
-PrintAll[DeleteParticles];
+(* PrintAll[DeleteParticles]; *)
 
 DeleteParticles = DeleteParticlesNew; 
 ];
@@ -1041,6 +1060,15 @@ SA`DimensionGG[flav[[i,2,j]],i2]=SA`DimensionGG[flav[[i,1]],i2];
 SA`DynL[flav[[i,2,j]],i2]=SA`DynL[flav[[i,1]],i2];
 ]; 
 i2++ ];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[flav[[i,2,j]],AuxGauge[[i2,3]]]=SA`Casimir[flav[[i,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[flav[[i,2,j]],AuxGauge[[i2,3]]]=SA`Dynkin[flav[[i,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[flav[[i,2,j]],AuxGauge[[i2,3]]]=SA`DimensionGG[flav[[i,1]],AuxGauge[[i2,3]]];
+SA`DynL[flav[[i,2,j]],AuxGauge[[i2,3]]]=SA`DynL[flav[[i,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[flav[[i,2,j]],AuxGauge[[i2,3]]]=MultiplicityFactor[flav[[i,1]],AuxGauge[[i2,3]]];
+i2++;];
+
 For[i2=1,i2<=Length[Global],
 SA`ChargeGlobal[RE[flav[[i,2,j]]],Global[[i2,2]]] =SA`ChargeGlobal[flav[[i,1]],Global[[i2,2]]];
 i2++;];
@@ -1085,6 +1113,15 @@ SA`DimensionGG[decomp[[i,2,j,2]],i2]=SA`DimensionGG[decomp[[i,1]],i2];
 SA`DynL[decomp[[i,2,j,2]],i2]=SA`DynL[decomp[[i,1]],i2];
 ]; 
 i2++ ];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[decomp[[i,2,j,2]],AuxGauge[[i2,3]]]=SA`Casimir[decomp[[i,2,j,2]],AuxGauge[[i2,3]]];
+SA`Dynkin[decomp[[i,2,j,2]],AuxGauge[[i2,3]]]=SA`Dynkin[decomp[[i,2,j,2]],AuxGauge[[i2,3]]];
+SA`DimensionGG[decomp[[i,2,j,2]],AuxGauge[[i2,3]]]=SA`DimensionGG[decomp[[i,2,j,2]],AuxGauge[[i2,3]]];
+SA`DynL[decomp[[i,2,j,2]],AuxGauge[[i2,3]]]=SA`DynL[decomp[[i,2,j,2]],AuxGauge[[i2,3]]];
+MultiplicityFactor[decomp[[i,2,j,2]],AuxGauge[[i2,3]]]=MultiplicityFactor[decomp[[i,2,j,2]],AuxGauge[[i2,3]]];
+i2++;];
+
 For[i2=1,i2<=Length[Global],
 SA`ChargeGlobal[RE[decomp[[i,2,j,2]]],Global[[i2,2]]] =SA`ChargeGlobal[decomp[[i,1]],Global[[i2,2]]];
 i2++;];
@@ -1328,7 +1365,6 @@ DynamicMMgaugeNr[name]=i;
 DynamicMMgaugeName[name]=def[[i,1]];
 PrintDebug[def[[i,1]]];
 If[getType[getBlank[def[[i,1,1]]]]===V,PartLag=Kinetic;,PartLag=Potential;];
-
 temp =Table[DMM[DMM[PartLag /. vevSub,def[[i,1,i1]] /. a_[b_Integer]->a,1,"t",1],def[[i,1,i2]] /. a_[b_Integer]->a,2,"t",2] /. {gt1-> ExtractGen[def[[i,1,i1]]],gt2-> ExtractGen[def[[i,1,i2]]]} /.subVac /. Mom[_]->0 /. zero[a_]->0 ,{i1,1,Length[def[[i,1]]]},{i2,1,Length[def[[i,1]]]}];
 
 MassMatricesGauge[name]=Join[MassMatricesGauge[name],{temp}];

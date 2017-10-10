@@ -126,7 +126,7 @@ WriteSPhenoCouplings[SPhenoCouplings3P,False,"2L"];
 (*------TWO LOOP POLE COUPLINGS------*)
 (* by M.D. Goodsell *)
 (*-----------------------------------*)
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False,
 DynamicCouplings2LPole="";
 Print["Creating couplings for 2-loop pole mass: ",Dynamic[DynamicCouplings2LPole]];
 

@@ -11,7 +11,12 @@ MINPAR=     {{1,m0},
              
 (* GMSB input parameters *)             
              
-         
+EXTPAR={
+    {1, M1input},
+ {2, M2input},
+ {3, M3input},
+ {4, mA2input}
+       }
 
 RealParameters = {TanBeta};
 

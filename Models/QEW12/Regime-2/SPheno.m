@@ -34,6 +34,8 @@ UseParameterAsGUTscale = MessengerScale;
 
 ParametersToSolveTadpoles = {\[Mu],B[\[Mu]]};
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 RenormalizationScaleFirstGuess = (vlvInput)^2;
 RenormalizationScale = MSu[1]*MSu[6];
 

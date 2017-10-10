@@ -36,6 +36,8 @@ RealParameters = {TanBeta, m0};
 
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2, msp2 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 

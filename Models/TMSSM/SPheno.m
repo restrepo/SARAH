@@ -25,6 +25,8 @@ UseParameterAsGUTscale = {mSUSY};
 
 ParametersToSolveTadpoles = {mHd2, mHu2,mT2};
 
+DEFINITION[MatchingConditions]=Default[THDMII];
+
 RenormalizationScaleFirstGuess = mSUSY^2;
 RenormalizationScale = mSUSY^2;
 

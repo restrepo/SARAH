@@ -21,9 +21,27 @@ RealParameters = {TanBeta,TanBetaRinput,g1RBLFactor,m0};
 ParametersToSolveTadpoles = {B[\[Mu]], B[MuR], \[Mu], MuR};
 
 
-AuxiliaryHyperchargeCoupling = True;
+DEFINITION[MatchingConditions]={
+ (* Matching for gauge couplings *)
+ {gR, Sqrt[5/3]*g1RBLFactor*g1SM},
+ {gBL, -((-g1SM^2 gRBL + gBLR gR gRBL + Sqrt[g1SM^2 (gBLR - gR)^2 (-g1SM^2 + gR^2 + gRBL^2)])/(g1SM^2 - gR^2))},
+ {g2, g2SM},
+ {g3, g3SM},
+ 
+ 
+ (* Matching for VEVs *) 
+ {vd, vSM/Sqrt[1 + TanBeta^2]},
+ {vu, VEVSM1*TanBeta},
+ 
+ (* Matching for Yukawas *) 
+ {Yu, YuSM vSM/vu},
+ {Yd, YdSM vSM/vd},
+ {Ye, YeSM vSM/vd}
 
-ExpressionAuxHypercharge =Sqrt[(gBL*gR - gBLR*gRBL)^2/((gBLR - gR)^2 + (gBL - gRBL)^2)];
+
+};
+
+
 
 (* -------------------------------------------------------- *)
 (* Renormalization scale                                    *)
@@ -84,12 +102,6 @@ BoundarySUSYScale = {
 
 
 BoundaryEWSBScale = {
-  {gYauxt, Sqrt[5/3]*gYaux},
-  {gR, g1RBLFactor*gYauxt}, 
-  {gRBLt, 1*gRBL},
-  {gBLRt, Sqrt[2/3]*gBLR},
-  {gBLt, (5 gBLRt gR gRBLt - Sqrt[6] gRBLt gYauxt^2 + Sqrt[(3 gBLRt^2 - 2 Sqrt[6] gBLRt gR + 2 gR^2) (5 (gR^2 + gRBLt^2) - 3 gYauxt^2) gYauxt^2])/(5 gR^2 - 3 gYauxt^2)},
-  {gBL, Sqrt[3/2]*gBLt},
   {TanBetaR, TanBetaRinput},
   {vChiR, vR*TanBetaR/Sqrt[1 + TanBetaR^2]},
   {vChiRb, vR*1/Sqrt[1 + TanBetaR^2]}};

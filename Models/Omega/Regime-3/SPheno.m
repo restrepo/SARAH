@@ -52,6 +52,7 @@ BoundaryHighScale={
 {MassG,m12}
 };
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 
 

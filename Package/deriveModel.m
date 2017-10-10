@@ -418,7 +418,7 @@ Print["The vertices are saved in ",StyleForm[ToString[$sarahCurrentVerticesDir ]
 InitAutomaticCalc[ES_]:=Block[{},
 
 (* subNonFields = {sum[a_,b_,c_]\[Rule]1,  Delta[a_,b_]\[Rule]1,epsTensor[a__]\[Rule]1, g[a__]\[Rule]1, Sig[a__]\[Rule]1,Lam[a__]\[Rule]1, Mom[a_,b_]\[Rule]1, T[a_]\[Rule] 1, B[a_]\[Rule]1, L[a_]\[Rule]1,gamma[a_]\[Rule]1 ,fSU2[a__]\[Rule]1, fSU3[a__]\[Rule]1, pmue[a__]\[Rule]a,RXi[a__]\[Rule]1, Mass[x_]\[Rule]1,Inv[a__][b__]\[Rule]1};  *)
-subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]:>Random[], T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]:>Random[] ,fSU2[a__]->1, fSU3[a__]->1, pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[], LorentzProduct[a___]:>Random[]}; 
+subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]:>Random[], T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]:>Random[] ,fSU2[a__]->1, fSU3[a__]->1, fSU4[a__]->1,pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[], LorentzProduct[a___]:>Random[]}; 
 subPar=Flatten[{T[a___]->1, B[a__]->1,L[a___]->1,Table[parameters[[i,1]][b__][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]]->1,{i,1,Length[parameters]}]}] /. conj[x_]->x;
 
 
