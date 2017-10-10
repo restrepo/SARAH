@@ -1343,6 +1343,7 @@ MakeVariableList[namesTadpoles,"",sphenoSugra];
 MakeVariableList[NewMassParameters,",Intent(inout)",sphenoSugra];
 MakeVariableList[listAllParameters,",Intent(inout)",sphenoSugra];
 NumberNewMasses = ToString[Plus@@Transpose[NewMasses][[2]]];
+NumberNewMasses=NumberNewMassesTotal;
 WriteString[sphenoSugra,"Real(dp) ::mass_new("<>NumberNewMasses<>"),mass_old("<>NumberNewMasses<>"),diff_m("<>NumberNewMasses<>")\n"];
 WriteString[sphenoSugra, "Real(dp) :: tz,dt,q,q2,mudim,mudimNew, vev, sinW2, mh_SM \n"];
 WriteString[sphenoSugra,"Logical::FoundResult, SignMassChangedSave \n"];
@@ -1388,6 +1389,7 @@ WriteString[sphenoSugra,"Write(ErrCan,*) \"sugra \", j,\".-iteration\" \n"];
 (* MakeCall["BoundarySM",{},{"j","lambda_SM"},{"delta0","g_SM","kont"},sphenoSugra]; *)
 
 MakeCall["BoundarySM",{},{"j","Lambda_MZ"},{"delta0","g_SM","kont"},sphenoSugra];
+WriteString[sphenoSugra,"g_SM_save = g_SM \n"];
 
 WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
 WriteString[sphenoSugra,"mudim=Max(mudim,mZ2)\n"];
@@ -1663,7 +1665,10 @@ WriteString[sphenoSugra,"CalculateOneLoopMasses =  CalculateOneLoopMassesSave \n
 WriteString[sphenoSugra,"Write(*,*) \"Calculate loop corrected masses \" \n"];
 MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoSugra];
 
-WriteString[sphenoSugra,"If (((Calculate_mh_within_SM).and.("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]+1] <>".gt.300._dp)).OR.(Force_mh_within_SM))Then\n"];
+If[getGen[HiggsBoson]>1,
+WriteString[sphenoSugra,"If (((Calculate_mh_within_SM).and.("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]+1] <>".gt.300._dp)).OR.(Force_mh_within_SM))Then\n"];,
+WriteString[sphenoSugra,"If (Calculate_mh_within_SM) Then\n"];
+];
 WriteString[sphenoSugra,"Write(*,*) \"Calculate Higgs mass within effective SM \" \n"];
 WriteString[sphenoSugra,"Call Get_mh_pole_SM(g_SM,mudim,delta0,"<>SPhenoMassSq[HiggsBoson,getGenStart[HiggsBoson]]<>",mh_SM) \n"];
 WriteString[sphenoSugra,SPhenoMassSq[HiggsBoson,getGenStart[HiggsBoson]] <>" = mh_SM**2 \n"];

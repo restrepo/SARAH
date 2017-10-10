@@ -37,7 +37,7 @@ DEFINITION[MatchingConditions]= {
  {g3, g3SM}
  };
 
-
+AddTreeLevelUnitarityLimits=True;
 
 ListDecayParticles = {Fu,Fe,Fd,hh,Ah,Hm};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};

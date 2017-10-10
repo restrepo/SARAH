@@ -619,7 +619,7 @@ MakeMatrixReal[matrix_]:=Block[{i,j,temp,res,a,subr,r1,r2},
 
 WriteMassMatricesHM[renscheme_]:=
     Block[{i,j,k,states=Last[NameOfStates],particlename,matrixname1,
-        matrixname2,diracf},
+        matrixname2,diracf,notmixed,treemass},
       
       Print["    Writing mass matrices for 1-loop eff. potential"];
       SA`HMparticleList={};
@@ -699,6 +699,32 @@ WriteMassMatricesHM[renscheme_]:=
           ];
         SA`HMparticleList=Join[SA`HMparticleList,{particlename}];
         i++;];
+
+        notmixed=Select[Select[Transpose[Particles[states]][[1]], FreeQ[DEFINITION[states][MatterSector], #] &], getType[#] === S ||  getType[#] === F &];
+
+ For[i=1,i<=Length[notmixed],
+        treemass=TreeMass[notmixed[[i]],states];
+       If[treemass=!=0,
+        WriteString[outHM,"<mass-squared_matrix \n"];
+        WriteString[outHM,"particle=\""<>ToString[notmixed[[i]]]<>"\"  "];
+        WriteString[outHM,       "rotationmatrix=\"No\"  "];
+		Switch[getType[notmixed[[i]]],
+			F, WriteString[outHM,"spin=\"Weyl\" "];,
+			S, WriteString[outHM,"spin=\"scalar\" "];,
+			V, WriteString[outHM,"spin=\"vector\" "];
+		];
+        WriteString[outHM,  "factor=\""<>ToString[InputForm[getFactorHM[{{},{notmixed[[i]]}}]]]<>       "\" >     \n"];
+		If[getType[notmixed[[i]]]===F,
+        WriteMassMatrixHM[{{Expand[treemass conj[treemass]]}}];,
+		WriteMassMatrixHM[{{treemass}}];
+		];
+        WriteString[outHM,"</mass-squared_matrix> \n \n"];
+        SA`HMparticleList=Join[SA`HMparticleList,{particlename}];
+      ];
+
+i++;];
+
+
       SA`HMparticleList=
         Select[Intersection[Flatten[SA`HMparticleList] /. conj[x_]->x],
           FreeQ[Massless[Last[NameOfStates]],#]&];

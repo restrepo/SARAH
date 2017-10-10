@@ -1,0 +1,64 @@
+OnlyLowEnergySPheno = True;
+
+MINPAR={
+        {3,Lambda3input},
+        {4,Lambda4input},
+        
+        {10, mh1input},
+        {11, m5input},
+        {12, sHinput}
+
+       };
+
+ParametersToSolveTadpoles = {mu2,Meta,MXi};
+
+AlwaysInclude2Loop = True;
+
+DEFINITION[MatchingConditions]= {
+ {g1, g1SM},
+ {g2, g2SM},
+ {g3, g3SM},
+ {vPhi,(sHinput vSM)/(2 Sqrt[2])},
+ {vDoub, Sqrt[vSM^2-8*vPhi^2]},
+ {Ye, YeSM vSM/vDoub},
+ {Yd, YdSM vSM/vDoub},
+ {Yu, YuSM vSM/vDoub}
+ };
+
+BoundaryLowScaleInput={
+  {Lambda3a, Lambda3input},
+  {Lambda3b, Lambda3input},
+  {Lambda3c, Lambda3input},
+  {Lambda4a, Lambda4input},
+  {Lambda4b, Lambda4input},
+  {Lambda4c, Lambda4input},
+  {M1a, (Sqrt[2] sHinput (m5input^2 + vDoub^2+vPhi^2))/Sqrt[vDoub^2+vPhi^2]},
+  {M1b, M1a},
+  {M2, M1a/6},
+  {vEta,vPhi},
+  {Lambda2a, m5input/2500},
+  {Lambda2b, Lambda2a},
+  {Lambda5a, (-(M1a*vDoub^2) + 4*m5input^2*vPhi - 48*M2a*vPhi^2 - 32*Lambda3a*vPhi^3)/(6*vDoub^2*vPhi)},
+  {Lambda5b, Lambda5a},    
+  {Lambda1,(3*M1a^2*vDoub^2*vPhi + M1a*vDoub^2*(mh1input^2 + 24*(-2*Lambda2a + Lambda5a)*vPhi^2) + 4*vPhi*(-mh1input^4 + 12*(-2*Lambda2a + Lambda5a)^2*vDoub^2*vPhi^2 + 2*mh1input^2*vPhi*(-3*M2a + 4*(Lambda3a + 3*Lambda4a)*vPhi)))/
+    (8*vDoub^2*(M1a*vDoub^2 + 4*vPhi*(-mh1input^2 - 6*M2a*vPhi + 8*(Lambda3a + 3*Lambda4a)*vPhi^2)))}
+(*  {Lambda1, (-6*mh1input^4 + m5input^4*sHinput^2*(3 - 2*sHinput^2)^2 + 3*mh1input^2*(2 + (-1 + 2*Lambda3a + 6*Lambda4a)*sHinput^2)*vDoub^2 + sHinput^2*(-1 + 6*Lambda2a + 2*(1 + Lambda3a)*sHinput^2)^2*vDoub^4 + m5input^2*(-3*mh1input^2*(-2 + sHinput^2) + 2*sHinput^2*(-3 + 2*sHinput^2)*(-1 + 6*Lambda2a + 2*(1 + Lambda3a)*sHinput^2)*vDoub^2))/    (24*vDoub^2*(-2*mh1input^2 - m5input^2*(-2 + sHinput^2) + (2 + (-1 + 2*Lambda3a + 6*Lambda4a)*sHinput^2)*vDoub^2))} *)
+};
+
+
+ListDecayParticles = {Fu,Fe,Fd,hh,Hpm,xiMM,Ah};
+ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
+
+DefaultInputValues ={vEtaInput->1, M1input->1000, M2input->1000,Lambda1input->0.2,Lambda2input->0.5,Lambda3input->0.5,Lambda4input->0.5,Lambda5input->0.5 };
+
+AddTreeLevelUnitarityLimits=True;
+
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWp/(MVWp^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWp/MVWp^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};
+
+(* turn off RGEs for loop-decays *)                     
+SA`NoRGEsforDecays=True;

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 CreateTeXNameList[Eigenstates_]:=Block[{i,j,k},
 
 particleList=WeylFermionAndIndermediate;
@@ -357,7 +358,7 @@ StringReplaceFinal = Join[StringReplaceFinal,{"(+"->"\\Big("}];
 StringReplaceFinal = Join[StringReplaceFinal,{"( +"->"\\Big("}];
 StringReplaceFinal = Join[StringReplaceFinal,{"("->"\\Big("}];
 StringReplaceFinal = Join[StringReplaceFinal,{")"->"\\Big)"}];
-StringReplaceFinal = Join[StringReplaceFinal,{"I"->"i"}];
+(* StringReplaceFinal = Join[StringReplaceFinal,{"I"->"i"}]; *)
 StringReplaceFinal = Join[StringReplaceFinal,{"+ -"->"-"}];
 StringReplaceFinal = Join[StringReplaceFinal,{"+-"->"-"}];
 
@@ -798,6 +799,7 @@ ReplacementsWO = Flatten[ReplacementsWO];
 
 
 
+(* ::Input::Initialization:: *)
 
 
 CHName[part_]:=Block[{pos,temp},
@@ -836,6 +838,7 @@ Return[temp];
 ];
 
 
+(* ::Input::Initialization:: *)
 ExportModelInformation:=Block[{i,particles, para},
 Print["Writing Information about Particles"];
 

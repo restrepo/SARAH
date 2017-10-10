@@ -70,7 +70,10 @@ WriteString[filenames[[l]],"1 0               #  1/0: High/low scale input \n"];
 WriteString[filenames[[l]],"2 "<>ToString[iminpar]<>"              # Boundary Condition  \n"];
 WriteString[filenames[[l]],"6 1               # Generation Mixing \n"];
 If[l==2,
+If[SupersymmetricModel===False,
+WriteString[filenames[[l]],"12 173.5          # Renormalization scale \n"];,
 WriteString[filenames[[l]],"12 1000.          # Renormalization scale \n"];
+];
 ];
 WriteString[filenames[[l]],"Block SMINPUTS    # Standard Model inputs \n"];
 WriteString[filenames[[l]],"2 1.166370E-05    # G_F,Fermi constant \n"];
@@ -83,7 +86,7 @@ WriteString[filenames[[l]],"Block MINPAR      # Input parameters \n"];
 
 If[Head[MINPAR[[1,1]]]=!=List,
 For[i=1,i<=Length[MINPAR],
-If[l==1 || (FreeQ[BoundaryLowScaleInput,MINPAR[[i,2]]]==False && FreeQ[EXTPAR,MINPAR[[i,2]]]==True),
+If[l==1 || (FreeQ[BoundaryLowScaleInput,MINPAR[[i,2]]]==False && FreeQ[EXTPAR,MINPAR[[i,2]]]==True)||(FreeQ[DEFINITION[MatchingConditions],MINPAR[[i,2]]]==False&& FreeQ[EXTPAR,MINPAR[[i,2]]]==True),
  If[NumericQ[MINPAR[[i,2]]/.defv]===False,
 WriteString[filenames[[l]],ToString[MINPAR[[i,1]]]<>"   0.000000E+00    # "<>ToString[MINPAR[[i,2]]] <>"\n"];,
 WriteString[filenames[[l]],ToString[MINPAR[[i,1]]]<>"   "<>ToStringFNr[MINPAR[[i,2]]/.defv] <>"    # "<>ToString[MINPAR[[i,2]]] <>"\n"];
@@ -91,7 +94,7 @@ WriteString[filenames[[l]],ToString[MINPAR[[i,1]]]<>"   "<>ToStringFNr[MINPAR[[i
 ];
 i++;];,
 For[i=1,i<=Length[MINPAR[[iminpar]]],
-If[l==1 || (FreeQ[BoundaryLowScaleInput,MINPAR[[iminpar,i,2]]]==False && FreeQ[EXTPAR,MINPAR[[iminpar,i,2]]]==True),
+If[l==1 || (FreeQ[BoundaryLowScaleInput,MINPAR[[iminpar,i,2]]]==False && FreeQ[EXTPAR,MINPAR[[iminpar,i,2]]]==True) ||(FreeQ[DEFINITION[MatchingConditions],MINPAR[[iminpar,i,2]]]==False&& FreeQ[EXTPAR,MINPAR[[iminpar,i,2]]]==True),
  If[NumericQ[MINPAR[[iminpar,i,2]]/.defv]===False,
 WriteString[filenames[[l]],ToString[MINPAR[[iminpar,i,1]]]<>" 0.000000E+00    # "<>ToString[MINPAR[[iminpar,i,2]]] <>"\n"];,
 WriteString[filenames[[l]],ToString[MINPAR[[iminpar,i,1]]]<>"  "<>ToStringFNr[MINPAR[[iminpar,i,2]]/.defv] <>"    # "<>ToString[MINPAR[[iminpar,i,2]]] <>"\n"];
@@ -652,8 +655,8 @@ If[Count[Gauge,U[1],3]>1,WriteString[filenames[[i]],"{{60},{Value\[Rule]1}}, (* 
 If[SeveralIndependentTadpoleSolutions=!=True,
 WriteString[filenames[[i]],"{{65},{Value\[Rule]1}}, (* Solution tadpole equation *)\n"];
 ];
-WriteString[filenames[[i]],"{{65},{Value\[Rule]1}}, (* two-scale matching *) \n"];
-WriteString[filenames[[i]],"{{66},{Value\[Rule]1}}, (* EFT Higgs *) \n"];
+WriteString[filenames[[i]],"{{66},{Value\[Rule]1}}, (* two-scale matching *) \n"];
+WriteString[filenames[[i]],"{{67},{Value\[Rule]1}}, (* EFT Higgs *) \n"];
 WriteString[filenames[[i]],"{{75},{Value\[Rule]1}}, (* Write WHIZARD files *) \n"];
 WriteString[filenames[[i]],"{{76},{Value\[Rule]1}},  (* Write HiggsBounds files *) \n"];
 WriteString[filenames[[i]],"{{86},{Value\[Rule]0.}},  (* Maximal width to be counted as invisible in Higgs decays; -1: only LSP *) \n"];

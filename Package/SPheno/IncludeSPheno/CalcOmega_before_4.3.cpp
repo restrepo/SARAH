@@ -1,12 +1,12 @@
-#include "../include/micromegas.h"
+#include "../sources/micromegas.h"
 #include "lib/pmodel.h"
-#include"../include/micromegas_aux.h"
+#include"../sources/micromegas_aux.h"
 #include <string>
 
 using namespace std;
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* MAIN PROGRAM (by F.Staub, last change 28.07.2017)			     		    */
+/* MAIN PROGRAM (by F.Staub, last change 04.05.2015)			     		    */
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 int main(int argc, char** argv)

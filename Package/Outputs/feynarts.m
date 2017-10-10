@@ -31,11 +31,11 @@
 
 (* ::Input::Initialization:: *)
 
-Options[MakeFeynArts]={AddCounterTerms->False};
+Options[MakeFeynArts]={Eigenstates->FinalStates,AddCounterTerms->False};
 
-MakeFeynArts[opt___]:=MakeFeynArtsFunc[AddCounterTerms /. {opt} /. Options[MakeFeynArts]];
+MakeFeynArts[opt___]:=MakeFeynArtsFunc[AddCounterTerms /. {opt} /. Options[MakeFeynArts],Eigenstates /. {opt} /. Options[MakeFeynArts]];
 
-MakeFeynArtsFunc[AddCounterT_]:=Block[{i,j,term,startedtime},
+MakeFeynArtsFunc[AddCounterT_,eigS_]:=Block[{i,j,term,startedtime},
 (*
 Print["------------------------------"];
 Print[" Creating FeynArts Model File "];
@@ -60,7 +60,7 @@ Message[ModelFile::NoVertices];,
 
 If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
 Print["Have to calculate the vertices first..."];
-ModelOutput[Last[NameOfStates]];
+If[eigS===FinalStates,ModelOutput[Last[NameOfStates]];,ModelOutput[eigS];];
 ];
 
 ClearAttributes[C,Orderless];

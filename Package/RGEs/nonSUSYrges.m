@@ -133,6 +133,7 @@ subComplexScalarsSum={};
 subComplexScalarsList={};
 SFieldsSplitted={};
 subExchangeScalarRI={};
+subRealSplitted={};
 temp={};
 tempR={};
 For[i=1,i<=Length[list],
@@ -170,7 +171,8 @@ SFieldsSplitted=Join[SFieldsSplitted,{list[[i]]/.name->real,list[[i]]/.name->im}
 temp=Join[temp,{list[[i]] /. name->real, list[[i]]/.name->im}];
 subComplexScalarsSum = Join[subComplexScalarsSum,{name[a__][b__]-> 1/Sqrt[2](real[a][b] + I im[a][b]),name[a__]-> 1/Sqrt[2]( real[a] + I im[a]),name-> 1/Sqrt[2]( real + I im)}];
 subComplexScalarsList = Join[subComplexScalarsList,{name[a__][b__]->{ real[a][b],  im[a][b]},name[a__]->{ real[a],  im[a]},name->{ real,  im}}];
-subExchangeScalarRI=Join[subExchangeScalarRI,{real->im,im->real}];,
+subExchangeScalarRI=Join[subExchangeScalarRI,{real->im,im->real}];
+subRealSplitted=Join[subRealSplitted,{conj[real[a__][b_]]->real[a][b],conj[im[a__][b_]]->im[a][b],conj[real[a_]]->real[a],conj[im[a__]]->im[a]}],
 tempR=Join[tempR,{list[[i]]}];
 SFieldsSplitted=Join[SFieldsSplitted,{list[[i]]}];
 ];
@@ -895,20 +897,18 @@ res=GetNonZeroEntriesNS[fields[[i,2,1]] /. Delta[gen1,a_]\[Rule]1 /. Delta[a___,
 ];
 *)
 
-If[FreeQ[fields[[i,1]],Rule],
+If[FreeQ[fields[[i]],Rule],
 res=GetNonZeroEntriesNS[fields[[i,2]], type,fields[[i,1]]];
 subNonZero=res[[1]];,
 subNonZero={};
 ];
-
-
 
 SuperpositionNeeded=False;
 
 UseSymmASymm=True;
 Switch[type,
 LIJKL,
-	If[FreeQ[fields[[i,1]],Rule],
+	If[FreeQ[fields[[i]],Rule],
 	coup=fields[[i,2,1]]*fields[[i,2,2]] /. conj[x_]->x;
 	If[FreeQ[bfcalculated,getBlank/@fields[[i,1]]],
 	betaFunction=BetaFunctionLijkl1LnonSUSY[fields[[i,1]](*/. subNonZero *)];
@@ -922,8 +922,23 @@ LIJKL,
 	betaFunction2L=bF2L[getBlank/@fields[[i,1]]]/. subNonZero;
 	];,
 	SuperpositionNeeded=True;
-	coup=fields[[i,2,1]]/. conj[x_]->x;
-	For[ii=1,ii<=(Length[fields[[i,1]]]-1)/2,
+	coup=fields[[i,2,2,1]]/. conj[x_]->x;
+	betaFunction=0;
+	betaFunction2L=0;
+	For[ii=1,ii<=Length[fields[[i,1]]],
+	If[FreeQ[bfcalculated,getBlank/@Drop[fields[[i,1,ii]],{1}]],
+	bF1L[getBlank/@Drop[fields[[i,1,ii]],{1}]]=BetaFunctionLijkl1LnonSUSY[Drop[fields[[i,1,ii]],{1}]];
+	bF2L[getBlank/@Drop[fields[[i,1,ii]],{1}]]=BetaFunctionLijkl2LnonSUSY[Drop[fields[[i,1,ii]],{1}]] ;
+	bfcalculated=Join[bfcalculated,{getBlank/@Drop[fields[[i,1,ii]],{1}]}];
+	];
+	betaFunction+=fields[[i,1,ii,1]]bF1L[getBlank/@Drop[fields[[i,1,ii]],{1}]];
+	If[twoloop,betaFunction2L+=fields[[i,1,ii,1]]bF2L[getBlank/@Drop[fields[[i,1,ii]],{1}]];];
+	ii++;];
+	betaFunction=betaFunction/. fields[[i,2,1,1]];
+	betaFunction2L=betaFunction2L/. fields[[i,2,1,1]];
+
+(*
+	For[ii=1,ii\[LessEqual](Length[fields[[i,1]]]-1)/2,
 	If[FreeQ[bfcalculated,getBlank/@fields[[i,1,1+2(ii-1)]]],
 	betaFunctionS[ii]=BetaFunctionLijkl1LnonSUSY[fields[[i,1,1+2(ii-1)]](*/. (fields[[i,1,2*ii]]/.subindnames)*) ];
 	If[twoloop,betaFunction2LS[ii]=BetaFunctionLijkl2LnonSUSY[fields[[i,1,1+2(ii-1)]](*/. (fields[[i,1,2*ii]]/.subindnames)*) ];,betaFunction2LS[ii]=0]; 
@@ -941,6 +956,10 @@ LIJKL,
 	betaFunction=betaFunctionS[1]-betaFunctionS[2];
 	betaFunction2L=betaFunction2LS[1]-betaFunction2LS[2];
 	];
+*)
+
+
+
 	]; ,
 YIJK,
 	coup=Yijk[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2],fields[[i,1,3]]/.subGC[3]];
@@ -1129,7 +1148,6 @@ Return[{indtab[[1]],1}];
 
 searchedcoup=Select[Transpose[parameters][[1]],(FreeQ[term/. CGCBroken[a___][b___]->CGCBroken[b],#]==False)&];
 
-
 i=1;
 Found=False;
 While[Found==False && i <= Length[indtab],
@@ -1188,28 +1206,50 @@ i++;];
 indtab=Tuples[indtab/.Flatten[Table[subIndFinal[i,i],{i,1,4}],1]];
 Return[indtab];];
 
-CheckPairsInsertions[list_,coups_,rcoup_]:=Block[{i,sums,lAins},lAins={};
-For[i=1,i<=Length[list],inds=GetNonZeroEntriesNSAll[list[[i,2,1]],LIJKL,list[[i,1]]];
-For[j=1,j<=Length[inds],If[(list[[i,2,1]]/.inds[[j]])=!=0,lAins=Join[lAins,{{list[[i,1]],inds[[j]],list[[i,2,1]]/.inds[[j]]}}];];
+CheckPairsInsertions[list_,coups_,rcoup_]:=Block[{i,sums,lAins},
+lAins={};
+For[i=1,i<=Length[list],
+inds=GetNonZeroEntriesNSAll[list[[i,2,1]],LIJKL,list[[i,1]]];
+For[j=1,j<=Length[inds],
+If[(list[[i,2,1]]/.inds[[j]])=!=0,
+lAins=Join[lAins,{{list[[i,1]],inds[[j]],list[[i,2,1]]/.inds[[j]]}}];];
 j++;];
 i++;];
 sums={};
-For[i=1,i<Length[lAins],For[j=i+1,j<=Length[lAins],sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],P},{lAins[[i,3]]+lAins[[j,3]],1}}}];
+For[i=1,i<Length[lAins],
+For[j=i+1,j<=Length[lAins],
+sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],P},{lAins[[i,3]]+lAins[[j,3]],1}}}];
 sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],M},{lAins[[i,3]]-lAins[[j,3]],1}}}];
 j++;];
 i++;];
 sums=Select[sums,FreeQ[#,rcoup]==False&];
-Return[Select[sums,FreeQcoups[#,coups]=={}&]];];
+sums=Select[sums,FreeQcoups[#,coups]=={}&];
+
+If[sums=!={},
+sums=sums[[1]];
+
+If[sums[[1,5]]===M,
+sums={{Join[{1},sums[[1,1]]],Join[{-1},sums[[1,3]]]},{{sums[[1,2]]},sums[[2]]}};,
+sums={{Join[{1},sums[[1,1]]],Join[{1},sums[[1,3]]]},{{sums[[1,2]]},sums[[2]]}};
+];
+];
+Return[sums];
+(* Return[Select[sums,FreeQcoups[#,coups]\[Equal]{}&]]; *)
+];
+
 CheckPairs[list_,coups_,rcoup_]:=Block[{i,sums},sums={};
-For[i=1,i<Length[list],For[j=i+1,j<=Length[list],sums=Join[sums,{{{list[[i,1]],list[[j,1]],P},{list[[i,2,1]]+list[[j,2,1]],list[[i,2,2]]}}}];
+For[i=1,i<Length[list],
+For[j=i+1,j<=Length[list],
+sums=Join[sums,{{{list[[i,1]],list[[j,1]],P},{list[[i,2,1]]+list[[j,2,1]],list[[i,2,2]]}}}];
 sums=Join[sums,{{{list[[i,1]],list[[j,1]],M},{list[[i,2,1]]-list[[j,2,1]],list[[i,2,2]]}}}];
 j++;];
 i++;];
 sums=Select[sums,FreeQ[#,rcoup]==False&];
-Return[Select[sums,FreeQcoups[#,coups]=={}&]];];
+Return[Select[sums,FreeQcoups[#,coups]=={}&]];
+];
 FreeQcoups[list_,coups_]:=Select[coups,FreeQ[list,#]==False&];
 
-CheckForNecessarySuperpositions:=Block[{i,temp,quartics,res},
+CheckForNecessarySuperpositions:=Block[{i,j,temp,quartics,res},
 quartics=Transpose[SA`SSSSlist][[2]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1;
 lA4oneNew={};
 For[i=1,i<=Length[quartics],
@@ -1217,16 +1257,22 @@ temp=Select[Select[lA4 /.conj[x_]->x,FreeQ[#,quartics[[i]] /. A_[gen1,___]->A/. 
 If[temp=!={},
 lA4oneNew=Join[lA4oneNew,{temp[[1]]}];,
 res=CheckPairsInsertions[Select[lA4,FreeQ[#,quartics[[i]]]==False&],DeleteCases[quartics,quartics[[i]]],quartics[[i]]];
+If[res==={},Print[i];res=BruteForceSuperposition[SA`SSSSlist[[i]],quartics[[i]],LIJKL];];
 If[res==={},
 RGEs::StillEntangled="Can't disentangle the contributions to the running of ``";
 Message[RGEs::StillEntangled,quartics[[i]]];,
-lA4oneNew=Join[lA4oneNew,{res[[1]]}]];
+lA4oneNew=Join[lA4oneNew,{res}]];
 ];
 i++;];
 
 lA4oneNewFlat={};
-For[i=1,i<=Length[lA4oneNew],If[FreeQ[lA4oneNew[[i,1]],Rule],lA4oneNewFlat=Join[lA4oneNewFlat,{lA4oneNew[[i]]}];,lA4oneNewFlat=Join[lA4oneNewFlat,{lA4[[Position[lA4,lA4oneNew[[i,1,1]]][[1,1]]]]}];
-lA4oneNewFlat=Join[lA4oneNewFlat,{lA4[[Position[lA4,lA4oneNew[[i,1,3]]][[1,1]]]]}];];
+For[i=1,i<=Length[lA4oneNew],
+If[FreeQ[lA4oneNew[[i]],Rule],
+lA4oneNewFlat=Join[lA4oneNewFlat,{lA4oneNew[[i]]}];,
+For[j=1,j<=Length[lA4oneNew[[i,1]]],
+lA4oneNewFlat=Join[lA4oneNewFlat,{lA4[[Position[lA4,Drop[lA4oneNew[[i,1,j]],{1}]][[1,1]]]]}];
+j++;];
+];
 i++;];
 lA4oneNewFlat;
 lA4oneBeta=lA4oneNew;
@@ -1274,5 +1320,60 @@ BetaBij=Select[BetaBij,#[[1]]=!=1&];
 
 
 UseSymmASymm=False;
+];
+
+
+BruteForceSuperposition[coupling_,parameter_,type_]:=Block[{tempList,temp,subindnames,fields,indnr,ind,indtab,i,Found,j},
+subindnames=Flatten[Table[Reverse/@ReleaseHold[subIndizesFinal/. number1->i /. number2->i],{i,1,4}]];
+tempList=List@@Expand[Times@@coupling[[1]]/. subComplexScalarsSum /. subRealSplitted] /. Times->List /. subindnames;
+fields=coupling[[1]]/. conj[x_]->x;
+Switch[type,
+LIJKL,
+ temp=Expand[Plus@@(tempList/. {a_,b_,c_,d_,e_}:>{a,Lijkl[b,c,d,e]}  /. Lijkl[a__]->0  /. {a_,b_}->Times[a,b])];, 
+(*tempList=Select[(tempList/. {a_,b_,c_,d_,e_}:>{{b,c,d,e},Lijkl[b,c,d,e]}  /. Lijkl[a__]\[Rule]0) ,#[[2]]=!=0&]; ,*)
+_,
+"not yet implemented"
+];
+
+indtab={};
+For[i=1,i<=Length[fields],
+If[Head[fields[[i]]]=!=Symbol,
+indnr=ToExpression[StringTake[ToString[(fields[[i]] /. {A_[{a___}][{b__}]->{a,b},A_[{a___}]->{a}})[[1]]],-1]];
+ind=getIndRGENS[getBlankSF[fields[[i]]],indnr];
+For[j=1,j<=Length[ind],
+indtab=Join[indtab,{Table[ind[[j,1]]->k,{k,1,ind[[j,3]]}]}];
+j++;];
+];
+i++;];
+indtab=Tuples[indtab]/. subindnames;
+
+i=1;
+
+(*
+allCombinations={};
+For[i=1,i\[LessEqual]Length[tempList],
+For[j=1,j\[LessEqual]Length[indtab],
+If[(tempList[[i,2]]/. indtab[[j]])=!=0,
+allCombinations=Join[allCombinations,{{tempList[[i,1]],indtab[[j]],tempList[[i,2]]/. indtab[[j]]}}];
+];
+j++;];
+i++;];
+*)
+
+
+Found=False;
+While[i<=Length[indtab] && Found==False,
+resTemp=temp/. indtab[[i]];
+If[Select[Transpose[parameters][[1]],(FreeQ[resTemp/. CGCBroken[a___][b___]->CGCBroken[b],#]==False)&]===parameter,
+Found=True;
+tempList=Join[tempList,{indtab[[i]]}];
+];
+i++;
+];
+
+If[Found==False,
+Return[{}];,
+Return[tempList];
+];
 ];
 

@@ -89,9 +89,13 @@ Print["  For gauge eigenstates"];
 OneLoopNotMixed[listNotMixedMasses, Eigenstates];
 OneLoopSelfEnergy[Eigenstates]=CalculatedSelfEnergy;
 
+(*
 If[SA`AddOneLoopDecay === True,
 OneLoopDifferentExternal[Eigenstates];
 ];
+
+*)
+OneLoopDifferentExternal[Eigenstates];
 
 SelfEnergy1LoopListtemp[Eigenstates]=Join[LoopCorrectionMassMatrices[Eigenstates],LoopCorrectionUnmixed[Eigenstates]];
 SelfEnergy1LoopSum[Eigenstates] = Join[SelfEnergies1Loop[Eigenstates],SelfEnergyUnmixed[Eigenstates]];
@@ -883,6 +887,18 @@ If[temp=!={},
 temp2={};
 For[k=1,k<=Length[temp],
 temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[2],C[External[1],AntiField[Internal[1]],Internal[2]],C[AntiField[External[2]],AntiField[Internal[2]],Internal[1]],VType[getType[Internal[1]],getType[Internal[2]],getType[External[1]]],CalculateColorFactor[getBlank[External[1]],Internal[1],Internal[2]],CalculateSymmetryFactor[Internal[1],Internal[2]]}]/. temp[[k,2]]] }];
+
+
+If[FreeQ[AddedVertex,temp2[[-1,3]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C],
+VerticesGaugeMassES = Join[VerticesGaugeMassES,{{AddVertex[{temp2[[-1,5]],temp2[[-1,1]],temp2[[-1,2]],particles[[i]]}],temp2[[-1,5]]}}]; 
+ AddedVertex=Join[AddedVertex,{temp2[[-1,3]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C}];
+];
+If[FreeQ[AddedVertex,temp2[[-1,4]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C],
+VerticesGaugeMassES = Join[VerticesGaugeMassES,{{AddVertex[{temp2[[-1,5]],AntiField[temp2[[-1,1]]],AntiField[temp2[[-1,2]]],AntiField[particles[[j]]]}],temp2[[-1,5]]}}]; 
+ AddedVertex=Join[AddedVertex,{temp2[[-1,4]]  //. {x_[{a__}][b_]->x,x_[{a__}]->x}/. Cp ->C}];
+];
+
+
 k++];
 temp=InsFields[{{C[particles[[i]],AntiField[particles[[j]]],AntiField[FieldToInsert[1]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],External[1]->particles[[i]], External[2]->particles[[j]],Index[1]->gO1,Index[2]->gO2,Index[3]->gI1}}];
 If[temp=!={},

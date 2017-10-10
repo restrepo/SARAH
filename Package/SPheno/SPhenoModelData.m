@@ -20,7 +20,7 @@
 
 
 (* ::Input::Initialization:: *)
-MakeModelData:=Block[{i,k,i2,temp,dim,pos,name,templist},
+MakeModelData:=Block[{i,k,i2,temp,dim,pos,name,templist,tlist},
 If[Head[RegimeNr]===Integer,
 AddParametersFromOtherRegimes;
 ];
@@ -105,6 +105,15 @@ WriteString[ModelData,"Logical :: TransposedYukawa= .False. \n"];
 
 WriteString[ModelData,"Logical :: KineticMixing = .True. \n"];
 WriteString[ModelData,"Logical :: KineticMixingSave = .True. \n"];
+WriteString[ModelData,"Logical :: TwoLoopMatching = .True., GuessTwoLoopMatchingBSM=.false. \n"];
+WriteString[ModelData,"Logical :: OneLoopMatching = .True. \n"];
+
+WriteString[ModelData,"Logical :: TreeLevelUnitarityLimits = .True. \n"];
+WriteString[ModelData,"Real(dp) :: max_scattering_eigenvalue=0._dp\n"];
+WriteString[ModelData,"Real(dp) :: TreeUnitarity=1\n"];
+ 
+
+
 
 WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleSolutions = .False. \n"];
 WriteString[ModelData,"Logical :: WriteHiggsDiphotonLoopContributions = .False. \n"];
@@ -138,7 +147,29 @@ WriteString[ModelData, "Real(dp) :: "<>SPhenoForm[SA`ListParametersFromTadpoles[
 i++;];
 
 
+tlist = NewMassParameters;
+For[i=1,i<=Length[tlist],
+name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
+pos=Position[SPhenoParameters,tlist[[i]]][[1,1]];
+SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]->name)}];
+If[FreeQ[realVar,tlist[[i]]]==False, realVar=Join[realVar,{name}];];
+i++;
+];
 
+tlist = listAllParametersAndVEVs;
+For[i=1,i<=Length[tlist],
+name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
+If[FreeQ[SPhenoParameters,name],
+pos=Position[SPhenoParameters,tlist[[i]]][[1,1]];
+SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]->name)}];
+If[FreeQ[realVar,tlist[[i]]]==False,
+realVar=Join[realVar,{name}];
+];
+];
+i++;];
+NumberNewMassesTotal = ToString[Plus@@Transpose[NewMasses][[2]]];
+WriteString[ModelData,"Real(dp) :: mass_uncertainty_Q("<>NumberNewMassesTotal<>"), mass_uncertainty_Yt("<>NumberNewMassesTotal<>"), g_SM_save(62) \n"];
+WriteString[ModelData,"Logical :: GetMassUncertainty = .false. \n"];
 WriteString[ModelData,"Integer :: SolutionTadpoleNr = 1 \n"];
 
 WriteString[ModelData,"Character(len=15)::HighScaleModel\n"];

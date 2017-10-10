@@ -44,6 +44,8 @@ WriteString[spheno2LP,"delta2Lmasses(:,:)=0._dp\n"];
 WriteString[spheno2LP,"delta2LmassesAh(:,:)=0._dp\n"];
 WriteString[spheno2LP,"tad1LG(:)=0._dp\n"];
 
+If[Skip1l2lshift=!=True,
+
 WriteString[spheno2LP,"if(include1l2lshift) then\n"];
 Writegaugeless1L;
 
@@ -55,9 +57,10 @@ If[FreeQ[getType/@Transpose[relevanttreemasses][[1]],F],
 (*Routines for shifts not available if fermion masses are modified*)
 Write1L2Lshifts;
 ];
-
-
 WriteString[spheno2LP,"end if ! include1l2lshift\n"];
+
+]; (* end if[Skip1l2lshift=!=True,*)
+
 
 WriteString[spheno2LP,"! ----------------------------------\n"];
        WriteString[spheno2LP,"! ------- TADPOLE DIAGRAMS --------\n"]; 
@@ -1194,14 +1197,17 @@ Return[res];
 ];
 
 
-Writegaugeless1L:=Block[{i,j,k,(*my1Ltads,gaugeless3Pcouplings,*)type,coup,ind1,sind1,m1,m12,ngen,ngen2,factor,ngtads},
+Writegaugeless1L:=Block[{i,j,k,(*my1Ltads,gaugeless3Pcouplings,*)type,coup,ind1,sind1,m1,m12,ngen,ngen2,factor,ngtads,hbposintads},
 tad2L1Ldyn="";
 tot2L1dyn="";
 ngtads=0;
 Print["Writing 1L Gaugeless tadpoles: ",Dynamic[tot2L1dyn]," completed ",Dynamic[tad2L1Ldyn]];
 WriteString[spheno2LP,"temptad(:) = 0._dp \n"];
 ngen=getGenSPheno[HiggsBoson];
-my1Ltads=LoopCorrectionTadpoles[SA`CurrentStates][[1]]//.{Cp[x__]->C[x],ToExpression["U"<>ToString[HiggsBoson]]->HiggsBoson};
+hbposintads=Position[ScalarsForTadpoles,HiggsBoson];
+If[Length[hbposintads]!=1,
+Print["Either the Higgs has no tadpole, or more than one!!\n"]];
+my1Ltads=LoopCorrectionTadpoles[SA`CurrentStates][[hbposintads[[1,1]]]]//.{Cp[x__]->C[x],ToExpression["U"<>ToString[HiggsBoson]]->HiggsBoson};
 (*gaugelesscouplings=Flatten[Join[SPhenoCouplings3P[[All,1]],specialPOLEverticesorg]];*)
 gaugeless3Pcouplings=Flatten[SPhenoCouplings3P[[All,1]]];
 For[i=1,i<=Length[my1Ltads],i++,
@@ -1247,7 +1253,7 @@ tad2L1Ldyn="";
 
 
 
-Write1L2Lshifts:=Block[{i,j,k,ii,jj,ngen,(*relevanttreemasses,*)mass,masss,masss2,part,cpart,mpart1,mpart2,massmat,sngen,mixmat,ntads,linestring,deriv,linestub,linestubt,derivnonzero,thisshiftmatrix,ind1,ind2,ind4,coup,coup1,coup2,coup4,cname,cname1,cname2,cname4,indstring,indstring1,indstring2,indstring4,pos,factor,tadspresent,procmassel,pseudoselfs,npseudos,tempcontribs,ngen1,ngen2,cpart1,cpart2,massstr},
+Write1L2Lshifts:=Block[{i,j,k,ii,jj,ngen,(*relevanttreemasses,*)mass,masss,masss2,part,cpart,mpart1,mpart2,massmat,sngen,mixmat,ntads,linestring,deriv,linestub,linestubt,derivnonzero,thisshiftmatrix,ind1,ind2,ind4,coup,coup1,coup2,coup4,cname,cname1,cname2,cname4,indstring,indstring1,indstring2,indstring4,pos,factor,tadspresent,procmassel,pseudoselfs,npseudos,tempcontribs,ngen1,ngen2,cpart1,cpart2,massstr,tempsubsolutions,mconj},
 If[Length[relevanttreemasses]>0,
 Print["Calculating shifts to tadpoles and masses due to ",StringJoin@@Riffle[ToString/@Transpose[relevanttreemasses][[1]],", "]];
 ];
@@ -1259,6 +1265,18 @@ If[Length[pseudoselfs]>0,
 pseudoselfs=Delete[pseudoselfs[[1]],1];
 (*get in form of simple list without the Ah at the beginning*)];
 ];
+
+Clear[mconj];
+mconj[a_*b_]:=mconj[a]*mconj[b];
+mconj[Tad1Loop[x_]]=Tad1Loop[x];
+
+tempsubsolutions={};
+For[k=1,k<=Length[ParametersToSolveTadpoles],k++,
+AppendTo[tempsubsolutions,{L[ParametersToSolveTadpoles[[k]]]->L[ParametersToSolveTadpoles[[k]]],B[ParametersToSolveTadpoles[[k]]]->B[ParametersToSolveTadpoles[[k]]],T[ParametersToSolveTadpoles[[k]]]->T[ParametersToSolveTadpoles[[k]]]}];
+];
+AppendTo[tempsubsolutions,SubSolutionsTadpolesLoop];
+tempsubsolutions=Flatten[tempsubsolutions];
+
 For[ii=1,ii<=Length[relevanttreemasses],ii++,
 part=relevanttreemasses[[ii,1]];
 ngen=relevanttreemasses[[ii,2]];
@@ -1279,11 +1297,12 @@ For[i=1,i<=ngen,i++,
 For[j=i,j<=ngen,j++,
 linestub=thisshiftmatrix<>"("<>ToString[i]<>","<>ToString[j]<>")";
 derivnonzero=False;
-procmassel=(relevanttreemasses[[ii,6,i,j]]//.SubSolutionsTadpolesLoop/.subZeroGaugeLess);
+procmassel=(relevanttreemasses[[ii,6,i,j]]/.tempsubsolutions/.subZeroGaugeLess);
+procmassel=procmassel/.{conj[x__]->mconj[x]};
 tadspresent=Union[Cases[procmassel,Tad1Loop[x_]->x,Infinity]];
 For[k=1,k<=Length[tadspresent],k++,
 deriv=Simplify[D[procmassel,Tad1Loop[tadspresent[[k]]]]]/.{Tad1Loop[x_]->0};
-(*Print[massmat[[i,j]]//.SubSolutionsTadpolesLoop/.subZeroGaugeLess];*)
+deriv=deriv//.{mconj[x__]->conj[x]};
 If[deriv=!=0,
 derivnonzero=True;
 linestring=StringReplace[linestub<>"="<>linestub<>"+"<>ToString[FortranForm[deriv]]<>"*tad1LG("<>ToString[tadspresent[[k]]]<>")\n","+-"->"-"];
@@ -1444,6 +1463,7 @@ WriteString[spheno2LP,"delta2Ltadpoles=delta2Ltadpoles*oo16Pi2\n"];
 WriteString[spheno2LP,"delta2Lmasses=delta2Lmasses*oo16Pi2\n"];
 WriteString[spheno2LP,"delta2LmassesAh=delta2LmassesAh*oo16Pi2\n"];
 WriteString[spheno2LP,"! ----------------------------\n"];
+Clear[mconj];
 ];
 
 

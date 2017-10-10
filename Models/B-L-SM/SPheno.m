@@ -34,6 +34,7 @@ BoundaryLowScaleInput={
  {vX,vXinput}
 };
 
+AddTreeLevelUnitarityLimits=True;
 
 
 ListDecayParticles = {Fu,Fe,Fd,Fv,hh,VZp};

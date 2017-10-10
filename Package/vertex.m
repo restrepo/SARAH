@@ -451,7 +451,7 @@ subInvMatrices= Join[subInvMatrices,subInvMatrices/.conj[x_]->x];
 
 tempSave2=temp;
 tempWithLorentz=makeSumAll[CalcDelta[temp /.subVert /. subAlways] /.subInvMatrices/. subFinal]  /.subAlways /. sum[g_,b_,c_,fSU3[e_Integer,f_Integer,g_]^2]:>Sum[fSU3[e,f,g]^2,{g,b,c}]/. fSU3[a_,a_,b_]->0 /.  sum[j1_,1,8,fSU3[a_Integer,b_Integer,j1_] fSU3[c_Integer,d_Integer,j1_]]:>Sum[fSU3[a,b,j1] fSU3[c,d,j1],{j1,1,8}];
-If[Length[tempWithLorentz]>500,
+If[Length[tempWithLorentz]>300,
  tempWithLorentz = tempWithLorentz /. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; ,
  tempWithLorentz = Simplify[tempWithLorentz,Trig->True] /. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; 
 

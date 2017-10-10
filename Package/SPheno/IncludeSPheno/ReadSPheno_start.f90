@@ -50,6 +50,8 @@
      Case(7)
        If (wert.eq.1) then
          CalculateTwoLoopHiggsMasses=.False.
+         TwoLoopMatching = .false.
+         OneLoopMatching = .false.         
        Else
          CalculateTwoLoopHiggsMasses=.True.
        End if
@@ -197,6 +199,9 @@
 !      Case(26) ! minimal value such that a cross section is written out
 !       Call SetWriteMinSig(wert)
 
+     Case(20) 
+      If (wert.eq.1._dp) GetMassUncertainty=.True.
+
      Case(31) ! setting a fixed GUT scale if wert > 0
       If (wert.Gt.0._dp) Call SetGUTScale(wert)
 
@@ -290,6 +295,8 @@
        CalculateOneLoopMasses=.True.
       Else
        CalculateOneLoopMasses=.False.
+       TwoLoopMatching = .false.
+       OneLoopMatching = .false.
       End If
 
 !      Case(56)

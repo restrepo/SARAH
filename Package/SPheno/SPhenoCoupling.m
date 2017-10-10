@@ -234,6 +234,7 @@ Print["  Processing couplings for W/Z calculations: ",Dynamic[DynamicCouplingsWZ
 
 DynamicCouplingsWZ="building couplings";
 temp = SPhenoCouplingList[Cases[VerticesGaugeMassES,x_?FreeQZW]]; 
+(* temp = SPhenoCouplingList[Cases[VertexListNonCC,x_?FreeQZW]];  *)
 SPhenoCouplingsZW=temp[[1]];
 parametersZW=temp[[2]];
 namesZW=temp[[3]];
@@ -290,7 +291,7 @@ Close[sphenoCoup];
 ];
 
 FreeQZW[x_]:=Block[{i,temp},
-If[FreeQ[x,VectorZ]==False || FreeQ[x,VectorW]==False,
+If[FreeQ[x,VectorZ]==False || FreeQ[x,VectorW]==False|| FreeQ[x,VectorP]==False,
 temp=True;
 For[i=1,i<=Length[GaugeMassES],
 If[FreeQ[x,GaugeMassES[[i]]]==False,

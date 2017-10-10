@@ -92,7 +92,11 @@ ParameterDefinitions = {
 {\[Kappa],   {Description -> "Singlet Self-Interaction"}},                               
 {T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 
 {\[Lambda],   { Description -> "Singlet-Higgs-Interaction"   }},                               
-{T[\[Lambda]],  {Description -> "Softbreaking Singlet-Higgs-Interaction"}},        
+{T[\[Lambda]],  {Description -> "Softbreaking Singlet-Higgs-Interaction"}},   
+
+{PhaseTmm, { LaTeX -> "\\phi_{T}",
+             LesHouches -> {Phases, 2},
+             OutputName-> phT      }},
              
 {ms2,       { Description -> "Softbreaking Singlet Mass" }},
 {vS,        { Description -> "Singlet-VEV"}},

@@ -36,7 +36,7 @@ Print["----------------------------------------------"];
 
 
 (* defines the block numbers of the different observables for the LesHouches output *)
-ListOfLowEnergyNames={{ae,20,"(g-2)_e"},{amu,21,"(g-2)_mu"},{atau,22,"(g-2)_tau"},{EDMe,23,"EDM(e)"},{EDMmu,24,"EDM(mu)"},{EDMtau,25,"EDM(tau)"},{dRho,39,"delta(rho)"}};
+ListOfLowEnergyNames={{ae,20,"(g-2)_e"},{amu,21,"(g-2)_mu"},{atau,22,"(g-2)_tau"},{EDMe,23,"EDM(e)"},{EDMmu,24,"EDM(mu)"},{EDMtau,25,"EDM(tau)"},{dRho,39,"delta(rho)"},{Tpar,1,"T-parameter (1-loop BSM)"},{Spar,2,"S-parameter (1-loop BSM)"},{Upar,3,"U-parameter (1-loop BSM)"}};
 
 If[IncludeOldObservables===True,
 ListOfLowEnergyNames=Join[ListOfLowEnergyNames,{{BrMu3e,29,"mu->3e"},{BrTau3e,30,"tau->3e"},{BrTau3mu,31,"tau->3mu"},{GMuEgamma,0,""},{BRMuEgamma,26,",mu->e gamma"},{GTauEgamma,0,""},{BRTauEgamma,27,"tau->e gamma"},{GTauMugamma,0,""},{BRTauMugamma,28,"tau -> mu gamma"},{BRBtoSGamma,1,"b->s gamma"},{MuEAl,81,"mu-e,Al"},{MuETi,82,"mu-e,Ti"},{MuESr,83,"mu-e,Sr"},{MuESb,84,"mu-e,Sb"},{MuEAu,85,"mu-e,Au"},{MuEPb,86,"mu-e,Pb"},{TauEPi0,91,"tau->e pi"},{TauEEta,92,"tau->e eta"},{TauEEtap,93,"tau->e eta'"},{TauMuPi0,94,"tau->mu pi"},{TauMuEta,95,"tau->mu eta"},{TauMuEtap,96,"tau->mu eta'"},{GZMuE,0,""},{BRZMuE,40,"Z->mu e"},{GZTauE,0,""},{BRZTauE,41,"Z->tau e"},{GZTauMu,0,""},{BRZTauMu,42,"Z->tau mu"},{BRBsEE,5111,"Bs->ee"},{BRBsEESM,5110,"Bs->ee (SM)"},{BRBsMuMu,5221,"Bs->mu mu"},{BRBsMuMuSM,5220,"Bs->mu mu (SM)"},{BRBsMuE,5121,"Bs->mu e"},{BRBsMuESM,5120,"Bs->mu e (SM)"},{BRBdEE,4111,"Bd->ee"},{BRBdEESM,4110,"Bd>ee (SM)"},{BRBdMuMu,4221,"Bd->mu mu"},{BRBdMuMuSM,4220,"Bd->mu mu (SM)"},{BRBdTauTau,4331,"Bd->tau tau"},{BRBdTauTauSM,4330,"Bd->tau tau (SM)"},{GBsEE,0,""},{GBdEE,0,""},{GBsMuMu,0,""},{GBsMuE,0,""},{GBdMuMu,0,""},{GBdTauTau,0,""}}];
@@ -55,7 +55,7 @@ SPhenoParameters=Join[SPhenoParameters,{{ListOfLowEnergyNames[[i,1]],{},{}}}];
 i++;];
 
 (* assume that all observables are real parameters *)
-realVar=Join[realVar,{BRBtoSGamma,ae,amu,atau,BrMu3e,BrTau3e,BrTau3mu,EDMe,EDMmu,EDMtau,GMuEgamma,BRMuEgamma,GTauEgamma,BRTauEgamma,GTauMugamma,BRTauMugamma,dRho,MuEAl,MuETi,MuESr,MuESb,MuEAu,MuEPb,TauMuEta,TauMuEtap,TauMuPi0,TauEEta,TauEEtap,TauEPi0,BRZMuE,BRZTauE,BRZTauMu,GZMuE,GZTauE,GZTauMu,BRBsEE,BRBsMuMu,BRBsMuE,BRBdMuMu,BRBdEE,BRBdTauTau,BRBsTauTau,BRBsEESM,BRBsMuMuSM,BRBsMuESM,BRBdMuMuSM,BRBdEESM,BRBdTauTauSM,BRBsTauTauSM,GBsEE,GBsMuMu,GBsMuE,GBdMuMu,GBdEE,GBdTauTau,GBsTauTau}];
+realVar=Join[realVar,{BRBtoSGamma,ae,amu,atau,BrMu3e,BrTau3e,BrTau3mu,EDMe,EDMmu,EDMtau,GMuEgamma,BRMuEgamma,GTauEgamma,BRTauEgamma,GTauMugamma,BRTauMugamma,dRho,MuEAl,MuETi,MuESr,MuESb,MuEAu,MuEPb,TauMuEta,TauMuEtap,TauMuPi0,TauEEta,TauEEtap,TauEPi0,BRZMuE,BRZTauE,BRZTauMu,GZMuE,GZTauE,GZTauMu,BRBsEE,BRBsMuMu,BRBsMuE,BRBdMuMu,BRBdEE,BRBdTauTau,BRBsTauTau,BRBsEESM,BRBsMuMuSM,BRBsMuESM,BRBdMuMuSM,BRBdEESM,BRBdTauTauSM,BRBsTauTauSM,GBsEE,GBsMuMu,GBsMuE,GBdMuMu,GBdEE,GBdTauTau,GBsTauTau,Tpar,Spar,Upar}];
 
 
 (* open the file to write *)
@@ -94,6 +94,7 @@ WriteString[file,"Use Control \n"];
 WriteString[file,"Use Settings \n"];
 WriteString[file,"Use Couplings_"<>ModelName<>" \n"];
 WriteString[file,"Use LoopCouplings_"<>ModelName<>" \n"];
+WriteString[file,"Use LoopMasses_SM_HC \n"];
 WriteString[file,"Use LoopFunctions \n"];
 WriteString[file,"Use LoopMasses_"<>ModelName<>" \n"];
 WriteString[file,"Use StandardModel \n"];
@@ -136,6 +137,7 @@ WriteBtoQGamma;
 (* g-2, EDMs and delta rho *)
 GenerateGminus2; 
 WriteDeltaRho;
+WriteSTU;
 
 (* This routine adds Fortran code given in a file contained in Package/SPheno/Include without any change to the currently considered file. *)
 (* Here, we include the expressions for the necessary loop functions *)
@@ -2299,6 +2301,108 @@ WriteString[sphenoLow,"End subroutine DeltaRho \n \n \n"];
 
 ];
 
+WriteSTU:=Block[{masses,couplings,posH,posZ,posP,posZP,posW,upS,downS,i,posL,iso,y,tree,stringZP},
+
+posZ =Position[listNotMixedMasses,VectorZ][[1,1]];
+posP =Position[listNotMixedMasses,VectorP][[1,1]];
+posW =Position[listNotMixedMasses,VectorW][[1,1]];
+posZP=Position[CorrectionListVectorVector[NameOfStates[[-1]]],{VectorP,VectorZ}];
+If[posZP==={},
+Position[CorrectionListVectorVector[NameOfStates[[-1]]],{VectorZ,VectorP}][[1,1]];
+stringZP=ToString[VectorZ]<>ToString[VectorP];,
+posZP=posZP[[1,1]];
+stringZP=ToString[VectorP]<>ToString[VectorZ];
+];
+
+
+massesW= Extract[NeededMassesUnmixed,posW];
+massesP= Extract[NeededMassesUnmixed,posP];
+massesZ= Extract[NeededMassesUnmixed,posZ];
+massesZP= Extract[NeededMassesVV,posZP];
+couplingsW= Extract[NeededCouplingsUnmixed,posW];
+couplingsP= Extract[NeededCouplingsUnmixed,posP];
+couplingsZ= Extract[NeededCouplingsUnmixed,posZ];
+couplingsZP= Extract[NeededCouplingsVV,posZP];
+
+masses=Intersection[Flatten[{massesZ,massesP,massesZP,massesW}]];
+masses =DeleteCases[masses,0.];
+
+
+LowEnergyConstraintsParameterList = Join[LowEnergyConstraintsParameterList,{{STUpar,masses,namesZW}}];
+MakeSubroutineTitle["STUparameter",Flatten[{masses,namesZW}],{"vSM","g1SM","g2SM","g3SM","YuSM","YdSM","YeSM"},{"Spar","Tpar","Upar"},sphenoLow];
+WriteString[sphenoLow,"Implicit None\n"];
+MakeVariableList[Flatten[{masses,namesZW}], ",Intent(in) ", sphenoLow];
+WriteString[sphenoLow,"Real(dp), Intent(out) :: Spar,Tpar,Upar \n"];
+WriteString[sphenoLow,"Integer :: i1, i2, i3, kont \n"];
+WriteString[sphenoLow,"Real(dp) ::  mu_old, cw2, sw2, rMS_SM_save \n"];
+WriteString[sphenoLow,"Real(dp) ::  delta_T_SM, delta_S_SM, delta_U_SM \n"];
+WriteString[sphenoLow,"Complex(dp) :: PiZZ, PiZZ_mz2, PiWW,PiWW_mw2,PiZg_mz2, Pigg_mz2 \n"];
+WriteString[sphenoLow,"Complex(dp) :: PiZZ_SM, PiZZ_mz2_SM, PiWW_SM,PiWW_mw2_SM,PiZg_mz2_SM, Pigg_mz2_SM \n"];
+WriteString[sphenoLow,"Complex(dp) :: LamSM \n"];
+WriteString[sphenoLow,"Complex(dp), Intent(in) :: YdSM(3,3), YuSM(3,3), YeSM(3,3) \n"];
+WriteString[sphenoLow,"Real(dp), Intent(in) :: g1SM,g2SM,g3SM,vSM \n"];
+
+WriteString[sphenoLow,"mu_old = SetRenormalizationScale(mZ2) \n \n"];
+
+WriteString[sphenoLow,"LamSM = "<>SPhenoMassSq[HiggsBoson,1]<>"/vSM**2\n \n"];
+
+If[SupersymmetricModel,
+WriteString[sphenoLow,"rMS_SM_save = rMS_SM \n"];
+WriteString[sphenoLow,"rMS_SM = 0._dp \n"];
+];
+
+WriteString[sphenoLow,"Call OneLoop_Z_W_Gamma_SM(vSM,g1SM,g2SM,g3SM,LamSM,YuSM,YdSM,YeSM,kont, & \n & PiZZ_SM,PiZZ_mz2_SM,PiWW_SM,PiWW_mw2_SM,PiZg_mz2_SM,Pigg_mz2_SM) \n"];
+
+If[SupersymmetricModel,
+WriteString[sphenoLow,"rMS_SM = rMS_SM_save \n"];
+];
+
+MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"0._dp"},{"kont","PiZZ"},sphenoLow];
+MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{SPhenoForm[SPhenoMassSq[VectorZ]]},{"kont","PiZZ_mz2"},sphenoLow];
+MakeCall["Pi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{"0._dp"},{"kont","PiWW"},sphenoLow];
+MakeCall["Pi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{SPhenoForm[SPhenoMassSq[VectorW]]},{"kont","PiWW_mw2"},sphenoLow];
+MakeCall["Pi1Loop"<>stringZP,Flatten[{massesZP,couplingsZP}],{SPhenoForm[SPhenoMassSq[VectorZ]]},{"kont","PiZg_mz2"},sphenoLow];
+MakeCall["Pi1Loop"<>ToString[VectorP],Flatten[{massesP,couplingsP}],{SPhenoForm[SPhenoMassSq[VectorZ]]},{"kont","Pigg_mz2"},sphenoLow];
+
+(*
+MakeCall["DerPi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"0._dp"},{"kont","DerPiZZ"},sphenoLow];
+MakeCall["DerPi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{"0._dp"},{"kont","DerPiWW"},sphenoLow];
+MakeCall["DerPi1Loop"<>stringZP,Flatten[{massesZP,couplingsZP}],{"0._dp"},{"kont","DerPiZg"},sphenoLow];
+MakeCall["DerPi1Loop"<>ToString[VectorP],Flatten[{massesP,couplingsP}],{"0._dp"},{"kont","DerPigg"},sphenoLow];
+*)
+
+WriteString[sphenoLow,"PiZZ = PiZZ - PiZZ_SM \n"];
+WriteString[sphenoLow,"PiZZ_mz2 = PiZZ_mz2 - PiZZ_mz2_SM \n"];
+WriteString[sphenoLow,"PiWW = PiWW - PiWW_SM \n"];
+WriteString[sphenoLow,"PiWW_mw2 = PiWW_mw2 - PiWW_mw2_SM \n"];
+WriteString[sphenoLow,"PiZg_mz2 = PiZg_mz2 - PiZg_mz2_SM \n"];
+WriteString[sphenoLow,"Pigg_mz2 = Pigg_mz2 - Pigg_mz2_SM \n"];
+
+WriteString[sphenoLow,"sw2 = 0.22290_dp \n"];
+WriteString[sphenoLow,"cw2 = 1._dp - sw2 \n \n"];
+
+WriteString[sphenoLow,"mu_old = SetRenormalizationScale(mu_old) \n \n"];
+
+
+WriteString[sphenoLow,"! T-parameter \n"];
+WriteString[sphenoLow,"Tpar= PiZZ/mz2 - PiWW/mW2  \n "];
+WriteString[sphenoLow,"Tpar= -Tpar/alpha \n\n\n"];
+
+
+WriteString[sphenoLow,"! S-parameter \n"];
+WriteString[sphenoLow,"Spar= (PiZZ_mz2-PiZZ)/mz2 - (cw2-sw2)/(sqrt(cw2*sw2))*PiZg_mz2/mz2 - Pigg_mz2/mz2\n"];
+(* WriteString[sphenoLow,"Spar= DerPiZZ - (cw2-sw2)/(sqrt(cw2*sw2))*DerPiZg - DerPigg\n"]; *)
+WriteString[sphenoLow,"Spar= -4._dp*sw2*cw2/alpha*Spar \n\n\n"];
+
+WriteString[sphenoLow,"! U-parameter \n"];
+WriteString[sphenoLow,"Upar= (PiWW_mw2-PiWW)/mw2 -cw2*(PiZZ_mz2-PiZZ)/mz2 - 2._dp*(sqrt(cw2*sw2))*PiZg_mz2/mz2 - sw2*Pigg_mz2/mz2\n"];
+(* WriteString[sphenoLow,"Upar= DerPiWW -cw2*DerPiZZ - 2._dp*(sqrt(cw2*sw2))*DerPiZg - sw2*DerPigg\n"]; *)
+WriteString[sphenoLow,"Upar= -4._dp*sw2/alpha*Upar \n\n\n"];
+
+WriteString[sphenoLow,"End subroutine STUparameter \n \n \n"];
+
+];
+
 RhoParameterAtTreeLevel:=Block[{i,j,posH,posL,upS,downS,temp,iso,y,tree,treeMW,trip,doub,k,vev},
 (* tree-level contributions *)
 
@@ -2315,10 +2419,10 @@ For[i=1,i<=Length[NameOfStates],
 temp=DEFINITION[NameOfStates[[i]]][VEVs];
 If[Head[temp]===List,
 For[j=1,j<=Length[temp],
-iso=SA`DynL[temp[[j,1]],posL] /. {0}->0 /. {1}->1/2  /. {-1}->1/2 /. {2}->1;
+iso=SA`DynL[temp[[j,1]],posL] /. {0}->0 /. {1}->1/2  /. {-1}->1/2 /. {2}->1/. {3}->3/2 /. {N_}->Abs[N]/2;
 y= 2 Abs[SA`ChargeGG[temp[[j,1]],posH]];
 (* 1310.0763; eq. (1.124) *)
-upS+=(4 iso (iso+1)-3 y^2)temp[[j,2,1]]^2;
+upS+=If[temp[[j,1]]===conj[temp[[j,1]]],1/2,1](4 iso (iso+1)-3 y^2)temp[[j,2,1]]^2;
 downS+=2 y^2 temp[[j,2,1]]^2;
 vev=temp[[j,2,1]];
 If[vev=!=0,

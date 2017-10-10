@@ -10,20 +10,21 @@ MINPAR={
         {11, M1input},
         {12, M2input},
         
-        {20,vXInput}
+        {14, sHinput}
 
        };
 
 ParametersToSolveTadpoles = {mu2,Meta,MXi};
 
 DEFINITION[MatchingConditions]= {
- {Ye, YeSM},
- {Yd, YdSM},
- {Yu, YuSM},
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
- {v, vSM}
+ {vPhi,(sHinput vSM)/(2 Sqrt[2])},
+ {vDoub, Sqrt[vSM^2-8*vPhi^2]},
+ {Ye, YeSM vSM/vDoub},
+ {Yd, YdSM vSM/vDoub},
+ {Yu, YuSM vSM/vDoub}
  };
 
 BoundaryLowScaleInput={
@@ -41,8 +42,7 @@ BoundaryLowScaleInput={
   {M1a, M1input},
   {M1b, M1input},
   {M2, M2input},
-  {vEta, vXInput},
-  {vPhi, vXInput}
+  {vEta,vPhi}
    
 };
 
@@ -52,6 +52,7 @@ ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 DefaultInputValues ={vXInput->1, M1input->1000, M2input->1000,Lambda1input->0.2,Lambda2input->0.5,Lambda3input->0.5,Lambda4input->0.5,Lambda5input->0.5 };
 
+AddTreeLevelUnitarityLimits=True;
 
 RenConditionsDecays={
 {dCosTW, 1/2*Cos[ThetaW] * (PiVWp/(MVWp^2) - PiVZ/(mVZ^2)) },

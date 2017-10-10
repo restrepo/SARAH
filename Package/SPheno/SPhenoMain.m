@@ -75,7 +75,7 @@ WriteString[spheno,"Implicit None\n \n"];
 
 WriteString[spheno,"Real(dp) :: epsI=0.00001_dp, deltaM = 0.000001_dp \n"];
 WriteString[spheno, "Real(dp) :: mGut = -1._dp, ratioWoM = 0._dp\n"];
-WriteString[spheno, "Integer :: kont \n \n"];
+WriteString[spheno, "Integer :: kont, n_tot \n \n"];
 WriteString[spheno, "Integer,Parameter :: p_max=100\n"];
 WriteString[spheno, "Real(dp) :: Ecms(p_max),Pm(p_max),Pp(p_max), dt, tz, Qin, gSM(11) \n"];
 (* If[OnlyLowEnergySPheno===True,
@@ -325,7 +325,55 @@ WriteString[spheno,"End If \n\n"];
 
 (* If[OnlyLowEnergySPheno=!=True, *)
 WriteString[spheno,"Else \n "];
+WriteString[spheno,"  If (GetMassUncertainty) Then \n "];
+WriteString[spheno,"  ! Uncertainty from Y_top \n "];
+WriteString[spheno,"If ((CalculateOneLoopMasses).and.(CalculateTwoLoopHiggsMasses)) Then \n"];
+WriteString[spheno,"OneLoopMatching = .true. \n"];
+WriteString[spheno,"TwoLoopMatching = .false. \n"];
+WriteString[spheno,"GuessTwoLoopMatchingBSM = .True. \n"];
+WriteString[spheno,"Elseif ((CalculateOneLoopMasses).and.(.not.CalculateTwoLoopHiggsMasses)) Then  \n"];
+WriteString[spheno,"OneLoopMatching = .true. \n"];
+WriteString[spheno,"TwoLoopMatching = .false. \n"];
+WriteString[spheno,"GuessTwoLoopMatchingBSM = .false. \n"];
+WriteString[spheno,"Else  \n"];
+WriteString[spheno,"OneLoopMatching = .true. \n"];
+WriteString[spheno,"TwoLoopMatching = .false. \n"];
+WriteString[spheno,"GuessTwoLoopMatchingBSM = .false. \n"];
+WriteString[spheno,"End if \n"];
+
 MakeCall["CalculateSpectrum",Join[NewMassParameters,Join[listVEVs,listAllParameters ]],{"n_run","delta_mass","WriteOut","kont"},{"mGUT"},spheno];
+
+WriteString[spheno,"n_tot =1\n"];
+For[i=1,i<=Length[NewMasses],
+WriteString[spheno,"mass_uncertainty_Yt(n_tot:n_tot+"<>ToString[NewMasses[[i,2]]-1]<>") = " <>ToString[NewMasses[[i,1]]]<> "! difference will be taken later \n"]; 
+If[i<Length[NewMasses],
+WriteString[spheno,"n_tot = n_tot + " <>ToString[NewMasses[[i,2]]] <>" \n"];
+];
+i++;];
+
+WriteString[spheno,"If ((CalculateOneLoopMasses).and.(CalculateTwoLoopHiggsMasses)) Then \n"];
+WriteString[spheno,"OneLoopMatching = .true. \n"];
+WriteString[spheno,"TwoLoopMatching = .true. \n"];
+WriteString[spheno,"GuessTwoLoopMatchingBSM = .false. \n"];
+WriteString[spheno,"Elseif ((CalculateOneLoopMasses).and.(.not.CalculateTwoLoopHiggsMasses)) Then  \n"];
+WriteString[spheno,"OneLoopMatching = .false. \n"];
+WriteString[spheno,"TwoLoopMatching = .false. \n"];
+WriteString[spheno,"GuessTwoLoopMatchingBSM = .false. \n"];
+WriteString[spheno,"Else  \n"];
+WriteString[spheno,"OneLoopMatching = .false. \n"];
+WriteString[spheno,"TwoLoopMatching = .false. \n"];
+WriteString[spheno,"GuessTwoLoopMatchingBSM = .false. \n"];
+WriteString[spheno,"End if \n"];
+
+WriteString[spheno,"  End if \n "];
+
+MakeCall["CalculateSpectrum",Join[NewMassParameters,Join[listVEVs,listAllParameters ]],{"n_run","delta_mass","WriteOut","kont"},{"mGUT"},spheno];
+
+WriteString[spheno,"  If (GetMassUncertainty) Then \n "];
+MakeCall["GetScaleUncertainty",Join[NewMassParameters,Join[listVEVs,listAllParameters ]],{"delta_mass","WriteOut","kont"},{"mass_uncertainty_Q"},spheno];
+
+WriteString[spheno,"  End if \n "];
+
 WriteString[spheno,"End If \n "];
 (* ]; *)
 
@@ -416,8 +464,11 @@ WriteString[spheno,"If (OutputForMO) Then \n"];
 MakeCall["RunningFermionMasses",Join[Join[listVEVs,listAllParameters]],SPhenoForm/@SA`SMfermionmasses ,{"kont"},spheno];
 WriteString[spheno,"End if \n"];
 
-WriteString[spheno,"Write(*,*) \"Writing output files\" \n"];
+If[AddTreeLevelUnitarityLimits===True,
+MakeCall["ScatteringEigenvalues",Join[listVEVs,listAllParameters],{} ,{"kont"},spheno];
+];
 
+WriteString[spheno,"Write(*,*) \"Writing output files\" \n"];
 MakeCall["LesHouches_Out",Transpose[ListOfLowEnergyNames][[1]],{"67","11","kont","MGUT"},{"GenerationMixing"},spheno];
 WriteString[spheno, "End if \n"];
 
@@ -437,6 +488,12 @@ GenerateReadingData;
 If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
 GenerateCalcLowEnergy; 
 ];
+
+If[AddTreeLevelUnitarityLimits===True,
+GenerateTreeLevelUni;
+];
+
+GenerateScaleUncertainty;
 
 WriteString[spheno,"End Program SPheno"<>NameForModel<>" \n"];
 
@@ -481,6 +538,124 @@ WriteString[spheno,"End Subroutine ReadingData\n\n \n"];
 
 
 (* ::Input::Initialization:: *)
+GenerateScaleUncertainty:=Block[{i,j,temp},
+Print["  Write 'ScaleUncertainty'"];
+
+MakeSubroutineTitle["GetScaleUncertainty",ToExpression[SPhenoForm[#]<>"input"]&/@Join[NewMassParameters,Join[listVEVs,listAllParameters]],{"delta","WriteOut","kont"},{"mass_Qerror"},spheno]; 
+
+WriteString[spheno,"Implicit None \n"];
+WriteString[spheno, "Integer, Intent(inout) :: kont \n"];
+WriteString[spheno, "Logical, Intent(in) :: WriteOut \n"];
+WriteString[spheno, "Real(dp), Intent(in) :: delta \n"]; 
+
+WriteString[spheno, "Real(dp) :: mass_in("<>NumberNewMassesTotal<>"), mass_new("<>NumberNewMassesTotal<>") \n"]; 
+WriteString[spheno, "Real(dp), Intent(out) :: mass_Qerror("<>NumberNewMassesTotal<>") \n"]; 
+
+WriteString[spheno, "Real(dp) :: gD("<>ToString[numberAllwithVEVs]<>"), Q, Qsave, Qstep, Qt, g_SM(62), mh_SM \n"]; 
+WriteString[spheno, "Integer :: i1, i2, iupdown, ntot \n"]; 
+
+MakeVariableList[ToExpression[SPhenoForm[#]<>"input"]&/@listAllParameters,",Intent(in)",spheno];
+MakeVariableList[ToExpression[SPhenoForm[#]<>"input"]&/@NewMassParameters,",Intent(in)",spheno];
+MakeVariableList[ToExpression[SPhenoForm[#]<>"input"]&/@listVEVs,",Intent(in)",spheno];
+
+MakeVariableList[listAllParameters,"",spheno];
+MakeVariableList[NewMassParameters,"",spheno];
+MakeVariableList[listVEVs,"",spheno];
+
+WriteString[spheno,"kont = 0 \n"];
+
+WriteString[spheno,"Write(*,*) \"Check scale uncertainty\" \n"];
+
+WriteString[spheno,"n_tot =1\n"];
+For[i=1,i<=Length[NewMasses],
+WriteString[spheno,"mass_in(n_tot:n_tot+"<>ToString[NewMasses[[i,2]]-1]<>") = " <>ToString[NewMasses[[i,1]]]<> "input\n"];
+If[i<Length[NewMasses],
+WriteString[spheno,"n_tot = n_tot + " <>ToString[NewMasses[[i,2]]] <>" \n"];
+];
+i++;];
+WriteString[spheno,"mass_Qerror = 0._dp \n"];
+
+WriteString[spheno,"Qsave=sqrt(getRenormalizationScale()) \n"];
+
+WriteString[spheno,"Do iupdown=1,2 \n"];
+WriteString[spheno,"If (iupdown.eq.1) Then \n"];
+WriteString[spheno,"  Qstep=Qsave/7._dp \n"];
+WriteString[spheno,"Else \n"];
+WriteString[spheno,"  Qstep=-0.5_dp*Qsave/7._dp \n"];
+WriteString[spheno,"End if \n"];
+
+WriteString[spheno,"Do i1=1,7 \n"];
+WriteString[spheno,"Q=Qsave+i1*Qstep \n"];
+WriteString[spheno,"Qt = SetRenormalizationScale(Q**2) \n"];
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[spheno,SPhenoForm[listAllParametersAndVEVs[[i]]]<>" = "<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"input\n"];
+i++;];
+WriteGUTnormalization[spheno];
+MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gD"},spheno];
+
+WriteString[spheno,"If (iupdown.eq.1) Then \n"];
+WriteString[spheno," tz=Log(Q/Qsave)\n"];
+WriteString[spheno," dt=-tz/50._dp\n"];
+WriteString[spheno," Call odeint(gD,"<>ToString[numberAllwithVEVs]<>",0._dp,tz,0.1_dp*delta,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n"];
+WriteString[spheno,"Else \n"];
+WriteString[spheno," tz=-Log(Q/Qsave)\n"];
+WriteString[spheno," dt=tz/50._dp\n"];
+WriteString[spheno," Call odeint(gD,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,0.1_dp*delta,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n"];
+WriteString[spheno,"End if \n"];
+
+MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"gD"},{},spheno];
+
+WriteRemoveGUTnormalization[spheno];
+
+WriteTadpoleSolutionOnlyHigh[spheno];
+
+MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},spheno];
+
+If[getGen[HiggsBoson]>1,
+WriteString[spheno,"If (((Calculate_mh_within_SM).and.("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]+1] <>".gt.300._dp)).OR.(Force_mh_within_SM))Then\n"];,
+WriteString[spheno,"If (Calculate_mh_within_SM) Then\n"];
+];
+WriteString[spheno,"g_SM=g_SM_save \n"];
+WriteString[spheno,"tz=0.5_dp*Log(mZ2/Q**2)\n"];
+WriteString[spheno,"dt=tz/100._dp\n"];
+WriteString[spheno,"g_SM(1)=Sqrt(5._dp/3._dp)*g_SM(1) \n"];
+WriteString[spheno,"Call odeint(g_SM,62,tz,0._dp,delta,dt,0._dp,rge62_SM,kont) \n"];
+WriteString[spheno,"g_SM(1)=Sqrt(3._dp/5._dp)*g_SM(1) \n"];
+WriteString[spheno,"Call Get_mh_pole_SM(g_SM,Q**2,delta,"<>SPhenoMassSq[HiggsBoson,getGenStart[HiggsBoson]]<>",mh_SM)\n"];
+WriteString[spheno,SPhenoMassSq[HiggsBoson,getGenStart[HiggsBoson]] <>" = mh_SM**2 \n"];
+WriteString[spheno,SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]] <>" = mh_SM \n"];
+WriteString[spheno,"End if\n"];
+
+WriteString[spheno,"n_tot =1\n"];
+For[i=1,i<=Length[NewMasses],
+WriteString[spheno,"mass_new(n_tot:n_tot+"<>ToString[NewMasses[[i,2]]-1]<>") = " <>ToString[NewMasses[[i,1]]]<> "\n"];
+If[i<Length[NewMasses],
+WriteString[spheno,"n_tot = n_tot + " <>ToString[NewMasses[[i,2]]] <>" \n"];
+];
+i++;];
+
+WriteString[spheno,"  Do i2=1,"<>NumberNewMassesTotal<>" \n"];
+WriteString[spheno,"    If (Abs(mass_new(i2)-mass_in(i2)).gt.mass_Qerror(i2)) mass_Qerror(i2) = Abs(mass_new(i2)-mass_in(i2)) \n"];
+WriteString[spheno,"  End Do \n"];
+
+WriteString[spheno,"End Do \n"];
+WriteString[spheno,"End Do \n"];
+
+WriteString[spheno,"  Do i2=1,"<>NumberNewMassesTotal<>"  \n"];
+WriteString[spheno,"    mass_uncertainty_Yt(i2) = Abs(mass_uncertainty_Yt(i2)-mass_in(i2)) \n"];
+WriteString[spheno,"  End Do \n"];
+
+
+WriteString[spheno,"If (kont.ne.0) Then \n"];
+WriteString[spheno," Write(*,*) \"Error appeared in check of scale uncertainty \"\n \n"];
+WriteString[spheno," Call TerminateProgram \n"];
+WriteString[spheno,"End If \n \n"];
+
+WriteString[spheno,"Qt = SetRenormalizationScale(Qsave**2) \n"];
+
+WriteString[spheno,"End Subroutine GetScaleUncertainty \n \n\n \n"];
+];
+
 GenerateCalculateSpectrum:=Block[{i,j,temp},
 
 Print["  Write 'CalculateSpectrum'"];
@@ -567,30 +742,34 @@ GenerateCalcLowEnergy:=Block[{temp,i,j,ii,iiii,tlist,name,indlist,indvector,dimi
 
 (* Generate auxiliary variables 'PARinput' *)
 
+(*
 tlist = NewMassParameters;
 
-For[i=1,i<=Length[tlist],
+For[i=1,i\[LessEqual]Length[tlist],
 name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
 pos=Position[SPhenoParameters,tlist[[i]]][[1,1]];
-SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]->name)}];
-If[FreeQ[realVar,tlist[[i]]]==False, realVar=Join[realVar,{name}];];
+SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]\[Rule]name)}];
+If[FreeQ[realVar,tlist[[i]]]\[Equal]False, realVar=Join[realVar,{name}];];
 i++;
 ];
 
 tlist = listAllParametersAndVEVs;
 temp={};
-For[i=1,i<=Length[tlist],
+For[i=1,i\[LessEqual]Length[tlist],
 name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
 If[FreeQ[SPhenoParameters,name],
 pos=Position[SPhenoParameters,tlist[[i]]][[1,1]];
-SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]->name)}];
-If[FreeQ[realVar,tlist[[i]]]==False,
+SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]\[Rule]name)}];
+If[FreeQ[realVar,tlist[[i]]]\[Equal]False,
 realVar=Join[realVar,{name}];
 ];
 ];
 temp=Join[temp,{name}];
 i++;
 ];
+*)
+
+temp=ToExpression[SPhenoForm[#]<>"input"]&/@listAllParametersAndVEVs;
 
 Print["  Write 'CalculateLowEnergy'"];
 
@@ -1188,26 +1367,48 @@ If[AuxiliaryHyperchargeCoupling===True,
 WriteString[spheno,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge] <>"\n"];,
 WriteString[spheno,"sinW2=0.22290_dp \n"];
 WriteString[spheno, SPhenoForm[Weinberg]<>" = asin(sqrt(sinW2)) \n"];
+(*
 WriteString[spheno,SPhenoForm[leftCoupling]<>"=Sqrt(4._dp*Sqrt2*G_F*mW2) \n"];
 WriteString[spheno,SPhenoForm[hyperchargeCoupling]<>"="<>SPhenoForm[leftCoupling]<>"*Sqrt(sinW2/(1._dp-sinW2)) \n"];
+*)
 ];
+
 If[AddOHDM=!=True,
 If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 WriteString[spheno,"mW2=(1._dp-sinW2)*mz2 + "<>SPhenoForm[Simplify[-Vertex[{VectorW,conj[VectorW]}][[2,1]]-(-Vertex[{VectorZ,VectorZ}][[2,1]] )(1-Sin[ThetaW]^2) /. ThetaW->ArcSin[Sqrt[hyperchargeCoupling^2/(hyperchargeCoupling^2+leftCoupling^2)]],{hyperchargeCoupling>0,leftCoupling>0}]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>"\n"];
-WriteString[spheno,"vev2=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) +"<> SPhenoForm[Simplify[-Vertex[{VectorZ,VectorZ}][[2,1]] -1/4 (VEVSM1^2+VEVSM2^2)(leftCoupling Cos[Weinberg]+hyperchargeCoupling Sin[Weinberg])^2]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>" \n"];
+(*
+WriteString[spheno,"vev2=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) -"<> SPhenoForm[Simplify[-Vertex[{VectorZ,VectorZ}][[2,1]] -1/4 (VEVSM1^2+VEVSM2^2)(leftCoupling Cos[Weinberg]+hyperchargeCoupling Sin[Weinberg])^2]/.sum[a_,b_,c_,d_]\[RuleDelayed]Sum[d,{a,b,c}]]<>") \n"];
 WriteString[spheno,SPhenoForm[VEVSM1]<>"=vev2/Sqrt(1._dp+TanBeta**2) \n"];
 WriteString[spheno,SPhenoForm[VEVSM2]<>"=TanBeta*"<>SPhenoForm[VEVSM1]<>" \n"];
+*)
 ];,
 
 WriteString[spheno,"mW2=(1._dp-sinW2)*mz2 + "<>SPhenoForm[Simplify[-Vertex[{VectorW,conj[VectorW]}][[2,1]]-(-Vertex[{VectorZ,VectorZ}][[2,1]] )(1-Sin[ThetaW]^2) /. ThetaW->ArcSin[Sqrt[hyperchargeCoupling^2/(hyperchargeCoupling^2+leftCoupling^2)]],{hyperchargeCoupling>0,leftCoupling>0}]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>"\n"];
-WriteString[spheno,"vev2=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) +"<> SPhenoForm[Simplify[-Vertex[{VectorZ,VectorZ}][[2,1]] -1/4 (VEVSM^2)(leftCoupling Cos[Weinberg]+hyperchargeCoupling Sin[Weinberg])^2]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>" \n"];
+(*
+WriteString[spheno,"vev2=Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha) -"<> SPhenoForm[Simplify[-Vertex[{VectorZ,VectorZ}][[2,1]] -1/4 (VEVSM^2)(leftCoupling Cos[Weinberg]+hyperchargeCoupling Sin[Weinberg])^2]/.sum[a_,b_,c_,d_]\[RuleDelayed]Sum[d,{a,b,c}]]<>") \n"];
 WriteString[spheno,SPhenoForm[VEVSM]<>"=vev2 \n"];
+*)
 ];
 ];
 
+WriteString[spheno,"g2SM=2._dp*Sqrt(alpha*pi/sinW2) \n"];
+WriteString[spheno,"g1SM=g2SM*Sqrt(sinW2/(1._dp-sinW2)) \n"];
+WriteString[spheno,"vSM = Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) \n"];
+
+WriteString[spheno,"YuSM=0._dp\n"];
+WriteString[spheno,"YdSM=0._dp\n"];
+WriteString[spheno,"YeSM=0._dp\n"];
+WriteString[spheno,"   Do i1=1,3 \n"];
+WriteString[spheno,"      YuSM(i1,i1)=sqrt(2._dp)*mf_u(i1)/vSM \n"];
+WriteString[spheno,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
+WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
+WriteString[spheno,"    End Do \n"];
+
+SetMatchingConditions[spheno];
+
 WriteTadpoleSolution[spheno];
 MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},spheno];
-SetPoleMasses[spheno];
+(* SetPoleMasses[spheno]; *)
 
 MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},spheno];
 
@@ -1216,6 +1417,12 @@ masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
 couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
 
 MakeCall["DeltaRho",Flatten[{masses,couplings}],{},{"dRho"},spheno];
+
+pos=Position[LowEnergyConstraintsParameterList,STUpar];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["STUparameter",Flatten[{masses,couplings}],{"vSM","g1SM","g2SM","g3SM","YuSM","YdSM","YeSM"},{"Spar","Tpar","Upar"},spheno];
 
 
 (* Neutrino Masses *)
@@ -1258,4 +1465,42 @@ If[FreeQ[NewNumericalDependences,subDependencesSPheno[[i,1]]],
 WriteString[file,SPhenoForm[subDependencesSPheno[[i,1]]]<>" = "<>SPhenoForm[subDependencesSPheno[[i,2]]]<>"\n"];
 ];
 i++;];
+];
+
+
+
+GenerateTreeLevelUni:=Block[{i,j,dim},
+scattermatrix=Get2to2scattering;
+dim=Length[scattermatrix];
+
+Print["  Write 'Tree-Level Unitarity Limits'"];
+
+MakeSubroutineTitle["ScatteringEigenvalues",Join[listVEVs,listAllParameters],{} ,{"kont"},spheno];
+
+WriteString[spheno,"Implicit None \n"];
+WriteString[spheno, "Integer, Intent(inout) :: kont \n"];
+WriteString[spheno, "Integer :: ierr \n"];
+MakeVariableList[listAllParameters,",Intent(in)",spheno];
+MakeVariableList[listVEVs,",Intent(in)",spheno];
+
+WriteString[spheno, "Complex(dp) :: scatter_matrix("<>ToString[dim]<>","<>ToString[dim]<>") \n"]; 
+WriteString[spheno, "Complex(dp) :: rot_matrix("<>ToString[dim]<>","<>ToString[dim]<>") \n"]; 
+WriteString[spheno, "Real(dp) :: eigenvalues_matrix("<>ToString[dim]<>"), test(2) \n"]; 
+
+WriteString[spheno,"scatter_matrix=0._dp \n"];
+
+For[i=1,i<=dim,
+For[j=1,j<=dim,
+If[scattermatrix[[i,j]]=!=0,
+WriteString[spheno,"scatter_matrix("<>ToString[i]<>","<>ToString[j]<>") = "<>SPhenoForm[scattermatrix[[i,j]]]<>"\n"];
+];
+j++;];
+i++;];
+
+WriteString[spheno, "Call EigenSystem(scatter_matrix,eigenvalues_matrix,rot_matrix,ierr,test) \n\n"];
+WriteString[spheno,"max_scattering_eigenvalue=MaxVal(Abs(eigenvalues_matrix)) \n"];
+WriteString[spheno,"If (max_scattering_eigenvalue.gt.8._dp*Pi) TreeUnitarity=0._dp \n"];
+
+WriteString[spheno,"End Subroutine ScatteringEigenvalues\n\n"];
+
 ];

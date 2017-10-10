@@ -122,7 +122,8 @@ DEFINITION[EWSB][MatterSector]=
    }; 
 
 DEFINITION[EWSB][Phases]= 
-{    {fG, PhaseGlu}
+{    {fG, PhaseGlu},
+     {FTmm, PhaseTmm}
     }; 
 
 

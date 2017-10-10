@@ -127,7 +127,7 @@ If[SA`AddOneLoopDecay ===True, WriteFermionPropNonSymmSingle[nameCurrent,particl
 VectorMass,
 If[listNotMixedMasses[[i,4]]=!=0,WriteLoopMassSingle[nameCurrent,particleCurrent,parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],treeMassCurrent,False];];
 WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]]]; 
-If[SA`AddOneLoopDecay ===True,WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"];]; 
+WriteVectorPropSingle[nameCurrent,particleCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]],Unmixed1Loop[[i]],"Der"]; 
 ];
 ];
 
@@ -193,28 +193,35 @@ pos2=Position[SA`LoopMassesParticle,SMFermion[[i]]][[1,1]];
 i++;];
 (* ];  *)
 
+list=CorrectionListVectorVector[Eigenstates];
+For[i=1,i<=Length[list],
+WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesVV[[i]],NeededCouplingsVV[[i]],list[[i,2]]];
+WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesVV[[i]],NeededCouplingsVV[[i]],list[[i,2]],"Der"];
+i++;];
+
+list=CorrectionListVectorScalar[Eigenstates];
+For[i=1,i<=Length[list],
+WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesSV[[i]],NeededCouplingsSV[[i]],list[[i,2]]];
+WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesSV[[i]],NeededCouplingsSV[[i]],list[[i,2]],"Der"];
+i++;];
+
+(*
 If[SA`AddOneLoopDecay === True,
 (*
 For[i=1,i\[LessEqual]Length[CorrectionListVectorScalar],
 WriteVectorScalarMixedSE[ToString[CorrectionListVectorScalar[[i,1,1]]]<>ToString[CorrectionListVectorScalar[[i,1,2]]],CorrectionListVectorScalar[[i,1,1]],CorrectionListVectorScalar[[i,1,2]],NeededMassesVS[[i]],NeededCouplingsVS[[i]],CorrectionListVectorScalar[[i]]];
 i++;];
 *)
-list=CorrectionListVectorVector[Eigenstates];
-For[i=1,i<=Length[list],
-WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesVV[[i]],NeededCouplingsVV[[i]],list[[i,2]]];
-If[SA`AddOneLoopDecay ===True,
-WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesVV[[i]],NeededCouplingsVV[[i]],list[[i,2]],"Der"];
-];
-i++;];
 
 list=CorrectionListVectorScalar[Eigenstates];
-For[i=1,i<=Length[list],
+For[i=1,i\[LessEqual]Length[list],
 WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesSV[[i]],NeededCouplingsSV[[i]],list[[i,2]]];
 If[SA`AddOneLoopDecay ===True,
 WriteVectorScalarMixedSE[ToString[list[[i,1,1]]]<>ToString[list[[i,1,2]]],list[[i,1,1]],list[[i,1,2]],NeededMassesSV[[i]],NeededCouplingsSV[[i]],list[[i,2]],"Der"];
 ];
 i++;];
 ];
+*)
 DynamicMass1LoopName="All Done";
 
 (*
@@ -353,7 +360,7 @@ NeededCouplingsVS=temp[[2]];
 CorrectionTypeVS=temp[[3]];
 *)
 
-If[SA`AddOneLoopDecay === True,
+
 temp=MakeListsLoopContributions2[CorrectionListVectorVector[Eigenstates],SPhenoCouplingsAllreallyAll];
 NeededMassesVV=Intersection/@temp[[1]];
 NeededCouplingsVV=Intersection/@temp[[2]];
@@ -364,8 +371,6 @@ NeededMassesSV=Intersection/@temp[[1]];
 NeededCouplingsSV=Intersection/@temp[[2]];
 CorrectionTypeSV=Intersection/@temp[[3]];
 
-
-];
 
 ];
 

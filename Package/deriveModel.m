@@ -19,13 +19,11 @@
 
 
 
-(* ::Input::Initialization:: *)
 (* ------------------------------------------------- *)
 (* Calculates all Vertices / Generates a TeX-Output  *)
 (* ------------------------------------------------- *)
 
 
-(* ::Input::Initialization:: *)
 
 Options[ModelOutput]={ SixParticleInteractions->False,effectiveOperators->False, ReadLists->False, WriteTeX-> False, WriteCHep->False,  WriteWHIZARD->False, WriteFeynArts->False, WriteUFO->False, FeynmanDiagrams ->True, IncludeLoopCorrections ->False,IncludeRGEs->False,TwoLoopRGEs->True,VerticesForLoops->False, SimplifySums->True, IncludeVertices->True,Eigenstates->Automatic };
 
@@ -143,7 +141,6 @@ ITypesNonRen={ {SSSSSS,S,S,S,S,S,S}, {SSSSVV,S,S,S,S,V,V}, {SSVVVV,S,S,V,V,V,V},
 
 
 
-(* ::Input::Initialization:: *)
 InitVertexCalculation[Eigenstates_,WriteTeX_]:=Block[{},
 Print["Generate Directories"];
 
@@ -220,7 +217,6 @@ CreateTeXNameList[Eigenstates];
 ];
 
 
-(* ::Input::Initialization:: *)
 
 
 ReadVertexList[ES_,effectiveOperators_,SixP_,VLoop_]:=Block[{i},
@@ -253,7 +249,6 @@ i++;];
 ];
 
 
-(* ::Input::Initialization:: *)
 MakeVertexList[ES_,opt___]:=MakeVertexListFun[ES, effectiveOperators/.{opt}/.Options[MakeVertexList],SixParticleInteractions/.{opt}/.Options[MakeVertexList], VerticesForLoops /.{opt}/.Options[MakeVertexList],SimplifySums /.{opt}/.Options[MakeVertexList],GenericClasses /.{opt}/.Options[MakeVertexList]];
 
 MakeVertexListFun[ES_,effectiveOperators_,SixParticleInteractions_, VerticesForLoops_,SimplifySums_,classes_]:=Block[{s1,s2,s3,s4,s5,s6,fin,iteration,starttime},
@@ -424,7 +419,7 @@ InitAutomaticCalc[ES_]:=Block[{},
 
 (* subNonFields = {sum[a_,b_,c_]\[Rule]1,  Delta[a_,b_]\[Rule]1,epsTensor[a__]\[Rule]1, g[a__]\[Rule]1, Sig[a__]\[Rule]1,Lam[a__]\[Rule]1, Mom[a_,b_]\[Rule]1, T[a_]\[Rule] 1, B[a_]\[Rule]1, L[a_]\[Rule]1,gamma[a_]\[Rule]1 ,fSU2[a__]\[Rule]1, fSU3[a__]\[Rule]1, pmue[a__]\[Rule]a,RXi[a__]\[Rule]1, Mass[x_]\[Rule]1,Inv[a__][b__]\[Rule]1};  *)
 subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]:>Random[], T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]:>Random[] ,fSU2[a__]->1, fSU3[a__]->1, fSU4[a__]->1,pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[], LorentzProduct[a___]:>Random[]}; 
-subPar=Flatten[{T[a___]->1, B[a__]->1,L[a___]->1,Table[parameters[[i,1]][b__][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]]->1,{i,1,Length[parameters]}]}] /. conj[x_]->x;
+subPar=Flatten[{T[a___]->1, B[a__]->1,L[a___]->1,Table[parameters[[i,1]][b__][a__]->Random[],{i,1,Length[parameters]}],Table[parameters[[i,1]][a__]->Random[],{i,1,Length[parameters]}],Table[parameters[[i,1]]->1,{i,1,Length[parameters]}]}] /. conj[x_]->x;
 
 
 subGeneric[FFV]={a_[b_?IntegerQ]->a};
@@ -656,7 +651,6 @@ Close[sphenoFlavorKitObs];
 
 
 
-(* ::Input::Initialization:: *)
 
 
 

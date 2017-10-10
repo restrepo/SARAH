@@ -120,9 +120,11 @@ DEFINITION[EWSB][MatterSector]=
      {{{FuL,conj[Ft2]},{conj[FuR],conj[Ft1]}},{{FUL,ZUL},{FUR,ZUR}}}       }; 
        
 DEFINITION[EWSB][Phases]= 
-{    {fG, PhaseGlu}
+{    {fG, PhaseGlu},
+     {FtauR1,PhaseTR},
+     {FbL1,PhaseBL},
+     {FtL1,PhaseTL}
     }; 
-
 	
 	
 DEFINITION[EWSB][DiracSpinors]={

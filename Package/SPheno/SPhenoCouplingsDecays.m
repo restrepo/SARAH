@@ -226,11 +226,15 @@ WriteString[sphenoCoup,"   vSM=1/Sqrt((G_F*Sqrt(2._dp))) ! On-Shell VEV needed f
 WriteString[sphenoCoup,"   YuSM(3,3)=sqrt(2._dp)*mf_u(3)/vSM  ! On-Shell top needed in loop \n"];
 WriteString[sphenoCoup,"   ! Other running values kept to get H->ff correct \n"];
 
-For[i=1,i<=Length[BoundaryLowScaleInput],
-If[Select[{vSM,YdSM,YeSM,YuSM,g1SM,g2SM,g3SM},FreeQ[BoundaryLowScaleInput[[i,2]],#]==False&]=!={},
+SetMatchingConditions[sphenoCoup];
+
+(*
+For[i=1,i\[LessEqual]Length[BoundaryLowScaleInput],
+If[Select[{vSM,YdSM,YeSM,YuSM,g1SM,g2SM,g3SM},FreeQ[BoundaryLowScaleInput[[i,2]],#]\[Equal]False&]=!={},
 WriteString[sphenoCoup,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"="<>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
 ];
 i++;];
+*)
 ];
 
 

@@ -143,7 +143,7 @@ ParameterDefinitions = {
      LaTeX -> "U^u_R", 
      OutputName -> ZUR}}, 
 
-{v,{ 
+{vDoub,{ 
      Description -> "EW-VEV", 
      Dependence -> None, 
      DependenceNum -> 2*Sqrt[Mass[VWp]^2/g2^2], 
@@ -152,7 +152,7 @@ ParameterDefinitions = {
      Real -> True, 
      LesHouches -> {HMIX, 3}, 
      LaTeX -> "v", 
-     OutputName -> v}}, 
+     OutputName -> vDoub}}, 
 
 {Vd,{ 
      Description -> "Left-Down-Mixing-Matrix", 
@@ -190,7 +190,7 @@ ParameterDefinitions = {
 {Yd,{ 
      Description -> "Down-Yukawa-Coupling", 
      Dependence -> None, 
-     DependenceNum -> {{(Sqrt[2]*Mass[Fd, 1])/v, 0, 0}, {0, (Sqrt[2]*Mass[Fd, 2])/v, 0}, {0, 0, (Sqrt[2]*Mass[Fd, 3])/v}}, 
+     DependenceNum -> {{(Sqrt[2]*Mass[Fd, 1])/vDoub, 0, 0}, {0, (Sqrt[2]*Mass[Fd, 2])/vDoub, 0}, {0, 0, (Sqrt[2]*Mass[Fd, 3])/vDoub}}, 
      DependenceOptional -> None, 
      DependenceSPheno -> None, 
      Real -> False, 
@@ -201,7 +201,7 @@ ParameterDefinitions = {
 {Ye,{ 
      Description -> "Lepton-Yukawa-Coupling", 
      Dependence -> None, 
-     DependenceNum -> {{(Sqrt[2]*Mass[Fe, 1])/v, 0, 0}, {0, (Sqrt[2]*Mass[Fe, 2])/v, 0}, {0, 0, (Sqrt[2]*Mass[Fe, 3])/v}}, 
+     DependenceNum -> {{(Sqrt[2]*Mass[Fe, 1])/vDoub, 0, 0}, {0, (Sqrt[2]*Mass[Fe, 2])/vDoub, 0}, {0, 0, (Sqrt[2]*Mass[Fe, 3])/vDoub}}, 
      DependenceOptional -> None, 
      DependenceSPheno -> None, 
      Real -> False, 
@@ -212,7 +212,7 @@ ParameterDefinitions = {
 {Yu,{ 
      Description -> "Up-Yukawa-Coupling", 
      Dependence -> None, 
-     DependenceNum -> {{(Sqrt[2]*Mass[Fu, 1])/v, 0, 0}, {0, (Sqrt[2]*Mass[Fu, 2])/v, 0}, {0, 0, (Sqrt[2]*Mass[Fu, 3])/v}}, 
+     DependenceNum -> {{(Sqrt[2]*Mass[Fu, 1])/vDoub, 0, 0}, {0, (Sqrt[2]*Mass[Fu, 2])/vDoub, 0}, {0, 0, (Sqrt[2]*Mass[Fu, 3])/vDoub}}, 
      DependenceOptional -> None, 
      DependenceSPheno -> None, 
      Real -> False, 
@@ -378,5 +378,7 @@ ParameterDefinitions = {
      Real -> False, 
      LesHouches -> ZA , 
      LaTeX -> "ZA" , 
-     OutputName -> za }}
+     OutputName -> za }},
+     
+{\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }}     
 } 

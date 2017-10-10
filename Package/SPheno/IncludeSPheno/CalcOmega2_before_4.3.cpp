@@ -1,6 +1,6 @@
-#include "../include/micromegas.h"
+#include "../sources/micromegas.h"
 #include "lib/pmodel.h"
-#include"../include/micromegas_aux.h"
+#include"../sources/micromegas_aux.h"
 #include <string>
 
 using namespace std;

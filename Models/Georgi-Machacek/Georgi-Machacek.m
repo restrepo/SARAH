@@ -86,7 +86,7 @@ DEFINITION[EWSB][GaugeSector] =
 
 
 DEFINITION[EWSB][VEVs]= 
-{     {H0, {v, 1/Sqrt[2]}, {sigmaH, \[ImaginaryI]/Sqrt[2]},{phiH, 1/Sqrt[2]}},
+{     {H0, {vDoub, 1/Sqrt[2]}, {sigmaH, \[ImaginaryI]/Sqrt[2]},{phiH, 1/Sqrt[2]}},
       {eta0, {vEta, 1}, {0, 0},{phiEta, 1}}, 
       {xi0, {vPhi, 1}, {sigmaXi,  \[ImaginaryI]/Sqrt[2]},{phiXi, 1/Sqrt[2]}} 
       }; 

@@ -808,6 +808,7 @@ If[SPhenoOnlyForHM=!=True,
 If[getGen[HiggsBoson]>0 || (1+getGen[PseudoScalar]-getGenSPhenoStart[PseudoScalar])>0,WriteInOutHiggsObservables;];
 WriteInOutLowEnergyObservables;
 If[IncludeFineTuning===True,WriteInOutFT;];
+If[AddTreeLevelUnitarityLimits===True,WriteInOutTreeUni;];
 WriteInOutDecays;
 
 If[SA`AddOneLoopDecay === True,WriteInOutDecays1L;];
@@ -1538,7 +1539,7 @@ WriteString[sphenoInOut,"&     6,1, \" switching on flavour violation\" \n"];
 If[SLHA1Possible,WriteString[sphenoInOut,"End if \n"];];
 ];
 
-WriteInOutParameters:=Block[{i,i1,i2,i3,i4,kk,k, stringrep,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2,suffix},
+WriteInOutParameters:=Block[{i,i1,i2,i3,i4,kk,k, stringrep,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2,suffix,ntot,pdgs},
 WriteString[sphenoInOut,"Write(io_L,100) \"Block MINPAR  # Input parameters\"\n"];
 If[Head[MINPAR[[1,1]]]=!=List,
 For[i=1,i<=Length[MINPAR],
@@ -1942,7 +1943,7 @@ j++;];
 ];
 ];
 
-WriteInOutMasses:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
+WriteInOutMasses:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2,pdgs,ntot},
 WriteString[sphenoInOut,"MassLSP = 100000._dp \n"];
 
 WriteString[sphenoInOut,"Write(io_L,100) \"Block MASS  # Mass spectrum\"\n"];
@@ -1994,6 +1995,44 @@ i++;];
 
 WriteString[sphenoInOut,"\n \n"];
 
+WriteString[sphenoInOut,"If (GetMassUncertainty) Then\n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"Block DMASS  # Overall uncertainty\"\n"];
+ntot=1;
+For[i1=1,i1<=Length[NewMasses],
+pdgs=getPDG[ToExpression[StringDrop[ToString[NewMasses[[i1,1]]],{1}]]];
+For[i2=1,i2<=Length[pdgs],
+If[pdgs[[i2]]=!=0,
+WriteString[sphenoInOut," Write(io_L,102) INT(Abs("<>ToString[pdgs[[i2]]]<>")), Sqrt(mass_uncertainty_Q("<>ToString[ntot]<>")**2+mass_uncertainty_Yt("<>ToString[ntot]<>")**2),\"# "<>ToString[NewMasses[[i1,1]]]<>"("<>ToString[i2]<>") \" \n"];
+];
+ntot++;
+i2++;];
+i1++;];
+
+WriteString[sphenoInOut,"Write(io_L,100) \"Block DMASSQ  # Scale uncertainty\"\n"];
+ntot=1;
+For[i1=1,i1<=Length[NewMasses],
+pdgs=getPDG[ToExpression[StringDrop[ToString[NewMasses[[i1,1]]],{1}]]];
+For[i2=1,i2<=Length[pdgs],
+If[pdgs[[i2]]=!=0,
+WriteString[sphenoInOut," Write(io_L,102) INT(Abs("<>ToString[pdgs[[i2]]]<>")), mass_uncertainty_Q("<>ToString[ntot]<>"),\"# "<>ToString[NewMasses[[i1,1]]]<>"("<>ToString[i2]<>") \" \n"];
+];
+ntot++;
+i2++;];
+i1++;];
+
+WriteString[sphenoInOut,"Write(io_L,100) \"Block DMASST  # Top Matching uncertainty\"\n"];
+ntot=1;
+For[i1=1,i1<=Length[NewMasses],
+pdgs=getPDG[ToExpression[StringDrop[ToString[NewMasses[[i1,1]]],{1}]]];
+For[i2=1,i2<=Length[pdgs],
+If[pdgs[[i2]]=!=0,
+WriteString[sphenoInOut," Write(io_L,102) INT(Abs("<>ToString[pdgs[[i2]]]<>")), mass_uncertainty_Yt("<>ToString[ntot]<>"),\"# "<>ToString[NewMasses[[i1,1]]]<>"("<>ToString[i2]<>") \" \n"];
+];
+ntot++;
+i2++;];
+i1++;];
+
+WriteString[sphenoInOut,"End if\n"];
 
 If[FreeQ[Global,RParity]==False,
 	WriteString[sphenoInOut,"Write(io_L,100) \"Block LSP  # LSP and NLSP\"\n"];
@@ -2614,6 +2653,13 @@ For[i=1,i<=Length[FineTuningParameters],
 WriteString[sphenoInOut,"Write(io_L,1010) "<>ToString[i]<>", FineTuningResultsAllVEVs("<>ToString[i] <>"),  \"# "<>ToString[FineTuningParameters[[i,1]]] <>"\" \n"];
 i++;];
 
+WriteString[sphenoInOut, "\n \n"];
+];
+
+WriteInOutTreeUni:=Block[{i},
+WriteString[sphenoInOut,"Write(io_L,100) \"Block TREELEVELUNITARITY #  \" \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 0, TreeUnitarity,  \"# Tree-level unitarity limits fulfilled or not \"  \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 1, max_scattering_eigenvalue,  \"# Maximal scattering eigenvalue \"  \n"];
 WriteString[sphenoInOut, "\n \n"];
 ];
 

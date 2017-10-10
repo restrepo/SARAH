@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 (* Begin["`More`"] *)
 
@@ -150,6 +151,7 @@ CheckU1mixing;
 SymbolQS[x_]:=If[Head[x]===Symbol,Return[True],Return[False]]
 
 
+(* ::Input::Initialization:: *)
 
 InitChargeFactors:=Block[{i,i1,j,k},
 For[i1=1,i1<=Length[Gauge],
@@ -962,6 +964,16 @@ Return["v_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
 
 Return[temp];
 
+];
+
+
+Get2to2scattering:=Block[{AllScalars,pairs,lag,ScatterMatrix},
+AllScalars=Transpose[Select[Particles[GaugeES],#[[4]]==S&]][[1]];
+AllScalars=Join[AllScalars,conj/@AllScalars];
+pairs=Intersection[Map[Sort[#]&,Tuples[AllScalars,{2}],{1}]];
+lag=LagSSSS[GaugeES];
+ScatterMatrix=Table[If[pairs[[i2,2]]===pairs[[i2,1]],1/Sqrt[2],1]If[pairs[[i1,2]]===pairs[[i1,1]],1/Sqrt[2],1]D[D[D[D[lag,pairs[[i1,1]]],pairs[[i1,2]]],pairs[[i2,1]]],pairs[[i2,2]]],{i1,1,Length[pairs]},{i2,1,Length[pairs]}]  /. Delta[a_Integer,b_Symbol]->1/. Delta[b_Integer,a_Symbol]->1;
+Return[ScatterMatrix];
 ];
 
 

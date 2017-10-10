@@ -1785,6 +1785,20 @@ WriteString[TFile,"\n"];
 ];
 i++;];
 
+If[SA`CPViolationHiggsSector===True,
+For[i=1,i<=Length[SA`PseudoScalarHF[NameOfStates[[j]]]],
+If[getGenALL[SA`PseudoScalarHF[NameOfStates[[j]]][[i]]]===1,
+WriteString[TFile,"\\frac{\\partial V}{\\partial "<>TeXOutput[SA`PseudoScalarHF[NameOfStates[[j]]][[i]]] <>"} &= "];,
+WriteString[TFile,"\\frac{\\partial V}{\\partial {"<>TeXOutput[SA`PseudoScalarHF[NameOfStates[[j]]][[i]]] <>"}_i} &= "];
+];
+WriteString[TFile,TeXOutput[TeXSimplify[TadpoleEquation[SA`PseudoScalarHF[NameOfStates[[j]]][[i]]]  /. a_ conj[x_] + a_ x_ ->2 a Re[x] ] /. a_ conj[x_] + a_ x_ ->2 a Re[x] ]];
+If[(i+Length[SA`ScalarHF[NameOfStates[[j]]]])<Length[TadEqu],
+WriteString[TFile,"\\\\ \n"];,
+WriteString[TFile,"\n"];
+];
+i++;];
+];
+
 WriteString[TFile,"\\end{align} \n"];
 ];
 j++;];

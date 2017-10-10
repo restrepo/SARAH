@@ -2362,6 +2362,14 @@ AppendSourceCode["CalcOmega.cpp",MOfile];
 ];
 Close[MOfile];
 
+MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_before_v4.3.cpp"]];
+If[TwoDM===True,
+AppendSourceCode["CalcOmega2_before_4.3.cpp",MOfile];,
+AppendSourceCode["CalcOmega_before_4.3.cpp",MOfile];
+];
+Close[MOfile];
+
+
 If[TwoDM=!=True,
 MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection_MOv3.cpp"]];
 AppendSourceCode["CalcOmega_with_DDetection_MOv3.cpp",MOfile];
@@ -2373,6 +2381,10 @@ Close[MOfile];
 
 MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection_MOv4.2.cpp"]];
 AppendSourceCode["CalcOmega_with_DDetection_MOv4.2.cpp",MOfile];
+Close[MOfile];
+
+MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection_MOv4.3.cpp"]];
+AppendSourceCode["CalcOmega_with_DDetection_MOv4.3.cpp",MOfile];
 Close[MOfile];
 ];
 ];
