@@ -164,3 +164,6 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Chi,"Chi.f90"},{Cha,"Cha.f90"},{Glu,"Glu.f90"}};
 
 
+DefaultInputValues = {mSUSY -> 2500, mC2input->2500, TanBeta->20, TanBetaX->1, gXInput->0.5, MZpInput->3000, M1input->1000, M2input->1000, M3input->1000, \
+ MXinput ->1000, MuInput->1000, BMuInput->10^6, LambdaInput->10^-4, ALambdaInput->1000, vSInput->500, MSInput->-100, BMSInput->3.855 10^6, \
+ LambdaCinput->-0.2, ALambdaCinput->1000,lUinput->1, lEinput->1, MVUinput->1000, MVEinput->500};

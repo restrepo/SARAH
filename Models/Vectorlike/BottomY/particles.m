@@ -77,6 +77,7 @@ ParticleDefinitions[GaugeES] = {
               Width->Automatic,
               LaTeX->"y",
               OutputName->"FY",
+              FeynArtsNr -> 9,
               ElectricCharge->-4/3
        
              }},

@@ -48,24 +48,30 @@ ParticleDefinitions[GaugeES] = {
 
 {FVeR, {PDG->{502},
            OutputName -> "Fep",
+           FeynArtsNr -> 50,
            ElectricCharge->-1}},
 {FVdL, {PDG->{503},
            OutputName -> "Fdp",
+           FeynArtsNr -> 51,
            ElectricCharge->-1/3}},
 {FVuL, {PDG->{505},
            OutputName -> "Ftp",
+           FeynArtsNr -> 52,           
            ElectricCharge -> 2/3}},
            
 {StpL, {PDG->{4000002, 4000004},
            OutputName -> "Stp",
+           FeynArtsNr -> 52,           
            ElectricCharge -> 2/3}},           
            
 {SbpL, {PDG->{3000001,3000003},
            OutputName -> "Sbp",
+           FeynArtsNr -> 51,           
            ElectricCharge->-1/3}},   
            
 {SepL, {PDG->{3000011,3000013},
            OutputName -> "Sep",
+           FeynArtsNr -> 50,           
            ElectricCharge->-1}},   
            
 

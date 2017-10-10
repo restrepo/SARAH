@@ -128,7 +128,7 @@ WriteString[filenames[[l]]," 32 0               # Strict unification \n"];
 WriteString[filenames[[l]]," 34 1.000E-04       # Precision of mass calculation \n"];
 WriteString[filenames[[l]]," 35 40              # Maximal number of iterations\n"];
 WriteString[filenames[[l]]," 36 5               # Minimal number of iterations before discarding points\n"];
-WriteString[filenames[[l]]," 37 1               # Set Yukawa scheme  \n"];
+WriteString[filenames[[l]]," 37 "<>If[Head[DefaultYukawaScheme]===Integer,ToString[DefaultYukawaScheme],"1"]<>"               # Set Yukawa scheme  \n"];
 WriteString[filenames[[l]]," 38 2               # 1- or 2-Loop RGEs \n"];
 WriteString[filenames[[l]]," 50 1               # Majorana phases: use only positive masses (put 0 to use file with CalcHep/Micromegas!) \n"];
 WriteString[filenames[[l]]," 51 0               # Write Output in CKM basis \n"];

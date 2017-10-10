@@ -95,3 +95,4 @@ BoundaryLowScaleInput={
 
 DefaultInputValues = {LambdaInput -> 2*10^7, MessengerScale->5*10^7, TanBeta->10, SignumMu->1,n5plets->1, MTinput->1000, YTinput->0.1};
 
+DefaultYukawaScheme = 2;

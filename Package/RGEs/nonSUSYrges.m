@@ -1062,12 +1062,14 @@ UseSymmASymm=False;
 
 
 GetNonZeroEntriesNS[term_,type_,fields_]:=Block[{sub={},pos,i,j,fac=1,epsilons, deltas, indnr,coup,coup2,searchedcoup,indtab,Found},
+Print[term,type,fields];
 Switch[type,
 LIJKL,
 	 coup=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3],fields[[4]]/.subGC[4] ];
 	coup2=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]/.SA`subImagToReal,fields[[4]]/.subGC[4]/.SA`subImagToReal ];,
 YIJK,
-	coup=Yijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,
+	coup=Yijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];
+		coup2=I Yijk[fields[[1]]/.subGC[1]/.SA`subImagToReal,fields[[2]]/.subGC[2]/.SA`subImagToReal,fields[[3]]/.subGC[3]/.SA`subImagToReal];,
 MFIJ,
 	coup=Muij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,
 TIJK,

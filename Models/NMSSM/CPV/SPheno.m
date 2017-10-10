@@ -4,8 +4,7 @@ MINPAR={{1,m0},
         {2,m12},
         {3,TanBeta},
         {5,Azero},
-        {6,etaInput},
-        {7,etaSInput}};
+        {6,etaInput}};
 
 EXTPAR = {
 	   {61,LambdaInput},
@@ -32,7 +31,8 @@ ConditionGUTscale = g1 == g2;
 
 BoundarySUSYScale = {
 {eta,etaInput},
-{etaS,etaSInput},
+{phil,Arg[LambdaInput]},
+{etaS,Arg[MuEffinput]-phil},
 {\[Kappa], KappaInput},
 {\[Lambda], LambdaInput},
 {re[T[\[Lambda]]], ALambdaInput*re[LambdaInput]},
@@ -59,13 +59,14 @@ BoundaryHighScale={
 
 
 BoundaryLowScaleInput={
- {vS, Sqrt[2]*MuEffinput/LambdaInput},
  {\[Kappa], KappaInput},
  {\[Lambda], LambdaInput},
  {re[T[\[Lambda]]], ALambdaInput*re[LambdaInput]},
  {re[T[\[Kappa]]], AKappaInput*re[KappaInput]},
  {eta,etaInput},
- {etaS,etaSInput},
+ {phil,Arg[LambdaInput]},
+ {etaS,Arg[MuEffinput]-phil},
+ {vS, Sqrt[2]*Abs[MuEffinput]/Abs[LambdaInput]},
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };

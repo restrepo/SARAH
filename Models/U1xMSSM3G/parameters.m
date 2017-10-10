@@ -860,7 +860,7 @@ ParameterDefinitions = {
      Real -> False, 
      LesHouches -> {U1XMSSM,16}  (* auto generated Les Houches entry *), 
      LaTeX -> "T_{{\\lambda}_{C}}"  (* auto generated LaTeX name *), 
-     OutputName -> Tlamc  (* auto generated Output name *)}}, 
+     OutputName -> Tlc  (* auto generated Output name *)}}, 
 
 {lambdaE,{ 
      Real -> False, 
@@ -872,7 +872,7 @@ ParameterDefinitions = {
      Real -> False, 
      LesHouches -> TLAME  (* auto generated Les Houches entry *), 
      LaTeX -> "T_{{\\lambda}_{E}}"  (* auto generated LaTeX name *), 
-     OutputName -> Tlame  (* auto generated Output name *)}}, 
+     OutputName -> Tle  (* auto generated Output name *)}}, 
 
 {lambdaH,{ 
      Real -> False, 
@@ -884,7 +884,7 @@ ParameterDefinitions = {
      Real -> False, 
      LesHouches -> {U1XMSSM,24}  (* auto generated Les Houches entry *), 
      LaTeX -> "T_{{\\lambda}_{H}}"  (* auto generated LaTeX name *), 
-     OutputName -> Tlamh  (* auto generated Output name *)}}, 
+     OutputName -> Tlh  (* auto generated Output name *)}}, 
 
 {kappa,{ 
      Real -> False, 
@@ -908,7 +908,7 @@ ParameterDefinitions = {
      Real -> False, 
      LesHouches -> TLAMU (* auto generated Les Houches entry *), 
      LaTeX -> "T_{{\\lambda}_{U}}"  (* auto generated LaTeX name *), 
-     OutputName -> Tlamu  (* auto generated Output name *)}}, 
+     OutputName -> Tlu  (* auto generated Output name *)}}, 
 
 {Yup,{ 
      Real -> False, 

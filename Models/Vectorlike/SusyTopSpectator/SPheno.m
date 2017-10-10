@@ -48,7 +48,9 @@ BoundaryHighScale={
 {mTau, MTinput},
 {B[mT], 0},
 {B[mQ], 0},
-{B[mTau], 0}
+{B[mTau], 0},
+{B[mUT], 0},
+{mUT,0} 
 };
 
 IncludeFineTuning = True;

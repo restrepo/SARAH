@@ -1,0 +1,215 @@
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {5,Azero}};
+
+EXTPAR = {
+
+           {1, M1input},
+           {2, M2input},
+           {3, M3input},
+
+           {11, AtInput},
+           {12, AbInput},
+           {13, ATauInput},
+
+           {25, TanBeta},
+
+           {31, ml1Input},
+           {32, ml2Input},
+           {33, ml3Input},
+
+           {34, me1Input},
+           {35, me2Input},
+           {36, me3Input},
+
+           {41, mq1Input},
+           {42, mq2Input},
+           {43, mq3Input},
+
+           {47, md1Input},
+           {48, md2Input},
+           {49, md3Input},
+
+           {44, mu1Input},
+           {45, mu2Input},
+           {46, mu3Input},
+
+	   {61,LambdaInput},
+	   {62,KappaInput},
+	   {63,ALambdaInput},
+	   {64,AKappaInput},
+           {65,MuEffinput},
+           {80,etaInput} (*,
+           {81,etaSInput} *)
+	 };
+
+RealParameters = {TanBeta,m0};
+
+AssumptionsTadpoleEquations = {T[\[Kappa]]-> (AKappaInput+I*imAKappa)*\[Kappa],T[\[Lambda]]->(ALambdaInput+I*imALambda)*\[Lambda], \
+conj[AKappaInput]->AKappaInput, conj[ALambdaInput]->ALambdaInput, conj[imAKappa]->imAKappa, conj[imALambda]->imALambda};
+AftermathTadpoles={T[\[Kappa]]-> (AKappaInput+I*imAKappa)*\[Kappa],T[\[Lambda]]->(ALambdaInput+I*imALambda)*\[Lambda]};
+
+(* ParametersToSolveTadpoles = {mHd2,mHu2, ms2, im[T[\[Kappa]]], im[T[\[Lambda]]]}; *)
+ParametersToSolveTadpoles = {mHd2,mHu2, ms2, imAKappa,imALambda};
+Tad1Loop[5]=Tad1Loop[4]*vd/vu;
+
+
+RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
+RenormalizationScale = MSu[1]*MSu[6];
+
+(* 
+
+Three different sets of boundary conditions are used:
+1) Kappa, Lambda defined at SUSY scale, AKappa, ALambda at GUT scale
+2) Kappa, Lambda, AKappa, ALambda defined at GUT scale
+3) Kappa, Lambda, AKappa, ALambda defined at SUSY scale 
+
+
+Switch in SPheno happens by flag 2 in MODSEL 
+*)
+
+ConditionGUTscale = g1 == g2;
+
+
+BoundaryEWSBScale = Table[{},{3}];
+BoundarySUSYScale = Table[{},{3}];
+BoundaryHighScale = Table[{},{3}];
+
+
+BoundarySUSYScale[[1]] = {
+{vS, Sqrt[2]*MuEffinput/LambdaInput},  
+{\[Kappa], KappaInput},
+{\[Lambda], LambdaInput}
+};
+
+
+BoundarySUSYScale[[2]] = {
+{vS, Sqrt[2]*MuEffinput/LambdaInput}
+};
+
+BoundarySUSYScale[[3]] = {
+{vS, Sqrt[2]*MuEffinput/LambdaInput},  
+{\[Kappa], KappaInput},
+{\[Lambda], LambdaInput},
+{T[\[Kappa]], AKappaInput*KappaInput},
+{T[\[Lambda]], ALambdaInput*LambdaInput}
+};
+
+BoundaryHighScale[[1]]={
+{T[Ye], Azero*Ye},
+{T[Yd], Azero*Yd},
+{T[Yu], Azero*Yu},
+{mq2, DIAGONAL m0^2},
+{ml2, DIAGONAL m0^2},
+{md2, DIAGONAL m0^2},
+{mu2, DIAGONAL m0^2},
+{me2, DIAGONAL m0^2},
+{T[\[Kappa]], AKappaInput*\[Kappa]},
+{T[\[Lambda]], ALambdaInput*\[Lambda]},
+{MassB, m12},
+{MassWB,m12},
+{MassG,m12}
+};
+
+BoundaryHighScale[[2]]={
+{T[Ye], Azero*Ye},
+{T[Yd], Azero*Yd},
+{T[Yu], Azero*Yu},
+{mq2, DIAGONAL m0^2},
+{ml2, DIAGONAL m0^2},
+{md2, DIAGONAL m0^2},
+{mu2, DIAGONAL m0^2},
+{me2, DIAGONAL m0^2},
+{\[Kappa], KappaInput},
+{\[Lambda], LambdaInput},
+{T[\[Kappa]], AKappaInput*KappaInput},
+{T[\[Lambda]], ALambdaInput*LambdaInput},
+{MassB, m12},
+{MassWB,m12},
+{MassG,m12}
+};
+
+
+BoundaryHighScale[[3]]={
+{T[Ye], Azero*Ye},
+{T[Yd], Azero*Yd},
+{T[Yu], Azero*Yu},
+{mq2, DIAGONAL m0^2},
+{ml2, DIAGONAL m0^2},
+{md2, DIAGONAL m0^2},
+{mu2, DIAGONAL m0^2},
+{me2, DIAGONAL m0^2},
+{MassB, m12},
+{MassWB,m12},
+{MassG,m12}
+};
+
+
+BoundaryLowScaleInput={
+ {\[Kappa], KappaInput},
+ {\[Lambda], LambdaInput},
+ {re[T[\[Kappa]]], AKappaInput*KappaInput},
+ {re[T[\[Lambda]]], ALambdaInput*LambdaInput},
+ {etaS,Arg[MuEffinput]-phil},
+ {phil,Arg[LambdaInput]},
+ {vS, Sqrt[2]*Abs[MuEffinput]/Abs[LambdaInput]},
+ {MassB, M1input},
+ {MassWB, M2input},
+ {MassG, M3input},
+
+ {me2[1,1], me1Input^2},
+ {me2[2,2], me2Input^2},
+ {me2[3,3], me3Input^2},
+ {ml2[1,1], ml1Input^2},
+ {ml2[2,2], ml2Input^2},
+ {ml2[3,3], ml3Input^2},
+ {md2[1,1], md1Input^2},
+ {md2[2,2], md2Input^2},
+ {md2[3,3], md3Input^2},
+ {mu2[1,1], mu1Input^2},
+ {mu2[2,2], mu2Input^2},
+ {mu2[3,3], mu3Input^2},
+ {mq2[1,1], mq1Input^2},
+ {mq2[2,2], mq2Input^2},
+ {mq2[3,3], mq3Input^2},
+
+ {T[Yu][3,3], AtInput*Yu[3,3]},
+ {T[Yd][3,3], AbInput*Yd[3,3]},
+ {T[Ye][3,3], ATauInput*Ye[3,3]},
+ 
+ {eta, etaInput}
+ 
+ (*,
+ {etaS, etaSInput}
+ *)
+};
+
+
+
+ListDecayParticles = Automatic;
+ListDecayParticles3B = Automatic;
+
+
+UseHiggs2LoopMSSM = False;
+
+(*
+UseAuxiliaryMu2Loop = True;
+AuxiliaryMu2Loop = vS*\[Lambda]/Sqrt[2];
+*)
+
+
+(* --------- Examples for input values ---------- *)
+
+(* Boundary condition type 1 *)
+DefaultInputValues[1] = {m0 -> 500, m12 -> 500, TanBeta -> 10, Azero ->-1500, LambdaInput -> 0.1, KappaInput -> 0.11,  ALambdaInput -> -1500,  AKappaInput -> -36,  MuEffinput -> 965};
+
+(* Boundary condition type 2 *)
+DefaultInputValues[2] = {};
+
+
+(* Boundary condition type 3 *)
+DefaultInputValues[3] = {};
+
+
+
