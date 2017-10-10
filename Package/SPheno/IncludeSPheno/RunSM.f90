@@ -6,6 +6,8 @@ Complex(dp), Intent(out) :: Yu(3,3), Yd(3,3), Ye(3,3)
 Real(dp) :: dt, gSM(14), gSM2(2), gSM3(3), mtopMS,  sinw2, vev, tz, alphaStop 
 Integer :: kont
 
+RunningTopMZ = .false.
+
 Yd = 0._dp
 Ye = 0._dp
 Yu = 0._dp
@@ -250,10 +252,11 @@ If (scale_out.gt.sqrt(mz2)) Then
 Else
 
  ! From M_Z down to scale_out
-  tz=Log(scale_out/sqrt(mz2)) 
-  dt=tz/50._dp 
-  Call odeint(gSM,14,0._dp,tz,deltaM,dt,0._dp,rge11_SMa,kont)
-
+  If (abs(scale_out - sqrt(mz2)).gt.1.0E-3_dp) Then 
+   tz=Log(scale_out/sqrt(mz2)) 
+   dt=tz/50._dp 
+   Call odeint(gSM,14,0._dp,tz,deltaM,dt,0._dp,rge11_SMa,kont)
+  End if
 End if
 
 ! Calculating Couplings 
@@ -307,6 +310,8 @@ Integer :: kont
 Yd = 0._dp
 Ye = 0._dp
 Yu = 0._dp
+
+RunningTopMZ = .false.
 
 If (.not.RunningTopMZ) Then
 

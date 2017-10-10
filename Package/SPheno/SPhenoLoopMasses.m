@@ -1233,7 +1233,7 @@ WriteString[sphenoLoop,"Do i1="<>dimMatrix <>",1,-1 \n"];
 If[SupersymmetricModel=!=False,
 If[particle===HiggsBoson,
 WriteString[sphenoLoop,"PiSf(i1,:,:) = PiSf(i1,:,:) - Pi2S_EffPot \n"];,
-If[UseHiggs2LoopMSSM==True&&particle===PseudoScalar,
+If[particle===PseudoScalar,
 WriteString[sphenoLoop,"PiSf(i1,:,:) = PiSf(i1,:,:) - PiP2S_EffPot \n"];
 ];
 ];

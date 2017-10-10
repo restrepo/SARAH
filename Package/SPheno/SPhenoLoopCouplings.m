@@ -1245,6 +1245,7 @@ WriteString[sphenoLoopCoup,"mH2p = 0.25_dp*mHiggs**2 \n"];
 WriteString[sphenoLoopCoup,"coup = 0._dp \n \n"];
 
 For[i=1,i<=Length[list],
+If[SMQ[list[[i,1]]],
 If[getGenSPheno[list[[i,1]]]>1 && getType[list[[i,1]]]===F,
 WriteString[sphenoLoopCoup,"Do i1 =1, "<>ToString[getGenSPheno[list[[i,1]]]] <>"\n"];
 ];
@@ -1277,7 +1278,7 @@ If[getGenSPheno[list[[i,1]]]>1 && getType[list[[i,1]]]===F,
 WriteString[sphenoLoopCoup,"End Do \n"];
 ];
 
-
+];
 i++;];
 
 If[vname==="Gluon",
