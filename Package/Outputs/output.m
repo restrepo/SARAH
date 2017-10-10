@@ -96,7 +96,7 @@ BaredField[field_]:=StringReplace[StringReplace["\\bar{"<>field<>"}",RegularExpr
 ConjField[field_]:=StringReplace[field<>"^*",{RegularExpression["(.[^\\_\\^]*)\\^(.[^\\_\\^]*)\\^(.[^\\]]*)"]:>"$1^{$2,$3}",RegularExpression["(.[^\\_\\^]*)\\^(.[^\\_\\^]*)\\_(.[^\\_\\^]*)\\^(.[^\\]]*)"]:>"$1^{$2,$4}_$3"}];
 HattedField[field_]:=StringReplace[StringReplace["\\check{"<>field<>"}",RegularExpression["\\\\check{(.[^\\]]*)\\^(.[^\\]]*)}"]:>"\\check{$1}^$2"],RegularExpression["\\\\check{(.[^\\]]*)\\_(.[^\\]]*)}"]:>"\\check{$1}_$2"];
 
-CreateTeXForm:=Block[{i},
+CreateTeXForm:=Block[{i,ii},
  TeXLineBreak=3; 
 
 Unprotect[TeXForm];

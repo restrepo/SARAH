@@ -381,13 +381,22 @@ temp = temp[nr];
 ];
 ];
 
-For[i=1,i<=Length[ind],
+(*
+For[i=1,i\[LessEqual]Length[ind],
 If[ind[[i]]=!= generation && ind[[i]] =!=lorentz,
 (* sumStates=sumStates*sum[ToExpression["a"<>StringTake[ToString[ind[[i]]],{4,6}]<>ToString[nr]],1,getNumberStates[ind[[i]]]]; *)
 sumStates=sumStates*sum[ToExpression[StringTake[ToString[ind[[i]]],{1,3}]<>ToString[nr]],1,getNumberStates[ind[[i]]]];
 ];
 i++;
 ];
+*)
+
+For[i=1,i<=Length[ind],If[ind[[i]]=!=generation&&ind[[i]]=!=lorentz,(*sumStates=sumStates*sum[ToExpression["a"<>StringTake[ToString[ind[[i]]],{4,6}]<>ToString[nr]],1,getNumberStates[ind[[i]]]];*)(*H*)(*I am changing this since getNumberStates[color] did not work if pati\[Rule]color breaking is present.I suspect that it does not work correctly even without such breaking (e.g.gG[{col1}]sum[col1,1,3]),to be discussed!!!*)(*At this stage it is not very general,however,at least it works for the ToyPS model*)If[AuxGaugesPresent===True&&MemberQ[UnbrokenSubgroups,ind[[i]],3]&&getType[particle]===G&&MemberQ[RepGaugeBosons,ToExpression["V"<>StringDrop[ToString[particle],1]],3],pos=Position[RepGaugeBosons,ToExpression["V"<>StringDrop[ToString[particle],1]]][[1]];
+nStates=RepGaugeBosons[[pos[[1]],pos[[2]],2]];,nStates=getNumberStates[ind[[i]]];
+];
+sumStates=sumStates*sum[ToExpression[StringTake[ToString[ind[[i]]],{1,3}]<>ToString[nr]],1,nStates];];
+i++;];
+
 
 If[Head[RE[particle]]===List,
 res = {temp[[1]]*sumStates*sum[genf[nr],GetGenStart[RE[particle][[1]]],GetGen[RE[particle][[1]]]],temp[[2]]*sumStates*sum[genf[nr],GetGenStart[RE[particle][[2]]],GetGen[RE[particle][[2]]]]};,
@@ -1061,6 +1070,20 @@ i++;];
 Return[temp];
 ];
 
+(*H*)(*Analogous routines as for GB,to be used in generating gauge transformations*)
+SplitGhostsAux[term_]:=Block[{i,j,temp},temp=Expand[term];
+For[i=1,i<=Length[GaugeListAux],If[GaugeListAux[[i,1]]==True,For[j=1,j<=4,If[FreeQ[term,getGhost[Head[SGauge[[i]]]][{SGauge[[i,1,1]]}]/.subGC[j]]==False,temp=temp/.(subGhostsAux/.{a->(generation/.subGC[j]),b->(lorentz/.subGC[j])})/.{color->((Gauge[[i,3]]/.subGC[j])/.subNamesAux)};];
+j++;];];
+i++;];
+Return[temp];];
+
+SplitGhostsAuxFabc[term_]:=Block[{i,j,temp},temp=Expand[term];
+For[i=1,i<=Length[GaugeListAux],If[GaugeListAux[[i,1]]==True,For[j=1,j<=5,If[FreeQ[term,getGhost[Head[SGauge[[i]]]][{SGauge[[i,1,1]]}]/.subGC[j]]==False,temp=Expand[temp]//.(subGhostsAuxFabc/.{a->(generation/.subGC[j]),b->(lorentz/.subGC[j])})/.{color->((Gauge[[i,3]]/.subGC[j])/.subNamesAux)};];
+j++;];];
+i++;];
+Return[temp];];
+
+
 
 
 (* ------------------------------------------- *)
@@ -1597,6 +1620,7 @@ SU,Return[group[[1]]^2-1];
 ];
 ];
 
+(*
 getNumberStates[charge_]:=Block[{cCharge,pos, particle,i},
 cCharge = DeleteCases[charge,x_?NumberQ];
 If[StringTake[ToString[cCharge],3]==="adj",
@@ -1610,6 +1634,23 @@ pos = Position[Gauge,cCharge][[1,1]];
 Return[(Extract[Gauge,pos][[2,1]])];
 ];
 ];
+*)
+
+getNumberStates[charge_]:=Block[{cCharge,pos,particle,i,GaugeHere},
+cCharge=DeleteCases[charge,x_?NumberQ];
+(*H*)(*If AuxGaugesPresent,one has to take into account also the unbroken subgroup*)
+If[AuxGaugesPresent===True,GaugeHere=Join[Gauge,AuxGauge];,GaugeHere=Gauge];
+If[StringTake[ToString[cCharge],3]==="adj",
+cCharge=ToExpression[StringDrop[ToString[cCharge],3]];
+pos=Position[GaugeHere,cCharge][[1,1]];
+Return[(Extract[GaugeHere,pos][[2,1]]^2-1)];,
+If[FreeQ[GaugeHere,cCharge],
+cCharge=ToExpression[StringDrop[ToString[cCharge],-1]];];
+pos=Position[GaugeHere,cCharge][[1,1]];
+Return[(Extract[GaugeHere,pos][[2,1]])];
+];
+];
+
 
 getNumberGenerators[charge_]:=((Extract[Gauge, Position[Gauge,charge][[1,1]]][[2,1]])^2-1);
 

@@ -1435,7 +1435,8 @@ temp=Join[temp,InsFields[currentTop]];
 currentTop={{C[FieldToInsert[1],f1,f4],C[AntiField[FieldToInsert[1]],f3,f2]},{External[1]->f1,External[2]->f4,External[3]->f3,External[4]->f2,Propagator->FieldToInsert[1],  InsertionOrder->3,Index[1]->gt1,Index[2]->gt4,Index[3]->gt3,Index[4]->gt2}};
 temp=Join[temp,InsFields[currentTop]];
 
-  temp=Select[temp, (RE[Propagator/. #[[2]]])===RE[prop]&];
+(* temp=Select[temp, (RE[Propagator/. #[[2]]])===RE[prop]&]; *)
+temp=Select[temp, (Propagator/. #[[2]])===prop&];
 Return[temp];
 ];
 

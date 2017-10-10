@@ -173,6 +173,12 @@ j++;];
 LagInput[NameOfStates[[rotNr]]]=sumLagInput;
 ];
 
+If[rotNr===1 && Head[TensorRepToVector]===List && TensorRepToVector=!={},
+ReplaceTensorRepsByVectors[TensorRepToVector];
+];
+If[rotNr===1 && AuxGaugesPresent===True,
+RenameIndicesAux;
+];
 
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][VEVs]]]=!=DEFINITION,
 GenerateVEVs[NameOfStates[[rotNr]]];,
@@ -825,6 +831,8 @@ MassMatrices[[i]]=Table[DMM[DMM[potential,basis[[i,1,m]],m,"m",1],basis[[i,2,n]]
 ];
 i++;];
 
+SA`mSave=MassMatrices;
+
 DynamicNameMass[basis]="All Done";
 MassMatricesFull = Table[{},{Length[basis]}];
 
@@ -867,14 +875,21 @@ If[FreeQ[ltest[[k,m]],Lam]==False,
 ltest[[k,m]]=ltest[[k,m]]//. sum[a_,1,3] sum[b_,1,3] Lam[c_,a_,b_] Lam[d_,b_,a_]->Delta[c,d]*2 //.Delta[col1_,col2b_] Delta[col1b_,col2_] Lam[acm2_,col2_,col2b_] Lam[acn2_,col1_,col1b_] sum[col1_,1,3] sum[col1b_,1,3] sum[col2_,1,3] sum[col2b_,1,3]->Delta[acm2,acn2]*2;
 ];
 If[FV==True,
-tElement=ltest[[k,m]]/.{ToExpression["gm"<>ToString[k]]->ll,ToExpression["gn"<>ToString[m]]->n}/. (Reverse/@subIndFinalX[1,m,"n"]) /. subValue[1,1]/. (Reverse/@subIndFinalX[1,k,"m"]) /. subValue[1,1];
+tElement=ltest[[k,m]]/.{ToExpression["gm"<>ToString[k]]->ll,ToExpression["gn"<>ToString[m]]->n}
+/.((#->1)&/@Intersection[getIndizes[basis[[i,1,k]]]]/. subGC[1]/. subIndFinalX[1,m,"n"] )
+/.((#->1)&/@Intersection[getIndizes[basis[[i,2,m]]]]/. subGC[1]/. subIndFinalX[1,k,"m"] );
+(*/. (Reverse/@subIndFinalX[1,m,"n"]) /. subValue[1,1] /. (Reverse/@subIndFinalX[1,k,"m"]) /. subValue[1,1]*);
 MassMatricesFull[[i,zeile,spalte]]=CalcDelta[tElement/.DeleteCases[subAlways,x_?((FreeQ[#,sum]==False)&)]];,
-tElement=ltest[[k,m]]/.{ToExpression["fm"<>ToString[k]]->ll,ToExpression["fn"<>ToString[m]]->n}/. (Reverse/@subIndFinalX[1,m,"n"]) /. subValue[1,1]/. (Reverse/@subIndFinalX[1,k,"m"]) /. subValue[1,1];
+tElement=ltest[[k,m]]/.{ToExpression["fm"<>ToString[k]]->ll,ToExpression["fn"<>ToString[m]]->n}
+/.((#->1)&/@Intersection[getIndizes[basis[[i,1,k]]]]/. subGC[1]/. subIndFinalX[1,m,"n"] )
+/.((#->1)&/@Intersection[getIndizes[basis[[i,2,m]]]]/. subGC[1]/. subIndFinalX[1,k,"m"] )(*/. (Reverse/@subIndFinalX[1,m,"n"]) /. subValue[1,1]/. (Reverse/@subIndFinalX[1,k,"m"]) /. subValue[1,1]*);
 MassMatricesFull[[i,zeile,spalte]]=CalcDelta[tElement/.DeleteCases[subAlways,x_?((FreeQ[#,sum]==False)&)]];
 ];,
 pos=Position[OffSetFlavors,basis[[i,1,1]]][[1,1]];
 offset=Extract[OffSetFlavors,pos][[2]];
-tElement=ltest[[k,m]]/.{ToExpression["gm"<>ToString[k]]->ll+offset,ToExpression["gn"<>ToString[m]]->n+offset}/. (Reverse/@subIndFinalX[1,m,"n"]) /. subValue[1,1]/. (Reverse/@subIndFinalX[1,k,"m"]) /. subValue[1,1];
+tElement=ltest[[k,m]]/.{ToExpression["gm"<>ToString[k]]->ll+offset,ToExpression["gn"<>ToString[m]]->n+offset}
+/.((#->1)&/@Intersection[getIndizes[basis[[i,1,k]]]]/. subGC[1]/. subIndFinalX[1,m,"n"] )
+/.((#->1)&/@Intersection[getIndizes[basis[[i,2,m]]]]/. subGC[1]/. subIndFinalX[1,k,"m"] )(* /. (Reverse/@subIndFinalX[1,m,"n"]) /. subValue[1,1]/. (Reverse/@subIndFinalX[1,k,"m"]) /. subValue[1,1]*);
 MassMatricesFull[[i,zeile,spalte]]=CalcDelta[tElement/.DeleteCases[subAlways,x_?((FreeQ[#,sum]==False)&)]];
 ];
 n++;];
@@ -903,7 +918,7 @@ Message[MassMatrix::OnlyZero,basis[[i]]];
 ];
 i++;];
 *)
-
+SA`MassMatricesFullSave=MassMatricesFull;
 Return[{CalcDelta[MassMatrices],CalcDelta[MassMatricesFull]}];
 
 ];
@@ -1355,7 +1370,7 @@ SA`NewGaugeBosons={};
 If[Head[def[[1,1]]]===Symbol,
 Message[GaugeSector::NewSyntax ];
 ];
-
+PartLagSave=Kinetic;
 SA`NewGaugeSector=True;
 MassMatricesGauge[name]={};
 subVac=Flatten[Map[vacHead,vacuum]];
@@ -1366,7 +1381,6 @@ DynamicMMgaugeName[name]=def[[i,1]];
 PrintDebug[def[[i,1]]];
 If[getType[getBlank[def[[i,1,1]]]]===V,PartLag=Kinetic;,PartLag=Potential;];
 temp =Table[DMM[DMM[PartLag /. vevSub,def[[i,1,i1]] /. a_[b_Integer]->a,1,"t",1],def[[i,1,i2]] /. a_[b_Integer]->a,2,"t",2] /. {gt1-> ExtractGen[def[[i,1,i1]]],gt2-> ExtractGen[def[[i,1,i2]]]} /.subVac /. Mom[_]->0 /. zero[a_]->0 ,{i1,1,Length[def[[i,1]]]},{i2,1,Length[def[[i,1]]]}];
-
 MassMatricesGauge[name]=Join[MassMatricesGauge[name],{temp}];
 
 subV = Join[subV,GenerateSubGauge[def[[i]]]];
@@ -1388,7 +1402,7 @@ If[IgnoreGaugeFixing=!=True,
 UpdateGaugeTransformations[subGauge,subGaugeInv,UGTgaugeMM[rotNr]];
 GaugeTransformation=replaceGen[ReleaseHold[GaugeTransformation /. subGhost /.subGauge],rgNr];
 ];
-
+MassMatricesGaugeTEMP[name]=MassMatricesGauge[name];
 MassMatricesGauge[name]=SimplifySARAH[MassMatricesGauge[name]] /. g[a__]->1;
 
 todel=Intersection[getBlank/@Flatten[Table[def[[i,1]],{i,1,Length[def]}]]];
@@ -1512,6 +1526,59 @@ SA`CPodd[NameOfStates[[i]]]=Select[SA`ScalarsCPodd ,(FreeQ[Particles[NameOfState
 SA`CPeven[NameOfStates[[i]]]=Select[SA`ScalarsCPeven ,(FreeQ[Particles[NameOfStates[[i]]],#]==False)&];
 
 i++;];
+
+];
+
+ReplaceTensorRepsByVectors[def_]:=Block[{i,i2,j,indold,renameindices},
+
+genMax=8;
+For[i=1,i<=Length[def],
+
+indold=Select[getIndizesWI[def[[i,1]]],getFundamentalIndex[#[[1]]]=!=def[[i,2,1]]&];
+indold=Join[indold,{{def[[i,2,1]],SA`DimensionGG[def[[i,1]],def[[i,2,1]]]}}];
+
+For[i2=1,i2<=AnzahlGauge,
+ If[FreeQ[BrokenSymmetries,i2]==True,
+SA`Casimir[def[[i,2,2]],i2]=SA`Casimir[def[[i,1]],i2];
+SA`Dynkin[def[[i,2,2]],i2]=SA`Dynkin[def[[i,1]],i2];
+SA`DimensionGG[def[[i,2,2]],i2]=SA`DimensionGG[def[[i,1]],i2];
+SA`DynL[def[[i,2,2]],i2]=SA`DynL[def[[i,1]],i2];
+]; 
+MultiplicityFactor[def[[i,2,2]],i2]=MultiplicityFactor[def[[i,1]],i2];
+i2++;];
+
+addParticle[def[[i,2,2]],indold,getGen[def[[i,1]]],getType[def[[i,1]]]];
+
+
+If[FreeQ[realVar,def[[i,1]]]===False,realVar=Join[realVar,{def[[i,2,2]]}];];
+delParticle[def[[i,1]]];
+LagReDef=LagReDef/.def[[i,2,3]];
+LagrangianVVV=LagrangianVVV/.def[[i,2,3]];
+LagrangianVVVV=LagrangianVVVV/.def[[i,2,3]];
+Potential=Potential/.def[[i,2,3]];
+Kinetic=Kinetic/.def[[i,2,3]];
+i++;];
+
+];
+
+RenameIndicesAux:=Block[{i,j,jjj,sub},
+Print["Rename indices"];
+For[i=1,i<=Length[AuxGauge],
+sub=Reverse/@Flatten[Table[(AuxGauge[[i,3]]/.subGC[iii])->ToExpression[ToString[AuxGauge[[i,3]]/.subGC[iii]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,4}]];
+LagReDef=LagReDef/.sub;
+LagrangianVVV=LagrangianVVV/.sub;
+LagrangianVVVV=LagrangianVVVV/.sub;
+Potential=Potential/.sub;
+Kinetic=Kinetic/.sub;
+
+Particles[SA`CurrentStates]=Particles[SA`CurrentStates]/.Reverse/@Flatten[Table[(AuxGauge[[i,3]])->ToExpression[ToString[AuxGauge[[i,3]]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,1}]];
+Particles[GaugeES]=Particles[GaugeES]/.Reverse/@Flatten[Table[(AuxGauge[[i,3]])->ToExpression[ToString[AuxGauge[[i,3]]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,1}]];
+Particles[Current]=Particles[Current]/.Reverse/@Flatten[Table[(AuxGauge[[i,3]])->ToExpression[ToString[AuxGauge[[i,3]]]<>appendIndex[[jjj]]],{jjj,2,4},{iii,1,1}]];
+i++;];
+
+
+
+
 
 ];
 

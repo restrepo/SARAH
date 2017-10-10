@@ -19,7 +19,7 @@
 
 
 
-CalcGaugeTransformations:=Block[{i},
+CalcGaugeTransformations:=Block[{i,j},
 
 PrintDebug["Calc Gauge Transformations"];
 Print["Calculate gauge transformations: ",Dynamic[DynamicGaugeTNr],"/",AnzahlChiral+Length[Gauge]," (",Dynamic[DynamicGaugeTName],")"];
@@ -31,7 +31,15 @@ DynamicGaugeTNr=i;
 DynamicGaugeTName=SGauge[[i]];
 PrintDebug["   ",SGauge[[i]]];
 ai=ADI[i];
-GaugeTransformation=Join[GaugeTransformation,{{(SGauge[[i]]/.subGC[1]),Gauge[[i,4]] getStructureConstant[i,ai /. subGC[1],ai /. subGC[2],ai /. subGC[3]] part[gGauge[[i]],2] part[SGauge[[i]],3]}}];
+
+(*
+GaugeTransformation=Join[GaugeTransformation,{{(SGauge[[i]]/.subGC[1]),Gauge[[i,4]] getStructureConstant[i,ai /. subGC[1],ai /. subGC[2],ai /. subGC[3]] part[gGauge[[i]],2] part[SGauge[[i]],3]}}]; *)
+GTnew={(SGauge[[i]]/.subGC[1]),Gauge[[i,4]] getStructureConstant[i,ai/.subGC[1],ai/.subGC[2],ai/.subGC[3]] part[gGauge[[i]],2] part[SGauge[[i]],3]};
+GaugeTransformation=Join[GaugeTransformation,{GTnew}];
+(*H*)(*If the gauge group has an non-abelian unbroken subroup,then the Gauge Transformations are translated using the new VB*)
+If[AuxGaugesPresent===True&&GaugeListAux[[i,1]]===True,posAux=Position[UnbrokenSubgroups,Gauge[[i,3]]][[1,1]];
+GaugeTransformation=Join[GaugeTransformation,Table[{RepGaugeBosons[[posAux,k,1]][GTnew[[1]][[1]]],SplitGhostsAuxFabc[(SplitGaugeBosonsAuxFabc[GTnew[[2]]])/.{gen1->gen1+Sum[RepGaugeBosons[[posAux,n,2]],{n,1,k-1}]}]},{k,1,Length[RepGaugeBosons[[posAux]]]}]];
+];
 i++;];
 
 For[i=1,i<=AnzahlChiral,
@@ -53,10 +61,17 @@ NumFac=withNum/withoutNum;
 invF=Map[getFull,withoutNum] /. subGC[1];
 For[j=1,j<=Length[invF],
 If[NumericQ[invF[[j]]]===False,
-GaugeTransformation=Join[GaugeTransformation, {{invF[[j]],NumFac[[j]]gaugeT[[j]]}}];
+(*H*)(*If AuxGaugesPresent, one has to rewrite e.g.gPS\[Rule]gG,gX,gY,gS*)
+If[AuxGaugesPresent===True,
+GaugeTransformation=Join[GaugeTransformation,{{invF[[j]],NumFac[[j]]SplitGhostsAux[gaugeT[[j]]]}}];,
+GaugeTransformation=Join[GaugeTransformation,{{invF[[j]],NumFac[[j]]gaugeT[[j]]}}];
+];
 ];
 j++;];,
-GaugeTransformation=Join[GaugeTransformation, {{SFieldsMultiplets[[i]],gaugeT}}];
+If[AuxGaugesPresent===True,
+GaugeTransformation=Join[GaugeTransformation,{{SFieldsMultiplets[[i]],SplitGhostsAux[gaugeT]}}];,
+GaugeTransformation=Join[GaugeTransformation,{{SFieldsMultiplets[[i]],gaugeT}}];
+];
 ];
 ];
 i++;];
@@ -240,7 +255,7 @@ Return[ghostp];
 
 
 
-GenerateGaugeFixing[kinetic_,name_,nr_]:=Block[{scalars,gb,temp={}, res,i,j,nameXi,num},
+GenerateGaugeFixing[kinetic_,name_,nr_]:=Block[{scalars,gb,temp={}, res,i,j,nameXi,num,un},
 If[Head[DEFINITION[name][GaugeFixing]]===List,
 GaugeFixing::Defined="Since version 3.1.0 SARAH derives the gauge fixing terms by itself. The given input in the model file is longer necessary and it will be ingored.";
 Message[GaugeFixing::Defined];
@@ -252,10 +267,29 @@ gb=Transpose[gb][[1]];
 scalars=Select[Particles[Current],(#[[4]]===S)&];
 scalars=Transpose[scalars][[1]];
 
+(*H*)(*If there are auxilary gauges,the gauge bosons of the broken gauge group stay in Particles[Currents] at this stage,hece are removed from the list gb*)
+If[AuxGaugesPresent===True,
+For[un=1,un<=Length[UnbrokenSubgroups],
+gb=Delete[gb,Position[gb,ToExpression["V"<>ToString[Gauge[[Position[Gauge,UnbrokenSubgroups[[un,1]]][[1,1]]]][[1]]]]][[1,1]]];
+un++;];
+];
+
 CalcImp=True;
 Update[];
 
 Print["  ... generate gauge fixing terms: ",Dynamic[DynamicGFnr[name]],"/",Length[gb]," (",Dynamic[DynamicGFname[name]],")"];
+
+(*H*)(*If AuxGaugesPresent,then the all the vector bosons corresponding to the (later) broken group have to have the same RXi name if at the group is not broken yet as that stage*)(*How to find out if the group is already broken or not?Apparently "BrokenSymmetries" assigns a gauge group as broken if some of the corresponding gauge bosons are mentioned in DEFINITION[NameOfStates][GaugeSector],I will use the same approach.These gauge bosons are already singled out in subGauge,so I will use this fact.The corresponding VB will be "marked"*)
+markedVB={};
+If[AuxGaugesPresent===True,VBbr=Table[Head[subGauge[[i,1]]],{i,1,Length[subGauge]}];
+For[unb=1,unb<=Length[UnbrokenSubgroups],
+unbName=Gauge[[Position[Gauge,UnbrokenSubgroups[[unb,1]]][[1,1]]]][[1]];
+VBunb=Table[RepGaugeBosons[[unb,k,1]],{k,1,Length[RepGaugeBosons[[unb]]]}];
+If[Sort[Intersection[VBunb,gb]]==Sort[VBunb]&&Intersection[VBunb,VBbr]=={},
+markedVB=Join[markedVB,Table[{VBunb[[k]],unbName},{k,1,Length[VBunb]}]]];
+unb++;
+];
+];
 
 For[i=1,i<=Length[gb],
 DynamicGFnr[name]=i;
@@ -263,7 +297,13 @@ DynamicGFname[name]=gb[[i]];
 PrintDebug["   ",gb[[i]]];
 res=0;
 If[conj[gb[[i]]]===gb[[i]],num=2;,num=1;];
-nameXi=RXi[ToExpression[StringDrop[ToString[gb[[i]]],1]]];
+(*H*)
+posMarked=Position[markedVB,gb[[i]]];
+If[posMarked=={},
+nameXi=RXi[ToExpression[StringDrop[ToString[gb[[i]]],1]]];,
+nameXi=RXi[markedVB[[posMarked[[1,1]],2]]];
+num=2;(*Since these gauge fixing terms come from the bigger gauge group,they inherit the 1/2 factor.Attention! If RepGaugeBosons included conj[VX],then it is not true!!!!*)
+];
 If[getEntryField[gb[[i]],Mass]=!=0,
 For[j=1,j<=Length[scalars],
 res+=DPV[DPV[kinetic /. vacuumF /. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,scalars[[j]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[a__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2 ;
@@ -315,8 +355,8 @@ GaugeFixingFactor[makeGhost[GaugeFixingTemp[[i,1]]]]=Cases[GaugeFixing[[i,2]],RX
 GaugeFixingFactor[ExtractGaugeField[GaugeFixingTemp[[i,1]]]]=Cases[GaugeFixing[[i,2]],RXi[a__],2][[1,1]];
 LGhosttemp +=(GaugeFixing[[i,2]] /. RXi[a__]->1)(bar[partBlank[makeGhost[conj[GaugeFixingTemp[[i,1]]]],1]]*(DeltaGT[conj[GaugeFixingTemp[[i,1]]]] /.subGhostC)+bar[partBlank[makeGhost[GaugeFixingTemp[[i,1]]],1]]*(DeltaGT[GaugeFixingTemp[[i,1]]] /.subGhostC));
 If[vb===conj[vb],
-LGhostSS+=(GaugeFixing[[i,1]] /. Der[a__]->0)*conj[(GaugeFixing[[i,1]] /. Der[a__]->0 /. gen1->gen3 /. gen2->gen4)]/Rxi/2;,
-LGhostSS+=(GaugeFixing[[i,1]] /. Der[a__]->0)*conj[(GaugeFixing[[i,1]] /. Der[a__]->0 /. gen1->gen3 /. gen2->gen4)]/Rxi;
+LGhostSS+=(GaugeFixing[[i,1]] /. Der[a__]->0/.(Reverse/@Flatten[Table[subIndFinal[i,i],{i,1,4}]]))*conj[(GaugeFixing[[i,1]] /. Der[a__]->0 )/.Reverse/@Flatten[Table[subIndFinal[i,i],{i,1,4}]] /. subGCRE[1,3]/.subGCRE[2,4]]/Rxi/2;,
+LGhostSS+=(GaugeFixing[[i,1]] /. Der[a__]->0/.(Reverse/@Flatten[Table[subIndFinal[i,i],{i,1,4}]]))*conj[(GaugeFixing[[i,1]] /. Der[a__]->0 /.Reverse/@Flatten[Table[subIndFinal[i,i],{i,1,4}]] /. subGCRE[1,3]/.subGCRE[2,4])]/Rxi;
 ];
 saveGF=GaugeFixing[[i,1]];
 i++;];
@@ -335,7 +375,7 @@ vb=Select[Particles[name],(#[[4]]==V)&];
 
 For[i=1,i<=Length[vb],
 If[getEntryField[vb[[i,1]],Goldstone]===Goldstone || getEntryField[vb[[i,1]],Goldstone]===None,
- If[getEntryField[vb[[i,1]],Mass]=!=0 && FreeQ[SGauge,vb[[i,1]]],
+ If[getEntryField[vb[[i,1]],Mass]=!=0 && FreeQ[SGauge,vb[[i,1]]] && FreeQ[RepGaugeBosons,vb[[i,1]]],
 (* Print["No Goldstone for massive vector boson defined ", vb[[i,1]]]; *)
 Message[ModelFile::NoGoldstone,vb[[i,1]]];
 ];,

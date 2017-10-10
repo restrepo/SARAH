@@ -273,7 +273,7 @@ If[FreeQ[lA3one[[i]],a_[gt2,gt3,gt1]]==False,threeIndexParameter=Join[threeIndex
 If[FreeQ[lA3one[[i]],a_[gt3,gt2,gt1]]==False,threeIndexParameter=Join[threeIndexParameter,{Cases[lA3one[[i,2,1]],x_[gt3,gt2,gt1]]}];]; 
 If[FreeQ[lA3one[[i]],a_[gt3,gt1,gt2]]==False,threeIndexParameter=Join[threeIndexParameter,{Cases[lA3one[[i,2,1]],x_[gt3,gt1,gt2]]}];]; 
 i++;];
-threeIndexParameter=Intersection[Flatten[threeIndexParameter]];
+threeIndexParameter=Intersection[Flatten[threeIndexParameter] /. A_[b_,c_,d_]->A];
 subThreeIndices  = {};
 
 If[threeIndexParameter=!={},
@@ -1199,7 +1199,7 @@ CheckForNecessarySuperpositions:=Block[{i,temp,quartics,res},
 quartics=Transpose[SA`SSSSlist][[2]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1;
 lA4oneNew={};
 For[i=1,i<=Length[quartics],
-temp=Select[Select[lA4,FreeQ[#,quartics[[i]]]==False&],FreeQcoups[#,DeleteCases[quartics,quartics[[i]]]]=={}&];
+temp=Select[Select[lA4,FreeQ[#,quartics[[i]] /. A_[gen1,___]->A/. A_[gen2,___]->A/. A_[gen3,___]->A]==False&],FreeQcoups[#,DeleteCases[quartics,quartics[[i]]]/. A_[gen1,___]->A/. A_[gen2,___]->A/. A_[gen3,___]->A]=={}&];
 If[temp=!={},
 lA4oneNew=Join[lA4oneNew,{temp[[1]]}];,
 res=CheckPairsInsertions[Select[lA4,FreeQ[#,quartics[[i]]]==False&],DeleteCases[quartics,quartics[[i]]],quartics[[i]]];

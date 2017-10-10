@@ -129,7 +129,7 @@ betaFuncMSij1Lns[p1_,p2_]:=ExpandTermNS[Bij[pQ,pP] Lijkl[p1,p2,pQ,pP]+Aijk[p1,pP
 betaFuncMSij2Lns[p1_,p2_]:=Block[{line=Table[0,{8}]},
 line[[1]]=1/2(Lam2S[p1,p1]+Lam2S[p2,p2])Bij[p1,p2]  - 1/2 LamBar3[p1,p2] -4 kF LamBar2Y[p1,p2]; 
 line[[2]]= kF (4 HbarLam[p1,p2]-Bij[p1,p2](3 H2ab[p1,p1] + 2 Hbar2[p1,p1]+3 H2ab[p2,p2] + 2 Hbar2[p2,p2]));
-line[[3]]=2 kF (HY[p1,p2] + HY[p2,p1]  + 2 HYbar[p1,p2]  + 2 conj[HYbar[p2,p1]]  + 2 H3ab[p1,p2] + 2 H3ab[p2,p1] );
+line[[3]]=2 kF (HY[p1,p2] + HY[p2,p1]  + 2 HYbar[p1,p2]  + 2 Conj[HYbar[p2,p1]]  + 2 H3ab[p1,p2] + 2 H3ab[p2,p1] );
 line[[4]]= (  2 LamBar2S[p1,p2] -    6 Lam2g[p1,p2] + 2 kF   (HSab[p1,p2]-HFab[p1,p2]-HFab[p2,p1])); 
 line[[5]] = Sum[10 kF (Y2FS[p1,p1,nr]+Y2FS[p2,p2,nr]) Bij[p1,p2],{nr,1,Length[Gauge]}];
 line[[6]]=-(35/3 LamSC2G[p1,p2] -10/3 kF LamSS2F[p1,p2] -11/12 LamSS2S[p1,p2] )  ;

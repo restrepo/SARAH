@@ -46,7 +46,7 @@ SuperFields[[13]] = {Dxbar, 3, conj[DxbarR],  1/3, 1, -3, -3/Sqrt[40], RpP};
 SuperFields[[14]] = {Hp, 1, {Hpd0, Hpdm},  -1/2, 2,  1, 2/Sqrt[40], RpP};
 SuperFields[[15]] = {Hpbar, 1, {Hpup, Hpu0}, 1/2, 2,  1, -2/Sqrt[40], RpP};
 SuperFields[[16]] = {sp, 1, spR,    0, 1,  1, 5/Sqrt[40], RpP};
-NoU1Mixing=True;
+NoU1Mixing=False;
 AddMixedSofts = False;
 
 (*------------------------------------------------------*)

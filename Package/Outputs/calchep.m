@@ -19,11 +19,13 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ----------------------------------- *)
 (* Write CalcHep Model File *)
 (* ----------------------------------- *)
 
 
+(* ::Input::Initialization:: *)
 
 Options[MakeCHep]={FeynmanGauge->True, CPViolation -> False, ModelNr->1, CompHep->False,NoSplittingWith->{},NoSplittingOnly->{}, UseRunningCoupling->True, SLHAinput->True, WriteMOfile->True, CalculateMasses->True, RunSPhenoViaCalcHep->False, IncludeEffectiveHiggsVertices->False,DMcandidate1->Default,DMcandidate2->None,Exclude->{}};
 
@@ -423,6 +425,7 @@ iter1++;];
 
 
 
+(* ::Input::Initialization:: *)
 CalcHepVertices[FeynmanGauge_,CPViolation_, ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_,RunningCoup_,SLHA_,CalcMM_,RunSPhenoCH_,effHiggsV_,exclude_]:=Block[{i,particle1,particle2,particle3,particle4,iter1,iter2,iter3,iter4,Minutes},
 
 Print["Writing Lagrangian and Functions"];
@@ -825,6 +828,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteAdditonalFunctions[RunningCoup_,CPViolation_,SLHA_,CalcMM_,RunSPhenoCH_,effHiggsV_]:=Block[{list,i,abbr,name, writtenLH={}},
 Print["Writing additional functions"];
 
@@ -1355,9 +1359,13 @@ i++;
 
 ANr=0;
 For[i=1,i<=Length[PART[A]],
-If[getGen[PART[A][[i,1]]]!= 8, 
+(* If[getGen[PART[A][[i,1]]]\[NotEqual] 8,  *)
+If[FreeQ[getBlankSF/@aGauge,PART[A][[i,1]]],
 start=1;  ende=getGen[PART[A][[i,1]]];,
-start=0; ende=0;
+If[FreeQ[BrokenGaugeSymmetries[SA`CurrentStates],Position[getBlankSF/@aGauge,PART[A][[i,1]]][[1,1]]] || Gauge[[Position[getBlankSF/@aGauge,PART[A][[i,1]]][[1,1]]]][[2]]===U[1],
+start=0; ende=0;,
+start=1;  ende=getGen[PART[A][[i,1]]];
+];
 ];
 If[getFla[PART[A][[i,1]]]<2,
 For[j=start,j<=ende,
@@ -1602,6 +1610,7 @@ If[MemberQ[realVar,getBlank[x]]==True, Return[True];,Return[False];];
 
 
 
+(* ::Input::Initialization:: *)
 WriteVerticesCHep[vlist_,CPViolation_,FeynmanGauge_,type_, NoSplitWith_,NoSplitOnly_,TestAux_]:=Block[{i,j,iter1,iter2,iter3,iter4,fiter1,fiter2,fiter3,fiter4,gf1,gf2,gf3,particle1,particle2,particle3, entry,WriteCompleteVertex,colorflow,cfsupported,startedtime},
 
 startedtime=TimeUsed[];
@@ -1877,6 +1886,7 @@ DeleteSpace[string_]:=StringReplace[string,{" " ->""}];
 
 
 
+(* ::Input::Initialization:: *)
 WriteCHepParticles[list_, CompHep_, WriteOut_,SLHA_,CalcMM_]:=Block[{i,j,k,name,nameC},
 For[i=1,i<=Length[list],
 For[j=1,j<=getGen[list[[i,1]]],(* For[j=1,j\[LessEqual]getGenOne[list[[i,1]]], *)
@@ -2249,6 +2259,7 @@ progressCoupCH[type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
 
 
 
+(* ::Input::Initialization:: *)
 
 SortDependendParameters[RunningCoupling_]:=Block[{i,j,k,temp,temp2,add,tempNew,subMassTemp,subMassTempRe,iter=1},
 Print["Sort parameters"];

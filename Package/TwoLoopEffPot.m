@@ -19,25 +19,55 @@
 
 
 
-getColorFactorEffPot[fields_]:=Block[{pos,i,j,fieldsordered,vertex,colorFunction,colorIndizes,res,ind,IND,sub4},pos=Position[VerticesInv[All],C@@fields]/.Cp->C;
+(*getColorFactorEffPot[fields_]:=Block[{pos,i,j,fieldsordered,vertex,colorFunction,colorIndizes,res,ind,IND,sub4},pos=Position[VerticesInv[All],C@@fields]/.Cp\[Rule]C;
 fieldsordered=VerticesOrg[All][[pos[[1,1]]]];
 vertex=VerticesVal[All][[pos[[1,1]]]];
-colorFunction=ExtractStructure[vertex,color]/.Lam[a__]->1/2 Lam[a];
+colorFunction=ExtractStructure[vertex,color]/.Lam[a__]\[Rule]1/2 Lam[a];
 colorIndizes=getIndizesWI/@fieldsordered;
-colorIndizes=Select[#,FreeQ[#,color]==False&]&/@colorIndizes/.{color,a_Integer}->a;
-If[Length[fields]===4,sub4={ct3->ct1,ct4->ct2};,sub4={}];
+colorIndizes=Select[#,FreeQ[#,color]\[Equal]False&]&/@colorIndizes/.{color,a_Integer}\[Rule]a;
+If[Length[fields]===4,sub4={ct3\[Rule]ct1,ct4\[Rule]ct2};,sub4={}];
 colorFunction=Select[colorFunction,#[[2,1]]=!=0&];
 res=Table[{},{Length[colorFunction]}];
-For[i=1,i<=Length[colorFunction],
-res[[i]]=colorFunction[[i,1]]*conj[colorFunction[[i,1]]]//.sub4//.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}];
-For[j=1,j<=Length[colorIndizes],
+For[i=1,i\[LessEqual]Length[colorFunction],
+res[[i]]=colorFunction[[i,1]]*conj[colorFunction[[i,1]]]//.sub4//.sum[a_,b_,c_,d_]\[RuleDelayed]Sum[d,{a,b,c}];
+For[j=1,j\[LessEqual]Length[colorIndizes],
 If[colorIndizes[[j]]=!={}&&(Length[fields]<4||j<3),
 ind={ToExpression["ct"<>ToString[j]],1,colorIndizes[[j,1]]};
-res[[i]]=ReleaseHold[Hold[Sum[res[[i]],IND]] /. IND->ind];
+res[[i]]=ReleaseHold[Hold[Sum[res[[i]],IND]] /. IND\[Rule]ind];
 ];
 j++;];
 i++;];
-Return[res //. sum->Sum];];
+Return[res //. sum\[Rule]Sum];];
+
+*)
+
+getColorFactorEffPot[fields_]:=Block[{i,j,k,pos,unbroken,uc,ucname,Indices,IndexRanges,ucIndices,ucFunction,totalgfunc,toprocess,ind,tempf,namestub,nind,Res},pos=Position[VerticesInv[All],C@@fields]/.Cp->C;
+fieldsordered=VerticesOrg[All][[pos[[1,1]]]];
+vertex=VerticesVal[All][[pos[[1,1]]]];
+If[Length[vertex]==0,Return[0]];
+IndexRanges=getIndizesWI/@fieldsordered;
+Indices=fieldsordered//.{_[b_]->b};
+If[Length[fields]===4,sub4=subfourpoint,sub4={}];
+totalgfunc=1;
+toprocess=vertex;
+ind={};
+For[uc=1,uc<=Length[dataUnBrokenGaugeGroups],uc++,ucname=dataUnBrokenGaugeGroups[[uc,2]];
+ucFunction=ExtractStructure[toprocess,ucname]/.Lam[a__]->1/2 Lam[a];
+ucFunction=Select[ucFunction,#[[2,1]]=!=0&][[1]];
+(*Keep only the first one*)
+tempf=ucFunction[[1]];
+If[Length[fields]==3,totalgfunc=totalgfunc*tempf*conj[tempf],totalgfunc*=tempf];
+toprocess={ucFunction[[2,1]]};
+ucIndices=Select[#,FreeQ[#,ucname]==False&]&/@IndexRanges/.{ucname,a_Integer}->a;
+namestub=StringTake[ToString[dataUnBrokenGaugeGroups[[uc,2]]],1];
+For[j=1,j<=3,j++,If[(ucIndices[[j]]=!={})&&(Length[fields]<4||j<3),AppendTo[ind,{ToExpression[namestub<>"t"<>ToString[j]],1,ucIndices[[j,1]]}]]];];
+If[Length[fields]==4,totalgfunc=totalgfunc/.sub4];
+nind=ind/.{{a__}->a};
+Res={};
+If[ind!={},AppendTo[Res,ReleaseHold[Hold[Sum[totalgfunc,IND]]/.IND->nind]],AppendTo[Res,totalgfunc]];
+Return[Res]];
+
+
 
 
 DiracQ[p_]:=Block[{temp},

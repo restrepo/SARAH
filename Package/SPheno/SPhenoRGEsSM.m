@@ -288,6 +288,11 @@ WriteString[file, "Alpha_out = sinW2_out*g2SM**2/(4._dp*Pi) \n"];
 WriteString[file, "AlphaS_out = g3SM**2/(4._dp*Pi) \n \n"];
 WriteString[file,"Else \n\n"];
 WriteString[sphenoSM,"! Don't run SM RGEs separately \n"];
+If[WriteCKMBasis===True,
+WriteString[sphenoSM,"! Rotating from SCKM to EW basis \n"];
+WriteString[sphenoSM,"Call Switch_from_superCKM(YdSM, YuSM, Td_ckm, Tu_ckm, md2_ckm, mq2_ckm, mu2_ckm& \n"];
+WriteString[sphenoSM,"&, "<>SPhenoForm[TrilinearDown] <>"," <>SPhenoForm[TrilinearUp] <>"," <>SPhenoForm[SoftDown] <>"," <>SPhenoForm[SoftSquark] <>","<>SPhenoForm[SoftUp] <>",.True.) \n"];
+];
 If[FreeQ[ParameterDefinitions,"Up-Yukawa-Coupling"]==False,
 WriteString[file, "If (YukawaScheme.Eq.1) Then \n"];
 WriteString[file, "  Call FermionMass("<>SPhenoForm[UpYukawa]<>",1._dp,test,dummy,CKMout,kont) \n"];

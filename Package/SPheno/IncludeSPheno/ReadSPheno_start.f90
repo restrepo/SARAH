@@ -372,6 +372,11 @@
         OutputForMO = .True.  
         RotateNegativeFermionMasses = .false.
       End if
+      
+     Case(78) ! Use conventions for MG
+      If (wert.Eq.1) Then 
+        OutputForMG = .True.  
+      End if      
 
 
      Case(80) ! exit for sure with non-zero value if a problem occurs

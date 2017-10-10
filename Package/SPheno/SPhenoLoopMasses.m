@@ -506,6 +506,7 @@ i++;];
 
 MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoLoop];
 
+If[((Select[{"Hypercharge-Coupling","Left-Coupling"},FreeQ[ParameterDefinitions,#]&]==={})&&(Select[{"Down-VEV","Up-VEV"},FreeQ[ParameterDefinitions,#]&]==={}||FreeQ[ParameterDefinitions,"EW-VEV"]==False)) || OnlyLowEnergySPheno=!=True,
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoLoop];
 If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLoop,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge] <>" \n"];];
 WriteString[sphenoLoop,"vev2=4._dp*Real(mZ2+dmz2,dp)/("<>SPhenoForm[hyperchargeCoupling] <>"**2+"<>SPhenoForm[leftCoupling] <>"**2) -"<>SPhenoForm[SA`AdditionalDoubletVEVs]<>" \n"];
@@ -513,7 +514,7 @@ WriteString[sphenoLoop,"vSM=sqrt(vev2) \n"];
 For[i=1,i<=Length[MatchingForVEVs],
 WriteString[sphenoLoop,SPhenoForm[MatchingForVEVs[[i,1]]]<>"="<>SPhenoForm[MatchingForVEVs[[i,2]]/. subRunningAngles]<>" \n"];
 i++;];
-
+];
 
 WriteTadpoleSolution[sphenoLoop];
 

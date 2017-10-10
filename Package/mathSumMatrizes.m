@@ -186,7 +186,7 @@ epsTensor[a__]:=0 /; Intersection[{a}]=!={a};
 CalcDelta[expr_]:=Block[{i,j},
 If[Head[expr]==List,erg=List@@expr;erg=CalcDelta/@erg;Return[List@@erg];];
 If[Head[expr]==Plus, erg=List@@expr;erg=CalcDelta/@erg;Return[Plus@@erg];];
-expand=Expand[expr];
+expand=Expand[expr]//. (Delta[a_Integer,b_] sum[b_,1,c_Integer]/;a>c):>0;
 If[Head[expand]==Plus,
 erg=List@@expand;
 erg=CalcDelta/@erg;
@@ -194,6 +194,7 @@ Return[Plus@@erg];
 ];
 
 If[FreeQ[expr,Delta]==False,
+expand=expand//.Delta[a_,b_] Delta[c_,b_] sum[b_,__]->Delta[a,c];
 deltas=Cases[Cases[expand,x:(Delta[a_,b_]),3],x_?IntF];
  If[Length[deltas]>0,
 expand =expand /. Flatten[Table[{deltas[[j,2]]->deltas[[j,1]]},{j,1,Length[deltas]}]];

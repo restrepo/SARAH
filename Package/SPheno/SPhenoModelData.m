@@ -59,6 +59,7 @@ WriteString[ModelData,"Logical :: CalculateTwoLoopHiggsMassesSave = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateLowEnergy = .True. \n"];
 WriteString[ModelData,"Logical, Save :: WriteParametersAtQ = .False. \n"];
 WriteString[ModelData,"Logical, Save :: OutputForMO = .False. \n"];
+WriteString[ModelData,"Logical, Save :: OutputForMG = .False. \n"];
 WriteString[ModelData,"Logical, Save :: TwoLoopRGE=.True.\n"];
 If[SA`AddOneLoopDecay===True,
 WriteString[ModelData,"Logical, Save :: OneLoopDecays=.True.\n"];,

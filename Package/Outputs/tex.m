@@ -1886,7 +1886,7 @@ TeXSimplify[expr_]:=Block[{i,j,k,temp,atom,gaugec,supc,dterms,nodterms},
 If[AtomQ[expr],Return[expr];];
 If[Head[Expand[expr]]=!=Plus,Return[expr]];
 temp=List@@Expand[expr];
-atom=Select[temp,AtomQ[#]&,1];
+atom=Select[temp,AtomQ[#]&,2];
 temp=Complement[temp,atom];
 gaugec=Transpose[Transpose[SA`ListGaugeMixedAll][[2]]][[2]];
 supc=Flatten[{WCouplingsTri,WCouplingsBi,WCouplingsLin,WCouplingsQuad}];

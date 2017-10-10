@@ -107,7 +107,8 @@ WO`WOWhizardVersion::usage = (""
    <> "   \"2.0\"  : 2.0 - 2.0.2\n"
    <> "   \"2.0.3\"  : 2.0.3 - 2.1.7\n"
    <> "   \"2.2.0\": 2.2.0 - 2.2.2\n"
-   <> "   \"2.2.3\": 2.2.3 - 2.2.3 ");
+   <> "   \"2.2.3\": 2.2.3 - 2.2.3\n"
+   <> "   \"2.3.0\": 2.3.0 - 2.3.0 ");   
 WO`WOVerbose::usage = (""
    <> "Verbose output. At the moment, this enables more detailed information "
    <> "on skipped vertices. Default: False");
@@ -756,7 +757,10 @@ WO`CopyAux[srcdir_, destdir_] := Module[{CopyHelper},
    If[WO`whizv2x[],
       CopyHelper[{filea_, fileb_}] := Module[{src, dest, sdir, sfile, ddir, dfile},
         If[WO`whizvn[]>222,
-         src = ToFileName[{srcdir, "2.2.3"}, filea];,
+           If[WO`whizvn[]>225,
+         src = ToFileName[{srcdir, "2.3.0"}, filea];,
+         src = ToFileName[{srcdir, "2.2.3"}, filea];
+         ];,
          src = ToFileName[{srcdir, "2.0"}, filea];
          ];
          dest = ToFileName[destdir, fileb];
@@ -2710,13 +2714,21 @@ WO`WriteWhizMdl[file_] := Module[{handle, content, header, params, DoParams, rep
             <> "  anti pbar \"p-\"\n"
             <> "\n"
             <> "particle HADRON_REMNANT 90\n"
+            <> "  name hr\n"
+            <> "  tex_name \"had_r\"\n"            
             <> "\n"
             <> "particle HADRON_REMNANT_SINGLET 91\n"
+            <> "  name hr1\n"
+            <> "  tex_name \"had_r^{(1)}\"\n"            
             <> "\n"
             <> "particle HADRON_REMNANT_TRIPLET 92\n"
+            <> "  name hr3\n"
+            <> "  tex_name \"had_r^{(3)}\"\n"            
             <> "  color 3\n"
             <> "\n"
             <> "particle HADRON_REMNANT_OCTET 93\n"
+            <> "  name hr8\n"
+            <> "  tex_name \"had_r^{(8)}\"\n"            
             <> "  color 8"
             <> "\n\n";
       ];

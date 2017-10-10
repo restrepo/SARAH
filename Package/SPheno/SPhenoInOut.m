@@ -840,7 +840,7 @@ WriteBlockEntries[nameString, dimensions,"Real(",",dp)"];
 
 If[thresholdscale<100 && thresholdscale=!=0 && thresholdscale =!=GUTSCALE,
 WriteString[sphenoInOut,"If (MaxVal(Abs(AImag("<>SPhenoForm[name]<>"_save))).gt.0._dp) Then \n"];,
-WriteString[sphenoInOut,"If (MaxVal(Abs(AImag("<>SPhenoForm[name]<>"))).gt.0._dp) Then \n"];
+WriteString[sphenoInOut,"If ((MaxVal(Abs(AImag("<>SPhenoForm[name]<>"))).gt.0._dp).OR.(OutputForMG)) Then \n"];
 ];
 
 WriteString[sphenoInOut,"Write(io_L,106) \"Block IM"<> ToString[BlockName] <>" Q=\","<>Qscale<>",\"# ("<>scalename<>")\" \n"];
@@ -1361,10 +1361,11 @@ WriteString[sphenoInOut,"Write(io_L,100) \"#   F. Staub; Comput. Phys. Commun. 1
 WriteString[sphenoInOut,"Write(io_L,100) \"# Including the calculation of flavor observables based on the FlavorKit \"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"#   W. Porod, F. Staub, A. Vicente; Eur.Phys.J. C74 (2014) 8, 2992; arXiv:1405.1434 \"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"# Two-loop masss corrections to Higgs fields based on \"\n"];
-WriteString[sphenoInOut,"Write(io_L,100) \"#   M. D. Goodsell, K. Nickel, F. Staub; arXiv:1411.0675 \"\n"];
-WriteString[sphenoInOut,"Write(io_L,100) \"#   M. D. Goodsell, K. Nickel, F. Staub; arXiv:1503.03098\"\n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"#   M. D. Goodsell, K. Nickel, F. Staub; Eur.Phys.J. C75 (2015) no.6, 290; arXiv:1411.0675 \"\n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"#   M. D. Goodsell, K. Nickel, F. Staub; Eur.Phys.J. C75 (2015) no.1, 32; arXiv:1503.03098\"\n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"#   M. D. Goodsell, F. Staub; arXiv:1511.01904\"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"#  \"\n"];
-WriteString[sphenoInOut,"Write(io_L,100) \"# in case of problems send email to florian.staub@cern.ch and goodsell@lpthe.jussieu.fr\ \"\n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"# in case of problems send email to florian.staub@kit.edu and goodsell@lpthe.jussieu.fr\ \"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"# ----------------------------------------------------------------------\" \n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"# Created: \"//Datum(7:8)//\".\"//Datum(5:6)//\".\"//Datum(1:4)&\n"];
 WriteString[sphenoInOut,"&//\",  \"//Zeit(1:2)//\":\"//Zeit(3:4)\n"];
@@ -1399,6 +1400,7 @@ If[Head[MINPAR[[1,1]]]=!=List,
 For[i=1,i<=Length[MINPAR],
 WriteString[sphenoInOut,"Write(io_L,101) "<>ToString[MINPAR[[i,1]]]<>", Real("<>SPhenoForm[MINPAR[[i,2]]]<>",dp) ,\"# "<>SPhenoForm[MINPAR[[i,2]]]<>"\"\n"];
 i++;];
+
 WriteString[sphenoInOut,"WriteNextBlock = .False. \n"];
 For[i=1,i<=Length[MINPAR],
 If[FreeQ[realVar,MINPAR[[i,2]]],
@@ -1602,7 +1604,9 @@ Switch[kk,
 For[kkk=1,kkk<=fin,
 If[kkk==2,suffix="1L"; stringrep={"IMLOOP"->"LOOPIM","TREE"->"LOOP"},stringrep={"IMTREE"->"TREEIM"}];
 For[i=1,i<=Length[CombindedBlock],
+
 WriteString[sphenoInOut,"WriteNextBlock = .false. \n"];
+WriteString[sphenoInOut,"If (OutputForMG) WriteNextBlock = .True. \n"];
 WriteString[sphenoInOut,"Write(io_L,106) \"Block "<> StringReplace[ToString[CombindedBlock[[i,1]]],stringrep] <>" Q=\",Q,\"# ("<> StringScaleOut <>")\" \n"];
 For[j=2,j<=Length[CombindedBlock[[i]]],
 If[FreeQ[ThresholdCouplings,CombindedBlock[[i,j,1]]] && FreeQ[listParametersOtherRegimes,CombindedBlock[[i,j,1]]],
@@ -1613,6 +1617,7 @@ WriteString[sphenoInOut,"If (Abs(Aimag("<>SPhenoForm[CombindedBlock[[i,j,1]]]<>s
 ];
 j++;];
 
+If[Select[Transpose[Drop[CombindedBlock[[i]],1]][[1]],FreeQ[realVar,#]&]=!={},
 WriteString[sphenoInOut,"If(WriteNextBlock) Then \n"];
 WriteString[sphenoInOut,StringReplace["Write(io_L,106) \"Block IM"<> StringReplace[ToString[CombindedBlock[[i,1]]],stringrep] <>" Q=\",Q,\"# ("<> StringScaleOut <>")\" \n",stringrep]];
 For[j=2,j<=Length[CombindedBlock[[i]]],
@@ -1623,7 +1628,7 @@ WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[CombindedBlock[[i,j,2]]]<>"
 ];
 j++;];
 WriteString[sphenoInOut, "End if \n"];
-
+];
 If[SLHA1Possible==True && CombindedBlock[[i,1]]===MSOFT && kk ==1,
 WriteString[sphenoInOut, "If (WriteSLHA1) Then \n"];
 WriteString[sphenoInOut,"Write(io_L,104)  31,  Real(sqrt("<>SPhenoForm[SoftLeftLepton]<>"(1,1)),dp), \" # mL(1,1) \" \n"];

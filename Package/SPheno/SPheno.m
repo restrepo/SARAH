@@ -46,7 +46,8 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPhenoLowEnergy`;
 <<SPhenoHiggsBoundsOutput`;
 
- 
+ <<SPhenoLoopDecays`; 
+
  <<SPhenoHiggsCS`; 
 <<SPhenoTadpoles`;
 
@@ -349,7 +350,7 @@ GenerateSPhenoLoopCouplings[Eigenstates];
 
 If[Include2LoopCorrections=!=False,
 GenerateSPhenoEffPot;
-GenerateSPheno2LPole;
+GenerateSPheno2LPole[ReadL];
 ];
 GenerateSPhenoLoopMasses[Eigenstates];
 

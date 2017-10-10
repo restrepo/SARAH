@@ -91,16 +91,17 @@ WriteString[sphenoFT,"Implicit None \n"];
 MakeVariableList[temp,",Intent(in)",sphenoFT];
 WriteString[sphenoFT,"Real(dp), Intent(in) :: mGUT \n"];
 WriteString[sphenoFT,"Integer, Intent(inout) :: kont \n"];
-WriteString[sphenoFT,"Integer :: i1, Fpar \n"];
+WriteString[sphenoFT,"Integer :: i1, j, Fpar \n"];
 WriteString[sphenoFT,"Real(dp) :: delta0,gA("<>ToString[numberAll]<>"), gB("<>ToString[numberAll] <>"), gC("<>ToString[numberAllwithVEVs]<>"), gRef("<>ToString[numberAll]<>"), gDiff("<>ToString[numberAll]<>")\n"];
 WriteString[sphenoFT,"Real(dp) :: MZ2ref, MZ2current, variation, stepsize, dt, tz, factor \n"];
 WriteString[sphenoFT,"Real(dp) :: vdref, vuref, maxdiff \n"];
 WriteString[sphenoFT,"Real(dp) :: m_lo, m_hi \n"];
 WriteString[sphenoFT,"Logical :: NumericalProblem, GenerationMixingSave \n"];
 MakeVariableList[listAllParametersAndVEVs,"",sphenoFT];
-WriteString[sphenoFT, "Complex(dp) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>"), dmz2, mudim \n\n"];
+WriteString[sphenoFT, "Complex(dp) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>"), Tadpoles_Save("<>ToString[SA`NrTadpoleEquations]<>"), dmz2, mudim \n\n"];
 MakeVariableList[NewMassParameters,"",sphenoFT];
 MakeVariableList[Union[Flatten[{NeededCouplingsUnmixed}]],"",sphenoFT];
+MakeVariableList[Union[Flatten[{NeededCouplingsLoop}]],"",sphenoFT];
 
 WriteString[sphenoFT,"Write(*,*) \"Calculate FineTuning\" \n"];
 
@@ -147,6 +148,22 @@ WriteString[sphenoFT,SPhenoForm[listVEVs[[i]]] <>" = "<>SPhenoForm[listVEVs[[i]]
 i++;];
 *)
 
+WriteString[sphenoFT,"If (OneLoopFT) Then \n"];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoFT];
+MakeCall["CouplingsForLoopMasses" , Join[parametersLoop,namesLoop],{},{},sphenoFT];
+off=1;
+For[i=1,i<=Length[loopContributionTad],
+If[loopContributionTad[[i]]=!={} && Intersection[listVEVseparated[[i]]]=!={0},
+MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+getGen[ScalarsForTadpoles[[i]]]]<>")"},sphenoFT]; 
+(* MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+ Length[Intersection[listVEVseparated[[i]]]]]<>")"},sphenoLoop]; *)
+off += getGen[ScalarsForTadpoles[[i]]]; 
+(* off += Length[Intersection[listVEVseparated[[i]]]]; *)
+];
+i++;];
+WriteString[sphenoFT,"Else \n"];
+WriteString[sphenoFT,"  Tad1Loop(:) = 0._dp \n"];
+WriteString[sphenoFT,"End If \n\n"];
+
 MakeCall["SolveTadpoleEquations",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoFT];
 
 WriteString[sphenoFT,"! First Run to GUT scale and back to get reference \n"];
@@ -155,6 +172,22 @@ WriteString[sphenoFT,"Do i1=1,100 \n"];
 WriteRunningUpFT;
 WriteString[sphenoFT,"Call BoundaryFT(gA,gB,0,variation)\n"];
 WriteRunningDownFT;
+
+WriteString[sphenoFT,"If (OneLoopFT) Then \n"];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoFT];
+MakeCall["CouplingsForLoopMasses" , Join[parametersLoop,namesLoop],{},{},sphenoFT];
+off=1;
+For[i=1,i<=Length[loopContributionTad],
+If[loopContributionTad[[i]]=!={} && Intersection[listVEVseparated[[i]]]=!={0},
+MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+getGen[ScalarsForTadpoles[[i]]]]<>")"},sphenoFT]; 
+(* MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+ Length[Intersection[listVEVseparated[[i]]]]]<>")"},sphenoLoop]; *)
+off += getGen[ScalarsForTadpoles[[i]]]; 
+(* off += Length[Intersection[listVEVseparated[[i]]]]; *)
+];
+i++;];
+WriteString[sphenoFT,"Else \n"];
+WriteString[sphenoFT,"  Tad1Loop(:) = 0._dp \n"];
+WriteString[sphenoFT,"End If \n\n"];
 
 WriteString[sphenoFT,"gDiff=Abs(gB-gRef) \n"];
 WriteString[sphenoFT,"Where (Abs(gDiff).lt.1E-12_dp) gDiff=0._dp \n"];
@@ -168,6 +201,22 @@ WriteString[sphenoFT,"Else \n"];
 WriteString[sphenoFT,"Exit \n"];
 WriteString[sphenoFT,"End if \n"];
 WriteString[sphenoFT,"End Do \n"];
+
+WriteString[sphenoFT,"If (OneLoopFT) Then \n"];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoFT];
+MakeCall["CouplingsForLoopMasses" , Join[parametersLoop,namesLoop],{},{},sphenoFT];
+off=1;
+For[i=1,i<=Length[loopContributionTad],
+If[loopContributionTad[[i]]=!={} && Intersection[listVEVseparated[[i]]]=!={0},
+MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+getGen[ScalarsForTadpoles[[i]]]]<>")"},sphenoFT]; 
+(* MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+ Length[Intersection[listVEVseparated[[i]]]]]<>")"},sphenoLoop]; *)
+off += getGen[ScalarsForTadpoles[[i]]]; 
+(* off += Length[Intersection[listVEVseparated[[i]]]]; *)
+];
+i++;];
+WriteString[sphenoFT,"Else \n"];
+WriteString[sphenoFT,"  Tad1Loop(:) = 0._dp \n"];
+WriteString[sphenoFT,"End If \n\n"];
 
 WriteString[sphenoFT,"\n ! Calculate VEVs \n"];
 MakeCall["SolveTadpoleEquationsVEVs",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoFT];
@@ -212,7 +261,8 @@ WriteString[sphenoFT,"! RGE running \n"];
 WriteString[sphenoFT,"Fpar = i1 \n"];
 
 For[i=1,i<=Length[listVEVs],
-WriteString[sphenoFT,SPhenoForm[listVEVs[[i]]] <>" = "<>SPhenoForm[listVEVs[[i]]]<>"MZ \n"];
+(* WriteString[sphenoFT,SPhenoForm[listVEVs[[i]]] <>" = "<>SPhenoForm[listVEVs[[i]]]<>"MZ \n"]; *)
+WriteString[sphenoFT,SPhenoForm[listVEVs[[i]]] <>" = "<>SPhenoForm[listVEVs[[i]]]<>"input \n"];
 i++;];
 
 (*
@@ -230,11 +280,33 @@ WriteString[sphenoFT,"    factor = "<>SPhenoForm[FineTuningParameters[[i,2]]]<>"
 i++;];
 WriteString[sphenoFT,"End Select \n"];
 
-
+WriteString[sphenoFT,"Do j=1,1000 \n"];
+WriteString[sphenoFT,"If (OneLoopFT) Then \n"];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoFT];
+MakeCall["CouplingsForLoopMasses" , Join[parametersLoop,namesLoop],{},{},sphenoFT];
+off=1;
+For[i=1,i<=Length[loopContributionTad],
+If[loopContributionTad[[i]]=!={} && Intersection[listVEVseparated[[i]]]=!={0},
+MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+getGen[ScalarsForTadpoles[[i]]]]<>")"},sphenoFT]; 
+(* MakeCall["OneLoopTadpoles"<>ToString[ScalarsForTadpoles[[i]]],Flatten[{Intersection[listVEVseparated[[i]]],NeededMassesLoopTad[[i]], NeededCouplingsLoopTad[[i]]}],{},{"Tad1Loop("<>ToString[off]<>":"<>ToString[off-1+ Length[Intersection[listVEVseparated[[i]]]]]<>")"},sphenoLoop]; *)
+off += getGen[ScalarsForTadpoles[[i]]]; 
+(* off += Length[Intersection[listVEVseparated[[i]]]]; *)
+];
+i++;];
+WriteString[sphenoFT,"Else \n"];
+WriteString[sphenoFT,"  Tad1Loop(:) = 0._dp \n"];
+WriteString[sphenoFT,"End If \n\n"];
 
 WriteString[sphenoFT,"\n\n ! Calculate VEVs \n"];
 MakeCall["SolveTadpoleEquationsVEVs",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoFT];
 
+WriteString[sphenoFT,"If (MaxVal(Abs(Tad1Loop-Tadpoles_Save)).lt.1._dp) Then \n"];
+WriteString[sphenoFT,"  Exit \n"];
+WriteString[sphenoFT,"Else \n"];
+WriteString[sphenoFT,"  Tadpoles_Save=Tad1Loop \n"];
+WriteString[sphenoFT,"End if \n"];
+
+WriteString[sphenoFT,"End Do \n"];
 (*
 MakeCall["SolveTadpoleEquationsVEVsSM",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoFT];
 *)

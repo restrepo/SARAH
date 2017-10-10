@@ -136,7 +136,7 @@ CheckForU1mixing;
 DynamicInitMisc="All Done";
 ];
 
-InitAuxGroups:=Block[{i,j,k,l,pos,temp,nrInd,dim,vb,name,rep,posGauge,nr,dimGroup,dimSub,nameSub},
+InitAuxGroups:=Block[{i,j,k,l,pos,temp,nrInd,dim,vb,name,rep,posGauge,nr,dimGroup,dimSub,nameSub,gh},
 (* check if auxiliary gauge groups are present *)
 If[Head[UnbrokenSubgroups]===List &&UnbrokenSubgroups=!={},
 AuxGaugesPresent=True;,
@@ -161,6 +161,8 @@ i++;
 AuxGaugeBosons={};
 subGaugeBosonsAux={};
 subGaugeBosonsAuxFabc={};
+subGhostsAux={};
+subGhostsAuxFabc={};
 For[i=1,i<=Length[RepGaugeBosons],
 For[j=1,j<=Length[RepGaugeBosons[[i]]],
 AuxGaugeBosons=Join[AuxGaugeBosons,{{RepGaugeBosons[[i,j,1]],{UnbrokenSubgroups[[i,2]],RepGaugeBosons[[i,j,2]]}}}];
@@ -173,6 +175,10 @@ name=UnbrokenSubgroups[[i,2]];
 (* where T are the generators and alpha the charge indices for the full group, while x,y,.. the indices for the unbroken subgroup *)
 subGaugeBosonsAux=Join[subGaugeBosonsAux,{sum[a,___] conj[TA[dim,a,i1_,i2_]] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] conj[TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2]] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
 subGaugeBosonsAux=Join[subGaugeBosonsAux,{sum[a,___] TA[dim,a,i1_,i2_] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+
+subGhostsAux=Join[subGhostsAux,{sum[a,___] conj[TA[dim,a,i1_,i2_]] gh[{a}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] conj[TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2]] If[RepGaugeBosons[[i,k,2]]>1,ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]][{name}],ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+subGhostsAux=Join[subGhostsAux,{sum[a,___] TA[dim,a,i1_,i2_] gh[{a}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] TA[dim,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i1,i2] If[RepGaugeBosons[[i,k,2]]>1,ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]][{name}],ToExpression["g"<>StringDrop[ToString[RepGaugeBosons[[i,k,1]]],1]]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
+
 
 (* and now the replacement for the terms with structure constant *)
 subGaugeBosonsAuxFabc=Join[subGaugeBosonsAuxFabc,{sum[a,___]FST[dim][i1___,a,i2___] vb[{a,b}]->(Sum[sum[name,1,RepGaugeBosons[[i,k,2]]] FST[dim][i1,name+Sum[RepGaugeBosons[[i,j,2]],{j,1,k-1}],i2] If[RepGaugeBosons[[i,k,2]]>1,RepGaugeBosons[[i,k,1]][{name,b}],RepGaugeBosons[[i,k,1]][{b}]],{k,1,Length[RepGaugeBosons[[i]]]}])}];
@@ -420,10 +426,9 @@ absI=Table[absIFull[[j,1]],{j,1,Length[absIFull]}];
 absE=Table[absEFull[[j,1]],{j,1,Length[absEFull]}];
 
 If[Dimensions[Fields[[i,1]]]=!={} &&  Head[Fields[[i,1]]]=!=conj,
-FieldNames=Select[Intersection[DeleteCases[Flatten[Fields[[i,1]]],x_?NumericQ] /.x_? NumericQ->1],(Head[#]=!=conj || MemberQ[DeleteCases[Flatten[Fields[[i,1]]],x_?NumericQ] /.x_? NumericQ->1,conj[#]]==False)&],
+FieldNames=Select[Intersection[DeleteCases[Flatten[Fields[[i,1]]/. Plus->List /. Delta[__]->1],x_?NumericQ] /.x_? NumericQ->1],(Head[#]=!=conj || MemberQ[DeleteCases[Flatten[Fields[[i,1]]],x_?NumericQ] /.x_? NumericQ->1,conj[#]]==False)&],
 FieldNames ={Fields[[i,1]]};
 ];
-
 
 subScalar={};
 subFermion={};
@@ -442,12 +447,7 @@ If[Head[FieldNames[[j]]]===conj,
 name= ToString[FieldNames[[j,1]]];,
 name = ToString[FieldNames[[j]]];
 ];
-(*
-If[FreeQ[FieldNames[[j]],AuxGauges[[1]]]===False,
-name=ToExpression[name]/.A_[AuxGauges[[1]]]\[Rule]A;
-name[AuxGauges[[1]]][{d__}]=name[{d,AuxGauges[[1]]}];
-name=ToString[name];
-]; *)
+
 If[Last[Fields[[i]]]===S,
 scalar=ToExpression[name];
 If[FreeQ[RealScalars,Fields[[i,3]]]==False && FreeQ[Fields[[i,1]],conj[scalar]],
@@ -474,7 +474,7 @@ U[1],
 	valueCasimir=GUTren[j2]^2 Fields[[i,j2+3]]^2;
 	valueDynkin=GUTren[j2]^2 Fields[[i,j2+3]]^2;
 	valueGenerator= Fields[[i,j2+3]];
-	valueDimension=1;
+	valueDimensions=1;
 	If[FreeQ[Fields[[i,1]],conj]==True,
 	valueDyn=Fields[[i,j2+3]];
 	valueDynSF=valueDyn;,
@@ -487,7 +487,8 @@ _,
 	valueDynkin=0;
 	valueGenerator= 0;
 	valueDyn={0};
-	valueDynSF={0};,
+	valueDynSF={0};
+	valueDimensions=1;,
 	valueCasimir= SA`Casimir[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
 	valueDynkin= SA`Dynkin[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
 	If[Gauge[[j2,5]]===True && Gauge[[j2,2]]=!=U[1],
@@ -510,99 +511,16 @@ valueMulFactor=Fields[[i,2]]*Times@@(Abs/@Table[If[Gauge[[k,2]]===U[1] || k===j2
 If[Last[Fields[[i]]]===S,
 SetGroupConstants[scalar,Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,True,False];
 SetGroupConstants[scalarSF,Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,If[Length[FieldNames]===1,True,False],True];
-(*
-SA`Casimir[scalar,Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[scalar[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[scalarSF,Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF,Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[scalar,Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[scalar[a__],Gauge[[j2,3]]]=valueDynkin;
-Generator[scalarSF,Gauge[[j2,3]]]=valueGenerator;
-Generator[scalar,Gauge[[j2,3]]]=valueGenerator;
-SA`MulFactor[scalarSF,Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[scalar,Gauge[[j2,3]]]=valueMulFactor; *)
 ];
 
 
 If[Last[Fields[[i]]]===F,
 SetGroupConstants[fermion,Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,True,False];
 SetGroupConstants[fermionSF,Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,If[Length[FieldNames]===1,True,False],True];
-(*
-SA`Casimir[fermion,Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[fermion[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[fermion,Gauge[[j2,3]]]=valueDynkin; 
-SA`Dynkin[fermion[a__],Gauge[[j2,3]]]=valueDynkin;
-Generator[fermion,Gauge[[j2,3]]]=valueGenerator;
-SA`MulFactor[fermionSF,Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[fermion,Gauge[[j2,3]]]=valueMulFactor;
-*)
 ];
 
 SetGroupConstants[Fields[[i,3]],Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,False,False];
-(*
-SA`Casimir[Fields[[i,3]],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[Fields[[i,3]],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[Fields[[i,3]],Gauge[[j2,3]]]=valueMulFactor;
-*)
 
-(*
-If[Last[Fields[[i]]]===S,
-SA`Casimir[scalarSF,Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF,Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF,Gauge[[j2,3]]]=valueMulFactor;
-If[Length[FieldNames]===1,
-SA`Casimir[scalarSF[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF[a__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF[a__],Gauge[[j2,3]]]=valueMulFactor;
-SA`Casimir[scalarSF[a__][b__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF[a__][b__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF[a__][b__],Gauge[[j2,3]]]=valueMulFactor;,
-SA`Casimir[scalarSF[a__][b__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF[a__][b__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF[a__][b__],Gauge[[j2,3]]]=valueMulFactor;
-];,
-SA`Casimir[fermionSF,Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[fermionSF,Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[fermionSF,Gauge[[j2,3]]]=valueMulFactor;
-If[Length[FieldNames]===1,
-SA`Casimir[fermionSF[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[fermionSF[a__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[fermionSF[a__],Gauge[[j2,3]]]=valueMulFactor;
-SA`Casimir[fermionSF[a__][b__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[fermionSF[a__][b__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[fermionSF[a__][b__],Gauge[[j2,3]]]=valueMulFactor;,
-SA`Casimir[fermionSF[a__][b__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[fermionSF[a__][b__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[fermionSF[a__][b__],Gauge[[j2,3]]]=valueMulFactor;
-];
-];
-*)
-
-(*
-If[Last[Fields[[i]]]===S,SA`DimensionGG[scalar,j2] = If[Gauge[[j2,2]]===U[1],1,Abs[Fields[[i,j2+3]]]];];
-If[Last[Fields[[i]]]===F,SA`DimensionGG[fermion,j2] = If[Gauge[[j2,2]]===U[1],1,Abs[Fields[[i,j2+3]]]];];
-*)
-
-(*
-If[Gauge[[j2,2]]=!=U[1],
-If[FreeQ[Fields[[i,1]],conj]\[Equal]True,
-If[Last[Fields[[i]]]===S,SA`DynL[scalar,Gauge[[j2,3]]]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];];
-If[Last[Fields[[i]]]===F,SA`DynL[fermion,Gauge[[j2,3]]]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];];,
-If[Last[Fields[[i]]]===S,SA`DynL[scalar,Gauge[[j2,3]]]=ConjugatedRep[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];];
-If[Last[Fields[[i]]]===F,SA`DynL[fermion,Gauge[[j2,3]]]=ConjugatedRep[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];];
-];
-If[Last[Fields[[i]]]===S,SA`DynL[scalarSF,Gauge[[j2,3]]]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];];
-If[Last[Fields[[i]]]===F,SA`DynL[fermionSF,Gauge[[j2,3]]]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];];,
-If[FreeQ[Fields[[i,1]],conj]\[Equal]True,
-If[Last[Fields[[i]]]===S,SA`DynL[scalar,Gauge[[j2,3]]]=Fields[[i,j2+3]];];
-If[Last[Fields[[i]]]===F,SA`DynL[fermion,Gauge[[j2,3]]]=Fields[[i,j2+3]];];,
-If[Last[Fields[[i]]]===S,SA`DynL[scalar,Gauge[[j2,3]]]=-Fields[[i,j2+3]];];
-If[Last[Fields[[i]]]===F,SA`DynL[fermion,Gauge[[j2,3]]]=-Fields[[i,j2+3]];];
-];
-If[Last[Fields[[i]]]===S,SA`DynL[scalarSF,Gauge[[j2,3]]]=Fields[[i,j2+3]];];
-If[Last[Fields[[i]]]===F,SA`DynL[fermionSF,Gauge[[j2,3]]]=Fields[[i,j2+3]];];
-];
-*)
 If[Gauge[[j2,2]]===U[1],
 If[Last[Fields[[i]]]===S,SA`ChargeGG[scalar,j2] = Fields[[i,j2+3]];];
 If[Last[Fields[[i]]]===F,SA`ChargeGG[fermion,j2] = Fields[[i,j2+3]];];
@@ -634,12 +552,7 @@ usedInd=absI;,
 usedInd={}
 ];
 absIsave=absI;
-(*
-If[FreeQ[FieldNames[[j]],AuxGauges[[1]]]===False,
-FieldNames[[j]]=FieldNames[[j]]/.A_[AuxGauges[[1]]]\[Rule]A;
-absI=Join[absI,{AuxGauges[[1]]}];
-ChangedAbsI=True;
-]; *)
+
 If[Head[FieldNames[[j]]]===conj,
 subScalar=Join[subScalar,{FieldNames[[j]]->conj[scalar[usedInd]]}];
 subFermion=Join[subFermion,{FieldNames[[j]]->conj[fermion[usedInd]]}];
@@ -688,28 +601,10 @@ j2++;];
 addParticle[namefield,absIFull,Fields[[i,2]],Last[Fields[[i]]]];
 ];
 
-(*
-If[Last[Fields[[i]]]===F,
-If[FreeQ[AuxRepFields,fermion /. A_[b__Symbol]\[Rule]A]\[Equal]False,
-temp=Hold[Set[(fermion /. A_[b__Symbol]\[Rule]A)[d__Symbol][{c__}][f_Integer],(fermion /. A_[b__Symbol]\[Rule]A)[{c,d}][f]]];
-ReleaseHold[temp];
-
-addParticle[fermion/. A_[b__Symbol]\[Rule]A,Join[absIFull,AuxRepFields[[Position[AuxRepFields,fermion /. A_[b__Symbol]\[Rule]A][[1,1]]]][[2]]],Fields[[i,2]],F];,
-addParticle[fermion,absIFull,Fields[[i,2]],F];
-];
-]; *)
 ];
 j++;];
 
-(*
-If[AuxGaugesPresent===False,
-If[Last[Fields[[i]]]===S,SFieldsMultiplets [[i]]=Fields[[i,1]] /. subScalar /. A_[{}]\[Rule]A;,SFieldsMultiplets [[i]]=0;];
-If[Last[Fields[[i]]]===F,FFieldsMultiplets [[i]]=Fields[[i,1]] /. subFermion /. A_[{}]\[Rule]A;,FFieldsMultiplets [[i]]=0;];,
-(* add explicitly the sum over the unbroken charged indices *)
-If[Last[Fields[[i]]]===S,SFieldsMultiplets [[i]]=Fields[[i,1]] /. subSumUnbrokenCharges /. subScalar /. A_[{}]\[Rule]A;,SFieldsMultiplets [[i]]=0;];
-If[Last[Fields[[i]]]===F,FFieldsMultiplets [[i]]=Fields[[i,1]] /. subSumUnbrokenCharges/. subFermion /. A_[{}]\[Rule]A;,FFieldsMultiplets [[i]]=0;];
-];
-*)
+
 If[Last[Fields[[i]]]===S,SFieldsMultiplets [[i]]=Fields[[i,1]] /. subScalar /. A_[{}]->A;,SFieldsMultiplets [[i]]=0;];
 If[Last[Fields[[i]]]===F,FFieldsMultiplets [[i]]=Fields[[i,1]] /. subFermion /. A_[{}]->A;,FFieldsMultiplets [[i]]=0;];
 
@@ -736,7 +631,11 @@ If[Last[Fields[[i]]]===F,
 subFieldsOne=Join[subFieldsOne,{Fields[[i,3]][{c__}][d_]->(FFieldsMultiplets [[i]]/. A_[{x__}]->A)[{c}][d]}];
 ];,
 If[Last[Fields[[i]]]===S,
-Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];
+Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}],
+Hold[If[Head[Extract[SFieldsMultiplets [[NR]],{x}]]=!=Plus,
+(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}],
+Sum[(Extract[SFieldsMultiplets [[NR]],{x,jj}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x,jj}],(y_?NumberQ|y_Delta),4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x,jj}],(y_?NumberQ|y_Delta),4][{c}],{jj,1,Length[Extract[SFieldsMultiplets [[NR]],{x}]]}]
+]] /. NR->i];
 ];
 If[Last[Fields[[i]]]===F,
 Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}][d]] /. NR->i];
@@ -847,13 +746,15 @@ U[1],
 	valueCasimir=GUTren[j2]^2 Fields[[i,j2+3]]^2;
 	valueDynkin=GUTren[j2]^2 Fields[[i,j2+3]]^2;
 	valueGenerator= Fields[[i,j2+3]];
-	valueDyn=Fields[[i,j2+3]];,
+	valueDyn=Fields[[i,j2+3]];
+	valueDimensions=1;,
 _,
 	If[Fields[[i,j2+3]]==1,
 	valueCasimir=0;
 	valueDynkin=0;
 	valueGenerator= 0;
-	valueDyn={0};,
+	valueDyn={0};
+	valueDimensions=1;,
 	valueCasimir= SA`Casimir[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
 	valueDynkin= SA`Dynkin[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
 	valueDyn=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];
@@ -861,7 +762,7 @@ _,
 	valueGenerator= GeneratorB[Gauge[[j2,2]],getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]]];,
 	valueGenerator= Generator[Gauge[[j2,2]],getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]]];
 	];
-
+	valueDimensions=Abs[Fields[[i,j2+3]]];
 	];
 ];
 
@@ -1228,6 +1129,11 @@ indizesVBT=Join[indizesT,{{lorentz,4}}];
 ];
 addParticle[ToExpression["V"<>nameBasis],indizesVBT,nGen,V];
 addParticle[ToExpression["g"<>nameBasis],indizesT,nGen,G];
+
+(*H*)(*If e.g.VX=!=conj[VX],one has to add both gX and gXC.Attention! Variables gG and VG are added to realVar by hand in the model file.*)
+If[MemberQ[realVar,ToExpression["g"<>nameBasis]]==False,
+addParticle[ToExpression["g"<>nameBasis<>"C"],indizesT,nGen,G];
+];
 
 (* Set Group constants *)
 valueDimensions=AuxGaugeBosons[[j,2,2]];

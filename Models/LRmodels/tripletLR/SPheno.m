@@ -23,6 +23,10 @@ RealParameters = {TanBeta,vRinput};
 
 ParametersToSolveTadpoles = {mu12,mu22,mu32}; 
 
+(*
+AuxiliaryHyperchargeCoupling = True;
+ExpressionAuxHypercharge = Sqrt[(gBL*gR)^2/(gBL^2 + gR^2)];
+*)
 
 BoundaryLowScaleInput={
  {g3, g3SM},

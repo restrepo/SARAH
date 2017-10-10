@@ -28,7 +28,7 @@ ParticleDefinitions[EWSB] = {
      LaTeX -> "d", 
      Mass -> {0.0035, 0.104, 4.2}, 
      OutputName -> "d", 
-     PDG -> {1, 3, 5, 101, 103, 105, 201, 203, 205}, 
+     PDG -> {1, 3, 5}, 
      ElectricCharge -> -1/3, 
      Width -> {0, 0, 0}}}, 
 
@@ -68,7 +68,7 @@ ParticleDefinitions[EWSB] = {
      LaTeX -> "u", 
      Mass -> {0.0015, 1.27, 171.2}, 
      OutputName -> "u", 
-     PDG -> {2, 4, 6, 102, 104, 106, 202, 204, 206}, 
+     PDG -> {2, 4, 6}, 
      ElectricCharge -> 2/3, 
      Width -> {0, 0, 1.51}}}, 
 

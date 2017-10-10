@@ -100,9 +100,16 @@ genMax=4;
 
 DP[term_,particle_]:=Sum[D[term,getFull[particle]/.subGC[i],{i,1,genMax}]];
 DPF[term_,particle1_,particle2_,fnr_]:=Sum[(D[term,particle1 /.subGC[i] ]*(particle2[fnr] /. subGC[i]) /. {GetGen[getBlank[particle1]] ->GetGen[getBlank[particle2]],GetGenStart[getBlank[particle1]] ->GetGenStart[getBlank[particle2]]}),{i,1,genMax}]; 
+(*
 DMM[term_,particle_,number__,name_,fnr_]:=Block[{i,j,res, temp, part},
 If[getType[particle]===F,part=getFull[particle][fnr];,part=getFull[particle];];
-Return[Sum[D[term,part /.subGC[i]]  /. subIndFinalX[i,number,name] /.subFinalX,{i,1,genMax}]];
+Return[Sum[D[term,part /.subGC[i]]  /.Flatten[(Table[sum[UnbrokenSubgroups[[j,2]]/. subGC[i],a_,b_]\[Rule]1,{j,1,Length[UnbrokenSubgroups]}] )]/. subIndFinalX[i,number,name] /.subFinalX /.(Table[sum[Gauge[[j,3]],a_,b_]\[Rule]1,{j,1,Length[Gauge]}] /. subGC[i]),{i,1,genMax}]];
+];
+*)
+DMM[term_,particle_,number__,name_,fnr_]:=Block[{i,j,res, temp, part,ind},
+If[getType[particle]===F,part=getFull[particle][fnr];,part=getFull[particle];];
+ind=DeleteCases[getIndizes[particle],generation];
+Return[Sum[D[term,part /.subGC[i]]  /.Flatten[(Table[sum[ind[[j]]/. subGC[i],a_,b_]->1,{j,1,Length[ind]}] )]/.Table[If[FreeQ[ind,AuxGauge[[j,3]]],(AuxGauge[[j,3]]/. subGC[i])->(AuxGauge[[j,3]]/. subGC[i+4]),1->1],{j,1,Length[UnbrokenSubgroups]}]/. subIndFinalX[i,number,name] /.subFinalX /.(Table[sum[ind[[j]],a_,b_]->1,{j,1,Length[ind]}] /. subGC[i]),{i,1,genMax}]];
 ];
 
 DPV[term_,particle_,t_,fermpos_]:=Block[{part,i},
@@ -116,7 +123,7 @@ Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
 (*
 DPTad[term_,particle_,t_]:=Block[{part,i},
 part=getFull[particle];
-If[(Length[getIndizes[particle]]==0 && (OnesChecked==True)) || Depth[particle[{gen1}]]==1,
+If[(Length[getIndizes[particle]]\[Equal]0 && (OnesChecked\[Equal]True)) || Depth[particle[{gen1}]]\[Equal]1,
 Return[D[term,part]];,
 Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
 ]; 

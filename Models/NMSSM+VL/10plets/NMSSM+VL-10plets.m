@@ -125,7 +125,7 @@ DEFINITION[EWSB][DiracSpinors]={
  Fe ->{  FEL, conj[FER]},
  Fu ->{  FUL, conj[FUR]},
  Fv ->{  FvL, 0},
- Fep -> {FeR10, FeR10p},
+ Fep -> {FeR10p, FeR10},
  Fdp -> {FdL10, FdL10p},
  Fup -> {FULp, conj[FURp]}, 
  Chi ->{ L0, conj[L0]},

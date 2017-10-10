@@ -1083,7 +1083,16 @@ Switch[Length[getDimSPheno[name]],
 	WriteString[sphenoRGE, FortranLineBreak[String1LoopHead,String1Loop,99] <>"\n"];
 	WriteString[sphenoRGE,"End Do\n"];
 	WriteString[sphenoRGE,"End Do\n"];
-	j55++;];,
+	j55++;];
+	WriteString[sphenoRGE,"Do i1 = 1,"<>ToString[dim[[1]]]<>"\n"];
+	WriteString[sphenoRGE,"Do i2 = 1,"<>ToString[dim[[2]]]<>"\n"];
+	WriteString[sphenoRGE,"Do i3 = 1,"<>ToString[dim[[3]]]<>"\n"];
+	String1LoopHead ="beta" <>SPhenoForm[name]<>"1(i1,i2,i3)"; 
+	String1Loop =SPhenoForm[OneLoop/.Kronecker[__]->0];
+	WriteString[sphenoRGE, FortranLineBreak[String1LoopHead,String1Loop,99,True] <>"\n"];
+	WriteString[sphenoRGE,"End Do\n"];
+	WriteString[sphenoRGE,"End Do\n"];
+	WriteString[sphenoRGE,"End Do\n"];,
 2,
 	WriteString[sphenoRGE,"beta" <>SPhenoForm[name]<>"1 = 0._dp \n"];
 	String1LoopHead ="beta" <>SPhenoForm[name]<>"1(i1,i2)"; 
@@ -1211,7 +1220,16 @@ Switch[Length[getDimSPheno[name]],
 	WriteString[sphenoRGE, FortranLineBreak[String2LoopHead,String2Loop,99] <>"\n"];
 	WriteString[sphenoRGE,"End Do\n"];
 	WriteString[sphenoRGE,"End Do\n"];
-	j55++;]; ,
+	j55++;];
+	WriteString[sphenoRGE,"Do i1 = 1,"<>ToString[dim[[1]]]<>"\n"];
+	WriteString[sphenoRGE,"Do i2 = 1,"<>ToString[dim[[2]]]<>"\n"];
+	WriteString[sphenoRGE,"Do i3 = 1,"<>ToString[dim[[3]]]<>"\n"];
+	String2LoopHead ="beta" <>SPhenoForm[name]<>"2(i1,i2,i3)"; 
+	String2Loop =SPhenoForm[TwoLoop/.Kronecker[__]->0];
+	WriteString[sphenoRGE, FortranLineBreak[String2LoopHead,String2Loop,99,True] <>"\n"];
+	WriteString[sphenoRGE,"End Do\n"];
+	WriteString[sphenoRGE,"End Do\n"];
+	WriteString[sphenoRGE,"End Do\n"]; ,
 2,
 	WriteString[sphenoRGE,"beta" <>SPhenoForm[name]<>"2 = 0._dp \n"];
 	String2LoopHead ="beta" <>SPhenoForm[name]<>"2(i1,i2)"; 

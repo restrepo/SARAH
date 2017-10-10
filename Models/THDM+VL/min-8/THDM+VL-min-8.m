@@ -89,7 +89,6 @@ DEFINITION[EWSB][MatterSector]=
       {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},
       (* Vector-like quarks *)
       {{{dVL, sL}, {conj[dVR], conj[sR]}}, {{DVL,VdV}, {DVR,UdV}}},
-     (* {{{uVL}, {conj[uVR]}}, {{UVL,VuV}, {UVR,UuV}}}, *)
       (* leptons *)
       {{{eL}, {conj[eR]}}, {{EL,Ve}, {ER,Ue}}}       };  
 

@@ -578,7 +578,7 @@ group=Gauge[[Position[Gauge,allind[[i]]][[1,1]],2]];
 If[getType[External[3]/.extfields]===V,
 If[SA`DynL[extfields[[3,2]],Position[Gauge,allind[[i]]][[1,1]]]==={0},
 norm=1;,
-norm=Generator[Gauge[[Position[Gauge,allind[[i]]][[1,1]]]][[2]],SA`DynL[extfields[[2,2]],Position[Gauge,allind[[i]]][[1,1]]]]@@fixvar/.Lam[a_,b_,c_]->Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]->A[SU[n],b][c,a,b] /. sub[[k]];
+norm=Generator[Gauge[[Position[Gauge,allind[[i]]][[1,1]]]][[2]],SA`DynL[RE[extfields[[2,2]]],Position[Gauge,allind[[i]]][[1,1]]]]@@fixvar/.Lam[a_,b_,c_]->Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]->A[SU[n],b][c,a,b] /. sub[[k]];
 ];,
 norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],Position[Gauge,allind[[i]]][[1,1]]],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]] /. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,
 CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,
