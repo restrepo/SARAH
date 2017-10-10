@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 SMparticles={VectorP,VectorW,VectorZ,VectorG,TopQuark,BottomQuark,Electron,Neutrino,ChargedHiggs,PseudoScalar,HiggsBoson,getGhost[VectorP],getGhost[VectorZ],getGhost[VectorG],getGhost[VectorW],getGhost[conj[VectorW]]};
 CheckSM[list_]:=Length[Intersection[SMparticles,list/.{bar[a_]->a,conj[a_]->a}]]==Length[Intersection[list/.{bar[a_]->a,conj[a_]->a}]];
 WriteGoldstoneCheck[file_,particles_]:=Block[{temp,ifstring,ifstring2,listT},
@@ -54,6 +55,7 @@ Return[tempGen];
 GetGenerationFlag[particle_]:=getGenSPheno[particle];
 
 
+(* ::Input::Initialization:: *)
 AddPenguinContributions2[list_,resFFVscalar_,resFFVvector_,resSSV_,resFFSscalar_,resFFSvector_,resSSS_,resVVV_,resSVV_,initial_,final_,V3Needed_,mb_,goldstones_,file_]:=Block[{i,j,k,cfactor,i1,i2,i3},
 
 (* This function take a list of diagrams and uses known, analytical expression to write the ampltiude to the Fortran code. The 'names' of the expression for the amplitudes have to agree with the names used in the function 'AddPenguinResult' below. Note, it is assumed that two external particles are always fermions (that's the only case we need for the low-energy observables!). *)
@@ -475,6 +477,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 (*
 AddPenguinContributions2[list_,resFFVscalar_,resFFVvector_,resSSV_,resFFSscalar_,resFFSvector_,resSSS_,resVVV_,resSVV_,initial_,final_,V3Needed_,mb_,goldstones_,file_]:=Block[{i,j,k,cfactor},
 
@@ -787,6 +790,7 @@ j++;];
 
 
 
+(* ::Input::Initialization:: *)
 
 AddBoxResult[res_,file_]:=Block[{string,string1,string2,string3,string4,subB,
 subB2={"B1L"->"B1R","B2L"->"B2R","B3L"->"B3R", "B4L"->"B4R","coup1L"->"coup1R","coup2L"->"coup2R","coup3L"->"coup3R","coup4L"->"coup4R","coup1R"->"coup1L","coup2R"->"coup2L","coup3R"->"coup3L","coup4R"->"coup4L"},M1F,M2F,M2Fsq,M1Fsq,MSsq,MVsq,MV2sq},
@@ -1151,6 +1155,7 @@ WriteString[file, "End if\n"];
 
 
 
+(* ::Input::Initialization:: *)
 AddWaveResult[res_,file_]:=Block[{n,start4,prop,MF,MpropSq,mQi,mQj,mQisq,mQjsq,mQn,mQnsq,subB={"coup1L"->"coup1R","coup2L"->"coup2R","coup3L"->"coup3R","coup4L"->"coup4R","coup1R"->"coup1L","coup2R"->"coup2L","coup3R"->"coup3L","coup4R"->"coup4L","coup5L"->"coup5R","coup5R"->"coup5L"},string1,string2,string3,string4,M1Sq,M2Sq,M3Sq,stringLow,stringHigh,stringHightilde,stringHighV,stringLowV,stringHighVtilde,stringLowVtilde},
 
 Switch[res,(*----------Contributions to B0\[Rule]l l'------------*)
@@ -1781,6 +1786,7 @@ DeltaVBVertex,
 ];
 
 
+(* ::Input::Initialization:: *)
 AddPenguinResult[res_,file_]:=Block[{norm,M1,M2,M3,M1Sq,M2Sq,M3Sq,MpropSq,string1,string2,string3,string4,Cstring,subB={"coup1L"->"coup1R","coup2L"->"coup2R","coup3L"->"coup3R","coup4L"->"coup4R","coup1R"->"coup1L","coup2R"->"coup2L","coup3R"->"coup3L","coup4R"->"coup4L"},LoopArgumentString},
 
 Switch[res,
@@ -2217,7 +2223,7 @@ PenguinGm2SSV,
 	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
 	WriteString[file,"a_mu = a_mu - 2._dp*Real(coup1L*Conjg(coup1R),dp)*F4(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
-	WriteString[file,"      & - 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F1(ratio)/" <>
+	WriteString[file,"      & - ("<>SPhenoForm[-1.getElectricCharge[currentScalar1]/getElectricCharge[Electron]]<>")*2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F1(ratio)/" <>
 SPhenoMassSq[currentFermion1,IndexFermion1] <>" \n"];
 WriteString[file,"End if \n \n"];,
 
@@ -2225,7 +2231,7 @@ PenguinGm2FFV,
 	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
 	WriteString[file,"a_mu = a_mu - Real(coup1L*Conjg(coup1R),dp)*F3gamma(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
-	WriteString[file,"      & + 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F2(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>" \n"];
+	WriteString[file,"      & + ("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")*2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F2(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>" \n"];
 WriteString[file,"End if \n \n"];,
 
 

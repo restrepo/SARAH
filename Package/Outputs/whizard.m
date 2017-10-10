@@ -19,11 +19,13 @@
 
 
 
+(* ::Input::Initialization:: *)
 Options[MakeWHIZARD]={WOGauge->WO`WOUnitarity,AutoGauge->True,Exclude->{SSSS},WriteOmega->True, WriteWHIZARD->True, ReadLists->False,Version->"2.2.0", WOModelName->Automatic, MaximalCouplingsPerFile->150};
 
 MakeWHIZARD[opt___ ]:=MakeWHIZARDFunc[WOGauge/.{opt}/.Options[MakeWHIZARD],AutoGauge/.{opt}/.Options[MakeWHIZARD],Exclude/.{opt}/.Options[MakeWHIZARD],WriteOmega/.{opt}/.Options[MakeWHIZARD],WriteWHIZARD/.{opt}/.Options[MakeWHIZARD],ReadLists/.{opt}/.Options[MakeWHIZARD],Version/.{opt}/.Options[MakeWHIZARD],WOModelName/.{opt}/.Options[MakeWHIZARD],MaximalCouplingsPerFile/.{opt}/.Options[MakeWHIZARD]];
 
 
+(* ::Input::Initialization:: *)
 MakeWHIZARDFunc[ChosenGauge_,AGauge_,Exclude_, WriteOmega_, WriteWHIZARD_,ReadLists_,WOVersion_,ModelNameInput_,maxNumber_]:=Block[{i,j,k,temp,res,pos,names,j1,j2,j3,j4,(* $Path={$sarahPackageDir}}, *) $Path={$sarahNonPublicDir},startedtime},
 (*
 Print["-------------------------------------"];
@@ -292,11 +294,13 @@ Print["Output is saved in ",StyleForm[$sarahCurrentWODir,"Section",FontSize->10]
 ];
 
 
+(* ::Input::Initialization:: *)
  WOForm[x_]:=Return[x  /. ReplacementsWO /. subGreek]; 
 
 
 
 
+(* ::Input::Initialization:: *)
 ExpandWHIZARD3[vlist_]:=Block[{i,j,gf1,gf2,gf3,start1,start2,start3,iter1,iter2,iter3,ff1,ff2,ff3,fstart1,fstart2,fstart3,fiter1,fiter2,fiter3,temp},
 gf1=getGen[vlist[[1,1]] /. CC[a_]->a];
 gf2=getGen[vlist[[1,2]]/. CC[a_]->a];
@@ -464,6 +468,7 @@ Return[temp/. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],a
 
 
 
+(* ::Input::Initialization:: *)
 CreateParamListWO:=Block[{i,temp,temp2, allDependences,j1,j2,j3,angles},
 Print["Creating parameter List"];
 
@@ -605,7 +610,10 @@ getColorRep[x_]:=Block[{temp,pos,posC},
 temp=getIndizesWI[getBlank[x]];
 If[FreeQ[temp,color],Return[S];];
 pos=Position[temp,color][[1,1]];
-posC=Position[Gauge,color][[1,1]];
+If[FreeQ[Gauge,color]===False,
+posC=Position[Gauge,color][[1,1]];,
+posC=Position[AuxGauge,color][[1,1]];
+];
 Switch[temp[[pos,2]],
 3,
 	If[SA`DynL[getBlank[x],posC]==={1,0},

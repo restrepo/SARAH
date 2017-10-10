@@ -19,7 +19,6 @@
 
 
 
-(* ::Input::Initialization:: *)
 MakeCouplingLists:=Block[{i,j,k,temp,pos},
 For[i=1,i<=Length[ITypes],
 ISec=Intersection[ITypes[[i]]];
@@ -99,7 +98,6 @@ Return[Transpose[list][[2]]];
 ];
 
 
-(* ::Input::Initialization:: *)
 
 AddUnrotatedVertex[coup_,matrix_]:=Block[{pos,vertex,parts},
 If[coup[[1]]=!=SSSS && coup[[1]] =!=SSVV  && coup[[1]] =!=VVVV,
@@ -224,7 +222,6 @@ Return[temp2 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getG
 ];
 
 
-(* ::Input::Initialization:: *)
 ThreeBodyDecay[p_]:=Block[{i,res1,res2,listTemp,j,k},
 process={};
 res1=ThreeParticleVertex[p];
@@ -407,7 +404,6 @@ _,Return[{a,b}]
 ];
 
 
-(* ::Input::Initialization:: *)
 
 SymmFactor2BodyDecay[pD_,p1_,p2_]:=Block[{},
 If[getType[getBlank[pD]]===S,
@@ -471,7 +467,6 @@ temp=Select[getIndizesWI[Int1],(FreeQ[getIndizesWI[Ext],#1]&&#1[[1]]=!=generatio
 If[temp=!={},Return[Times@@Transpose[temp][[2]]];,Return[1];];];
 
 
-(* ::Input::Initialization:: *)
 CalculateSymmetryFactor[p1_,p2_]:=Block[{},
 fac=1/2;
 If[getBlank[p1]=!=getBlank[p2],
@@ -620,7 +615,11 @@ If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/.extfields],nor
 If[norm===0,norm=1;];];
 ,
 
-norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],gname],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]]/.{CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]};
+norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],gname],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]]/.{CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
+CG[SU[3],{{0,1},{1,0},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
+CG[SU[3],{{0,1},{1,0},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
+CG[SU[3],{{0,1},{0,1},{1,0},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d],
+CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]};
 ];
 ];
 fac=res*fac/norm;
@@ -805,7 +804,6 @@ Return[temp];
 ];
 
 
-(* ::Input::Initialization:: *)
 getChargeFactorDecay[list_,ind_,constraint_]:=Block[{i,j,k,temp,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={},sumvarA,fixvarA},
 allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
 

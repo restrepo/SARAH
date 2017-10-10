@@ -39,6 +39,10 @@ Print["No Output created!"];,
 
 MAXTEXLENGTH=120;
 
+UseSymmASymm=True;
+Update[];
+
+
 WithDiagramm = FeynmanDiagrams;
 CreateTeXForm;
 
@@ -86,6 +90,10 @@ WriteVerticesTeX[effectiveOperators,SixParticleInteractions,Short];
 If[WriteSARAH ==True,
 TeXforSARAH;
 ];
+
+UseSymmASymm=False;
+Update[];
+
 
 Print[""];
 Print["Done. Output is in ", $sarahCurrentTeXDir];
@@ -1619,6 +1627,7 @@ WriteString[outputfile,"Gauge fixing contributions: \n"];
 For[j=1,j<=Length[rxis],
 WriteMatrixToTeX[mixIN,mixedIN,D[matIN,rxis[[j]]]  //.RXi[_]->0,rxis[[j]]];
 j++;];
+
 
 ];
 

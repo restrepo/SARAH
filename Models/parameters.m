@@ -289,8 +289,7 @@ ParameterDefinitionsMain = {
              
 {{Description -> "Scalar mixing angle",
 			 LaTeX -> "\\alpha",
-             DependenceSPheno -> ArcCos[ZH[1,2]], 
-(*             DependenceNum ->1/2 ArcTan[Tan[2 \[Beta]] (Mass[Ah,2]^2+Mass[VZ]^2)/(Mass[Ah,2]^2-Mass[VZ]^2)], *)
+             DependenceSPheno -> ArcTan[ZH[2,2]/ZH[1,2]], 
              Real -> True, 
              LesHouches -> {HMIX, 11},
              OutputName-> alphaH     }},  

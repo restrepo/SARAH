@@ -81,11 +81,37 @@ InitializationValues = {
  {gBL, 0.5},
  {g1BL, -0.06},
  {gBL1, -0.06}
- }
+ };
+ 
+
+EXTPAR={{1,gBLinput},
+        {2,g1BLinput},
+        {3,MZp},
+        {10,TBetaP},
+        {11,MuInput},
+        {12,MuPInput},        
+        {13,BMuInput},
+        {14,BMuPInput}        
+        
+        };
+
+
+ParametersToSolveTadpolesLowScaleInput = {mHd2,mHu2,mC12,mC22}; 
 
 BoundaryLowScaleInput={
+ {gBL,gBLinput},
+ {g1BL, g1BLinput},
+ {gBL1, 0},
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
- {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]},
+ {vevP, MZp/gBL},
+ {betaP,ArcTan[TBetaP]},
+ {x2,vevP*Cos[betaP]},
+ {x1,vevP*Sin[betaP]},
+ {B[\[Mu]],BMuInput},
+ {B[MuP],BMuPInput},
+ {\[Mu],MuInput},
+ {MuP,MuPInput}
 };
 
 

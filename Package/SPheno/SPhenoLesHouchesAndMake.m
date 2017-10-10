@@ -652,6 +652,8 @@ If[Count[Gauge,U[1],3]>1,WriteString[filenames[[i]],"{{60},{Value\[Rule]1}}, (* 
 If[SeveralIndependentTadpoleSolutions=!=True,
 WriteString[filenames[[i]],"{{65},{Value\[Rule]1}}, (* Solution tadpole equation *)\n"];
 ];
+WriteString[filenames[[i]],"{{65},{Value\[Rule]1}}, (* two-scale matching *) \n"];
+WriteString[filenames[[i]],"{{66},{Value\[Rule]1}}, (* EFT Higgs *) \n"];
 WriteString[filenames[[i]],"{{75},{Value\[Rule]1}}, (* Write WHIZARD files *) \n"];
 WriteString[filenames[[i]],"{{76},{Value\[Rule]1}},  (* Write HiggsBounds files *) \n"];
 WriteString[filenames[[i]],"{{86},{Value\[Rule]0.}},  (* Maximal width to be counted as invisible in Higgs decays; -1: only LSP *) \n"];

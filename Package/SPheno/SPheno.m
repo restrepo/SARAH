@@ -57,12 +57,12 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPheno2LPole`;
 ];
 
-Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran",IncludeFlavorKit->True,IncludeLoopDecays->True};
+Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran",IncludeFlavorKit->True,IncludeLoopDecays->True,Include2loopMasses->True};
 
 MakeSPhenoFast[opt___]:=MakeSPheno[IncludeLoopDecays->False,IncludeFlavorKit->False,ReadLists->True];
-MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno],IncludeFlavorKit/.{opt}/.Options[MakeSPheno],IncludeLoopDecays/.{opt}/.Options[MakeSPheno]];
+MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno],IncludeFlavorKit/.{opt}/.Options[MakeSPheno],IncludeLoopDecays/.{opt}/.Options[MakeSPheno],Include2loopMasses/.{opt}/.Options[MakeSPheno]];
 
-MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_,flavorkit_,loopdecays_]:=Block[{i,i1,i2,temp,startedtime},
+MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_,flavorkit_,loopdecays_,inc2Lcorrections_]:=Block[{i,i1,i2,temp,startedtime},
 startedtime=TimeUsed[];
 Print[StyleForm["Generate SPheno Source Code","Section"]];
 
@@ -120,6 +120,10 @@ GenerateMatchingConditions;
 
 If[AlwaysInclude2Loop===True,
 Include2LoopCorrections=True;
+];
+
+If[inc2Lcorrections===False,
+Include2LoopCorrections=False;
 ];
 
 If[UseHiggs2LoopMSSM===True || Use2LoopFromLiterature===True,

@@ -540,7 +540,7 @@ On[Part::"pkspec1"];
 Return[structure];
 ];
 
-MakeIndexStructureRGEnonSUSY[partListIN_]:=Block[{i,j,k,l,pos,pos2,temp,dyn,ind,sign={},dims, CGc,inds, i1,i2,i3,i4,partList={}},
+MakeIndexStructureRGEnonSUSY[partListIN_]:=Block[{i,j,k,l,pos,pos2,temp,dyn,ind,sign={},dims, CGc,inds, i1,i2,i3,i4,partList={},realScalarInv={}},
 IndexTypes={};
 For[i=1,i<=Length[partListIN],
 If[FreeQ[ListFields,RE[partListIN[[i]]]]==False,
@@ -564,6 +564,9 @@ For[i=1,i<=Length[partList],
 If[FreeQ[ListFields,RE[partList[[i]]]]==False,
 pos=Position[ListFields,RE[partList[[i]]]][[1,1]];
 IndexTypes = Join[IndexTypes,Select[Gauge,(FreeQ[ListFields[[pos]],#[[3]]]==False &&#[[2]]=!=U[1])&]];
+If[FreeQ[RealScalars,partList[[i]]]==False,
+realScalarInv=Join[realScalarInv,Select[Gauge,(FreeQ[ListFields[[pos]],#[[3]]]==False &&#[[2]]=!=U[1])&]];
+];
 ];
 If[Head[partList[[i]]]===conj,sign=Join[sign,{-1}];,sign=Join[sign,{1}];];
 i++;];
@@ -575,7 +578,7 @@ pos=Position[Gauge,IndexTypes[[i]]][[1,1]];
 If[Gauge[[pos,5]]===False,
 CGc=GenerateInvariantsTensor[Gauge[[pos,2]],Gauge[[pos,3]],Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
 structure=structure*CGc;
-If[FreeQ[SA`KnonwCG,Head[CGc]] && Length[partList]<5 && FreeQ[CGc,CG]==False &&Head[CGc]=!=Times,
+If[FreeQ[SA`KnonwCG,Head[CGc]]  && Length[partList]<5 && FreeQ[CGc,CG]==False &&Head[CGc]=!=Times,
 If[Length[Head[CGc][[2]]]===4,
 If[(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i1,i2}]]==False ) &&(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i3,i4}]]==False ) ,
 structure=structure /.  CG[a_,{i1_List,i2_List,i3_List,i4_List}][j1_,j2_,j3_,j4_]:>CG[a,{i1,i2}][j1,j2]CG[a,{i3,i4}][j3,j4];,
@@ -584,6 +587,7 @@ structure=structure /. CG[a_,b_]:>InvariantMatrixSusyno[Gauge[[pos,2]],getDynkin
 structure=structure /. CG[a_,b_]:>InvariantMatrixSusyno[Gauge[[pos,2]],getDynkinLabels[#,Gauge[[pos,2,1]]]&/@Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
 ];
 ];,
+
 dims=Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}];
 For[j=1,j<=Length[dims],
 If[Abs[dims[[j]]]=!=1,

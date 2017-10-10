@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}, IncludeEffectiveHiggsVertices->True,BSMcouplings->{}};
 
 MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeUFO],BSMcouplings/.{opt}/.Options[MakeUFO]];
@@ -124,6 +125,7 @@ Print["Output is saved in ",StyleForm[$sarahCurrentUfoDir,"Section",FontSize->10
 ];
 
 
+(* ::Input::Initialization:: *)
 ExtractColor[vertex_]:=Block[{i,j,temp={},temp2,res,CS,diffCol,coeff,current },
 diffCol={fSU3,Delta,Lam, LamHlf,K6,K6Bar,T6,CG,Generator, epsTensor}; (* Possible Headers *)
 diffColQT={ct1,ct2,ct3,ct4}; (* name of color indices *)
@@ -158,6 +160,7 @@ Return[D[vertex,col]];
 
 
 
+(* ::Input::Initialization:: *)
 WriteUfoVertices[Eigenstates_,Exclude_,effHiggsV_]:=Block[{i,j},
 Print["Write Vertex and Couplings file "];
 
@@ -447,6 +450,7 @@ WriteString[UfoCF,"from function_library import complexconjugate,re,im,csc,sec,a
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteUfoLorentz[Eigenstates_,Exclude_,effHiggsV_]:=Block[{i,temp},
 SA`UfoLorentzTypes = {};
 
@@ -490,6 +494,7 @@ Close[UfoLF];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteUfoParticles[Eigenstates_]:=Block[{i,j},
 
 Print["Write particles files"];
@@ -567,6 +572,7 @@ UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongC
 (* UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling\[Rule]G /. subGreek]],{"^"->"**"}]]; *)
 
 
+(* ::Input::Initialization:: *)
 ExpandUfo4[vlist_,prefac_]:=Block[{i,j,gf1,gf2,gf3,gf4,start1,start2,start3,start4,iter1,iter2,iter3,iter4,ff1,ff2,ff3,ff4,fstart1,fstart2,fstart3,fstart4,fiter1,fiter2,fiter3,fiter4,temp},
 gf1=getGen[vlist[[1,1]]];
 gf2=getGen[vlist[[1,2]]];
@@ -640,7 +646,6 @@ If[FreeQ[vlist,Delta[ft2,ft3]]==False,fstart3=Hold[fiter2];ff3=Hold[fiter2];];
 If[FreeQ[vlist,Delta[ft1,ft4]]==False,fstart4=Hold[fiter1];ff4=Hold[fiter1];];
 If[FreeQ[vlist,Delta[ft3,ft4]]==False,fstart4=Hold[fiter3];ff4=Hold[fiter3];];
 If[FreeQ[vlist,Delta[ft2,ft4]]==False,fstart4=Hold[fiter2];ff4=Hold[fiter2];];
-
 value =Table[{ExtractColor[prefac*conj[vlist[[i,1]]/.Complex[a_,b_]->Complex[a,-b] ]],vlist[[i,2]] //. subUfoLorentz},{i,2,Length[vlist]}] //. sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}] ;
 
 For[iter1=1,iter1<=gf1,
@@ -664,6 +669,7 @@ Return[temp];
 ];
 
 
+(* ::Input::Initialization:: *)
 ExpandUfo3[vlist_,prefac_]:=Block[{i,j,gf1,gf2,gf3,start1,start2,start3,iter1,iter2,iter3,ff1,ff2,ff3,fstart1,fstart2,fstart3,fiter1,fiter2,fiter3,temp,colorstructures},
 gf1=getGen[vlist[[1,1]] /. CC[a_]->a];
 gf2=getGen[vlist[[1,2]]/. CC[a_]->a];
@@ -745,11 +751,24 @@ Return[temp];
 
 
 subUfoColor={
+ThetaStep[__]->1,
 Lam[a_,b_,c_]->2LamHlf[a,b,c],
  sum[a_,b_,c_,fSU3[d___,x_,e___] fSU3[f___,x_,g___]]-> fSU3[d,-1,e] fSU3[f,-1,g],
+(*
+ sum[a_,b_,c_,fSU3[d___,j1,e___] fSU3[f___,j1,g___]]\[Rule] fSU3[d,-1,e] fSU3[f,-1,g],
+sum[a_,b_,c_,fSU3[d___,j2,e___] fSU3[f___,j2,g___]]\[Rule] fSU3[d,-2,e] fSU3[f,-2,g],
+sum[a_,b_,c_,fSU3[d___,j3,e___] fSU3[f___,j3,g___]]\[Rule] fSU3[d,-3,e] fSU3[f,-3,g],
+sum[a_,b_,c_,fSU3[d___,j4,e___] fSU3[f___,j4,g___]]\[Rule] fSU3[d,-4,e] fSU3[f,-4,g],
+*)
 sum[a_,b_,c_,epsTensor[d___,x_,e___] epsTensor[f___,x_,g___]]-> epsTensor[d,-1,e] epsTensor[f,-1,g],
 sum[a_,b_,c_,fSU3[x_,d_,e_] fSU3[x_,f_,g_]]-> fSU3[-1,d,e] fSU3[-1,f,g],
- sum[a_,b_,c_,Lam[d___,x_,e___] Lam[f___,x_,g___]]-> Lam[d,-1,e] Lam[f,-1,g],
+sum[a_,b_,c_,Lam[d___,x_,e___] Lam[f___,x_,g___]]-> Lam[d,-1,e] Lam[f,-1,g],
+(*
+ sum[a_,b_,c_,Lam[d___,j1,e___] Lam[f___,j1,g___]]\[Rule] Lam[d,-1,e] Lam[f,-1,g],
+sum[a_,b_,c_,Lam[d___,j2,e___] Lam[f___,j2,g___]]\[Rule] Lam[d,-2,e] Lam[f,-2,g],
+sum[a_,b_,c_,Lam[d___,j3,e___] Lam[f___,j3,g___]]\[Rule] Lam[d,-3,e] Lam[f,-3,g],
+sum[a_,b_,c_,Lam[d___,j4,e___] Lam[f___,j4,g___]]\[Rule] Lam[d,-4,e] Lam[f,-4,g],
+*)
 sum[a_,b_,c_,CG[c1___][d___,x_,e___] CG[c2__][f___,x_,g___]]-> CG[c1][d,-1,e] CG[c2][f,-1,g],
 CG[SU[3],{{0,1},{2,0},{0,1}}][a_,b_,c_]->K6[b,a,c],
 CG[SU[3],{{2,0},{0,1},{0,1}}][a_,b_,c_]->K6[a,b,c],

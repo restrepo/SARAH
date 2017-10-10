@@ -236,6 +236,7 @@ WriteString[spheno,"      YuSM(i1,i1)=sqrt(2._dp)*mf_u(i1)/vSM \n"];
 WriteString[spheno,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
 WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
 WriteString[spheno,"    End Do \n"];
+WriteString[spheno,"    If (GenerationMixing) YuSM = Matmul(Transpose(CKM),YuSM) \n"];
 WriteString[spheno,"End if \n"];
 
 If[SPhenoOnlyForHM=!=True,
@@ -604,11 +605,15 @@ MakeVariableList[NewMassParameters,"",spheno];
 
 MakeVariableList[listAllParametersAndVEVs,"",spheno];
 
+PreSARAHoperatorsQFV=Join[Select[PreSARAHoperatorsQFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=="Tree"&],Select[PreSARAHoperatorsQFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=!="Tree"&]];
+PreSARAHoperatorsLFV=Join[Select[PreSARAHoperatorsLFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=="Tree"&],Select[PreSARAHoperatorsLFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=!="Tree"&]];
+
 
 MakeVariableList[Intersection[Flatten[{namesAll,namesZW}]],"",spheno];
 MakeVariableList[Transpose[ListOfLowEnergyNames][[1]],",Intent(out)",spheno];
 WriteString[spheno,"Complex(dp) :: c7,c7p,c8,c8p \n"];
 WriteString[spheno,"Real(dp) :: ResultMuE(6), ResultTauMeson(3), ResultTemp(99) \n"];
+WriteString[spheno,"Real(dp) :: epsTree=1.0E-20_dp \n"];
 WriteString[spheno,"Complex(dp), Dimension(3,3) :: "<> SPhenoForm[UpYukawa]<>"_save, "<>SPhenoForm[DownYukawa]<>"_save, "<>SPhenoForm[ElectronYukawa]<>"_save, CKMsave \n"];
 
 If[NewNumericalDependences=!={},
@@ -736,8 +741,8 @@ SetGoldstoneMasses[spheno];
 MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},spheno];
 ];
 
-
-If[iQFV==1,
+(*
+If[iQFV\[Equal]1,
 WriteString[spheno,"iQFinal = 1 \n"];
 WriteString[spheno,"If (MakeQtest) iQFinal=10 \n"];
 WriteString[spheno,"Qinsave=GetRenormalizationScale() \n"];
@@ -745,6 +750,7 @@ WriteString[spheno,"Do iQTEST=1,iQFinal \n"];
 WriteString[spheno,"maxdiff=0._dp \n"];
 WriteString[spheno,"If (MakeQtest) Qin=SetRenormalizationScale(10.0_dp**iQTest) \n"];
 ];
+*)
 For[i=1,i<=Length[PreSARAHoperatorsQFV],
 If[PreSARAHoperatorsQFV[[i,1]]=!="dummy",
 WriteString[spheno,"\n ! **** "<>ToString[PreSARAHoperatorsQFV[[i,1]]]<>" **** \n \n"];
@@ -776,8 +782,22 @@ WriteString[spheno,"  gt3= 1 \n"];
 indlist = Join[indlist,{gt3}];
 ];
 ];
+
+stringReplaceTS={"PengS"->"TreeS","PengV"->"TreeS","Box"->"TreeS"};
+stringReplaceTV={"PengS"->"TreeV","PengV"->"TreeV","Box"->"TreeV"};
+
 If[iQFV==1,
-MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];,
+If[StringTake[ToString[PreSARAHoperatorsQFV[[i,1]]],{1,Min[{4,StringLength[ToString[PreSARAHoperatorsQFV[[i,1]]]]}]}]=!="Tree" && Length[PreSARAHoperatorsQFV[[i,2]]]===4,
+posS=Position[PreSARAHoperatorsQFV,ToExpression[StringReplace[ToString[PreSARAHoperatorsQFV[[i,1]]],stringReplaceTS]]][[1,1]];
+posV=Position[PreSARAHoperatorsQFV,ToExpression[StringReplace[ToString[PreSARAHoperatorsQFV[[i,1]]],stringReplaceTV]]][[1,1]];
+WriteString[spheno,"If ("<>StringReplace[ToString[Flatten[Table[{"(Abs("<>ToString[PreSARAHoperatorsQFV[[posS,3,k]]]<>indvector<>").lt.epsTree)"},{k,1,Length[PreSARAHoperatorsQFV[[posS,3]]]}]]],{"),"->").and. & \n &","{"->"","}"->""}]<>") Then \n"];
+WriteString[spheno,"  If ("<>StringReplace[ToString[Flatten[Table[{"(Abs("<>ToString[PreSARAHoperatorsQFV[[posV,3,k]]]<>indvector<>").lt.epsTree)"},{k,1,Length[PreSARAHoperatorsQFV[[posV,3]]]}]]],{"),"->").and. & \n &","{"->"","}"->""}]<>") Then \n"];
+];
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];
+If[StringTake[ToString[PreSARAHoperatorsQFV[[i,1]]],{1,Min[{4,StringLength[ToString[PreSARAHoperatorsQFV[[i,1]]]]}]}]=!="Tree" && Length[PreSARAHoperatorsQFV[[i,2]]]===4,
+WriteString[spheno,"  End if \n"];
+WriteString[spheno,"End if \n"];
+];,
 MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".true."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>"SM"<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],spheno];
 (*
 If[getGen[BottomQuark]\[LessEqual] 3 && getGen[TopQuark]\[LessEqual] 3,
@@ -795,10 +815,11 @@ WriteString[spheno,"End do \n\n"];
 WriteString[spheno,"\n"];
 ];
 i++;];
-If[iQFV==1,
+(*
+If[iQFV\[Equal]1,
 WriteString[spheno,"If (MakeQTEST) Then  \n"];
-For[ii=1,ii<=Length[PreSARAHoperatorsQFV],
-For[k=1,k<=Length[PreSARAHoperatorsQFV[[ii,3]]],
+For[ii=1,ii\[LessEqual]Length[PreSARAHoperatorsQFV],
+For[k=1,k\[LessEqual]Length[PreSARAHoperatorsQFV[[ii,3]]],
 WriteString[spheno,"where (Abs("<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check).ne.0._dp) "<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check = ("<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check-"<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]] <>")/"<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check\n"];
 WriteString[spheno,"If(MaxVal(Abs("<> ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check)).gt.maxdiff) maxdiff=MaxVal(Abs("<> ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check))\n"];
 WriteString[spheno,ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check="<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"\n"];
@@ -808,8 +829,9 @@ WriteString[spheno,"If (iQTEST.gt.1) Write(*,*) \"Q=\",10.0_dp**iQTest,\" max ch
 WriteString[spheno,"If (iQTEST.eq.10) Qin=SetRenormalizationScale(Qinsave) \n"];
 WriteString[spheno,"End If  \n"];
 WriteString[spheno,"End Do  \n"];
-];
+]; *)
 iQFV++;];
+
 
 For[i=1,i<=Length[WrappersQFV],
 WriteString[spheno,"\n ! ***** Combine operators for "<>ToString[WrappersQFV[[i,1]]]<>"\n"];
@@ -1022,13 +1044,14 @@ WriteString[spheno,"TauMuEta = ResultTauMeson(2) \n"];
 WriteString[spheno,"TauMuEtap = ResultTauMeson(3) \n"];
 ];
 
+(*
 WriteString[spheno,"iQFinal = 1 \n"];
 WriteString[spheno,"If (MakeQtest) iQFinal=10 \n"];
 WriteString[spheno,"Qinsave=GetRenormalizationScale() \n"];
 WriteString[spheno,"Do iQTEST=1,iQFinal \n"];
 WriteString[spheno,"maxdiff=0._dp \n"];
 WriteString[spheno,"If (MakeQtest) Qin=SetRenormalizationScale(10.0_dp**iQTest) \n"];
-
+*)
 For[i=1,i<=Length[PreSARAHoperatorsLFV],
 If[PreSARAHoperatorsLFV[[i,1]]=!="dummy",
 WriteString[spheno,"\n ! **** "<>ToString[PreSARAHoperatorsLFV[[i,1]]]<>" **** \n \n"];
@@ -1071,9 +1094,10 @@ WriteString[spheno,"\n"];
 ];
 i++;];
 
+(*
 WriteString[spheno,"If (MakeQTEST) Then  \n"];
-For[ii=1,ii<=Length[PreSARAHoperatorsLFV],
-For[k=1,k<=Length[PreSARAHoperatorsLFV[[ii,3]]],
+For[ii=1,ii\[LessEqual]Length[PreSARAHoperatorsLFV],
+For[k=1,k\[LessEqual]Length[PreSARAHoperatorsLFV[[ii,3]]],
 WriteString[spheno,"where (Abs("<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check).ne.0._dp) "<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check = ("<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check-"<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]] <>")/"<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check\n"];
 WriteString[spheno,"If(MaxVal(Abs("<> ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check)).gt.maxdiff) maxdiff=MaxVal(Abs("<> ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check))\n"];
 WriteString[spheno,ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check="<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"\n"];
@@ -1083,6 +1107,7 @@ WriteString[spheno,"If (iQTEST.gt.1) Write(*,*) \"Q=\",10.0_dp**iQTest,\" max ch
 WriteString[spheno,"If (iQTEST.eq.10) Qin=SetRenormalizationScale(Qinsave) \n"];
 WriteString[spheno,"End If  \n"];
 WriteString[spheno,"End Do  \n"];
+*)
 
 For[i=1,i<=Length[WrappersLFV],
 WriteString[spheno,"\n ! ***** Combine operators for "<>ToString[WrappersLFV[[i,1]]]<>"\n"];

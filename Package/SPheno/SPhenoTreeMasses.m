@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoTreeMasses[Eigenstates_]:=Block[{i,j, currentRegime, readRegime},
 (*
 Print["----------------------------------------------"];
@@ -85,6 +86,7 @@ Close[sphenoTree];
 ];
 
 
+(* ::Input::Initialization:: *)
 InitSPhenoTreeMasses[Eigenstates_]:=Block[{i,j,k, type,massMatrixTemp},
 
 Print["  Getting needed Information"]; 
@@ -267,6 +269,7 @@ ExistingParameters = Complement[ExistingParameters,NewMassParameters];
 
 
 
+(* ::Input::Initialization:: *)
 WriteTreeMassesHeader :=Block[{},
 
 Print["  Writing header"];
@@ -331,6 +334,7 @@ WriteString[sphenoTree,"End Subroutine RunningFermionMasses \n\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteCalcAllTreeMasses:=Block[{i2,suffix},
 
 Print["  Writing routine for calculating all masses"];
@@ -653,6 +657,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteTreeMassFunctionScalar[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3,pos,suffix,subVEVfixed},
 If[MassesForEffpot===True,
 suffix="EffPot";
@@ -996,6 +1001,7 @@ WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <>" \n\n
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteTreeMassFunctionFermionSymm[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3,suffix,subVEVfixed},
 
 If[MassesForEffpot===True,
@@ -1221,6 +1227,7 @@ WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <> " \n\
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteTreeMassFunctionFermionNonSymm[Name_,particle_,MixingName1_,MixingName2_,MatrixFunction_,Parameters_]:=Block[{i2,i3,suffix,subVEVfixed},
 
 If[MassesForEffpot===True,
@@ -1684,6 +1691,7 @@ WriteString[sphenoTree, "End Subroutine  TreeMassesSM \n \n \n"];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSortGoldstones[eigenstates_]:=Block[{i,j,k,scalars, gold,cGold,mm,mTemp,ZTemp, mC, ZC},
 If[IntermediateScale === True,
 MakeSubroutineTitle["SortGoldstones"<>ToString[RegimeNr],NewMassParameters,{},{"kont"},sphenoTree];,

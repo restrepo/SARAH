@@ -1424,7 +1424,7 @@ UpdateGaugeTransformations[subGauge,subGaugeInv,UGTgaugeMM[rotNr]];
 GaugeTransformation=replaceGen[ReleaseHold[GaugeTransformation /. subGhost /.subGauge],rgNr];
 ];
 MassMatricesGaugeTEMP[name]=MassMatricesGauge[name];
-MassMatricesGauge[name]=SimplifySARAH[MassMatricesGauge[name]] /. g[a__]->1;
+MassMatricesGauge[name]=SimplifySARAH[MassMatricesGauge[name]] /. g[a__]->1 /.{ct1->1,ct2->1};
 
 todel=Intersection[getBlank/@Flatten[Table[def[[i,1]],{i,1,Length[def]}]]];
 delParticle/@(getGhost/@Select[todel,(getType[#]===V)&]);

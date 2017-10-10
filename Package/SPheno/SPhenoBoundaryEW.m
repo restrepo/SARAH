@@ -793,7 +793,11 @@ i++;];
 For[i=1,i<=Length[ListTree],
 If[ListTree[[i,6]]=!=SPhenoMass[Electron] && ListTree[[i,6]]=!=SPhenoMass[BottomQuark]&& ListTree[[i,6]]=!=SPhenoMass[TopQuark],
 If[Intersection[ListTree[[i,5]],DependOnYukawas]=!={},
-MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]],ListTree[[i,7]]}],{},{"kont"},sphenoSugra];
+If[ListTree[[i,4]]===ScalarMass,
+MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]],ListTree[[i,7]]}],{},{"kont"},sphenoSugra];,
+MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]]}],{},{"kont"},sphenoSugra];
+WriteString[sphenoSugra,ToString[ListTree[[i,7]]]<>" = "<>ToString[ListTree[[i,6]]]<>"**2 \n"];
+];
 ];
 ];
 i++;];

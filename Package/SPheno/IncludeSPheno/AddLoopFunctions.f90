@@ -636,12 +636,15 @@ End Function C22_IR
 Complex(dp) Function SA_B0(xp, xm1, xm2)
  Implicit None
   Real(dp), Intent(in) :: xp, xm1, xm2
-  
-  If ((xm1.eq.0._dp).and.(xm2.eq.0._dp)) Then 
-    SA_B0=0._dp
-    Return
-  End if
 
+! FS: changed 15/07/2017
+    If ((xm1.eq.0._dp).and.(xm2.eq.0._dp).and.(xp.eq.0._dp)) Then 
+      SA_B0=0._dp ! to prevent numerical problems.
+      Return
+    End if
+!    
+
+  
   If (divonly.Eq.1) Then
    If (IRdivonly) Then 
     SA_B0 = 0._dp

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* --------- Calc Vertices -----------------*)
 
 Options[Vertex]={Eigenstates ->CurrentStates,  UseDependences-> False, Lorentz->False};
@@ -456,6 +457,12 @@ If[Length[tempWithLorentz]>500,
 
 ];
 (* tempWithLorentz = tempWithLorentz/. Inv[X_][a_,b_]\[Rule]conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; *)
+
+If[partCode===220,
+If[FreeQ[tempWithLorentz,Lam[ct1,a__]]==False&&FreeQ[tempWithLorentz,Lam[ct2,a__]]==False&&FreeQ[tempWithLorentz,Lam[ct3,a__]]==False&&FreeQ[tempWithLorentz,Lam[ct4,a__]]==False,
+tempWithLorentz=Simplify[Simplify[tempWithLorentz]/. sum->sumC  //. sumC[a1_,a2_,a3_,d__]-> d/. Lam[ct1,j4_,j1_] Lam[ct2_,j2_,j3_] Lam[ct3_,j3_,j4_] Lam[ct4_,j1_,j2_] -> tr[Lam[ct1],Lam[ct4],Lam[ct2],Lam[ct3]] ]];
+tempWithLorentz=tempWithLorentz//. tr[a_,b_,c_,d_]-2tr[a_,c_,b_,d_]->tr[a,KK[b,c],d]-tr[a,c,b,d]//. -tr[a_,b_,c_,d_]+tr[a_,b_,d_,c_]->-tr[a,b,KK[c,d]] /.tr[a_,KK[b__],c_]->tr[c,a,KK[b]]//. tr[a_,b_,KK[c_,d_]]-tr[b_,a_,KK[c_,d_]]->tr[KK[a,b],KK[c,d]] /. tr[KK[Lam[a_],Lam[b_]],KK[Lam[c_],Lam[d_]]]->sum[j1,1,8,fSU3[a,b,j1] fSU3[c,d,j1]];
+];
 
 If[tempWithLorentz=!=0,
 If[LorentzNeeded==True,

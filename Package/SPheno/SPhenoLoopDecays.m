@@ -1342,7 +1342,7 @@ GenerateCalculateOneLoopWidths:=
 		 If[Head[factor]===Integer,factor=factor*1.0];
 		 If[Head[symfactor]===Integer,symfactor=symfactor*1.0];
 		 
-		 WriteString[outfile,"If (AmpSq"<>name<>dimIn<>".eq.0._dp) Then \n"];
+		 WriteString[outfile,"If (AmpSq"<>name<>dimIn<>".le.0._dp) Then \n"];
 		 WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = 0._dp \n"];
 		 WriteString[outfile,"Else \n"];
 
