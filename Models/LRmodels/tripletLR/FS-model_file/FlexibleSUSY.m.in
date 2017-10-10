@@ -1,0 +1,91 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = LRmodels/tripletLR;
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, vRinput},
+    {2, TanBeta},
+    {3, lam1INPUT},
+    {4, lam2INPUT},
+    {5, lam3INPUT},
+    {6, lam4INPUT},
+    {7, rho1INPUT},
+    {8, rho2INPUT},
+    {9, alp1INPUT},
+    {10, alp2INPUT},
+    {11, alp3INPUT},
+    {12, M1INPUT},
+    {13, M23INPUT},
+    {14, lamT1INPUT},
+    {15, lamT2INPUT}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mu12, mu22, mu32};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {g3, LowEnergyConstant[g3SM]},
+    {g2, LowEnergyConstant[g2SM]},
+    {gR, g2},
+    {gBL, (LowEnergyConstant[g1SM]*gR)/Sqrt[-LowEnergyConstant[g1SM]^2 + gR^2]},
+    {v1, LowEnergyConstant[vSM] Cos[ArcTan[TanBeta]]},   
+    {v2, LowEnergyConstant[vSM] Sin[ArcTan[TanBeta]]},
+    {vR, vRinput},
+    {YQ2[1,1], -Sqrt[2]*(v1*LowEnergyConstant[ydSM] - v2*LowEnergyConstant[yuSM])/(-v1^2 + v2^2)},
+    {YQ2[2,2], -Sqrt[2]*(v1*LowEnergyConstant[ysSM] - v2*LowEnergyConstant[ycSM])/(-v1^2 + v2^2)},
+    {YQ2[3,3], -Sqrt[2]*(v1*LowEnergyConstant[ybSM] - v2*LowEnergyConstant[ytSM])/(-v1^2 + v2^2)},
+    {YQ1[1,1],  Sqrt[2]*(v2*LowEnergyConstant[ydSM] - v1*LowEnergyConstant[yuSM])/(-v1^2 + v2^2)},
+    {YQ1[2,2],  Sqrt[2]*(v2*LowEnergyConstant[ysSM] - v1*LowEnergyConstant[ycSM])/(-v1^2 + v2^2)},
+    {YQ1[3,3],  Sqrt[2]*(v2*LowEnergyConstant[ybSM] - v1*LowEnergyConstant[ytSM])/(-v1^2 + v2^2)},
+    {YL2, ZEROMATRIX[3,3]},
+    {YL1, ZEROMATRIX[3,3]},
+    {lam1, lam1INPUT},
+    {lam2, lam2INPUT},
+    {lam3, lam3INPUT},
+    {lam4, lam4INPUT},
+    {rho1, rho1INPUT},
+    {rho2, rho2INPUT},
+    {alp1, alp1INPUT},
+    {alp2, alp2INPUT},
+    {alp3, alp3INPUT},
+    {M1, M1INPUT},
+    {M23, M23INPUT},
+    {lamT1, lamT1INPUT},
+    {lamT2, lamT2INPUT}
+};
+
+InitialGuessAtLowScale = {
+    {v1, LowEnergyConstant[vSM] Cos[ArcTan[TanBeta]]},   
+    {v2, LowEnergyConstant[vSM] Sin[ArcTan[TanBeta]]},
+    {YQ2[1,1], -Sqrt[2]*(v1*LowEnergyConstant[ydSM] - v2*LowEnergyConstant[yuSM])/(-v1^2 + v2^2)},
+    {YQ2[2,2], -Sqrt[2]*(v1*LowEnergyConstant[ysSM] - v2*LowEnergyConstant[ycSM])/(-v1^2 + v2^2)},
+    {YQ2[3,3], -Sqrt[2]*(v1*LowEnergyConstant[ybSM] - v2*LowEnergyConstant[ytSM])/(-v1^2 + v2^2)},
+    {YQ1[1,1],  Sqrt[2]*(v2*LowEnergyConstant[ydSM] - v1*LowEnergyConstant[yuSM])/(-v1^2 + v2^2)},
+    {YQ1[2,2],  Sqrt[2]*(v2*LowEnergyConstant[ysSM] - v1*LowEnergyConstant[ycSM])/(-v1^2 + v2^2)},
+    {YQ1[3,3],  Sqrt[2]*(v2*LowEnergyConstant[ybSM] - v1*LowEnergyConstant[ytSM])/(-v1^2 + v2^2)},
+    {YL2, ZEROMATRIX[3,3]},
+    {YL1, ZEROMATRIX[3,3]}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

@@ -218,7 +218,7 @@ WriteRemoveGUTnormalization[sphenoSugra];
 If[AddOHDM=!=True,
 If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 WriteString[sphenoSugra,"If(SPA_Convention) Then \n"];
-WriteString[sphenoSugra,"  tanbetaMZ = "<>ToString[VEVSM2]<>"/"<>ToString[VEVSM1] <>" \n"];
+WriteString[sphenoSugra,"  tanbetaMZ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
 WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  tanbetaMZ = tanbeta \n"];
 WriteString[sphenoSugra,"End If \n"];
@@ -917,7 +917,10 @@ Clear[j,i,k];
 
 For[j=1,j<=3,
 
-WriteString[sphenoSugra, SPhenoForm[hyperchargeCoupling] <> " = gauge(1)*Sqrt(3._dp/5._dp) \n"];
+If[AddOHDM=!=True,
+WriteString[sphenoSugra, SPhenoForm[hyperchargeCoupling] <> " = gauge(1)*Sqrt(3._dp/5._dp) \n"];,
+WriteString[sphenoSugra, SPhenoForm[hyperchargeCoupling] <> " = gauge(1) \n"];
+];
 WriteString[sphenoSugra, SPhenoForm[leftCoupling] <> " = gauge(2) \n"];
 WriteString[sphenoSugra, SPhenoForm[strongCoupling] <> " = gauge(3) \n"];
 

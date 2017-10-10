@@ -1,0 +1,92 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = trickingLY;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {{1, LambdaHINPUT},
+          {2, LambdaSINPUT},
+	  {3, LambdaHSINPUT},
+	  {30, vSINPUT},
+	  {40, gXINPUT},
+	  {42, g1XINPUT},
+	  {100, U1QX}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muH2, muS2};
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+
+(* limit RGE precision for speed of code generation. *)
+FSRGELoopOrder = 1; 
+
+
+LowScaleInput = {
+	         {gX, gXINPUT},
+		 {g1X, g1XINPUT},
+		 {gX1, 0},
+		 {lamH, LambdaHINPUT},
+		 {lamS, LambdaSINPUT},
+		 {lamHS, LambdaHSINPUT},
+		 {eta1, LHInput[eta1]},
+		 {eta2, LHInput[eta2]},
+		 {eta3, LHInput[eta3]},
+		 {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+		 {vS, vSINPUT},
+		 {Ye, Automatic},
+		 {Yu, Automatic},
+		 {Yd, Automatic},
+		 {Yv, LHInput[Yv]}
+};
+
+InitialGuessAtLowScale = {
+   {vH, LowEnergyConstant[vev]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {lamH, LambdaHINPUT},
+   {lamS, LambdaSINPUT},
+   {lamHS, LambdaHSINPUT},
+   {eta1, LHInput[eta1]},
+   {eta2, LHInput[eta2]},
+   {eta3, LHInput[eta3]},
+   {vS, vSINPUT},
+   {gX, gXINPUT},
+   {g1X, g1XINPUT},
+   {gX1, 0},
+   {Yv, LHInput[Yv]}  
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+(* EffectiveMu =. ; *)
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+(* EffectiveMu =. ;
+EffectiveMASqr =. ; *)
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

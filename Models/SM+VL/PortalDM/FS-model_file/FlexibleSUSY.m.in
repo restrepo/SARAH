@@ -1,0 +1,130 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = SMgaugegroup/PortalDM;
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, MSInput},
+    {2, lamSInput},
+    {3, kapSInput},
+    {4, lamHSInput},
+    {5, kapHSInput},
+    {6, lamDMInput},
+    {7, lamSDMInput},
+    {8, lamHDMInput},
+    {9, mDMSInput},
+    {10, kapSDMInput},
+    {11, YXInput},
+    {12, mXInput},
+    {13, YTInput},
+    {14, mTInput},
+    {15, YQInput},
+    {16, mQInput},
+    {17, YQTInput},
+    {18, YQTpInput},
+    {19, mDMFInput},
+    {20, YDMFInput},
+    {21, LambdaInput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mu2, vS};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {λ, LambdaInput},
+    {MS, MSInput^2},
+    {mX, mXInput},
+    {mDMS, mDMSInput^2},
+    {kapSDM, kapSDMInput},
+    {lamS, lamSInput},
+    {lamDM, lamDMInput},
+    {lamHS, lamHSInput},
+    {lamHDM, lamHDMInput},
+    {lamSDM, lamSDMInput},
+    {kapHS, kapHSInput},
+    {kapS, kapSInput},
+    {YX, YXInput},
+    {YT, YTInput},
+    {mT, mTInput},
+    {YQ, YQInput},
+    {mQ, mQInput},
+    {YQT, YQTInput},
+    {YQTp, YQTpInput},
+    {mDMF, mDMFInput},
+    {YDMF, YDMFInput},
+    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {Ye, Automatic},
+    {Yd, Automatic},
+    {Yu, Automatic}
+};
+
+InitialGuessAtLowScale = {
+    {λ, LambdaInput},
+    {MS, MSInput^2},
+    {mX, mXInput},
+    {mDMS, mDMSInput^2},
+    {kapSDM, kapSDMInput},
+    {lamS, lamSInput},
+    {lamDM, lamDMInput},
+    {lamHS, lamHSInput},
+    {lamHDM, lamHDMInput},
+    {lamSDM, lamSDMInput},
+    {kapHS, kapHSInput},
+    {kapS, kapSInput},
+    {YX, YXInput},
+    {YT, YTInput},
+    {mT, mTInput},
+    {YQ, YQInput},
+    {mQ, mQInput},
+    {YQT, YQTInput},
+    {YQTp, YQTpInput},
+    {mDMF, mDMFInput},
+    {YDMF, YDMFInput},
+    {v, LowEnergyConstant[vev]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};
+
+(* Note: There are 3 solutions to the EWSB equations.  However,
+   solution 2 and 3 yield a complex vS, which is why I throw them
+   away.
+*)
+TreeLevelEWSBSolution = {
+    { mu2, (-2*kapHS*v*vS - 2*lamHS*v*vS^2 - 
+            v^3*\[Lambda] + 2*tadpole[1])/(2*v) },
+    { vS, -kapS/(3*lamS) + (-4*kapS^2 + 12*lamS*(MS + lamHS*v^2))/
+     (3*2^(2/3)*lamS*(16*kapS^3 - 72*kapS*lamS*MS - 72*kapS*lamHS*lamS*v^2 + 
+        108*kapHS*lamS^2*v^2 - 216*lamS^2*tadpole[2] + 
+        Sqrt[4*(-4*kapS^2 + 12*lamS*(MS + lamHS*v^2))^3 + 
+          (16*kapS^3 - 72*kapS*lamS*MS - 72*kapS*lamHS*lamS*v^2 + 
+            108*kapHS*lamS^2*v^2 - 216*lamS^2*tadpole[2])^2])^(1/3)) - 
+    (16*kapS^3 - 72*kapS*lamS*MS - 72*kapS*lamHS*lamS*v^2 + 
+       108*kapHS*lamS^2*v^2 - 216*lamS^2*tadpole[2] + 
+       Sqrt[4*(-4*kapS^2 + 12*lamS*(MS + lamHS*v^2))^3 + 
+         (16*kapS^3 - 72*kapS*lamS*MS - 72*kapS*lamHS*lamS*v^2 + 
+           108*kapHS*lamS^2*v^2 - 216*lamS^2*tadpole[2])^2])^(1/3)/
+     (6*2^(1/3)*lamS) }
+};

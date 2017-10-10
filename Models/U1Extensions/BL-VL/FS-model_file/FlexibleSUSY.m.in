@@ -1,0 +1,146 @@
+
+(* Please note that in the current state (27/01/2016) of sarah model BL-VL, the xR Weyl fermion is mixed with the uR Weyl fermion, so there is a 4th generation up-type quark.  However ther is currently no actual couipling which mixes them, so there is a 1by1 block diagonal submatrix for this state.  Therefore I can ifnore this in setting the Yukawa couplings in the low ebergy constraint.  If substantive mixing was added and it's impact on the up type Yukawa mattered then this model file will not be safe *)
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = BLVL;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {{1, LambdaHINPUT},
+          {2, Lambda2INPUT},
+	  {3, Lambda3INPUT},
+	  {4, Lambda6INPUT},
+	  {5, LambdaH2INPUT},
+	  {6, LambdaH3INPUT},
+	  {7, LambdaH6INPUT},
+	  {8, Lambda23INPUT},
+	  {9, Lambda26INPUT},
+	  {10, Lambda36INPUT},
+	  {11, f36INPUT},
+	  {12, Lambda26PrimeINPUT},
+	  {13, fXINPUT},
+	  {14, fYINPUT},
+	  {30, mu22INPUT},
+	  {31, v3INPUT},
+	  {32, v6INPUT},
+	  {40, gBLINPUT},
+	  {42, g1BLINPUT}};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muH2, mu32, mu62, v2};
+
+(* SUSYScale is the EWSB scale by default *)
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+
+(* limit RGE precision for speed of code generation. *)
+FSRGELoopOrder = 0; 
+
+
+LowScaleInput = {
+	      {gBL, gBLINPUT},
+	      {g1BL, g1BLINPUT},
+	      {gBL1, 0},
+	      {lamH, LambdaHINPUT},
+	      {lam2, Lambda2INPUT},
+	      {lam3, Lambda3INPUT},
+	      {lam6, Lambda6INPUT},
+	      {lamH2, LambdaH2INPUT},
+	      {lamH3, LambdaH3INPUT},
+	      {lamH6, LambdaH6INPUT},
+	      {lam23, Lambda23INPUT},
+	      {lam26, Lambda26INPUT},
+	      {lam36, Lambda36INPUT},
+	      {f36, f36INPUT},
+	      {lam26P, Lambda26PrimeINPUT},
+	      {fX, fXINPUT},
+	      {fY, fYINPUT},
+	      {fNR, LHInput[fNR]},
+	      {fNL, LHInput[fNL]},
+	      {fN6, LHInput[fN6]},
+	      {fN6R, LHInput[fN6R]},
+	      {fNLR, LHInput[fNLR]},
+	      {mN, LHInput[mN]},
+	      {fN, LHInput[fN]},
+	      {fNP, LHInput[fNP]},
+	      {mu22, mu22INPUT},
+	      {v3, v3INPUT},
+	      {v6, v6INPUT}, 
+      {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] },
+      {Yu[1,1], Sqrt[2] topDRbar[1,1] / vH},
+      {Yu[2,2], Sqrt[2] topDRbar[2,2] / vH},	
+      {Yu[3,3], Sqrt[2] topDRbar[3,3] / vH},	
+      {Yd, Automatic},
+      {Ye, Automatic}
+};
+
+InitialGuessAtLowScale = {
+   (* Important: need to initialize the VEVs
+      for the fermions to non-zero value! *)
+   {gBL, gBLINPUT},
+   {g1BL, g1BLINPUT},
+   {gBL1, 0},
+   {lamH, LambdaHINPUT},
+   {lam2, Lambda2INPUT},
+   {lam3, Lambda3INPUT},
+   {lam6, Lambda6INPUT},
+   {lamH2, LambdaH2INPUT},
+   {lamH3, LambdaH3INPUT},
+   {lamH6, LambdaH6INPUT},
+   {lam23, Lambda23INPUT},
+   {lam26, Lambda26INPUT},
+   {lam36, Lambda36INPUT},
+   {f36, f36INPUT},
+   {lam26P, Lambda26PrimeINPUT},
+   {fX, fXINPUT},
+   {fY, fYINPUT},
+   {fNR, LHInput[fNR]},
+   {fNL, LHInput[fNL]},
+   {fN6, LHInput[fN6]},
+   {fN6R, LHInput[fN6R]},
+   {fNLR, LHInput[fNLR]},
+   {mN, LHInput[mN]},
+   {fN, LHInput[fN]},
+   {fNP, LHInput[fNP]},
+   {mu22, mu22INPUT},
+   {v3, v3INPUT},
+   {v6, v6INPUT},    
+   {vH, LowEnergyConstant[vev]},
+   {Yu[1,1], Sqrt[2] topDRbar[1,1] / vH},
+   {Yu[2,2], Sqrt[2] topDRbar[2,2] / vH},	
+   {Yu[3,3], Sqrt[2] topDRbar[3,3] / vH},	
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+(* EffectiveMu =. ; *)
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+(* EffectiveMu =. ;
+EffectiveMASqr =. ;
+*)
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

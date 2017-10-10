@@ -1,0 +1,67 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = THDM+VL/THDM-II-VL;
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, Lambda1Input},
+    {2, Lambda2Input},
+    {3, Lambda3Input},
+    {4, Lambda4Input},
+    {5, Lambda5Input},
+    {9, M12input},
+    {10, TanBeta}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {M112, M222};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {Lambda1, Lambda1Input},
+    {Lambda2, Lambda2Input},
+    {Lambda3, Lambda3Input},
+    {Lambda4, Lambda4Input},
+    {Lambda5, Lambda5Input},
+    {M12, M12input},
+    {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+    {v2, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+InitialGuessAtLowScale = {
+    {Lambda1, Lambda1Input},
+    {Lambda2, Lambda2Input},
+    {Lambda3, Lambda3Input},
+    {Lambda4, Lambda4Input},
+    {Lambda5, Lambda5Input},
+    {M12, M12input},
+    {v1, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {v2, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

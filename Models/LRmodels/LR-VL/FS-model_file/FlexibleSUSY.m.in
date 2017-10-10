@@ -1,0 +1,100 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = LRmodels/LR-VL;
+FSRGELoopOrder = 0;
+
+(* left-right symmetric model of arXiv:1512.09202, arXiv:1001.1341 *)
+
+MINPAR = {
+   {1, vRInput},
+   {2, gRInput},
+   {3, vSInput},
+   {11, LAM1Input},
+   {12, LAM2LInput},
+   {13, LAM2RInput},
+   {14, LAM3Input},
+   {15, LAM4LInput},
+   {16, LAM4RInput},
+   {17, MU3LInput},
+   {18, MU3RInput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+RealParameters = {vR, gR};
+
+EWSBOutputParameters = {muL2, muR2, mu12};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+LowScaleInput = {
+   {g3, LowEnergyConstant[g3SM]},
+   {g2, LowEnergyConstant[g2SM]},
+   {gR, gRInput},
+   {gBL, (LowEnergyConstant[g1SM]*gRInput)/Sqrt[-LowEnergyConstant[g1SM]^2 + gRInput^2]},
+   {lamU, LHInput[lamU]},
+   {lamD, LHInput[lamD]},
+   {lamE, LHInput[lamE]},
+   {lamV, LHInput[lamV]},
+   {lam1, LAM1Input},
+   {lam2L, LAM2LInput},
+   {lam2R, LAM2RInput},
+   {lam3, LAM3Input},
+   {lam4L, LAM4LInput},
+   {lam4R, LAM4RInput},
+   {mu3L, MU3LInput},
+   {mu3R, MU3RInput},
+   {vR, vRInput},
+   {vS, vSInput},
+   {vL, LowEnergyConstant[vSM]}
+};
+
+InitialGuessAtLowScale = {
+   {g3, LowEnergyConstant[g3SM]},
+   {g2, LowEnergyConstant[g2SM]},
+   {gR, gRInput},
+   {gBL, (LowEnergyConstant[g1SM]*gRInput)/Sqrt[-LowEnergyConstant[g1SM]^2 + gRInput^2]},
+   {lamU, LHInput[lamU]},
+   {lamD, LHInput[lamD]},
+   {lamE, LHInput[lamE]},
+   {lamV, LHInput[lamV]},
+   {lam1, LAM1Input},
+   {lam2L, LAM2LInput},
+   {lam2R, LAM2RInput},
+   {lam3, LAM3Input},
+   {lam4L, LAM4LInput},
+   {lam4R, LAM4RInput},
+   {mu3L, MU3LInput},
+   {mu3R, MU3RInput},
+   {vR, vRInput},
+   {vS, vSInput},
+   {vL, LowEnergyConstant[vSM]}
+};
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSMassW];
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
+PotentialLSPParticles    = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

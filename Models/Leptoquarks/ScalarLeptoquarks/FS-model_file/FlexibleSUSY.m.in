@@ -1,0 +1,89 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = Leptoquarks/ScalarLeptoquarks;
+FSRGELoopOrder = 1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, vSinput},
+    {2, MPhiinput}
+};
+
+EXTPAR = {
+    {1, Linput},
+    {2, LS3input},
+    {3, LS4input},
+    {4, LPhiinput},
+    {5, gSHinput},
+    {6, gHPinput},
+    {7, gSPinput},
+    {8, KSPinput},
+    {9, KSHinput}
+};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mu2, MS2};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+
+LowScaleInput = {
+    {v,  2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {vS, vSinput},
+    {Ye, Automatic},
+    {Yd, Automatic},
+    {Yu, Automatic},
+    {λ, Linput},
+    {LS3, LS3input},
+    {LS4, LS4input},
+    {LPhi, LPhiinput},
+    {MPhi2, MPhiinput^2},
+    {gSH, gSHinput},
+    {gHP, gHPinput},
+    {gSP, gSPinput},
+    {KSP, KSPinput},
+    {KSH, KSHinput},
+    {MChi, LHInput[MChi]},
+    {lamL, LHInput[lamL]},
+    {lamR, LHInput[lamR]},
+    {gSC, LHInput[gSC]}
+};
+
+InitialGuessAtLowScale = {
+    {v , LowEnergyConstant[vev]},
+    {Ye, Automatic},
+    {Yd, Automatic},
+    {Yu, Automatic},
+    {vS, vSinput},
+    {λ, Linput},
+    {LS3, LS3input},
+    {LS4, LS4input},
+    {LPhi, LPhiinput},
+    {MPhi2, MPhiinput^2},
+    {gSH, gSHinput},
+    {gHP, gHPinput},
+    {gSP, gSPinput},
+    {KSP, KSPinput},
+    {KSH, KSHinput},
+    {MChi, LHInput[MChi]},
+    {lamL, LHInput[lamL]},
+    {lamR, LHInput[lamR]},
+    {gSC, LHInput[gSC]}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

@@ -1,0 +1,117 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = 331/v2;
+FSRGELoopOrder = 0;
+
+(* 331 model of arXiv:1512.08441 *)
+
+MINPAR = {
+   {1, Lambda1Input},
+   {2, Lambda2Input},
+   {3, Lambda3Input},
+   {4, Lambda12Input},
+   {5, Lambda13Input},
+   {6, Lambda23Input},
+   {7, Lambda12tInput},
+   {8, Lambda13tInput},
+   {9, Lambda23tInput},
+   {10, fInput},
+   {11, TanBeta},
+   {12, v3Input}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mu12, mu22, mu32};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+LowScaleInput = {
+   {v1, LowEnergyConstant[vSM] Cos[ArcTan[TanBeta]]},
+   {v2, LowEnergyConstant[vSM] Sin[ArcTan[TanBeta]]},
+   {v3, v3Input},
+   {g1, LowEnergyConstant[g2SM] / 0.24},
+   {g2, LowEnergyConstant[g2SM]},
+   {g3, LowEnergyConstant[g3SM]},
+   {l1, Lambda1Input},
+   {l2, Lambda2Input},
+   {l3, Lambda3Input},
+   {l12, Lambda12Input},
+   {l13, Lambda13Input},
+   {l23, Lambda23Input},
+   {l12t, Lambda12tInput},
+   {l13t, Lambda13tInput},
+   {l23t, Lambda23tInput},
+   {ftri, fInput},
+   {yl[1,1], LowEnergyConstant[yeSM] LowEnergyConstant[vSM] / v2},
+   {yl[2,2], LowEnergyConstant[ymSM] LowEnergyConstant[vSM] / v2},
+   {yl[3,3], LowEnergyConstant[ylSM] LowEnergyConstant[vSM] / v2},
+   {yE, LHInput[yE]},
+   {yu1, LHInput[yu1]},
+   {yu2, LHInput[yu2]},
+   {yu3, LHInput[yu3]},
+   {yd1, LHInput[yd1]},
+   {yd2, LHInput[yd2]},
+   {yd3, LHInput[yd3]},
+   {yJ1, LHInput[yJ1]},
+   {yJ2, LHInput[yJ2]},
+   {yJ3, LHInput[yJ3]}
+};
+
+InitialGuessAtLowScale = {
+   {v1, LowEnergyConstant[vSM] Cos[ArcTan[TanBeta]]},
+   {v2, LowEnergyConstant[vSM] Sin[ArcTan[TanBeta]]},
+   {v3, v3Input},
+   {g1, LowEnergyConstant[g2SM] / 0.24},
+   {g2, LowEnergyConstant[g2SM]},
+   {g3, LowEnergyConstant[g3SM]},
+   {l1, Lambda1Input},
+   {l2, Lambda2Input},
+   {l3, Lambda3Input},
+   {l12, Lambda12Input},
+   {l13, Lambda13Input},
+   {l23, Lambda23Input},
+   {l12t, Lambda12tInput},
+   {l13t, Lambda13tInput},
+   {l23t, Lambda23tInput},
+   {ftri, fInput},
+   {yl[1,1], LowEnergyConstant[yeSM] LowEnergyConstant[vSM] / v2},
+   {yl[2,2], LowEnergyConstant[ymSM] LowEnergyConstant[vSM] / v2},
+   {yl[3,3], LowEnergyConstant[ylSM] LowEnergyConstant[vSM] / v2},
+   {yE, LHInput[yE]},
+   {yu1, LHInput[yu1]},
+   {yu2, LHInput[yu2]},
+   {yu3, LHInput[yu3]},
+   {yd1, LHInput[yd1]},
+   {yd2, LHInput[yd2]},
+   {yd3, LHInput[yd3]},
+   {yJ1, LHInput[yJ1]},
+   {yJ2, LHInput[yJ2]},
+   {yJ3, LHInput[yJ3]}
+};
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSMassW];
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

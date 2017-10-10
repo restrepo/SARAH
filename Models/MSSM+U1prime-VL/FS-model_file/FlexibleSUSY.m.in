@@ -1,0 +1,147 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = MSSMU1VL;
+FSRGELoopOrder = 1;
+
+MINPAR = {
+    {1, TanBeta},
+    {2, mSUSY},
+    {3, Azero},
+    {4, Bzero},
+    {5, gXinput},
+    {6, g1Xinput}
+};
+
+EXTPAR = {
+    {1, M1input},
+    {2, M2input},
+    {3, M3input},
+    {4, M4input},
+    {5, vSinput},
+    {6, vScinput},
+    {7, vS1input},
+    {8, vS1cinput},
+    {9, vS2input},
+    {10, muS2input},
+    {11, mu1S2input},
+    {12, mu2S2input},
+    {13, kap1input},
+    {14, Tkap1input},
+    {15, kap2input},
+    {16, Tkap2input},
+    {17, Laminput},
+    {18, Tlaminput},
+    {19, LamNinput},
+    {20, LamXinput},
+    {21, lamDdiag},
+    {22, lamTdiag},
+    {23, lamT3input}
+};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mHd2, mHu2, mS2, mSc2, mS12, mS1c2, mS22};
+
+HighScale = mSUSY;
+
+HighScaleFirstGuess = mSUSY;
+
+HighScaleInput = {
+    {gX, gXinput},
+    {\[Lambda], Laminput},
+    {lamN, LamNinput},
+    {lamD, lamDdiag*UNITMATRIX[2]},
+    {lamX, LamXinput},
+    {lamT, lamTdiag*UNITMATRIX[2]},
+    {lamT3, lamT3input},
+    {muS2, muS2input},
+    {mu1S2, mu1S2input},
+    {mu2S2, mu2S2input},
+    {kap1, kap1input},
+    {kap2, kap2input},
+    {Yv, LHInput[Yv]},
+    {B[mu2S2], Bzero*mu2S2},
+    {B[muS2], Bzero*muS2},
+    {B[mu1S2], Bzero*mu1S2},
+    {T[kap1], Tkap1input},
+    {T[kap2], Tkap2input},
+    {T[λ], Tlaminput},
+    {T[lamN], LamNinput},
+    {T[lamD], Azero*lamDdiag*UNITMATRIX[2]},
+    {T[lamX], Azero*LamXinput},
+    {T[lamT], Azero*lamTdiag*UNITMATRIX[2]},
+    {T[lamT3], Azero*lamT3},
+    {T[Yu], Azero*Yu},
+    {T[Yd], Azero*Yd},
+    {T[Ye], Azero*Ye},
+    {T[Yv], Azero*Yv},
+    {mq2, mSUSY^2*UNITMATRIX[3]},
+    {ml2, mSUSY^2*UNITMATRIX[3]},
+    {md2, mSUSY^2*UNITMATRIX[3]},
+    {mu2, mSUSY^2*UNITMATRIX[3]},
+    {me2, mSUSY^2*UNITMATRIX[3]},
+    {mvR2, mSUSY^2*UNITMATRIX[3]},
+    {mD12, mSUSY^2*UNITMATRIX[2]},
+    {mDc2, mSUSY^2*UNITMATRIX[2]},
+    {mN2, mSUSY^2},
+    {mNc2, mSUSY^2},
+    {mNNc2, 0},
+    {mT2, mSUSY^2*UNITMATRIX[2]},
+    {mTc2, mSUSY^2*UNITMATRIX[2]},
+    {mT3c2, mSUSY^2},
+    {mT32, mSUSY^2},
+    {mX2, mSUSY^2},
+    {mXc2, mSUSY^2},
+    {mScS22, 0},
+    {MassB, M1input},
+    {MassWB, M2input},
+    {MassG, M3input},
+    {MassBp, M4input}
+};
+
+SUSYScale = mSUSY;
+
+SUSYScaleFirstGuess = mSUSY;
+
+SUSYScaleInput = {
+    {gX, gXinput},
+    {vS, vSinput},
+    {vSc, vScinput},
+    {vS1, vS1input},
+    {vS1c, vS1cinput},
+    {vS2, vS2input}
+};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+InitialGuessAtHighScale = {};
+
+InitialGuessAtLowScale = {
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+EffectiveMu =. ;
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

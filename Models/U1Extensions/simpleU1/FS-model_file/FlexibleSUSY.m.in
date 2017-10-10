@@ -1,0 +1,84 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = simpleU1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = { {1, LambdaHINPUT},
+       	   {2, LambdaHSINPUT},
+	   {3, LambdaSINPUT},
+	   {4, Lambda1INPUT},
+	   {5, Lambda2INPUT},
+	   {6, M1INPUT},
+	   {7, M2INPUT},
+	   {20, gXINPUT},
+	   {22, g1XINPUT},
+	   {30, vSinput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muS2, muH2};
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+(* limit RGE precision for speed of code generation. *)
+FSRGELoopOrder = 1; 
+
+LowScaleInput = {
+	          {gX, gXINPUT},
+		  {g1X, g1XINPUT},
+		  {gX1, 0},
+		  {lamH, LambdaHINPUT},
+		  {lamHS, LambdaHSINPUT},
+		  {lamS, LambdaSINPUT},
+		  {lam1, Lambda1INPUT},
+		  {lam2, Lambda2INPUT},
+		  {M1, M1INPUT},
+		  {M2, M2INPUT},
+		  {vS, vSinput},
+		  {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+		  {Ye, Automatic},
+		  {Yd, Automatic},
+		  {Yu, Automatic}
+};
+
+InitialGuessAtLowScale = {
+   (* Important: need to initialize the VEVs
+      for the fermions to non-zero value! *)
+   {vH , LowEnergyConstant[vev]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+(*EffectiveMu =. ;*)
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+(* EffectiveMu =. ;
+EffectiveMASqr =. ; *)
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

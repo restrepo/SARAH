@@ -1,0 +1,136 @@
+
+(* this neglects mixing effects from YXU, YPU, YXD, YPD, YXE, YPE in the SM fermions when setting their Yukawa couplings.  This may be OK when the appropriate couplings are negligible. *) 
+
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = darkU1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = { {1, LambdaHINPUT},
+       	   {2, LambdaPINPUT},
+	   {3, LambdaXINPUT},
+	   {4, LambdaHPINPUT},
+	   {5, LambdaHXINPUT},
+	   {6, LambdaPXINPUT},
+	   {30, vPINPUT},
+	   {31, muX2INPUT},
+	   {40, gXINPUT},
+	   {41, gX1INPUT},
+	   {42, g1XINPUT},
+	   {1000, U1Qa},
+	   {1001, U1Qb}
+};
+
+EXTPAR = { };
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muH2, muP2, vX};
+
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+(* after 16 hours of running the 2-loop RGEs still were not generated, so we use this flag to not generate 2-looop RGEs. We can then only create low energy spectrum generators reliably unless we know the couplings are small enough that one loop is OK. *)
+
+
+FSRGELoopOrder = 1; 
+
+
+LowScaleInput = {
+      {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},	      
+      {Yu[1,1], Sqrt[2] topDRbar[1,1] / vH},
+      {Yu[2,2], Sqrt[2] topDRbar[2,2] / vH},
+      {Yu[3,3], Sqrt[2] topDRbar[3,3] / vH},
+      {Yd[1,1], Sqrt[2] bottomDRbar[1,1] / vH},
+      {Yd[2,2], Sqrt[2] bottomDRbar[2,2] / vH},
+      {Yd[3,3], Sqrt[2] bottomDRbar[3,3] / vH},
+      {Ye[1,1], Sqrt[2] electronDRbar[1,1] / vH},
+      {Ye[2,2], Sqrt[2] electronDRbar[2,2] / vH},
+      {Ye[3,3], Sqrt[2] electronDRbar[3,3] / vH},
+      {gX, gXINPUT},
+      {g1X, g1XINPUT},
+      {gX1, gX1INPUT},
+      {lamH, LambdaHINPUT},
+      {lamP, LambdaPINPUT},
+      {lamX, LambdaXINPUT},
+      {lamHP, LambdaHPINPUT},
+      {lamHX, LambdaHXINPUT},
+      {lamPX, LambdaPXINPUT},
+      {muX2, muX2INPUT},
+      {YPE, LHInput[YPE]},
+      {YPN, LHInput[YPN]},
+      {YPU, LHInput[YPU]},
+      {YPD, LHInput[YPD]},
+      {YXE, LHInput[YXE]},
+      {YXN, LHInput[YXN]},
+      {YXU, LHInput[YXU]},
+      {YXD, LHInput[YXD]},
+      {vP, vPINPUT},
+      {Yv, LHInput[Yv]}
+ };
+
+InitialGuessAtLowScale = {
+   (* Important: need to initialize the VEVs
+      for the fermions to non-zero value! *)
+   {gX, gXINPUT},
+   {g1X, g1XINPUT},	
+   {gX1, gX1INPUT},
+   {lamH, LambdaHINPUT},
+   {lamP, LambdaPINPUT},
+   {lamX, LambdaXINPUT},
+   {lamHP, LambdaHPINPUT},
+   {lamHX, LambdaHXINPUT},
+   {lamPX, LambdaPXINPUT},
+   {muX2, muX2INPUT},
+   {YPE, LHInput[YPE]},
+   {YPN, LHInput[YPN]},
+   {YPU, LHInput[YPU]},
+   {YPD, LHInput[YPD]},
+   {YXE, LHInput[YXE]},
+   {YXN, LHInput[YXN]},
+   {YXU, LHInput[YXU]},
+   {YXD, LHInput[YXD]},
+   {vP, vPINPUT},
+   {Yv, LHInput[Yv]},   
+   {vH, LowEnergyConstant[vev]},
+   {Yu[1,1], Sqrt[2] topDRbar[1,1] / vH},
+   {Yu[2,2], Sqrt[2] topDRbar[2,2] / vH},
+   {Yu[3,3], Sqrt[2] topDRbar[3,3] / vH},
+   {Yd[1,1], Sqrt[2] bottomDRbar[1,1] / vH},
+   {Yd[2,2], Sqrt[2] bottomDRbar[2,2] / vH},
+   {Yd[3,3], Sqrt[2] bottomDRbar[3,3] / vH},
+   {Ye[1,1], Sqrt[2] electronDRbar[1,1] / vH},
+   {Ye[2,2], Sqrt[2] electronDRbar[2,2] / vH},
+   {Ye[3,3], Sqrt[2] electronDRbar[3,3] / vH}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+(* EffectiveMu =. ; *)
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+(* EffectiveMu =. ;
+EffectiveMASqr =. ;
+*)
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

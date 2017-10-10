@@ -1,0 +1,99 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = scotoU1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+       {1, LambdaHINPUT},
+       {2, LambdaSINPUT},
+       {3, LambdaHSINPUT},
+       {4, LambdaHPINPUT},
+       {5, LambdaHPSINPUT},
+       {6, Lambda3INPUT},
+       {7, Lambda4INPUT},
+       {8, eta1INPUT},
+       {9, eta2INPUT},
+       {10, eta3INPUT},
+       {11, mXTINPUT},
+       {12, mXNINPUT},
+       {20, muHP2INPUT},
+       {30, vSINPUT},
+       {40, gXINPUT},
+       {41, gX1INPUT},
+       {42, g1XINPUT}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muH2, muS2, vHP};
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+(* limit RGE precision for speed of code generation. *)
+FSRGELoopOrder = 0; 
+
+LowScaleInput = {
+	         {gX, gXINPUT},
+	      	 {g1X, g1XINPUT},
+		 {gX1, gX1INPUT},
+		 {lamH, LambdaHINPUT},
+		 {lamS, LambdaSINPUT},
+		 {lamHS, LambdaHSINPUT},
+		 {lamHP, LambdaHPINPUT},
+		 {lamHPS, LambdaHPSINPUT},
+		 {lam3, Lambda3INPUT},
+		 {lam4, Lambda4INPUT},
+		 {eta1, eta1INPUT},
+		 {eta2, eta2INPUT},
+		 {eta3, eta3INPUT},
+		 {muHP2, muHP2INPUT},
+		 {mXT, mXTINPUT},
+		 {mXN, mXNINPUT},
+		 {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+		 {vS, vSINPUT},
+		 {Ye, Automatic},
+		 {Yu, Automatic},
+		 {Yd, Automatic},
+		 {Yv, LHInput[Yv]},
+		 {Yt, LHInput[Yt]},
+		 {Yn, LHInput[Yn]}
+};
+
+InitialGuessAtLowScale = {
+   {vH, LowEnergyConstant[vev]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+(* EffectiveMu =. ; *)
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+(* EffectiveMu =. ;
+EffectiveMASqr =. ; *)
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

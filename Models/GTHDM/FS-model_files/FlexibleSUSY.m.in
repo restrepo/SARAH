@@ -1,0 +1,89 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = GTHDM;
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, gHinput},
+    {2, LambdaHinput},
+    {3, LambdaPinput},
+    {4, LambdaDinput},
+    {5, LambdaHDinput},
+    {6, LambdaHPinput},
+    {7, LambdaPDinput},
+    {10, MHDinput},
+    {11, MPDinput},
+    {20, vDeltaInput},
+    {21, vPhiInput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muH2, muP2, muD2};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {gH, gHinput},
+    {LambdaH, LambdaHinput},
+    {LambdaP, LambdaPinput},
+    {LambdaD, LambdaDinput},
+    {LambdaHD, LambdaHDinput},
+    {LambdaHP, LambdaHPinput},
+    {LambdaPD, LambdaPDinput},
+    {MHD, MHDinput},
+    {MPD, MPDinput},
+    {vD, vDeltaInput},
+    {vP, vPhiInput},
+    {Ydp, LHInput[Ydp]},
+    {Yep, LHInput[Yep]},
+    {Yup, LHInput[Yup]},
+    {Yvp, LHInput[Yvp]},
+    {Yv, LHInput[Yv]},
+    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+InitialGuessAtLowScale = {
+    {v, LowEnergyConstant[vev]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {gH, gHinput},
+    {LambdaH, LambdaHinput},
+    {LambdaP, LambdaPinput},
+    {LambdaD, LambdaDinput},
+    {LambdaHD, LambdaHDinput},
+    {LambdaHP, LambdaHPinput},
+    {LambdaPD, LambdaPDinput},
+    {MHD, MHDinput},
+    {MPD, MPDinput},
+    {vD, vDeltaInput},
+    {vP, vPhiInput},
+    {Ydp, LHInput[Ydp]},
+    {Yep, LHInput[Yep]},
+    {Yup, LHInput[Yup]},
+    {Yvp, LHInput[Yvp]},
+    {Yv, LHInput[Yv]}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

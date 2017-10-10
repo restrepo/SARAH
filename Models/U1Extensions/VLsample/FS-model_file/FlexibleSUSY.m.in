@@ -1,0 +1,121 @@
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = U1VLsample;
+FSRGELoopOrder = 1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {{1, LambdaHINPUT},
+          {2, LambdaSINPUT},
+	  {3, LambdaHSINPUT},
+	  {4, YV1INPUT},
+	  {5, YV2INPUT},
+	  {6, YV3INPUT},
+	  {7, eta1INPUT},
+	  {8, eta2INPUT},
+	  {9, eta3INPUT},
+	  {10, eta4INPUT},
+	  {30, vSINPUT},
+	  {40, gXINPUT},
+	  {42, g1XINPUT},
+	  {100, U1Qm},
+	  {101, U1Qk},
+	  {102, U1Qb}
+};
+
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muH2, muS2};
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+(* Note: In FlexibleSUSY the strong, left and hypercharge gauge
+   couplings are initialized automatically at the `LowScale' and don't
+   need to be set in `LowScaleInput'.  The Standard Model Yukawa
+   couplings can be set to `Automatic'.  The VEV(s) can be set from
+   the running Z and/or W masses `MZDRbar' and/or `MWDRbar',
+   respectively.  Example (in the MSSM):
+
+   LowScaleInput = {
+      {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+      {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+      {Yu, Automatic},
+      {Yd, Automatic},
+      {Ye, Automatic}
+   };
+*)
+LowScaleInput = {{gX, gXINPUT},
+	         {g1X, g1XINPUT},
+		 {gX1, 0},
+		 {lamH, LambdaHINPUT},
+		 {lamS, LambdaSINPUT},
+		 {lamHS, LambdaHSINPUT},
+		 {YV1, YV1INPUT},
+		 {YV2, YV2INPUT},
+		 {YV3, YV3INPUT},
+		 {eta1, eta1INPUT},
+		 {eta2, eta2INPUT},
+		 {eta3, eta3INPUT},
+		 {eta4, eta4INPUT},		
+		 {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+		 {vS, vSINPUT},
+		 {Yu, Automatic},
+      		 {Yd, Automatic},
+      		 {Ye, Automatic},
+		 {Yx, LHInput[Yx]},
+		 {Yv, LHInput[Yv]}
+};
+
+InitialGuessAtLowScale = {
+   {gX, gXINPUT},
+   {g1X, g1XINPUT},
+   {gX1, 0},
+   {lamH, LambdaHINPUT},
+   {lamS, LambdaSINPUT},
+   {lamHS, LambdaHSINPUT},
+   {YV1, YV1INPUT},
+   {YV2, YV2INPUT},
+   {YV3, YV3INPUT},
+   {eta1, eta1INPUT},
+   {eta2, eta2INPUT},
+   {eta3, eta3INPUT},
+   {eta4, eta4INPUT},
+   {vH, LowEnergyConstant[vev]},
+   {vS, vSINPUT},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {Yx, LHInput[Yx]},
+   {Yv, LHInput[Yv]}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+EffectiveMu =. ;
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+EffectiveMu =. ;
+EffectiveMASqr =. ;
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

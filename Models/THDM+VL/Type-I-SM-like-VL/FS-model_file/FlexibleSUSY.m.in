@@ -1,0 +1,109 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = THDM+VL/THDM-I-SM-like-VL;
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, Lambda1Input},
+    {2, Lambda2Input},
+    {3, Lambda3Input},
+    {4, Lambda4Input},
+    {5, Lambda5Input},
+    {9, M12input},        
+    {10, TanBeta},
+    {19, MvVINPUT},
+    {20, MQVINPUT},
+    {21, MdVINPUT},
+    {22, MuVINPUT},
+    {23, MLVINPUT},
+    {24, MeVINPUT},
+    {26, YuVLINPUT},
+    {27, YuVRINPUT},
+    {28, YdVLINPUT},
+    {29, YdVRINPUT},
+    {30, YeVLINPUT},
+    {31, YeVRINPUT},
+    {32, YvVLINPUT},
+    {33, YvVRINPUT}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {M112, M222};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {Lambda1, Lambda1Input},
+    {Lambda2, Lambda2Input},
+    {Lambda3, Lambda3Input},
+    {Lambda4, Lambda4Input},
+    {Lambda5, Lambda5Input},
+    {M12, M12input},
+    {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+    {v2, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {YvVL, YvVLINPUT},
+    {YeVL, YeVLINPUT},
+    {YuVL, YuVLINPUT},
+    {YdVL, YdVLINPUT},
+    {YvVR, YvVRINPUT},
+    {YeVR, YeVRINPUT},
+    {YuVR, YuVRINPUT},
+    {YdVR, YdVRINPUT}, 
+    {MvV, MvVINPUT},
+    {MeV, MeVINPUT},
+    {MuV, MuVINPUT},
+    {MdV, MdVINPUT},
+    {MLV, MLVINPUT},
+    {MQV, MQVINPUT}
+};
+
+InitialGuessAtLowScale = {
+    {Lambda1, Lambda1Input},
+    {Lambda2, Lambda2Input},
+    {Lambda3, Lambda3Input},
+    {Lambda4, Lambda4Input},
+    {Lambda5, Lambda5Input},
+    {M12, M12input},
+    {v1, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {v2, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {YvVL, YvVLINPUT},
+    {YeVL, YeVLINPUT},
+    {YuVL, YuVLINPUT},
+    {YdVL, YdVLINPUT},
+    {YvVR, YvVRINPUT},
+    {YeVR, YeVRINPUT},
+    {YuVR, YuVRINPUT},
+    {YdVR, YdVRINPUT}, 
+    {MvV, MvVINPUT},
+    {MeV, MeVINPUT},
+    {MuV, MuVINPUT},
+    {MdV, MdVINPUT},
+    {MLV, MLVINPUT},
+    {MQV, MQVINPUT}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

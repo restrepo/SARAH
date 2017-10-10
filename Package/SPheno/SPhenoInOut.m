@@ -2250,11 +2250,11 @@ WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_H_H_Z("<>ToString[i]<>","<>To
 j++;];
 If[getGen[PseudoScalar]<99,
 For[j=getGenSPhenoStart[PseudoScalar],j<=getGen[PseudoScalar],
-If[getGen[PseudoScalar]>1 && getGen[HiggsBoson]>0,
+If[getGen[PseudoScalar]>1 && getGen[HiggsBoson]>1,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[j]<>","<>ToString[i]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];,
 If[getGen[PseudoScalar]>1 ,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[j]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];,
-If[getGen[HiggsBoson]>0 ,
+If[getGen[HiggsBoson]>1 ,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[i]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z, dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];
 ];

@@ -592,7 +592,7 @@ If[i===j,
 SA`gCoup[i,j]=Gauge[[i,4]];,
 SA`gCoup[i,j]=0;
 ];,
-If[Gauge[[j,2]]=!=U[1]  || NoU1Mixing===True, 
+If[Gauge[[j,2]]=!=U[1]  || (NoU1Mixing===True && i!=j), 
 SA`gCoup[i,j]=0;,
 If[i===j,
 SA`gCoup[i,j]=Gauge[[i,4]];,
@@ -1062,7 +1062,6 @@ UseSymmASymm=False;
 
 
 GetNonZeroEntriesNS[term_,type_,fields_]:=Block[{sub={},pos,i,j,fac=1,epsilons, deltas, indnr,coup,coup2,searchedcoup,indtab,Found},
-Print[term,type,fields];
 Switch[type,
 LIJKL,
 	 coup=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3],fields[[4]]/.subGC[4] ];

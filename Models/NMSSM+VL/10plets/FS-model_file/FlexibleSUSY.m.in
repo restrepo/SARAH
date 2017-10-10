@@ -1,0 +1,147 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = NMSSM+VL/10plets
+FSRGELoopOrder = 2;
+
+MINPAR = {
+   {1, m0},
+   {2, MV},
+   {3, TanBeta},
+   {5, Azero},
+   {6, Bzero},
+   {7, Lzero}
+};
+
+EXTPAR = {
+   {1, MassBInput},
+   {2, MassWBInput},
+   {3, MassGInput},
+   {10, MuInput},
+   {11, BMuInput},
+   {61, LambdaInput},
+   {62, KappaInput},
+   {63, ALambdaInput},
+   {64, AKappaInput},
+   {65, vSInput},
+   {66, tSInput},
+   {67, MSInput},
+   {40, Y10Input},
+   {41, Y10pInput},
+   {50, lQInput},
+   {51, lUInput},
+   {52, lEInput}
+};
+
+EWSBOutputParameters = {mHd2, mHu2, ms2};
+
+SUSYScale = m0;
+
+SUSYScaleFirstGuess = m0;
+
+SUSYScaleInput = {
+   {vS, vSInput}
+};
+
+HighScale = m0;
+
+HighScaleFirstGuess = m0;
+
+HighScaleInput = {
+   {kappa, KappaInput},
+   {lambda, LambdaInput},
+   {T[kappa], AKappaInput*KappaInput},
+   {T[lambda], ALambdaInput*LambdaInput},
+   {tS, tSInput},
+   {L[tS], Lzero*tSInput},
+   {MS, MSInput},
+   {B[MS], Bzero*MSInput},
+   {lQ10, lQInput},
+   {lE10, lEInput},
+   {lU10, lUInput},
+   {T[lQ10], Azero*lQInput},
+   {T[lE10], Azero*lEInput},
+   {T[lU10], Azero*lUInput},
+   {Y10, Y10Input},
+   {Y10p, Y10pInput},
+   {T[Y10], Azero*Y10Input},
+   {T[Y10p], Azero*Y10pInput},
+   {T[Yu], Azero*Yu},
+   {T[Yd], Azero*Yd},
+   {T[Ye], Azero*Ye},
+   {MVU, MV},
+   {MVQ, MV},
+   {MVE, MV},
+   {B[MVU], Bzero*MV},
+   {B[MVQ], Bzero*MV},
+   {B[MVE], Bzero*MV},
+   {B[\[Mu]], BMuInput},
+   {\[Mu], MuInput},
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {mu102, m0^2},
+   {mu10p2, m0^2},
+   {mq102, m0^2},
+   {mq10p2, m0^2},
+   {me102, m0^2},
+   {me10p2, m0^2},
+   {MassB, MassBInput},
+   {MassWB, MassWBInput},
+   {MassG, MassGInput}
+};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtLowScale = {
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {vS, vSInput},
+   {mHd2, LowEnergyConstant[MZ]^2},
+   {mHu2, LowEnergyConstant[MZ]^2},
+   {ms2, LowEnergyConstant[MZ]^2}
+};
+
+InitialGuessAtHighScale = {};
+
+UseHiggs2LoopNMSSM = True;
+EffectiveMu = \[Mu] + lambda vS / Sqrt[2];
+EffectiveMASqr = (T[lambda] vS / Sqrt[2] + B[\[Mu]] + lambda (0.5 kappa vS^2 + Sqrt[2] MS vS + tS)) (vu^2 + vd^2) / (vu vd);
+
+FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSMassW];
+
+PotentialLSPParticles = {Chi, Sv, Su, Sd, Se, Cha, Glu };
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{0, Hold[HighScale]},
+            {1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } },
+   {NMSSMRUN,
+           {{1, lambda},
+            {2, kappa},
+            {3, T[lambda] / lambda},
+            {4, T[kappa] / kappa},
+            {5, lambda vS / Sqrt[2]},
+            {10, ms2} } }
+};

@@ -1,0 +1,102 @@
+
+(* Warning: this modelfile neglets a mixing between a new gauge state and the up type fermions which should affect the up-type quark Yukawas *)
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = hiddenU1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {{1, LambdaHINPUT},
+       	  {2, LambdaHS1INPUT},
+	  {3, LambdaHS2INPUT},
+	  {4, LambdaS1INPUT},
+	  {5, LambdaS2INPUT},
+	  {6, LambdaS1S2INPUT},
+	  {7, sigma1INPUT},
+	  {8, sigma2INPUT},
+	  {9, sigma3INPUT},
+	  {10, fXINPUT},
+	  {11, MxqINPUT},
+	  {20, gXINPUT},
+	  {22, g1XINPUT},
+	  {30, vSinput},
+	  {31, vS2input}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {muS12, muH2, muS22};
+
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+(* limit RGE precision for speed of code generation. *)
+FSRGELoopOrder = 1; 
+
+LowScaleInput = {
+	      {gX, gXINPUT},
+	      {g1X, g1XINPUT},
+	      {gX1, 0},
+	      {lamH, LambdaHINPUT},
+	      {lamHS1, LambdaHS1INPUT},
+	      {lamHS2, LambdaHS2INPUT},
+	      {lamS1, LambdaS1INPUT},
+	      {lamS2, LambdaS2INPUT},
+	      {lamS1S2, LambdaS1S2INPUT},
+	      {sigma1, sigma1INPUT},
+	      {sigma2, sigma2INPUT},
+	      {sigma3, sigma3INPUT},
+	      {YxL, LHInput[YxL]},
+	      {YxR, LHInput[YxR]},
+	      {vS, vSinput},
+	      {vS2, vS2input},
+	      {fX, fXINPUT},
+	      {Mxq, MxqINPUT},
+	      {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+	      {Ye, Automatic},
+	      {Yd, Automatic},
+	      (* Warning: below is ignoring mixing with a with generation from new gauge state in model *)
+	      {Yu[1,1], Sqrt[2] topDRbar[1,1] / vH},
+    	      {Yu[2,2], Sqrt[2] topDRbar[2,2] / vH},
+    	      {Yu[3,3], Sqrt[2] topDRbar[3,3] / vH}
+};
+
+InitialGuessAtLowScale = {
+   {vH, LowEnergyConstant[vev]},
+   {Yu[1,1], Sqrt[2] topDRbar[1,1] / vH},
+   {Yu[2,2], Sqrt[2] topDRbar[2,2] / vH},
+   {Yu[3,3], Sqrt[2] topDRbar[3,3] / vH},	
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+(* EffectiveMu =. ; *)
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+(* EffectiveMu =. ; *)
+(* EffectiveMASqr =. ; *)
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

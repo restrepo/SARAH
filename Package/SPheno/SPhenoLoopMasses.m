@@ -1218,11 +1218,13 @@ WriteString[sphenoLoop, "p2 =  mass2(i1) \n"];
 
 If[FreeQ[Transpose[GoldstoneGhost][[2]],particle]==False,
 For[i2=1,i2<=getGen[particle],
-If[FreeQ[Transpose[GoldstoneGhost][[2]],particle[{i}]]==False,
+If[FreeQ[Transpose[GoldstoneGhost][[2]],particle[{i2}]]==False,
 WriteString[sphenoLoop, "If (i1.eq."<>ToString[i2]<>") p2 = 0._dp \n"];
 ];
 i2++;];
 ];
+
+
 
 MakeCall["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","PiSf(i1,:,:)"},sphenoLoop];
 WriteString[sphenoLoop,"End Do \n"];

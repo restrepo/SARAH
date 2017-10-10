@@ -1,0 +1,134 @@
+(*Not finished -- this model has spilt quqrk 3rd gen up and given Yukawas for thr quarks non-standard names -- need to think what to do here *)
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = nonUniversalU1;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+       {1, Lambda1Input},
+       {2, Lambda2Input},
+       {3, Lambda3Input},
+       {4, Lambda4Input},
+       {5, LambdaH1SInput},
+       {6, LambdaH2SInput},
+       {7, LambdaSInput},
+       {8, LamHSInput},
+       {10, gXINPUT},
+       {12, g1XINPUT},
+       {20, TanBeta},
+       {30, vSinput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {M112, M222, muS2};
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+(* limit RGE precision for speed of code generation. *)
+FSRGELoopOrder = 1; 
+
+
+LowScaleInput = {
+	      {gX, gXINPUT},
+	      {g1X, g1XINPUT},
+	      {gX1, 0},
+	      {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+      	      {v2, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+	      (* {v1, vSM/Sqrt[1 + TanBeta^2]},
+	      {v2, (TanBeta*vSM)/Sqrt[1 + TanBeta^2]}, *)
+	      {Lambda1, Lambda1Input},
+	      {Lambda2, Lambda2Input},
+	      {Lambda3, Lambda3Input},
+	      {Lambda4, Lambda4Input},
+	      {lamH1S, LambdaH1SInput},
+	      {lamH2S, LambdaH2SInput},
+	      {lamS, LambdaSInput},
+	      {lamHS, LamHSInput},
+	      {vS, vSinput},
+	      {Yv, LHInput[Yv]},
+	      {h1D, LHInput[h1D]},
+	      {h2D, LHInput[h2D]},
+	      {h1U, LHInput[h1U]},
+	      {h2U, LHInput[h2U]},
+	      {h1T, LHInput[h1T]},
+	      {h2T, LHInput[h2T]},
+	      {h1J, LHInput[h1J]},
+	      {h2J, LHInput[h2J]},
+	      {hXU, LHInput[hXU]},
+	      {hXT, LHInput[hXT]},
+	      {hXD, LHInput[hXD]},
+	      {hXJ, LHInput[hXJ]},
+	      (* spheno.m file doesn't assign any of the Yukwas
+	      to be input from sm fermion masses, so I will do the same
+	      {h2U[1], Sqrt[2] topDRbar[1,1] / v2},
+      	      {h1U[2], Sqrt[2] topDRbar[2,2] / v1},
+      	      {h1U[3], Sqrt[2] topDRbar[3,3] / v1},
+      	      {h1D[1], Sqrt[2] bottomDRbar[1,1] / v1},
+      	      {h2D[2], Sqrt[2] bottomDRbar[2,2] / v2},
+      	      {h2D[3], Sqrt[2] bottomDRbar[3,3] / v2}, *)
+      	       {Ye, Automatic}
+};
+
+InitialGuessAtLowScale = {
+   {gX, gXINPUT},
+   {g1X, g1XINPUT},
+   {gX1, 0},
+   {Lambda1, Lambda1Input},
+   {Lambda2, Lambda2Input},
+   {Lambda3, Lambda3Input},
+   {Lambda4, Lambda4Input},
+   {lamH1S, LambdaH1SInput},
+   {lamH2S, LambdaH2SInput},
+   {lamS, LambdaSInput},
+   {lamHS, LamHSInput},
+   {vS, vSinput},
+   {Yv, LHInput[Yv]},
+   {h1D, LHInput[h1D]},
+   {h2D, LHInput[h2D]},
+   {h1U, LHInput[h1U]},
+   {h2U, LHInput[h2U]},
+   {h1T, LHInput[h1T]},
+   {h2T, LHInput[h2T]},
+   {h1J, LHInput[h1J]},
+   {h2J, LHInput[h2J]},
+   {hXU, LHInput[hXU]},
+   {hXT, LHInput[hXT]},
+   {hXD, LHInput[hXD]},
+   {hXJ, LHInput[hXJ]},
+   {v1, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {v2, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+   {Ye, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+EffectiveMu =. ;
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+EffectiveMu =. ;
+EffectiveMASqr =. ;
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

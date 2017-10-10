@@ -1,0 +1,86 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = "Georgi-Machacek";
+
+OnlyLowEnergyFlexibleSUSY = True;
+FSRGELoopOrder = 0;
+
+MINPAR = {
+    {1, Lambda1input},
+    {2, Lambda2input},
+    {3, Lambda3input},
+    {4, Lambda4input},
+    {5, Lambda5input},
+    {11, M1input},
+    {12, M2input},
+    {20, vXInput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mu2, Meta, MXi};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {Lambda1, Lambda1input},
+    {Lambda2a, Lambda2input},
+    {Lambda2b, Lambda2input},
+    {Lambda3a, Lambda3input},
+    {Lambda3b, Lambda3input},
+    {Lambda3c, Lambda3input},
+    {Lambda4a, Lambda4input},
+    {Lambda4b, Lambda4input},
+    {Lambda4c, Lambda4input},
+    {Lambda5a, Lambda5input},
+    {Lambda5b, Lambda5input},
+    {M1a, M1input},
+    {M1b, M1input},
+    {M2, M2input},
+    {vEta, vXInput},
+    {vPhi, vXInput}
+};
+
+InitialGuessAtLowScale = {
+    {v , LowEnergyConstant[vev]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {Lambda1, Lambda1input},
+    {Lambda2a, Lambda2input},
+    {Lambda2b, Lambda2input},
+    {Lambda3a, Lambda3input},
+    {Lambda3b, Lambda3input},
+    {Lambda3c, Lambda3input},
+    {Lambda4a, Lambda4input},
+    {Lambda4b, Lambda4input},
+    {Lambda4c, Lambda4input},
+    {Lambda5a, Lambda5input},
+    {Lambda5b, Lambda5input},
+    {M1a, M1input},
+    {M1b, M1input},
+    {M2, M2input},
+    {vEta, vXInput},
+    {vPhi, vXInput}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

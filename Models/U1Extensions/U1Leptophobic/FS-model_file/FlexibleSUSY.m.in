@@ -1,0 +1,88 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = U1Leptophobe;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {{1, LambdaH1INPUT},
+       	  {2, LambdaH2INPUT},
+	  {3, Lambda3INPUT},
+	  {4, LambdaPhiINPUT},
+	  {5, Lambdatil1INPUT},
+	  {6, Lambdatil2INPUT},
+	  {7, tanbetaINPUT},
+	  {30, vphiINPUT},
+	  {32, muphiINPUT},
+	  {40, gXINPUT},
+	  {42, g1XINPUT}};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {m1til2, m2til2, mPhi2};
+
+(* SUSYScale is the EWSB scale by default *)
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ]; (* or LowEnergyConstant[MT] *)
+
+LowScaleFirstGuess = LowScale;
+
+FSRGELoopOrder = 0;
+
+LowScaleInput = {
+		 {vphi, vphiINPUT},
+		 {muPhi, muphiINPUT},
+		 {λ1, LambdaH1INPUT},
+		 {λ2, LambdaH2INPUT},
+		 {λ3, Lambda3INPUT},
+		 {λPhi, LambdaPhiINPUT},
+		 {λtil1, Lambdatil1INPUT},
+		 {λtil2, Lambdatil2INPUT},
+		 {gX, gXINPUT},
+		 {g1X, g1XINPUT},
+		 {gX1, 0},
+		 {Yn, LHInput[Yn]},
+		 {YD, LHInput[YD]},
+		 {YH, LHInput[YH]},
+		 {YN1, LHInput[YN1]},
+		 {YN2, LHInput[YN2]},
+		 {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[tanbetaINPUT]]},
+		 {v2,2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[tanbetaINPUT]]},
+		 {Yuu, Automatic},
+  		 {Ydd, Automatic},
+   		 {Yee, Automatic}
+};
+
+InitialGuessAtLowScale = {
+   (* Important: need to initialize the VEVs
+      for the fermions to non-zero value! *)
+   {v1, LowEnergyConstant[vev] Cos[ArcTan[tanbetaINPUT]]},
+   {v2, LowEnergyConstant[vev] Sin[ArcTan[tanbetaINPUT]]},
+   {Yuu, Automatic},
+   {Ydd, Automatic},
+   {Yee, Automatic}
+};
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in MSSM-like models (2 CP-even Higges, 1 CP-odd Higgs) *)
+UseHiggs2LoopMSSM = False;
+EffectiveMu =. ;
+
+(* set to True to enable Pietro's 2L Higgs mass corrections
+   in NMSSM-like models (3 CP-even Higges, 1 or 2 CP-odd Higgess) *)
+UseHiggs2LoopNMSSM = False;
+EffectiveMu =. ;
+EffectiveMASqr =. ;
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};

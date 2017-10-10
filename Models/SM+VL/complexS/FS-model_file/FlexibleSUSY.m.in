@@ -1,0 +1,142 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = SSM-VL-complex;
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, Lambdainput},
+    {2, lamSinput},
+    {3, lamHSinput},
+    {4, kapSinput},
+    {5, vSinput},
+    {6, MSinput},
+    {11, m1Finput},
+    {12, m2Finput},
+    {13, m3Finput},
+    {14, m4Finput},
+    {15, m5Finput},
+    {16, m6Finput},
+    {17, m7Finput},
+    {18, m8Finput},
+    {19, m9Finput},
+    {110, m10Finput},
+    {111, m11Finput},
+    {112, m12Finput},
+    {113, m13Finput},
+    {114, YF1input},
+    {115, YF2input},
+    {116, YF3input},
+    {117, YF4input},
+    {118, YF5input},
+    {119, YF6input},
+    {120, YF7input},
+    {121, YF8input},
+    {122, YF9input},
+    {123, YF10input},
+    {124, YF11input},
+    {125, YF12input},
+    {126, YF13input}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {mu2, kapHS};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {λ, Lambdainput},
+    {lamS, lamSinput},
+    {lamHS, lamHSinput},
+    {kapS, kapSinput},
+    {MS2, MSinput^2},
+    {vS, vSinput},
+    {m1F, m1Finput},
+    {m2F, m2Finput},
+    {m3F, m3Finput},
+    {m4F, m4Finput},
+    {m5F, m5Finput},
+    {m6F, m6Finput},
+    {m7F, m7Finput},
+    {m8F, m8Finput},
+    {m9F, m9Finput},
+    {m10F, m10Finput},
+    {m11F, m11Finput},
+    {m12F, m12Finput},
+    {m13F, m13Finput},
+    {YF1, YF1input},
+    {YF2, YF2input},
+    {YF3, YF3input},
+    {YF4, YF4input},
+    {YF5, YF5input},
+    {YF6, YF6input},
+    {YF7, YF7input},
+    {YF8, YF8input},
+    {YF9, YF9input},
+    {YF10, YF10input},
+    {YF11, YF11input},
+    {YF12, YF12input},
+    {YF13, YF13input},
+    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {Ye, Automatic},
+    {Yd, Automatic},
+    {Yu, Automatic}
+};
+
+InitialGuessAtLowScale = {
+    {λ, Lambdainput},
+    {lamS, lamSinput},
+    {lamHS, lamHSinput},
+    {kapS, kapSinput},
+    {MS2, MSinput^2},
+    {vS, vSinput},
+    {m1F, m1Finput},
+    {m2F, m2Finput},
+    {m3F, m3Finput},
+    {m4F, m4Finput},
+    {m5F, m5Finput},
+    {m6F, m6Finput},
+    {m7F, m7Finput},
+    {m8F, m8Finput},
+    {m9F, m9Finput},
+    {m10F, m10Finput},
+    {m11F, m11Finput},
+    {m12F, m12Finput},
+    {m13F, m13Finput},
+    {YF1, YF1input},
+    {YF2, YF2input},
+    {YF3, YF3input},
+    {YF4, YF4input},
+    {YF5, YF5input},
+    {YF6, YF6input},
+    {YF7, YF7input},
+    {YF8, YF8input},
+    {YF9, YF9input},
+    {YF10, YF10input},
+    {YF11, YF11input},
+    {YF12, YF12input},
+    {YF13, YF13input},
+    {v , LowEnergyConstant[vev]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } }
+};
