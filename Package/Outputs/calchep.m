@@ -863,9 +863,9 @@ tempI=StringReplace[ToString[CForm[ToExpression["Re"<>ToString[parameters[[i,1]]
 If[MemberQ[realVar,parameters[[i,1]]]==True || CPViolation==False,
 WriteString[funcFile,InsString[temp,lFF]<>"|"];
 WriteString[funcFile,"slhaVal(\""<>LHBlockName[parameters[[i,1]]]<>"\",Q,1,"<>LHPos[parameters[[i,1]]]<>") \n"];,
-WriteString[funcFile,InsString[tempR,lFF]<>"|"];
-WriteString[funcFile,"slhaVal(\""<>LHBlockName[parameters[[i,1]]]<>"\",Q,1,"<>LHPos[parameters[[i,1]]]<>") \n"];
 WriteString[funcFile,InsString[tempI,lFF]<>"|"];
+WriteString[funcFile,"slhaVal(\""<>LHBlockName[parameters[[i,1]]]<>"\",Q,1,"<>LHPos[parameters[[i,1]]]<>") \n"];
+WriteString[funcFile,InsString[tempR,lFF]<>"|"];
 WriteString[funcFile,"slhaVal(\"IM"<>LHBlockName[parameters[[i,1]]]<>"\",Q,1,"<>LHPos[parameters[[i,1]]]<>") \n"];
 ];,
 

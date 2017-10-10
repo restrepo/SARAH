@@ -89,3 +89,9 @@ BoundaryConditionsDown[[3]]={
 DefaultInputValues = {m0 -> 100, m12->250, TanBeta ->10, SignumMu ->1, Azero ->300, Bzero -> 10^10, MWM3[1,1]-> 3*10^13, MWM3[2,2]-> 4*10^14, MWM3[3,3]-> 5*10^14, MWM3[1,2]-> 1,  MWM3[1,3]-> 1,  MWM3[2,1]-> 1,  MWM3[3,1]-> 1,  MWM3[3,2]-> 1,  MWM3[2,3]-> 1, Yb3[1,2] -> -0.7, Yb3[1,3]->0.7, Yb3[2,1]->0.22, Yb3[2,2]-> 0.22, Yb3[2,3]->0.22  };
 
 
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};

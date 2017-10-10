@@ -392,7 +392,8 @@
       If (wert.Eq.1) Write_WHIZARD = .True.     
 
      Case(76) ! Writes input files for HiggsBounfs
-      If (wert.Eq.1) Write_HiggsBounds = .True.  
+      If (wert.Eq.1) Write_HiggsBounds = .True.
+      If (wert.Eq.2) Write_HiggsBounds5 = .True.  
       
      Case(77) ! Use conventions for MO
       If (wert.Eq.1) Then 
@@ -453,8 +454,9 @@
       If (wert.Ne.1._dp) Then
        WriteEffHiggsCouplingRatios=.False.
       Else
-       WriteEffHiggsCouplingRatios=.True.
+        WriteEffHiggsCouplingRatios=.True.
       End If
+      If (OutputForMG) WriteEffHiggsCouplingRatios=.false.
 
      Case(521)
       If (wert.Ne.1._dp) Then

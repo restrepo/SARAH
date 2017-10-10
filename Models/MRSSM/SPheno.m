@@ -74,3 +74,10 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 DefaultInputValues = {mSUSY->1500, TanBeta->10, vSinput ->0.7, vTinput->-0.2, MDBinput->200, MDWinput->500, MDOinput->1400, mRd2input->10^6, mRu2input->10^6, LSDinput->1.1, LSUinput->-1.1, LTDinput->-1.0, LTUinput->-1.0, MuDinput->400, MuUinput->400,BmuInput->9*10^4};
+
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};

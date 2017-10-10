@@ -74,4 +74,14 @@ ListDecayParticles3B = Automatic;
 DefaultInputValues = {TanBeta -> 2.0, mSUSY->2500, Azero->-2500, AzeroX -> -900, M1input->200, M2input->500, M3input->1500, AKappaInput->-500, ALambdaInput->50,KappaInput->0.3,LambdaInput->0.45, LamTinput->0.1, XiDinput->0.1, XiUinput->0.1, vTinput->2, vTbinput->0.1, vSInput-> 20  };
 
 
+(* loop decays not yet working because of double-charged Higgs *)                     
+SA`AddOneLoopDecay = False;
 
+(*
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};
+*)

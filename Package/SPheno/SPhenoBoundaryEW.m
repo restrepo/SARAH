@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 GenerateBoundaryBSM:=Block[{i,j, posZ, posW, massW, massZ, couplingsW, couplingsZ,pos, gSd, gSe, gSu,i1,i2,dim},
 
@@ -188,7 +189,7 @@ WriteString[sphenoSugra,"rMS_SM = rMS \n"];
 WriteString[sphenoSugra,"tanb = tanbetaMZ \n"];
 If[(ThetaW /.subNumDependences)===ThetaW,
 WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"]; ,
-WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
+WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW /.Mass[VWp]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
 ];
 WriteString[sphenoSugra,"mudim = GetRenormalizationScale() \n"];
 WriteString[sphenoSugra,"mudim = sqrt(mudim) \n"];
@@ -410,6 +411,7 @@ WriteString[sphenoSugra," delta = 0._dp \n"];
 WriteString[sphenoSugra,"End if \n"];
 
 WriteString[sphenoSugra,"delta_r=rho*Real(dmW2_0,dp)/mW2-Real(dmZ2,dp)/mZ2+delta\n"];
+WriteString[sphenoSugra,"delta_rho0="<>SPhenoForm[RhoParTree]<>"\n"];
 WriteString[sphenoSugra,"rho=1._dp/(1._dp-delta_rho-delta_rho0)\n"];
 WriteString[sphenoSugra,"delta_r=rho*Real(dmW2_0,dp)/mW2-Real(dmZ2,dp)/mZ2+delta\n"];
 WriteString[sphenoSugra,"CosW2SinW2=pi*alphaQ/(sqrt2*mZ2*G_F*(1-delta_r_SM - delta_r))\n"];
@@ -434,8 +436,12 @@ WriteString[sphenoSugra,"mW2=mZ2*rho*(0.5_dp&\n"];
 WriteString[sphenoSugra,"    &+Sqrt(0.25_dp-alphaQ*pi/(sqrt2*G_F*mz2*rho*(1._dp-delta_rw))))\n"];
 
 For[i=1,i<=Length[GoldstoneGhost],
+If[getGen[GoldstoneGhost[[i,2]]]>1,
 WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
-WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];,
+WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+];
 i++;];
 
 WriteString[sphenoSugra,"cosW2=mW2/mZ2\n"];
@@ -473,8 +479,12 @@ WriteString[sphenoSugra,"End Do\n\n"];
 
 
 For[i=1,i<=Length[GoldstoneGhost],
+If[getGen[GoldstoneGhost[[i,2]]]>1,
 WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
-WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];,
+WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+];
 i++;];
 
 
@@ -610,6 +620,14 @@ MakeCall["CouplingsForSMfermions" , Join[parametersEBT,namesEBT],{},{},sphenoSug
 MakeCall["Sigma1Loop"<>ToString[Electron]<>"MZ",Flatten[{massesE,couplingsE}],{"p2"},{"sigR_l","sigL_l","sigSL_l","sigSR_l"},sphenoSugra];
 MakeCall["Sigma1Loop"<>ToString[BottomQuark]<>"MZ",Flatten[{massesB,couplingsB}],{"p2"},{"sigR_d","sigL_d","sigSL_d","sigSR_d"},sphenoSugra];
 MakeCall["Sigma1Loop"<>ToString[TopQuark]<>"MZ",Flatten[{massesT,couplingsT}],{"p2"},{"sigR_u","sigL_u","sigSL_u","sigSR_u"},sphenoSugra];
+
+WriteString[sphenoSugra,"! Take care of the new normalisation of Sigma \n"];
+WriteString[sphenoSugra,"SigR_l = 0.5_dp*SigR_L \n"];
+WriteString[sphenoSugra,"SigL_l = 0.5_dp*SigL_L \n"];
+WriteString[sphenoSugra,"SigR_d = 0.5_dp*SigR_d \n"];
+WriteString[sphenoSugra,"SigL_d = 0.5_dp*SigL_d \n"];
+WriteString[sphenoSugra,"SigR_u = 0.5_dp*SigR_u \n"];
+WriteString[sphenoSugra,"SigL_u = 0.5_dp*SigL_u \n\n"];
 
 MakeCall["OneLoop_d_u_e_SM",{},{"vSM","g1SM","g2SM","g3SM","Lam_MS","-YuSM","YdSM","YeSM"},{"sigR_d_SM","sigL_d_SM","sigSR_d_SM","sigSL_d_SM","sigR_u_SM","sigL_u_SM","sigSR_u_SM","sigSL_u_SM","sigR_l_SM","sigL_l_SM","sigSR_l_SM","sigSL_l_SM","kont"},sphenoSugra];
 
@@ -1114,7 +1132,7 @@ WriteString[sphenoSugra,"NameOfUnit(Iname)='BoundarySM'\n"];
 
 If[(ThetaW /.subNumDependences)===ThetaW,
 WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"]; ,
-WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
+WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW /.Mass[VWp]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
 ];
 WriteString[sphenoSugra,"test = SetRenormalizationScale(mZ2) \n"];
 
@@ -1256,6 +1274,7 @@ WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"delta = 0._dp \n"];
 WriteString[sphenoSugra,"End if \n"];
 
+WriteString[sphenoSugra,"delta_rho0=0._dp\n"];
 WriteString[sphenoSugra,"delta_r=rho*Real(dmW2_0,dp)/mW2-Real(dmZ2,dp)/mZ2+delta\n"];
 WriteString[sphenoSugra,"rho=1._dp/(1._dp-delta_rho-delta_rho0-fac(2)/sinW2_Q-xt2)\n"];
 WriteString[sphenoSugra,"delta_r=rho*Real(dmW2_0,dp)/mW2-Real(dmZ2,dp)/mZ2+delta&\n"];
@@ -1655,6 +1674,7 @@ SetMatchingConditionsMZ[file_]:=MakeCall["SetMatchingConditions",Join[listVEVs,l
 
 
 
+(* ::Input::Initialization:: *)
 
 CheckYukawaScheme:=Block[{pos,i,j,temp,qn={},strongI},
 pos=Position[SuperPotential,UpYukawa];
@@ -1674,6 +1694,7 @@ TransposedYukawaScheme=False;
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateBoundaryEWnonSUSY:=Block[{i,j, posZ, posW, massW, massZ, couplingsW, couplingsZ},
 Print["  Write 'BoundaryEW'"];
 
@@ -1880,7 +1901,7 @@ WriteString[sphenoSugra,"NameOfUnit(Iname)='BoundaryEW'\n"];
 WriteString[sphenoSugra,"tanb = tanbetaMZ \n"];
 If[(ThetaW /.subNumDependences)===ThetaW,
 WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"]; ,
-WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
+WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW /.Mass[VWp]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
 ];
 WriteString[sphenoSugra,"test = SetRenormalizationScale(mZ2) \n"];
 
@@ -2123,8 +2144,12 @@ WriteString[sphenoSugra,"mW2=mZ2*rho*(0.5_dp&\n"];
 WriteString[sphenoSugra,"    &+Sqrt(0.25_dp-alphamz*pi/(sqrt2*G_F*mz2*rho*(1._dp-delta_rw))))\n"];
 
 For[i=1,i<=Length[GoldstoneGhost],
+If[getGen[GoldstoneGhost[[i,2]]]>1,
 WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
-WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];,
+WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+];
 i++;];
 
 WriteString[sphenoSugra,"cosW2=mW2/mZ2\n"];
@@ -2134,8 +2159,12 @@ WriteString[sphenoSugra,"End Do\n\n"];
 
 
 For[i=1,i<=Length[GoldstoneGhost],
+If[getGen[GoldstoneGhost[[i,2]]]>1,
 WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
-WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];,
+WriteString[sphenoSugra,SPhenoMass[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMass[GoldstoneGhost[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhost[[i,2]],1]<>"="<>SPhenoMassSq[GoldstoneGhost[[i,1]],i] <>"\n" ];
+];
 i++;];
 
 
@@ -2263,6 +2292,14 @@ MakeCall["CouplingsForSMfermions" , Join[parametersEBT,namesEBT],{},{},sphenoSug
 MakeCall["Sigma1Loop"<>ToString[Electron]<>"MZ",Flatten[{massesE,couplingsE}],{"p2"},{"sigR_l","sigL_l","sigSL_l","sigSR_l"},sphenoSugra];
 MakeCall["Sigma1Loop"<>ToString[BottomQuark]<>"MZ",Flatten[{massesB,couplingsB}],{"p2"},{"sigR_d","sigL_d","sigSL_d","sigSR_d"},sphenoSugra];
 MakeCall["Sigma1Loop"<>ToString[TopQuark]<>"MZ",Flatten[{massesT,couplingsT}],{"p2"},{"sigR_u","sigL_u","sigSL_u","sigSR_u"},sphenoSugra];
+
+WriteString[sphenoSugra,"! Take care of the new normalisation of Sigma \n"];
+WriteString[sphenoSugra,"SigR_l = 0.5_dp*SigR_L \n"];
+WriteString[sphenoSugra,"SigL_l = 0.5_dp*SigL_L \n"];
+WriteString[sphenoSugra,"SigR_d = 0.5_dp*SigR_d \n"];
+WriteString[sphenoSugra,"SigL_d = 0.5_dp*SigL_d \n"];
+WriteString[sphenoSugra,"SigR_u = 0.5_dp*SigR_u \n"];
+WriteString[sphenoSugra,"SigL_u = 0.5_dp*SigL_u \n\n"];
 
 WriteString[sphenoSugra,"\n\n"];
 

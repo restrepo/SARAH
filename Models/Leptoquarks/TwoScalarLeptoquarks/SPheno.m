@@ -88,3 +88,6 @@ LambdaSPinput->1,
 LambdaSTinput->1, 
 YT[a_,a_]->0.1
 };
+
+(* loop decays not working as long as neutrinos in the model are not mixed *)                     
+SA`AddOneLoopDecay = False;

@@ -264,6 +264,7 @@ ParticleDefinitions[EWSB] = {
                  PDG.IX ->{0},
                  Width -> {0}, 
                  Mass -> {0},
+                 FeynArtsNr -> 7,
                  LaTeX -> {"H^+","H^-"},
                  OutputName -> {"Hp","Hm"}
                  }},      

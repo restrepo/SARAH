@@ -3,8 +3,10 @@ Module Pole2LFunctions
 Use Control
 Use Mathematics
 Use LoopFunctions
+Use Settings
 
 Real(dp), parameter :: epsD = 1E-8_dp, epsM = 1E-10_dp
+
 
  Interface Smalldp
   Module Procedure SmalldpR, SmalldpC
@@ -128,9 +130,16 @@ real(dp) :: res
 
 if(smallc(x/q2)) then
 res=0._dp
+tffv=res
+return
 else
    res=real(4._dp*x*(6._dp-7._dp*log(x/q2)+3._dp*(log(x/q2))**2),dp)
 end if
+
+if(rMS.ne.0._dp) then
+   res=res+real((2._dp*log(x/q2)-1._dp),dp)
+end if
+
 
 TfFV=res
 end function tffv
@@ -547,6 +556,8 @@ call atvals(x,y,z,u,v,x_in,y_in)
 if(smalldp(x,y)) then
    if(smallc(x/q2,y/q2)) then
       res = 0._dp 
+      gfffv=res
+      return 
    else
       res = real(x*(20 - 32*Log(x/Q2) + 24*Log(x/Q2)**2),dp)
    end if
@@ -555,6 +566,10 @@ else
 res=Real( 2._dp*(  (x+y)*(3._dp*UU(x,y,x,0._dp,q2)+3._dp*UU(x,y,y,0._dp,q2) - 5._dp*BB(x,y,q2))-3._dp*II(x,x,0._dp,q2)-3._dp*II(y,y,0._dp,q2)+5._dp*J0(x,q2)+5._dp*J0(y,q2)-8*(x+y)),dp)
 
 
+end if
+
+if(rMS.ne.0._dp) then
+res=res+real(4._dp*(J0(x,q2)+J0(y,q2)-(x+y)*BB(x,y,q2)),dp)
 end if
 
 
@@ -572,6 +587,8 @@ call atvals(x,y,z,u,v,x_in,y_in)
 if(smalldp(x,y)) then
    if(smallc(x/q2,y/q2)) then
       res = 0._dp !!! since the function will be multiplied by zero anyway
+      gffbfbv=res
+      return
    else
       res = real(-4 - 4*Log(x/Q2) + 12*Log(x/Q2)**2,dp)
    end if
@@ -579,6 +596,13 @@ else
    res=real(12._dp*UU(x,y,x,0._dp,q2)+12._dp*UU(x,y,y,0._dp,q2)-20._dp*BB(x,y,q2)-16._dp,dp) 
 
 end if
+
+
+if(rMS.ne.0._dp) then
+res=res-real(8._dp*(0.5_dp+BB(x,y,q2)),dp)
+end if
+
+
 GfFbFbV = res
 
 

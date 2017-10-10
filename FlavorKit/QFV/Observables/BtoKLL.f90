@@ -6,6 +6,7 @@ Real(dp) ::  GF
 ! Observable implemented by W. Porod, F. Staub and A. Vicente
 ! Based on W. Altmannshofer, D. M. Straub, EPJ C 73 (2013) 2646
 ! [arXiv:1308.1501]
+! 17-03-24, FS: changed normalization of C7, C7'
 ! ---------------------------------------------------------------- 
 
 c7NP = (CC7(3,2) - CC7SM(3,2))
@@ -27,7 +28,7 @@ norm = - Alpha_160/Pi*GF/sqrt2*CKM_160(3,3)*Conjg(CKM_160(3,2))
 
 ! Branching ratio in the high-q^2 region
 ! q^2 in [14.18,22] GeV^2
-BrBtoKmumu = (1.11_dp + 0.22_dp*(c7Np+c7p)/norm + &
+BrBtoKmumu = (1.11_dp + 4._dp*pi*Alpha_160*0.22_dp*(c7Np+c7p)/norm + &
    & 0.27_dp*(c9NP+c9p)/norm - 0.27_dp*(c10NP+c10p)/norm)
 
 ! ratio relative to SM

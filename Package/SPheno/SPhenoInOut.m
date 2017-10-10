@@ -213,6 +213,7 @@ WriteString[sphenoInOut,"Integer,Private::i_cpv=0\n"];
 WriteString[sphenoInOut,"Integer,Save,Private::in_kont(2)\n"];
 WriteString[sphenoInOut,"Logical,Save::Add_Rparity= .False. \n"];
 WriteString[sphenoInOut,"Logical,Save::Write_HiggsBounds= .False. \n"];
+WriteString[sphenoInOut,"Logical,Save::Write_HiggsBounds5= .False. \n"];
 WriteString[sphenoInOut,"Character(len=40),Private::sp_info\n\n"];
 WriteString[sphenoInOut,"Logical,Private::l_RP_Pythia= .False. \n"];
 WriteString[sphenoInOut,"Logical,Save,Private::Use_Flavour_States= .False. \n"];
@@ -234,6 +235,7 @@ WriteWHIZARDout;
 
 If[SPhenoHiggsBoundsIncluded===True,
 WriteHiggsBounds;
+WriteHiggsBounds5;
 ];
 ];
 
@@ -408,12 +410,12 @@ WriteString[sphenoInOut,"gamW2 = gamW**2\n"];
 WriteString[sphenoInOut,"gmW = gamW * mW\n"];
 WriteString[sphenoInOut,"gmW2 = gmW**2\n"];
 
-If[SupersymmetricModel===True && OnlyLowEnergySPheno=!=True,
+(* If[SupersymmetricModel===True && OnlyLowEnergySPheno=!=True, *)
 WriteString[sphenoInOut,"Alpha_mZ = Alpha_MSbar(mZ, mW)\n"];
 WriteString[sphenoInOut,"If (calc_ferm) Call CalculateRunningMasses(mf_l,mf_d,mf_u&\n"];
 WriteString[sphenoInOut,"&,Q_light_quarks,alpha_mZ,alphas_mZ,mZ&\n"];
 WriteString[sphenoInOut,"&,mf_l_mZ,mf_d_mZ,mf_u_mZ,kont)\n\n\n"];
-];
+(* ]; *)
 
 
 
@@ -785,10 +787,11 @@ WriteString[sphenoInOut," Write(io_L,102) 9,1.,\"# Gauge-less limit\" \n"];
 WriteString[sphenoInOut,"Else \n"];
 WriteString[sphenoInOut," Write(io_L,102) 9,0.,\"# Gauge-less limit\" \n"];
 WriteString[sphenoInOut,"End if \n"];
-
+If[Include2LoopCorrections=!=False&&SkipEffPot=!=True,
 WriteString[sphenoInOut,"Write(io_L,102) 400,hstep_pn,\"# Step-size for purely-numerical methode for 2-loop calculation\" \n"];
 WriteString[sphenoInOut,"Write(io_L,102) 401,hstep_sa,\"# Step-size for semi-analytical methode for 2-loop calculation\" \n"];
 WriteString[sphenoInOut,"Write(io_L,102) 410,err2L,\"# indicative error in numerical derivation\" \n"];
+];
 ];
 WriteString[sphenoInOut, "\n \n"];
 
@@ -796,8 +799,8 @@ WriteString[sphenoInOut, "\n \n"];
 If[SPhenoOnlyForHM=!=True,
 WriteString[sphenoInOut, "If(Write_WHIZARD) Call WriteWHIZARD \n \n"];
 If[SPhenoHiggsBoundsIncluded===True,
-WriteString[sphenoInOut, "If(Write_HiggsBounds) Call WriteHiggsBounds"];
-WriteString[sphenoInOut, "\n \n"];
+WriteString[sphenoInOut, "If(Write_HiggsBounds) Call WriteHiggsBounds \n \n"];
+WriteString[sphenoInOut, "If(Write_HiggsBounds5) Call WriteHiggsBounds5 \n \n"];
 ];
 ];
 
@@ -2259,14 +2262,14 @@ WriteString[sphenoInOut, "! Information needed by MadGraph \n"];
 WriteString[sphenoInOut, "If (OutputForMG) Then \n"];
 For[i=1,i<=Length[PART[V]],
 If[FreeQ[Transpose[savedDecayInfos][[1]],PART[V][[i,1]]],
-WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[V][[i,1]],1]<>"),"<>SPhenoForm[1. getWidthNumerical[PART[V][[i,1]],1,1]/.External->0]<>", \""<>SPhenoForm[PART[V][[i,1]]]<>"\" \n"];
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT(Abs("<>SPhenoPDG[PART[V][[i,1]],1]<>")),"<>SPhenoForm[1. getWidthNumerical[PART[V][[i,1]],1,1]/.External->0]<>", \""<>SPhenoForm[PART[V][[i,1]]]<>"\" \n"];
 ];
 i++;];
 
 For[i=1,i<=Length[PART[F]],
 If[FreeQ[Transpose[savedDecayInfos][[1]],PART[F][[i,1]]],
 For[j=1,j<=getGen[PART[F][[i,1]]],
-WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[F][[i,1]],j]<>"),"<>SPhenoForm[1. getWidthNumerical[PART[F][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[F][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT(Abs("<>SPhenoPDG[PART[F][[i,1]],j]<>")),"<>SPhenoForm[1. getWidthNumerical[PART[F][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[F][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
 j++;];
 ];
 i++;];
@@ -2274,7 +2277,7 @@ i++;];
 For[i=1,i<=Length[PART[S]],
 If[FreeQ[Transpose[savedDecayInfos][[1]],PART[S][[i,1]]],
 For[j=1,j<=getGen[PART[S][[i,1]]],
-WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[S][[i,1]],j]<>"),"<>SPhenoForm[1. getWidthNumerical[PART[S][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[S][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT(Abs("<>SPhenoPDG[PART[S][[i,1]],j]<>")),"<>SPhenoForm[1. getWidthNumerical[PART[S][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[S][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
 j++;];
 ];
 i++;];

@@ -98,3 +98,6 @@ DEFINITION[EWSB][GaugeES]={
 
 
 
+(* No SPheno.m written so far *)
+(* Should be simple in principle; it you need it, please contact the author *)
+SetOptions[MakeAll, IncludeSPheno->False];

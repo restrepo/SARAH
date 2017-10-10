@@ -19,15 +19,15 @@ ParameterDefinitions = {
 			  DependenceNum ->  None}}, 
 
 {epsE,  {LaTeX ->"\\epsilon_e",
-       OutputName -> epsYE,
+       OutputName -> epsE,
        LesHouches -> epsE }},                                                                           
 
 {epsD,  {LaTeX ->"\\epsilon_d",
-       OutputName -> epsYD,
+       OutputName -> epsD,
        LesHouches -> epsD }},
 
 {epsU,  {LaTeX ->"\\epsilon_u",
-       OutputName -> epsYU,
+       OutputName -> epsU,
        LesHouches -> epsU }},
                                                                            
 {Lambda1,    { LaTeX -> "\\lambda_1",

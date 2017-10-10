@@ -19,7 +19,6 @@
 
 
 
-(* ::Input::Initialization:: *)
 GenerateLesHouchesFile := Block[{i,i1, i2,i3,i4,k,l,listIn,fin,iminpar},
 (*
 Print["--------------------------------- "];
@@ -152,6 +151,11 @@ If[Count[Gauge,U[1],3]>1,WriteString[filenames[[l]]," 60 1               # Inclu
 If[SeveralIndependentTadpoleSolutions=!=True,
 WriteString[filenames[[l]]," 65 1               # Solution tadpole equation \n"];
 ];
+If[ForceSimplifiedMatching=!=True,
+WriteString[filenames[[l]]," 66 1               # Two-Scale Matching \n"];,
+WriteString[filenames[[l]]," 66 0               # Two-Scale Matching \n"];
+];
+WriteString[filenames[[l]]," 67 1               # effective Higgs mass calculation \n"];
 WriteString[filenames[[l]]," 75 1               # Write WHIZARD files \n"];
 WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file   \n"];
 WriteString[filenames[[l]]," 77 0               # Output for MicrOmegas (running masses for light quarks; real mixing matrices)   \n"];
@@ -202,7 +206,7 @@ For[i=1,i<=Length[ListDecayParticles3B],
 WriteString[filenames[[l]],ToString[i]<>"    1     # Calc 3-Body decays of "<>SPhenoForm[ListDecayParticles3B[[i,1]]]<>" \n"];
 i++;];
 If[SA`AddOneLoopDecay === True,
-WriteString[filenames[[l]], ToString[1000] <>" 0     # One loop-induced decays only \n"];
+(* WriteString[filenames[[l]], ToString[1000] <>" 0     # One loop-induced decays only \n"]; *)
 For[i=1,i<=Length[SA`ParticlesDecays1Loop],
 WriteString[filenames[[l]],ToString[1000+i]<> " 1     # Loop Decay of "<>SPhenoForm[SA`ParticlesDecays1Loop[[i]]]<>" \n"];
 i++;];
@@ -212,11 +216,11 @@ WriteString[filenames[[l]], ToString[1102] <>" 0.     # Value used for divergenc
 WriteString[filenames[[l]], ToString[1103] <>" 0.     # Debug information \n"];
 WriteString[filenames[[l]], ToString[1104] <>" 0.     #  Tree-level values only \n"];
 *)
-WriteString[filenames[[l]], ToString[1114] <>" 1.     # External Z-factors (0: off, 1:p2_i=m2_i, 2:p2=0, p3:p2_i=m2_1) \n"];
-WriteString[filenames[[l]], ToString[1115] <>" 1.     # OS kinematics \n"];
-WriteString[filenames[[l]], ToString[1116] <>" 0.     # OS values (0: off, 1:g1,g2,v 2:g1,g2,v,Y_i) \n"];
-WriteString[filenames[[l]], ToString[1117] <>" 0.     # Use defined counter terms \n"];
-WriteString[filenames[[l]], ToString[1118] <>" 1.     # OS masses for loop-induced decays \n"];
+WriteString[filenames[[l]], ToString[1114] <>" 1.     # U-factors (0: off, 1:p2_i=m2_i, 2:p2=0, p3:p2_i=m2_1) \n"];
+WriteString[filenames[[l]], ToString[1115] <>" 1.     # Use loop-corrected masses for external states \n"];
+WriteString[filenames[[l]], ToString[1116] <>" 0.     # OS values for W,Z and fermions (0: off, 1:g1,g2,v 2:g1,g2,v,Y_i) \n"];
+WriteString[filenames[[l]], ToString[1117] <>" 0.     # Use defined counter-terms \n"];
+WriteString[filenames[[l]], ToString[1118] <>" 1.     # Use everywhere loop-corrected masses for loop-induced decays \n"];
 (*
 WriteString[filenames[[l]],"1201 1.0E-5               # Photon/Gluon mass in loop decays \n"];
 *)
@@ -301,7 +305,6 @@ GenerateSSPtemplate;
 ];
 
 
-(* ::Input::Initialization:: *)
 
 GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i},
 Print["  Writing Makefile"];
@@ -335,8 +338,8 @@ WriteString[sphenoMake,"F90="<>StandardCompiler<>"\n"];
 If[SA`Version === "SARAHVERSION",
 WriteString[sphenoMake,"comp= -c -g -module ${Mdir} -I${InDir}  \n"];
 WriteString[sphenoMake,"LFlagsB= -g  \n"];,
-WriteString[sphenoMake,"comp= -c -g -module ${Mdir} -I${InDir}  \n"];
-WriteString[sphenoMake,"LFlagsB= -g  \n"];
+WriteString[sphenoMake,"comp= -c -O -module ${Mdir} -I${InDir}  \n"];
+WriteString[sphenoMake,"LFlagsB= -O  \n"];
 ];
 
 WriteString[sphenoMake,"# Intels ifort,debug modus  \n"];
@@ -405,7 +408,9 @@ WriteString[sphenoMake ," \\\n"];
 ];
 
 If[Include2LoopCorrections=!=False,
+If[SkipEffPot=!=True,
 WriteString[sphenoMake," ${name}(EffPotFunctions.o) ${name}(DerivativesEffPotFunctions.o) ${name}(EffectivePotential_"<>ModelName<>".o) \\\n"];
+];
 WriteString[sphenoMake," ${name}(2LPoleFunctions.o) ${name}(2LPole_"<>ModelName<>".o) \\\n"];
 If[UseHiggs2LoopMSSM===True,
 WriteString[sphenoMake," ${name}(TwoLoopHiggsMass_SARAH.o) \\\n"];
@@ -413,10 +418,11 @@ WriteString[sphenoMake," ${name}(TwoLoopHiggsMass_SARAH.o) \\\n"];
 ];
 WriteString[sphenoMake,"${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \\\n"];
 WriteString[sphenoMake," ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
-If[OnlyLowEnergySPheno=!=True,
+(* If[OnlyLowEnergySPheno=!=True, 
 WriteString[sphenoMake," ${name}(RGEs_SM_HC.o) ${name}(Couplings_SM_HC.o) ${name}(TreeLevelMasses_SM_HC.o) ${name}(2LPole_SM_HC.o) ${name}(LoopMasses_SM_HC.o)   \\\n"];,
 WriteString[sphenoMake," ${name}(RGEs_SM_HC.o) \\\n"];
-];
+]; *)
+WriteString[sphenoMake," ${name}(RGEs_SM_HC.o) ${name}(Couplings_SM_HC.o) ${name}(TreeLevelMasses_SM_HC.o) ${name}(LoopMasses_SM_HC.o)   \\\n"];
 If[Head[RegimeNr]===Integer,
 WriteString[sphenoMake," ${name}(Shifts_"<>ModelName<>".o) \\\n"];
 ];
@@ -447,10 +453,10 @@ If[SkipFlavorKit=!=True,WriteString[sphenoMake,"${name}(FlavorKit_LFV_"<>ModelNa
 ];
 ];
 
-If[OnlyLowEnergySPheno=!=True,
-WriteString[sphenoMake," ${name}(Boundaries_"<>ModelName<>".o)  ${name}(InputOutput_"<>ModelName<>".o) \n"];,
+(* If[OnlyLowEnergySPheno=!=True, *)
+WriteString[sphenoMake," ${name}(Boundaries_"<>ModelName<>".o)  ${name}(InputOutput_"<>ModelName<>".o) \n"]; (*,
 WriteString[sphenoMake,"${name}(InputOutput_"<>ModelName<>".o) \n"];
-];
+]; *)
 WriteString[sphenoMake,"else \n"];
 WriteString[sphenoMake,"\t @echo -------------------------------------------------------------------  \n"];
 WriteString[sphenoMake,"\t @echo ERROR:  \n"];
@@ -489,7 +495,6 @@ Close[sphenoMake];
 ];
 
 
-(* ::Input::Initialization:: *)
 GenerateSSPtemplate:=Block[{i,j,k,l,pos,iminpar,fin},
 
 Print["  Writing SSP templates"];

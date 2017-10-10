@@ -518,6 +518,7 @@ sumvar = Join[sumvar,subGC[pos] /. (a_->b_)->b /. subIndFinalX[pos,1,ToString[in
 j++;];
 indrep=Join[indrep,{indreptemp}];
 i++;];
+sumvarSafe=sumvar;
 
 For[i=1,i<=Length[allind],
 chargepart= {};
@@ -543,7 +544,7 @@ CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1
 norm=1;
 
 fixvar = Intersection[Select[fixvar,(FreeQ[cfac,#]==False)&]];
-sumvar = Intersection[Select[sumvar,(FreeQ[cfac,#]==False)&]];
+sumvar = Intersection[Select[sumvarSafe,(FreeQ[cfac,#]==False)&]];
 
 
 subfixvar={};

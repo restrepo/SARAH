@@ -636,9 +636,18 @@ End Function C22_IR
 Complex(dp) Function SA_B0(xp, xm1, xm2)
  Implicit None
   Real(dp), Intent(in) :: xp, xm1, xm2
+  
+  If ((xm1.eq.0._dp).and.(xm2.eq.0._dp)) Then 
+    SA_B0=0._dp
+    Return
+  End if
 
   If (divonly.Eq.1) Then
-   SA_B0 = divergence
+   If (IRdivonly) Then 
+    SA_B0 = 0._dp
+   Else
+    SA_B0 = divergence
+   End if 
    Return 
   End If
   
@@ -657,7 +666,11 @@ Complex(dp) Function SA_A0(m)
   Real(dp), Intent(in) :: m
 
   If (divonly.Eq.1) Then
-   SA_A0 = m*divergence
+   If (IRdivonly) Then 
+    SA_A0 = 0._dp
+   Else
+    SA_A0 = m*divergence
+   End if
    Return
   End If
   
@@ -673,9 +686,18 @@ End Function SA_A0
 Complex(dp) Function SA_B1(xp, xm1, xm2)
  Implicit None
   Real(dp), Intent(in) :: xp, xm1, xm2
+  
+  If ((xm1.eq.0._dp).and.(xm2.eq.0._dp)) Then 
+    SA_B1=0._dp
+    Return
+  End if
 
   If (divonly.Eq.1) Then
-   SA_B1 = - 0.5_dp * divergence
+   If (IRdivonly) Then 
+    SA_B1 = 0._dp
+   Else
+    SA_B1 = - 0.5_dp * divergence
+   End if
    Return 
   End If
   
@@ -694,7 +716,11 @@ Complex(dp) Function SA_B00(xp, xm1, xm2)
   Real(dp), Intent(in) :: xp, xm1, xm2
 
   If (divonly.Eq.1) Then
-   SA_B00 = divergence * (3._dp * xm1 + 3._dp * xm2 - xp)/12._dp
+   If (IRdivonly) Then 
+    SA_B00 = 0._dp
+   Else
+    SA_B00 = divergence * (3._dp * xm1 + 3._dp * xm2 - xp)/12._dp
+   End if
    Return 
   End If
 
@@ -716,22 +742,25 @@ Complex(dp) Function SA_Cget(name, p1, p2, p1p2, m1, m2, m3)
   
   
  If (divonly.Eq.1) Then
-
-  If ((name.Eq."C0").Or.(name.Eq."C1").Or.(name.Eq."C2")) Then
-   SA_Cget = ZeroC
-  Else If (name.Eq."C00") Then
-   SA_Cget = 0.25_dp * divergence
-  Else If ((name.Eq."C11").Or.(name.Eq."C12").Or.(name.Eq."C22")) Then
-   SA_Cget = ZeroC
-  Else If ((name.Eq."C001").Or.(name.Eq."C002")) Then
-   SA_Cget = - divergence / 12._dp
-  Else If ((name.Eq."C111").Or.(name.Eq."C112").Or.(name.Eq."C122").Or.(name.Eq."C222")) Then
-   SA_Cget = ZeroC
+  if (IRdivonly) Then 
+    SA_Cget = 0._dp
   Else
-   Write (ErrCan,*) "Problem in function Cget, function "//name
-   Write (ErrCan,*) "is not defined"
-   If (Errorlevel.Ge.0) Call TerminateProgram
-  End If
+   If ((name.Eq."C0").Or.(name.Eq."C1").Or.(name.Eq."C2")) Then
+    SA_Cget = ZeroC
+   Else If (name.Eq."C00") Then
+    SA_Cget = 0.25_dp * divergence
+   Else If ((name.Eq."C11").Or.(name.Eq."C12").Or.(name.Eq."C22")) Then
+    SA_Cget = ZeroC
+   Else If ((name.Eq."C001").Or.(name.Eq."C002")) Then
+    SA_Cget = - divergence / 12._dp
+   Else If ((name.Eq."C111").Or.(name.Eq."C112").Or.(name.Eq."C122").Or.(name.Eq."C222")) Then
+    SA_Cget = ZeroC
+   Else
+    Write (ErrCan,*) "Problem in function Cget, function "//name
+    Write (ErrCan,*) "is not defined"
+    If (Errorlevel.Ge.0) Call TerminateProgram
+   End If
+  End if
 !   Return
 
  Else if (IRdivonly) Then 
@@ -804,7 +833,11 @@ Complex(dp) Function SVVloop(p2,m12,m22)
 
     Real(dp),Intent(in)::p2,m12,m22
     
-
+    If ((m12.eq.0._dp).and.(m22.eq.0._dp)) Then
+      SVVloop = 0._dp
+      Return
+    End if
+ 
     If (RXi.eq.1._dp) Then
 	   
         SVVloop = 4._dp*Real(SA_B0(p2,m12,m22)-0.5_dp*rMS,dp)
@@ -1072,6 +1105,11 @@ End Function VGGloop
  Complex(dp) Function SA_DerB0(xp, xm1, xm2)
  Implicit None
   Real(dp), Intent(in) :: xp, xm1, xm2
+  
+  If ((xm1.eq.0._dp).and.(xm2.eq.0._dp)) Then 
+    SA_DerB0=0._dp
+    Return
+  End if
 
   If (divonly.Eq.1) Then
    SA_DerB0 = ZeroC
@@ -1105,10 +1143,16 @@ End Function VGGloop
   Real(dp), Intent(in) :: xp, xm1, xm2
   
 ! 
-!     If (divonly.Eq.1) Then
-!    SA_DerB1 = ZeroC
-!    Return 
-!   End If
+   If ((xm1.eq.0._dp).and.(xm2.eq.0._dp)) Then 
+    SA_DerB1=0._dp
+    Return
+  End if
+
+
+    If (divonly.Eq.1) Then
+     SA_DerB1 = ZeroC
+     Return 
+    End If
    
   If (IRdivonly) Then
 !    If (xm1.eq.Mass_Regulator_PhotonGluon**2) Then
@@ -1144,7 +1188,7 @@ End Function DerB22
 Complex(dp) Function SA_DerHloop(p2,m12,m22)
 Implicit None
 Real(dp), Intent(in) :: p2,m12,m22
-SA_DerHloop =   0.5_dp*(4._dp * SA_DerB00(p2,m12,m22) + SA_DerGLoop(p2,m12,m22) )
+SA_DerHloop =   4._dp * SA_DerB00(p2,m12,m22) + SA_DerGLoop(p2,m12,m22) 
 End Function SA_DerHloop 
 
 Complex(dp) Function SA_DerGloop(p2,m12,m22)
@@ -1163,13 +1207,13 @@ End Function DerFloopRXi
 Complex(dp) Function DerVSSloop(p2,m12,m22)
 Implicit None
 Real(dp), Intent(in) :: p2,m12,m22
-DerVSSloop = -2._dp*SA_DerB00(p2,m12,m22) 
+DerVSSloop = -4._dp*SA_DerB00(p2,m12,m22) 
 End Function DerVSSloop
 
 Complex(dp) Function DerVVSloop(p2,m12,m22)
 Implicit None
 Real(dp), Intent(in) :: p2,m12,m22
-DerVVSloop = 0.5_dp*SA_DerB0(p2,m12,m22)
+DerVVSloop = SA_DerB0(p2,m12,m22)
 End Function DerVVSloop
 
 Complex(dp) Function DerSVVloop(p2,m12,m22)
@@ -1181,16 +1225,14 @@ End Function DerSVVloop
 Complex(dp) Function  DerVGGloop(p2,m12,m22)
 Implicit None
 Real(dp), Intent(in) :: p2,m12,m22
-DerVGGloop = 0.5_dp*SA_DerB00(p2,m12,m22)
+DerVGGloop = SA_DerB00(p2,m12,m22)
 End Function  DerVGGloop
 
 Complex(dp) Function DerVVVloop(p2,m12,m22)
 Implicit None
 Real(dp), Intent(in) :: p2,m12,m22
-! DerVVVloop = 2._dp/3._dp*rMS + 10._dp*DerB00(p2,m12,m22) &
-!      & + (m12+m22+4._dp*p2)*DerB0(p2,m12,m22)+ 4._dp*B0(p2,m12,m22)
-DerVVVloop =  0.5_dp*(10._dp*SA_DerB00(p2,m12,m22) &
-     & + (m12+m22+4._dp*p2)*SA_DerB0(p2,m12,m22)+ 4._dp*SA_B0(p2,m12,m22))
+DerVVVloop = 10._dp*SA_DerB00(p2,m12,m22) &
+     & + (m12+m22+4._dp*p2)*SA_DerB0(p2,m12,m22)+ 4._dp*SA_B0(p2,m12,m22)
 
 End Function DerVVVloop
 
@@ -1204,7 +1246,7 @@ End Function DerVVVloop
   Real(dp), Intent(in) :: xp, xm1, xm2
   Complex(dp) :: LogA, LogB, LogC, LogD, LogE, sxm2, sxp
   Real(dp) :: mdiff
-
+  
   If (divonly.Eq.1) Then
    DerB1 = ZeroC
    Return 
@@ -1292,9 +1334,15 @@ End Function DerVVVloop
   Real(dp) :: mdiff
   
   mudim2=GetRenormalizationScale()
+  
+
 
   If (divonly.Eq.1) Then
-   SA_DerB00 = - divergence / 12._dp
+   If (IRdivonly) Then 
+    SA_DerB00 = 0._dp
+   Else
+    SA_DerB00 = - divergence / 12._dp
+    End if
    Return 
   End If
 

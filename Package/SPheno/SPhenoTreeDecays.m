@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoTreeLevelDecays[Eigenstates_]:=Block[{i},
 (*
 Print["--------------------------------------"];
@@ -141,6 +142,7 @@ WriteString[sphenoDecay, "Contains \n \n  \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 MakeDecayLists[particle_]:=Block[{i,temp},
 (* Print["Decay of ", particle]; *)
@@ -546,38 +548,124 @@ WriteString[sphenoDecay, "gT = gT + gPartial(1,i_count) \n"];
 
 Switch[particle,
 HiggsBoson,
+	If[RE[p1]===Lepton && RE[p2]===Lepton,
+		WriteString[sphenoDecay,"If ((gt1.le.3).and.(gt2.le.3)) Then \n"];
+		WriteString[sphenoDecay, "  BR_Hll(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
+		WriteString[sphenoDecay,"End if\n"];
+	];
 	If[p1===HiggsBoson && p2===HiggsBoson,
 	If[getGenSPheno[HiggsBoson]==1,
 	WriteString[sphenoDecay, "  BRHHH(1,1) = gPartial(1,i_count) \n"];,
 	WriteString[sphenoDecay,"If (gt1.eq.gt2) Then \n"];
 	WriteString[sphenoDecay, "  BRHHH(i1,gt1) = gPartial(i1,i_count) \n"];
 	WriteString[sphenoDecay, "End if \n"];
-	];,
+	WriteString[sphenoDecay, "  BRHHHijk(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	];
 	If[p1===PseudoScalar && p2===PseudoScalar,
 	WriteString[sphenoDecay,"If (gt1.eq.gt2) Then \n"];
 	WriteString[sphenoDecay, "  BRHAA(i1,gt1) = gPartial(i1,i_count) \n"];
-	WriteString[sphenoDecay, "End if \n"]; (*,
-	If[AntiField[p1]===p1 && AntiField[p2]===p2,
-	WriteString[sphenoDecay, "  BRinvH(i1) = BRinvH(i1)+gPartial(i1,i_count) \n"];
-	]; *)
+	WriteString[sphenoDecay, "End if \n"]; 
+	WriteString[sphenoDecay, "  BRHAAijk(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
 	];
+	If[p1===PseudoScalar && p2===HiggsBoson,
+	WriteString[sphenoDecay, "  BRHHAijk(i1,gt2,gt1) = gPartial(i1,i_count) \n"];
+	];
+	If[p2===PseudoScalar && p1===HiggsBoson,
+	WriteString[sphenoDecay, "  BRHHAijk(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[p1===VectorZ && p2===HiggsBoson,
+	WriteString[sphenoDecay, "  BRHHZ(i1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[p1===VectorZ && p2===PseudoScalar,
+	WriteString[sphenoDecay, "  BRHAZ(i1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[p2===VectorZ && p1===HiggsBoson,
+	WriteString[sphenoDecay, "  BRHHZ(i1,gt1) = gPartial(i1,i_count) \n"];
+	];
+	If[p2===VectorZ && p1===PseudoScalar,
+	WriteString[sphenoDecay, "  BRHAZ(i1,gt1) = gPartial(i1,i_count) \n"];
+	];
+	If[RE[p1]===VectorW && RE[p2]===ChargedHiggs,
+	WriteString[sphenoDecay, "  BRHHpW(i1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[RE[p2]===VectorW && RE[p1]===ChargedHiggs,
+	WriteString[sphenoDecay, "  BRHHpW(i1,gt2) = gPartial(i1,i_count) \n"];
 	];,
-PseudoScalar,
+
+	PseudoScalar,
+	If[RE[p1]===Lepton && RE[p2]===Lepton,
+		WriteString[sphenoDecay,"If ((gt1.le.3).and.(gt2.le.3)) Then \n"];
+		WriteString[sphenoDecay, "  BR_All(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
+		WriteString[sphenoDecay,"End if\n"];
+	];
 	If[p1===HiggsBoson && p2===HiggsBoson,
 	WriteString[sphenoDecay,"If (gt1.eq.gt2) Then \n"];
 	WriteString[sphenoDecay, "  BRAHH(i1,gt1) = gPartial(i1,i_count) \n"];
-	WriteString[sphenoDecay, "End if \n"];,
+	WriteString[sphenoDecay, "End if \n"];
+	WriteString[sphenoDecay, "  BRAHHijk(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
+	];
 	If[p1===PseudoScalar && p2===PseudoScalar,
 	WriteString[sphenoDecay,"If (gt1.eq.gt2) Then \n"];
 	WriteString[sphenoDecay, "  BRAAA(i1,gt1) = gPartial(i1,i_count) \n"];
-	WriteString[sphenoDecay, "End if \n"]; (*,
-	If[AntiField[p1]===p1 && AntiField[p2]===p2,
-	WriteString[sphenoDecay, "  BRinvA(i1) = BRinvA(i1)+gPartial(i1,i_count) \n"];
-	]; *)
+	WriteString[sphenoDecay, "End if \n"]; 
+	WriteString[sphenoDecay, "  BRAAAijk(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
 	];
+	If[p1===HiggsBoson && p2===PseudoScalar,
+	WriteString[sphenoDecay, "  BRAHAijk(i1,gt1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[p2===HiggsBoson && p1===PseudoScalar,
+	WriteString[sphenoDecay, "  BRAHAijk(i1,gt2,gt1) = gPartial(i1,i_count) \n"];
+	];
+	If[p1===VectorZ && p2===HiggsBoson,
+	WriteString[sphenoDecay, "  BRAHZ(i1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[p1===VectorZ && p2===PseudoScalar,
+	WriteString[sphenoDecay, "  BRAAZ(i1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[p2===VectorZ && p1===HiggsBoson,
+	WriteString[sphenoDecay, "  BRAHZ(i1,gt1) = gPartial(i1,i_count) \n"];
+	];
+	If[p2===VectorZ && p1===PseudoScalar,
+	WriteString[sphenoDecay, "  BRAAZ(i1,gt1) = gPartial(i1,i_count) \n"];
+	];
+	If[RE[p1]===VectorW && RE[p2]===ChargedHiggs,
+	WriteString[sphenoDecay, "  BRAHpW(i1,gt2) = gPartial(i1,i_count) \n"];
+	];
+	If[RE[p2]===VectorW && RE[p1]===ChargedHiggs,
+	WriteString[sphenoDecay, "  BRAHpW(i1,gt2) = gPartial(i1,i_count) \n"];
 	];,
-ChargedHiggs,
+
+	ChargedHiggs,
 	Switch[RE[p1],
+		VectorW,
+			If[p2===VectorZ,
+			If[getGen[chargedHiggs]>1,
+			WriteString[sphenoDecay, "  BR_HpWZ(i1) = gPartial(i1,i_count) \n"];,
+			WriteString[sphenoDecay, "  BR_HpWZ = gPartial(i1,i_count) \n"];
+			];
+			];
+			If[p2===HiggsBoson,
+			WriteString[sphenoDecay, "  BR_HpHW(i1,gt2) = gPartial(i1,i_count) \n"];
+			];
+			If[p2===PseudoScalar,
+			WriteString[sphenoDecay, "  BR_HpAW(i1,gt2) = gPartial(i1,i_count) \n"];
+			];,
+		VectorZ,
+			If[RE[p2]===VectorW,
+			If[getGen[chargedHiggs]>1,
+			WriteString[sphenoDecay, "  BR_HpWZ(i1) = gPartial(i1,i_count) \n"];,
+			WriteString[sphenoDecay, "  BR_HpWZ = gPartial(i1,i_count) \n"];
+			];
+			];,
+		HiggsBoson,
+			If[RE[p2]===VectorW,
+			WriteString[sphenoDecay, "  BR_HpHW(i1,gt1) = gPartial(i1,i_count) \n"];
+			];,
+		PseudoScalar,
+			If[RE[p2]===VectorW,
+			WriteString[sphenoDecay, "  BR_HpAW(i1,gt1) = gPartial(i1,i_count) \n"];
+			];,
 		Neutrino,
 			WriteString[sphenoDecay,"If ((gt1.eq.gt2).and.(gt1.eq.3)) Then \n"];
 			If[getGen[chargedHiggs]>1,
@@ -606,6 +694,12 @@ ChargedHiggs,
 			WriteString[sphenoDecay, "  BR_Hcs = gPartial(i1,i_count) \n"];
 			];
 			WriteString[sphenoDecay, "End if \n"];
+			If[getGen[chargedHiggs]>1,
+			WriteString[sphenoDecay,"If ((gt1.eq.3).and.(gt2.eq.3)) Then \n"];
+			WriteString[sphenoDecay, "  BR_HpTB(i1) = gPartial(i1,i_count) \n"];,
+			WriteString[sphenoDecay, "  BR_HpTB = gPartial(i1,i_count) \n"];
+			];
+			WriteString[sphenoDecay, "End if \n"];
 			];,
 		TopQuark,
 			If[RE[p2]===BottomQuark,
@@ -621,9 +715,15 @@ ChargedHiggs,
 			WriteString[sphenoDecay, "  BR_Hcs = gPartial(i1,i_count) \n"];
 			];
 			WriteString[sphenoDecay, "End if \n"];
+			If[getGen[chargedHiggs]>1,
+			WriteString[sphenoDecay,"If ((gt1.eq.3).and.(gt2.eq.3)) Then \n"];
+			WriteString[sphenoDecay, "  BR_HpTB(i1) = gPartial(i1,i_count) \n"];,
+			WriteString[sphenoDecay, "  BR_HpTB = gPartial(i1,i_count) \n"];
+			];
+			WriteString[sphenoDecay, "End if \n"];
 			];
 		];,
-TopQuark,
+	TopQuark,
 	Switch[RE[p1],
 	VectorW,
 		If[RE[p2]===BottomQuark,
@@ -735,9 +835,11 @@ Return[channels];
 
 
 
+(* ::Input::Initialization:: *)
 
 
 
+(* ::Input::Initialization:: *)
  
 
 

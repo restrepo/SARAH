@@ -15,6 +15,7 @@ ParticleDefinitions[GaugeES] = {
    ParticleDefinitions[EWSB] = {
 
      {hh   ,  {  Description -> "Higgs",
+                 ElectricCharge->0,     
                  PDG -> {25},
                  FeynArtsNr -> 1,
                  PDG.IX -> {101000001} }}, 
@@ -24,16 +25,19 @@ ParticleDefinitions[GaugeES] = {
                  PDG.IX ->{0},
                  Mass -> {0},
                  FeynArtsNr -> 4,
+                 ElectricCharge->0,                 
                  Width -> {0} }},  
 
      {H0   ,  {  OutputName ->"H0",
                  PDG -> {35},
                  PDG.IX -> {101000001},
                  FeynArtsNr -> 2,
+                 ElectricCharge->0,                 
                  LaTeX -> "H" }}, 
                  
      {A0   ,  {  OutputName ->"A0",
                  PDG -> {36},
+                 ElectricCharge->0,
                  FeynArtsNr -> 3,
                  LaTeX -> "A^0" }},             
             

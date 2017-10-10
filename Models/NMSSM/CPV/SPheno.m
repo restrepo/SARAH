@@ -78,3 +78,6 @@ ListDecayParticles3B = Automatic;
 DEFINITION[MatchingConditions]=Default[THDMII];
 
 DefaultInputValues[1] = {m0 -> 1000, m12 -> 1000, TanBeta -> 10, Azero->-2000, LambdaInput ->0.1, KappaInput->0.11, ALambdaInput->-200,AKappaInput->-20, MuEffinput->200 };  
+
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = False;

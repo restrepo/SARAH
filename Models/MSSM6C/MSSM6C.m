@@ -131,5 +131,5 @@ DEFINITION[EWSB][DiracSpinors]={
 
 
 (* Model not supported by CalcHep and WHIZARD *)
-SetOptions[MakeAll, IncludeCalcHep->False, IncludeWHIZARD->False];
+SetOptions[MakeAll, IncludeCalcHep->False, IncludeWHIZARD->False, IncludeSPheno->False];
 

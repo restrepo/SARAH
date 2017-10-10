@@ -19,8 +19,8 @@ MINPAR={
         {11,Lambda11input},     *)     
 
         
-        
-        {16,Kappa2input},           
+    
+        {16, Kappa2input},           
         {20, LambdaHinput},
         {21, LambdaSinput},        
         {22, vSinput},
@@ -59,7 +59,6 @@ BoundaryLowScaleInput={
  { Lambda11,            Lambda11input},   
  *)
  
- { Kappa1,             Kappa1input},   
  { Kappa2,             Kappa2input},           
  { LambdaH,            LambdaHinput},
  { LambdaS,            LambdaSinput},
@@ -74,5 +73,14 @@ ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 
 
-DefaultInputValues ={LambdaHinput -> 0.1, LambdaSinput->0.1, Kappa2input ->0.1, MSinput->750, MOinput->1000, Lambda1input->0.1, vSinput->-1000 };
+DefaultInputValues ={LambdaHinput -> 0.1, LambdaSinput->0.1, Kappa2input ->0.1, MS2input->-625^2, MO2input->1000^2, Lambda1input->0.1, vSinput->-1000 };
 
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWp/(MVWp^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWp/MVWp^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};
+
+(* turn off RGEs for loop-decays *)                     
+SA`NoRGEsforDecays=True;

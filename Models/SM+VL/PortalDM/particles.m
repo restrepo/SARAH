@@ -167,6 +167,7 @@ ParticleDefinitions[EWSB] = {
      Mass -> LesHouches, 
      OutputName -> "sdm", 
      PDG -> {45}, 
+     ElectricCharge->0,
      Width -> Automatic}},      
      
 

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 epsTensorMatrix[n_]:=Block[{i,j,res,NR},
 res=epsTensor@@Table[NR[j],{j,1,n}];
 For[i=1,i<=n,
@@ -33,6 +34,7 @@ GINV[G_, D_][a__Integer]:=GINV[G,-D][a] /; D<0;
 
 
 
+(* ::Input::Initialization:: *)
 GaugeInteractionMatrix[group_,dim_]:=Block[{i,j,pos,res,res2,nr1,x1,x2,stringName,indname},
 
 pos=Position[Gauge,group][[1,1]];
@@ -51,7 +53,6 @@ res = res /.( (ToExpression["a"<>StringTake[ToString[Gauge[[pos,3]]],3]<>"10"]):
 
 res = Sum[res,{gen10,1,Gauge[[pos,2,1]]^2-1}];
 res=Table[Table[D[D[res,IR[x1][i]],IR[x2][j]],{i,1,dim}],{j,1,dim}];
-
 Off[Part::"pspec"];
 Off[Part::"pkspec1"];
 ReleaseHold[Hold[Set[LHS,RHS]] /. LHS -> GINV[group,dim][a__Integer] /. RHS -> (res[[a]])];
@@ -63,7 +64,9 @@ On[Part::"pkspec1"];
 getInvariantMatrix[fields_,coup_]:=Block[{i,j,k,res=1},
 For[i=1,i<=Length[Gauge],
 If[Gauge[[i,2]]=!=U[1],
-res=res*(GenerateInvariantsTensor[Gauge[[i,2]],Gauge[[i,3]],Table[Fields[[Position[ListFields,fields[[j]]][[1,1]],3+i]],{j,1,Length[fields]}]]/.CG[a_,b_]:>InvariantMatrixSusyno[a,b] /. 1[]->1)
+Off[Part::"pkspec1"];
+res=res*(GenerateInvariantsTensor[Gauge[[i,2]],Gauge[[i,3]],Table[Fields[[Position[ListFields,fields[[j]]][[1,1]],3+i]],{j,1,Length[fields]}]]/.CG[a_,b_]:>InvariantMatrixSusyno[a,b] /. 1[]->1);
+On[Part::"pkspec1"];
 ];
 i++;];
 Return[res];
@@ -476,8 +479,10 @@ If[ConjugatedRepQ[dyn,group],
 Generator[group,dyn][a_,b_,c_]=-Generator[group,ConjugatedRep[dyn,group]][a,c,b];
 Return[];,
 Off[Part::"pspec"];
+Off[Part::"pkspec1"];
 Generator[group,dyn][a__Integer]=Normal[RepMatrices[SusynoForm[group],dyn]][[a]]; 
 On[Part::"pspec"];
+On[Part::"pkspec1"];
 Return[];
 ];
 ];
@@ -488,7 +493,11 @@ If[DimR[SusynoForm[group],dyn]===getDimAdjoin[group],
  CG[group,{dyn,dyn}][a_,b_]:=Delta[a,b];
 ];
 
+Off[Part::"pspec"];
+Off[Part::"pkspec1"];
 temp=Hold[SetDelayed[Generator[group,dyn][a___Integer],REP[[a]]]]/. REP->repm;
+On[Part::"pspec"];
+On[Part::"pkspec1"];
 ReleaseHold[temp];
 
 SA`SavedGenerators=Join[SA`SavedGenerators,{{Generator[group,dyn],repm}}];

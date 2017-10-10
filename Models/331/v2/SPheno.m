@@ -79,3 +79,7 @@ DefaultInputValues = {
   yJ2[2] -> 0.455,
   yJ3[1] -> 0.455
 };
+
+
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = False;

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 CalcGaugeMixing[type_, def_]:=Block[{i,ll,j,k,l},
 
 PrintAll["Calc Mixings Gauge Sector"];
@@ -185,6 +186,15 @@ GenerateVEVs[NameOfStates[[rotNr]]];,
 vevSub={};
 vevSubInverse={};
 ];
+
+If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][Complexify]]]=!=DEFINITION,
+ComplexifyFields[NameOfStates[[rotNr]]];,
+compSub={};
+compSubInverse={};
+];
+
+
+
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][GaugeSectorOld]]]=!=DEFINITION,
 CalcGaugeMixing[NameOfStates[[rotNr]],DEFINITION[NameOfStates[[rotNr]]][GaugeSectorOld]];,
 subGauge = {};
@@ -224,19 +234,19 @@ PrintDebug["Rotate Lagrangian"];
 Print["Rotate Lagrangian: ",Dynamic[DynamicRotateLag[ROTNR]]/. ROTNR->rotNr,"/",14];
 
 DynamicRotateLag[rotNr]=1;
-Potential=replaceGen[ReleaseHold[Potential /. SA`subDeleteParticles/.subGauge/.vevSub/.flavorSub /. phaseSub /. DelPart->0],rgNr];
+Potential=replaceGen[ReleaseHold[Potential /. SA`subDeleteParticles/.subGauge/.vevSub /. compSub/.flavorSub /. phaseSub /. DelPart->0],rgNr];
 DynamicRotateLag[rotNr]=2;
-Kinetic=replaceGen[ReleaseHold[Kinetic/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
+Kinetic=replaceGen[ReleaseHold[Kinetic/. SA`subDeleteParticles/.vevSub/.subGauge/. compSub/.flavorSub /. phaseSub/. DelPart->0],rgNr];
 DynamicRotateLag[rotNr]=3;
-EffectiveOperators=replaceGen[ReleaseHold[EffectiveOperators/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
+EffectiveOperators=replaceGen[ReleaseHold[EffectiveOperators/. SA`subDeleteParticles/.vevSub/. compSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
 DynamicRotateLag[rotNr]=4;
 LagrangianVVV=replaceGen[ReleaseHold[LagrangianVVV/. SA`subDeleteParticles/.subGauge /. phaseSub/. DelPart->0],rgNr];
 DynamicRotateLag[rotNr]=5;
 LagrangianVVVV=replaceGen[ReleaseHold[LagrangianVVVV/. SA`subDeleteParticles/.subGauge /. phaseSub/. DelPart->0],rgNr];
 DynamicRotateLag[rotNr]=6;
-LagrangianAux=replaceGen[ReleaseHold[LagrangianAux/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
+LagrangianAux=replaceGen[ReleaseHold[LagrangianAux/. SA`subDeleteParticles/.vevSub/. compSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
 DynamicRotateLag[rotNr]=7;
-LagReDef=replaceGen[ReleaseHold[LagReDef/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
+LagReDef=replaceGen[ReleaseHold[LagReDef/. SA`subDeleteParticles/.vevSub/. compSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
 
 (* -------------------------------- Effective after Gauge Bososn Mixing ------------------ *)
 
@@ -409,6 +419,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 
 (* ----------------------------------------------- *)
@@ -705,6 +716,7 @@ Return[{subDef,MMatrices[[1]]/.subAlways,MMatrices[[2]]/.subAlways,mixBasis,mixM
 ];
 
 
+(* ::Input::Initialization:: *)
 
 
 (* ----------------------------------------------- *)
@@ -799,12 +811,14 @@ DeleteParticles = DeleteParticlesNew;
 ];
 
 
+(* ::Input::Initialization:: *)
 
 (*-----------------------------------------------------------*)
 (* Calculate Mass Matrices *)
 (*-----------------------------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 
 CalcMassMatrices[basis_, potential_, names_,FV_]:=Block[{i1,j,i2,off,ll,m,k,n, MassMatrices, MassMatricesFull, subVac},
 
@@ -1197,6 +1211,7 @@ UpdateGaugeTransformations[phaseSub,phaseInverse,UGTphasesMM[rotNr]];
 
 
 
+(* ::Input::Initialization:: *)
 SaveModelParameters[name_]:=Block[{},
 
 Print["Save information (",Dynamic[DynamicSaveInfo[name]],")"];
@@ -1615,6 +1630,110 @@ i++;];
 genMax=20;
 
 
+
+
+];
+
+
+ComplexifyFields[type_] := Block[{i,j,i2,equ,iii,vev,pos,form,scalarform,alignment},
+
+title=ToString[type];
+
+PrintAll["Complexify Fields"];
+newComplexStates={};
+
+compSub={};
+compSubInverse={};
+vev = DEFINITION[type][Complexify] /. Delta[a__]->1;
+oldfields={};
+newfields={};
+
+If[Head[Head[vev]]===DEFINITION,vev={}];
+
+For[i=1,i<=Length[vev],
+compSub = Join[compSub,{vev[[i,1]][x_]->vev[[i,2,2]]*vev[[i,2,1]][x]+vev[[i,3,2]]*vev[[i,3,1]][x]}];
+oldfields=Join[oldfields,{vev[[i,1]]}];
+If[vev[[i,2,1]]=!=0 && FreeQ[newfields,RE[vev[[i,2,1]]]],
+Print["add", vev[[i,2,1]]];
+addParticle[RE[vev[[i,2,1]]],getIndizesWI[vev[[i,1]]],getGen[vev[[i,1]]],getType[vev[[i,1]]]];
+newfields=Join[newfields,{RE[vev[[i,2,1]]]}];
+];
+If[vev[[i,3,1]]=!=0 && FreeQ[newfields,RE[vev[[i,3,1]]]],
+addParticle[RE[vev[[i,3,1]]],getIndizesWI[vev[[i,1]]],getGen[vev[[i,1]]],getType[vev[[i,1]]]];
+newfields=Join[newfields,{RE[vev[[i,3,1]]]}];
+];
+
+
+For[i2=1,i2<=AnzahlGauge,
+ If[FreeQ[BrokenSymmetries,i2]==True,
+If[vev[[i,3,1]]=!=0,
+SA`Casimir[RE[vev[[i,3,1]]],Gauge[[i2,3]]]=SA`Casimir[vev[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[RE[vev[[i,3,1]]],Gauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],Gauge[[i2,3]]];
+MultiplicityFactor[RE[vev[[i,3,1]]],Gauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[RE[vev[[i,3,1]]],Gauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],Gauge[[i2,3]]];
+SA`DynL[RE[vev[[i,3,1]]],Gauge[[i2,3]]]=SA`DynL[vev[[i,1]],Gauge[[i2,3]]];
+];
+If[vev[[i,2,1]]=!=0,
+SA`Casimir[RE[vev[[i,2,1]]],Gauge[[i2,3]]]=SA`Casimir[vev[[i,1]],Gauge[[i2,3]]];
+SA`Dynkin[RE[vev[[i,2,1]]],Gauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],Gauge[[i2,3]]];
+MultiplicityFactor[RE[vev[[i,2,1]]],Gauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],Gauge[[i2,3]]];
+SA`DimensionGG[RE[vev[[i,2,1]]],Gauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],Gauge[[i2,3]]];
+SA`DynL[RE[vev[[i,2,1]]],Gauge[[i2,3]]]=SA`DynL[vev[[i,1]],Gauge[[i2,3]]];
+];
+If[Gauge[[i2,2]]===U[1],
+If[vev[[i,3,1]]=!=0,SA`ChargeGG[RE[vev[[i,3,1]]],Gauge[[i2,3]]]=SA`ChargeGG[vev[[i,1]],Gauge[[i2,3]]];];
+If[vev[[i,2,1]]=!=0,SA`ChargeGG[RE[vev[[i,2,1]]],Gauge[[i2,3]]]=SA`ChargeGG[vev[[i,1]],Gauge[[i2,3]]];];
+];
+];
+i2++;];
+
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[RE[vev[[i,3,1]]],AuxGauge[[i2,3]]]=SA`Casimir[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[RE[vev[[i,3,1]]],AuxGauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[RE[vev[[i,3,1]]],AuxGauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DynL[RE[vev[[i,3,1]]],AuxGauge[[i2,3]]]=SA`DynL[vev[[i,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[RE[vev[[i,3,1]]],AuxGauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],AuxGauge[[i2,3]]];
+i2++;];
+If[vev[[i,2,1]]=!=0,
+For[i2=1,i2<=Length[AuxGauge],
+SA`Casimir[RE[vev[[i,2,1]]],AuxGauge[[i2,3]]]=SA`Casimir[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`Dynkin[RE[vev[[i,2,1]]],AuxGauge[[i2,3]]]=SA`Dynkin[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DimensionGG[RE[vev[[i,2,1]]],AuxGauge[[i2,3]]]=SA`DimensionGG[vev[[i,1]],AuxGauge[[i2,3]]];
+SA`DynL[RE[vev[[i,2,1]]],AuxGauge[[i2,3]]]=SA`DynL[vev[[i,1]],AuxGauge[[i2,3]]];
+MultiplicityFactor[RE[vev[[i,2,1]]],AuxGauge[[i2,3]]]=MultiplicityFactor[vev[[i,1]],AuxGauge[[i2,3]]];
+i2++;];
+];
+
+
+For[i2=1,i2<=Length[Global],
+If[vev[[i,3,1]]=!=0,
+SA`ChargeGlobal[RE[vev[[i,3,1]]],Global[[i2,2]]] =SA`ChargeGlobal[vev[[i,1]],Global[[i2,2]]];
+ ];
+If[vev[[i,2,1]]=!=0,
+SA`ChargeGlobal[RE[vev[[i,2,1]]],Global[[i2,2]]] =SA`ChargeGlobal[vev[[i,1]],Global[[i2,2]]];
+];
+i2++;];
+i++;];
+
+For[i2=1,i2<=Length[oldfields],
+delParticle[oldfields[[i2]]];
+i2++;];
+
+
+
+If[IgnoreGaugeFixing===True,
+compSubInverse={};,
+equ=compSub /. Rule->Equal /. A_[x_Symbol]->A /. A_[x_Pattern]->A /. conj[x_]:>ToExpression[ToString[x]<>"c"];
+compSubInverse=Solve[equ,Join[newfields,ToExpression[ToString[#]<>"c"]&/@newfields]][[1]] /. Equal->Rule  /. Table[ToExpression[ToString[newfields[[iii]]]<>"c"]->conj[newfields[[iii]]],{iii,1,Length[newfields]}] /. Table[newfields[[iii]]->newfields[[iii]][x_],{iii,1,Length[newfields]}] /. Table[oldfields[[iii]]->oldfields[[iii]][x],{iii,1,Length[oldfields]}];
+];
+
+ComplexSub[type]=compSub;
+ComplexSubInverse[type]=compSubInverse;
+
+
+If[IgnoreGaugeFixing=!=True,
+UpdateGaugeTransformations[compSub,compSubInverse,UGTvev[rotNr]];
+];
 
 
 ];

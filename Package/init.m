@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 (* Begin["`Init`"]  *)
 
@@ -1640,6 +1641,7 @@ InitSMParameters[Eigenstates_] :=Block[{i,j,k,tempName},
 AllScalarNonSM={};
 AllFermionNonSM={};
 AllVectorNonSM={};
+SMParticles={};
 For[i=1,i<=Length[ParticleDefinitions[Eigenstates]],
 Switch[getType[ParticleDefinitions[Eigenstates][[i,1]]],
 S,AllScalarNonSM=Join[AllScalarNonSM,{ParticleDefinitions[Eigenstates][[i,1]]}];,
@@ -1654,40 +1656,56 @@ AllFermionNonSM = Select[AllFermionNonSM,(FreeQ[Particles[Eigenstates] /. diracS
 
 Switch[Description /. ParticleDefinitions[Eigenstates][[i,2]],
 "Leptons",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
 	Electron = ParticleDefinitions[Eigenstates][[i,1]];
 	ChargedLepton = ParticleDefinitions[Eigenstates][[i,1]];
 	UElectron = ToExpression["U"<>ToString[ParticleDefinitions[Eigenstates][[i,1]]]];,
 "Sleptons",
 	Selectron = ParticleDefinitions[Eigenstates][[i,1]];,
 "Down-Quarks",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
 	BottomQuark = ParticleDefinitions[Eigenstates][[i,1]];
 	DownQuark = ParticleDefinitions[Eigenstates][[i,1]];
 	UBottom = ToExpression["U"<>ToString[ParticleDefinitions[Eigenstates][[i,1]]]];,
 "Down-Squarks",
 	BottomSquark = ParticleDefinitions[Eigenstates][[i,1]];,
 "Up-Quarks",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
 	TopQuark = ParticleDefinitions[Eigenstates][[i,1]];
 	UpQuark = ParticleDefinitions[Eigenstates][[i,1]];
 	UTop = ToExpression["U"<>ToString[ParticleDefinitions[Eigenstates][[i,1]]]];,
 "Up-Squarks",
 	TopSquark = ParticleDefinitions[Eigenstates][[i,1]];,
 "Photon",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	SMParticles=Join[SMParticles,{getGhost[ParticleDefinitions[Eigenstates][[i,1]]]}];
 	Photon= ParticleDefinitions[Eigenstates][[i,1]];
 	VectorP= ParticleDefinitions[Eigenstates][[i,1]];,
 "Gluon",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	SMParticles=Join[SMParticles,{getGhost[ParticleDefinitions[Eigenstates][[i,1]]]}];
            VectorG= ParticleDefinitions[Eigenstates][[i,1]];
 	Gluon= ParticleDefinitions[Eigenstates][[i,1]];,
 "Gluino",
 	Gluino= ParticleDefinitions[Eigenstates][[i,1]];,
 "W-Boson",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	SMParticles=Join[SMParticles,{getGhost[ParticleDefinitions[Eigenstates][[i,1]]]}];
+	SMParticles=Join[SMParticles,{getGhost[conj[ParticleDefinitions[Eigenstates][[i,1]]]]}];
 	VectorW= ParticleDefinitions[Eigenstates][[i,1]];
 	Wboson= ParticleDefinitions[Eigenstates][[i,1]];,
 "W+ - Boson",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	SMParticles=Join[SMParticles,{getGhost[ParticleDefinitions[Eigenstates][[i,1]]]}];
+	SMParticles=Join[SMParticles,{getGhost[conj[ParticleDefinitions[Eigenstates][[i,1]]]]}];
 	VectorW= ParticleDefinitions[Eigenstates][[i,1]];,
 "Z-Boson",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	SMParticles=Join[SMParticles,{getGhost[ParticleDefinitions[Eigenstates][[i,1]]]}];
 	VectorZ= ParticleDefinitions[Eigenstates][[i,1]];
 	Zboson= ParticleDefinitions[Eigenstates][[i,1]];,
 "Up-Squarks",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
 	TopSquark= ParticleDefinitions[Eigenstates][[i,1]];,
 "Higgs",
 	HiggsBoson = ParticleDefinitions[Eigenstates][[i,1]];
@@ -1698,12 +1716,49 @@ Switch[Description /. ParticleDefinitions[Eigenstates][[i,2]],
 	PseudoScalarBoson= ParticleDefinitions[Eigenstates][[i,1]];
 	PseudoScalarBosonPresent=True;,
 "Neutrinos",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
 	Neutrino = ParticleDefinitions[Eigenstates][[i,1]];
 	SA`NeutrinoPresent=True;,
 "Charged Higgs",
 	ChargedHiggs = ParticleDefinitions[Eigenstates][[i,1]];,
 "Sneutrinos",
-	Sneutrino = ParticleDefinitions[Eigenstates][[i,1]];
+	Sneutrino = ParticleDefinitions[Eigenstates][[i,1]];,
+"Down Quark",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	DownQuarkGen1 = ParticleDefinitions[Eigenstates][[i,1]];,
+"Strange Quark",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	StrangeQuark = ParticleDefinitions[Eigenstates][[i,1]];,
+"Bottom Quark",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	BottomQuarkGen3 = ParticleDefinitions[Eigenstates][[i,1]];,
+"Up Quark",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	UpQuarkGen1 = ParticleDefinitions[Eigenstates][[i,1]];,
+"Charmed Quark",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	CharmedQuark = ParticleDefinitions[Eigenstates][[i,1]];,
+"Top Quark",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	TopQuarkGen3 = ParticleDefinitions[Eigenstates][[i,1]];,
+"Electron",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	ElectronLepton= ParticleDefinitions[Eigenstates][[i,1]];,
+"Muon",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	MuonLepoton= ParticleDefinitions[Eigenstates][[i,1]];,
+"Tau",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	TauLepton= ParticleDefinitions[Eigenstates][[i,1]];,
+"Electron Neutrino",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	ElectronNeutrino= ParticleDefinitions[Eigenstates][[i,1]];,
+"Muon Neutrino",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	MuonNeutrino= ParticleDefinitions[Eigenstates][[i,1]];,
+"Tau Neutrino",
+	SMParticles=Join[SMParticles,{ParticleDefinitions[Eigenstates][[i,1]]}];
+	TauNeutrino= ParticleDefinitions[Eigenstates][[i,1]];
    ];
 
 i++;];
@@ -1717,6 +1772,8 @@ If[FreeQ[ParticleDefinitions[Eigenstates],"Sleptons"],
 Selectron = ChargedHiggs;
 ];
 ];
+
+
 
 For[i=1,i<=Length[ParameterDefinitions],
 Switch[Description /. ParameterDefinitions[[i,2]],
@@ -1808,9 +1865,18 @@ i++;];
 If[FreeQ[ParameterDefinitions,"Neutrino-Mixing-Matrix"],NeutrinoMM=Delta;];
 
 
-SMParticles={Electron, TopQuark,BottomQuark,VectorP,VectorZ,VectorG,VectorW,Neutrino};
+(*
+SMParticles={Electron, TopQuark,BottomQuark,VectorP,VectorZ,VectorG,VectorW,Neutrino, getGhost[VectorP], getGhost[VectorZ],getGhost[VectorW],getGhost[conj[VectorW]],DownQuarkGen1,StrangeQuark,UpQuarkGen1,CharmedQuark,BottomQuarkGen3,TopQuarkGen3,ElectronLepton,MuonLepoton,TauLepton,ElectronNeutrino,MuonNeutrino,TauNeutrino};
+*)
+
+SMParticlesAndHiggs=SMParticles;
+SMParticlesAndHiggs=Join[SMParticlesAndHiggs,{HiggsBoson,PseudoScalar,ChargedHiggs}];
+
 NonSMQ[x_]:=FreeQ[SMParticles,RE[x]];
 SMQ[x_]:=If[FreeQ[SMParticles,RE[x]],Return[False];,Return[True];];
+SMQHiggs[x_]:=If[FreeQ[SMParticlesAndHiggs,RE[x]],Return[False];,If[FreeQ[SMParticles,RE[x]]==False || getGenALL[RE[x]]==1,Return[True];,Return[False];];];
+SMQ[x_,Higgs->False]:=SMQ[x];
+SMQ[x_,Higgs->True]:=SMQHiggs[x];
 
 
 

@@ -103,5 +103,8 @@ DEFINITION[EWSB][GaugeES]={
  Fe1 ->{  Fe1, 0},
  Fe2 ->{  0, Fe2}};
 
+(* No SPheno.m written so far *)
+(* Should be simple in principle; it you need it, please contact the author *)
+SetOptions[MakeAll, IncludeSPheno->False];
 
 

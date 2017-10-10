@@ -99,7 +99,8 @@ DEFINITION[EWSB][MatterSector]=
 	 {{{dL}, {conj[dR]}}, {{DL,Vd}, {DR,Ud}}},
      {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},
      {{{eL}, {conj[eR]}}, {{EL,Ve}, {ER,Ue}}},
-	 {{{Chip}, {Chim}}, {{ChiL,VChi}, {ChiR,UChi}}}
+	 {{{Chip}, {Chim}}, {{ChiL,VChi}, {ChiR,UChi}}},
+      {{Chi0},{L0,ZC0}}	 
 	 };  
 
 
@@ -113,7 +114,7 @@ DEFINITION[EWSB][DiracSpinors]={
  Fu    ->{  UL, conj[UR]},
  Fv    ->{  vL, 0},
  FChip ->{  ChiL, conj[ChiR]},
- FChi0 ->{  Chi0, conj[Chi0]}};
+ FChi0 ->{  L0, conj[L0]}};
 
 DEFINITION[EWSB][GaugeES]={
  Fd1 ->{  FdL, 0},

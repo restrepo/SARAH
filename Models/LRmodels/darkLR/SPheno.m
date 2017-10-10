@@ -115,4 +115,8 @@ DefaultInputValues ={gRinput -> 0.5,
         xiRINPUT -> 300,
         xiLRINPUT -> 0.0
                      };
+                     
+(* loop decays not supported for this model *)                     
+SetOptions[MakeSPheno, IncludeLoopDecays -> False];
+
 

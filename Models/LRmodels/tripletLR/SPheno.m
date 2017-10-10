@@ -77,3 +77,6 @@ DefaultInputValues ={vRinput -> 4000,
                      rho2INPUT -> 0.005        
                      };
                      
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = True;
+                     

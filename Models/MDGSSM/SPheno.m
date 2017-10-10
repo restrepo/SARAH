@@ -99,3 +99,9 @@ DEFINITION[MatchingConditions]=Default[THDMII];
 
 DefaultInputValues = {m0 -> 3000, MDirac->500,  TanBeta->2.5, MuInput->200, BMuInput->9*10^5, mSingletInput->1000, mAdjointInput->3500, LambdaInput->0.324, MRinput ->1000, BMRinput -> 10^6, MuE[a_,a_]->1500};
 
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};

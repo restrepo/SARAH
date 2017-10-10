@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* Beta functions for gauge couplings: eq. (30) *)
 betaFuncGauge1Lns[nr1_,nr2_]:=If[Gauge[[nr1,2]]===U[1],betaFuncGauge1LnsU1[nr1,nr2],betaFuncGauge1LnsNonU1[nr1]];
 betaFuncGauge2Lns[nr1_,nr2_]:=If[Gauge[[nr1,2]]===U[1],betaFuncGauge2LnsU1[nr1,nr2],betaFuncGauge2LnsNonU1[nr1]];
@@ -37,8 +38,8 @@ GammaSij1L[p1_,p2_]:=2 kF Y2S[p1,p2]-Sum[(3-Xi)SA`CasimirRGE[p1,nr],{nr,1,Length
 GammaSij2L[p1_,p2_]:=1/2 Lam2S[p1,p2]+3/2 Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-3 kF H2ab[p1,p2]-2 kF Hbar2[p1,p2]+10 kF Sum[ Y2FS[p1,p2,nr],{nr,1,Length[Gauge]}]-Delta2[p1,p2] Sum[((35/3-2Xi-1/4Xi^2)SA`Casimir[nr] - 10/3 kF SA`DynkinF[rep,nr] -11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}];
 GammaSijHat1L[p1_,p2_]:=-Delta2[p1,p2]  Sum[ 2 Xi SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}];
 GammaSijHat2L[p1_,p2_]:= 
--(1+Xi)Xi  Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-
-Delta2[p1,p2] Xi Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]+Delta2[p1,p2]  ExpandTermNS[Xi Sum[ ThS[nr,p1,pQ,vecB] Y2S[pQ,pR] ThS[nr,pR,p2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]];
+-2(1+Xi)Xi  Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-
+Delta2[p1,p2] Xi Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]+Delta2[p1,p2]  ExpandTermNS[2Xi Sum[ ThS[nr,p1,pQ,vecB] Y2S[pQ,pR] ThS[nr,pR,p2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]];
 
 (* Anomalous dimensions of fermions: eq. (28) + (29) *)
 GammaFij1L[p1_,p2_]:=ExpandTermNS[1/2 Yijk[p1,pQ,pR] Conj[Yijk[pQ,p2,pR]] MakeDeltaNS[p1,gen1] + Sum[Xi SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] MakeDeltaNS[p1,{}]];

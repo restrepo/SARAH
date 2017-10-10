@@ -178,8 +178,8 @@ subListCounterNamesSingle={};
 
 
 For[i=1,i<=Length[parameters],
-If[FreeQ[VertexListNonCC,parameters[[i,1]]]==False || FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False,
-If[FreeQ[Flatten[AssociatedMixingAngles/@SA`RotationMatricesGaugeSector],parameters[[i,1]]],
+If[FreeQ[VertexListNonCC,parameters[[i,1]]]==False || FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False || FreeQ[ListMixingMat,parameters[[i,1]]]==False,
+If[FreeQ[Flatten[AssociatedMixingAngles/@SA`RotationMatricesGaugeSector],parameters[[i,1]]] && FreeQ[UnfixedCharges,parameters[[i,1]]],
 dim=parameters[[i,3]] /. {1}->{};
 ct=CounterTerm[parameters[[i,1]]];
 SA`ListCounterTerms = Join[SA`ListCounterTerms,{ct}];
@@ -206,15 +206,18 @@ If[FreeQ[realVar,parameters[[i,1]]]==False,realVar=Join[realVar,{ct}];];,
 cts=CounterTerm[Sin[parameters[[i,1]]]];
 ctc=CounterTerm[Cos[parameters[[i,1]]]];
 ctt=CounterTerm[Tan[parameters[[i,1]]]];
-SA`ListCounterTerms = Join[SA`ListCounterTerms,{cts,ctc}];
-realVar=Join[realVar,{cts,ctc}];
-subListCounterNamesSingle=Join[subListCounterNamesSingle,{parameters[[i,1]]->{cts,ctc}}];
+SA`ListCounterTerms = Join[SA`ListCounterTerms,{cts,ctc,ctt}];
+realVar=Join[realVar,{cts,ctc,ctt}];
+subListCounterNamesSingle=Join[subListCounterNamesSingle,{parameters[[i,1]]->{cts,ctc,ctt}}];
 SPhenoParameters=Join[SPhenoParameters,{{cts,{},{}}}];
 SPhenoParameters=Join[SPhenoParameters,{{ctc,{},{}}}];
+SPhenoParameters=Join[SPhenoParameters,{{ctt,{},{}}}];
 subListCounter=Join[subListCounter,{Sin[parameters[[i,1]]]->Sin[parameters[[i,1]]]+dd[Sin[parameters[[i,1]]]]}];
 subListCounterNames=Join[subListCounterNames,{dd[Sin[parameters[[i,1]]]]->cts}];
 subListCounter=Join[subListCounter,{Cos[parameters[[i,1]]]->Cos[parameters[[i,1]]]+dd[Cos[parameters[[i,1]]]]}];
 subListCounterNames=Join[subListCounterNames,{dd[Cos[parameters[[i,1]]]]->ctc}];
+subListCounter=Join[subListCounter,{Tan[parameters[[i,1]]]->Tan[parameters[[i,1]]]+dd[Tan[parameters[[i,1]]]]}];
+subListCounterNames=Join[subListCounterNames,{dd[Tan[parameters[[i,1]]]]->ctt}];
 ];
 ];
 i++;];
@@ -251,11 +254,13 @@ WriteString[sphenoLD,"Real(dp) :: p2 \n"];
 WriteString[sphenoLD,"Logical :: TwoLoopRGEsave \n"];
 WriteString[sphenoLD,"Real(dp) ::"<>ToString[SPhenoMass[VectorG]]<>","<>ToString[SPhenoMass[VectorP]]<>","<>ToString[SPhenoMassSq[VectorG]]<>","<>ToString[SPhenoMassSq[VectorP]]<>"\n"];
 WriteString[sphenoLD, "Complex(dp) ::  Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>")\n"];
+
 For[i=1,i<=Length[loopContributionTad],
 If[loopContributionTad[[i]]=!={} && Intersection[listVEVseparated[[i]]]=!={0},
 WriteString[sphenoLD, "Complex(dp) :: MatTad_"<>SPhenoForm[ScalarsForTadpoles[[i]]]<>"("<>ToString[getGen[ScalarsForTadpoles[[i]]]]<>","<>ToString[getGen[ScalarsForTadpoles[[i]]]]<>")=0._dp \n"];
 ];
 i++;];
+
 WriteString[sphenoLD,"Integer :: i1,i2,i3 \n\n"];
 
 WriteString[sphenoLD,ToString[SPhenoMass[VectorG]]<>" = MLambda \n"];
@@ -340,15 +345,15 @@ DsigSL="DerSigmaS"<>dirac;
 ];
 *)
 If[fields[[i,3]]===1,
-WriteString[sphenoLD,"Zf"<>ToString[fields[[i,1]]] <>" = -2._dp*"<>sigL<>" + &\n"];
-WriteString[sphenoLD,"& 1._dp/"<>mass<>"*("<>sigSL<>" - "<>sigSR<>")&\n"];
-WriteString[sphenoLD,"& -2._dp*"<>mass<>"*("<>mass<>"*"<>DsigL<>"+"<>mass<>"*"<>DsigR<>"+0.5_dp*("<>DsigSL<>"+"<>DsigSR<>"))\n"];
+WriteString[sphenoLD,"Zf"<>ToString[fields[[i,1]]] <>" = -"<>sigL<>" + &\n"];
+(* WriteString[sphenoLD,"& 1._dp/"<>mass<>"*("<>sigSL<>" - "<>sigSR<>")&\n"]; *)
+WriteString[sphenoLD,"& -"<>mass<>"*("<>mass<>"*"<>DsigL<>"+"<>mass<>"*"<>DsigR<>"+"<>DsigSL<>"+"<>DsigSR<>")\n"];
 WriteString[sphenoLD,"If (OSkinematics) Then \n"];
 WriteString[sphenoLD,"Zf"<>ToString[fields[[i,1]]] <>" = Zf"<>ToString[fields[[i,1]]]<>" &\n"];
-WriteString[sphenoLD,"& + -2._dp*"<>massOS<>"*("<>massOS<>"*"<>DsigLir<>"+"<>massOS<>"*"<>DsigRir<>"+0.5_dp*("<>DsigSLir<>"+"<>DsigSRir<>"))\n"];
+WriteString[sphenoLD,"& + -"<>massOS<>"*("<>massOS<>"*"<>DsigLir<>"+"<>massOS<>"*"<>DsigRir<>"+("<>DsigSLir<>"+"<>DsigSRir<>"))\n"];
 WriteString[sphenoLD,"Else \n"];
 WriteString[sphenoLD,"Zf"<>ToString[fields[[i,1]]] <>" = Zf"<>ToString[fields[[i,1]]]<>" &\n"];
-WriteString[sphenoLD,"& + -2._dp*"<>mass<>"*("<>mass<>"*"<>DsigLir<>"+"<>mass<>"*"<>DsigRir<>"+0.5_dp*("<>DsigSLir<>"+"<>DsigSRir<>"))\n"];
+WriteString[sphenoLD,"& + -"<>mass<>"*("<>mass<>"*"<>DsigLir<>"+"<>mass<>"*"<>DsigRir<>"+("<>DsigSLir<>"+"<>DsigSRir<>"))\n"];
 WriteString[sphenoLD,"End if \n"];
 ,
 massi=mass<>"(i1)"; massj=mass<>"(i2)";
@@ -380,28 +385,28 @@ If[FreeQ[masslessSave,fields[[i,1]]/.diracSubBack[EWSB]],
 WriteString[sphenoLD,"Do i1=1,"<>ToString[fields[[i,3]]]<>"\n"];
 WriteString[sphenoLD,"  Do i2=1,"<>ToString[fields[[i,3]]]<>"\n"];
 WriteString[sphenoLD,"   If ((i1.eq.i2).or.("<>massi<>".eq."<>massj<>")) Then \n"];
-WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = -2._dp*"<>sigL<>" &\n"];
-WriteString[sphenoLD,"      & -2._dp*"<>massSqi<>"*("<>DsigL<>" + "<>DsigR<>")&\n"];
+WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = -"<>sigL<>" &\n"];
+WriteString[sphenoLD,"      & -"<>massSqi<>"*("<>DsigL<>" + "<>DsigR<>")&\n"];
 WriteString[sphenoLD,"      & -"<>massi<>"*("<>DsigSL<>"+"<>DsigSR<>")\n"];
 WriteString[sphenoLD,"     If (OSkinematics) Then \n"];
 WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) &\n"];
-WriteString[sphenoLD,"      & -2._dp*"<>massSqiOS<>"*("<>DsigLir<>" + "<>DsigRir<>")&\n"];
+WriteString[sphenoLD,"      & -"<>massSqiOS<>"*("<>DsigLir<>" + "<>DsigRir<>")&\n"];
 WriteString[sphenoLD,"      & -"<>massiOS<>"*("<>DsigSLir<>"+"<>DsigSRir<>")\n"];
 WriteString[sphenoLD,"     Else \n"];
 WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) &\n"];
-WriteString[sphenoLD,"      & -2._dp*"<>massSqi<>"*("<>DsigLir<>" + "<>DsigRir<>")&\n"];
+WriteString[sphenoLD,"      & -"<>massSqi<>"*("<>DsigLir<>" + "<>DsigRir<>")&\n"];
 WriteString[sphenoLD,"      & -"<>massi<>"*("<>DsigSLir<>"+"<>DsigSRir<>")\n"];
 WriteString[sphenoLD,"     End if \n"];
 WriteString[sphenoLD,"   Else \n"];
 WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = 2._dp/("<>massSqi<>" - "<>massSqj<>")* &\n"];
-WriteString[sphenoLD,"      & (2._dp*"<>massSqj<>"*"<>sigL <>" + 2._dp*"<>massi<>"*"<>massj<>"*"<>sigR <>" + "<>massi<>"*"<>sigSL<>" + "<>massj<>"*"<>sigSR<>")\n"];
+WriteString[sphenoLD,"      & ("<>massSqj<>"*"<>sigL <>" + "<>massi<>"*"<>massj<>"*"<>sigR <>" + "<>massi<>"*"<>sigSL<>" + "<>massj<>"*"<>sigSR<>")\n"];
 WriteString[sphenoLD,"   End if \n"];
 WriteString[sphenoLD,"  End Do \n"];
 WriteString[sphenoLD,"End Do \n"]; ,
 WriteString[sphenoLD,"Do i1=1,"<>ToString[fields[[i,3]]]<>"\n"];
 WriteString[sphenoLD,"  Do i2=1,"<>ToString[fields[[i,3]]]<>"\n"];
 WriteString[sphenoLD,"   If (i1.eq.i2) Then \n"];
-WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = -2._dp*"<>sigL<>" \n"];
+WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = -"<>sigL<>" \n"];
 WriteString[sphenoLD,"   Else \n"];
 WriteString[sphenoLD,"     Zf"<>ToString[fields[[i,1]]] <>"(i1,i2) = 0._dp \n"];
 WriteString[sphenoLD,"   End if \n"];
@@ -425,7 +430,7 @@ WriteString[sphenoLD,"  End Do \n"];
 WriteString[sphenoLD,"End Do \n"];
 ];,
 V,
-WriteString[sphenoLD,"Zf"<>ToString[fields[[i,1]]] <>" = -2._dp*DerPi"<>ToString[fields[[i,1]]] <>"\n"];
+WriteString[sphenoLD,"Zf"<>ToString[fields[[i,1]]] <>" = -DerPi"<>ToString[fields[[i,1]]] <>"\n"];
 
 ];
 i++;];
@@ -492,7 +497,34 @@ pos=Position[SPhenoCouplingsAll,name][[1,1]];
 pos2=Position[SPhenoCouplingsAll,name][[1,-1]];
 pos=Position[SPhenoCouplingsAll,SPhenoCouplingsAll[[pos]][[1]] /. sub];
 If[pos=!={},
-Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];
+Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];,
+Print["getGBCoup ",name];
+Return[False];
+];
+];
+
+getGBCoup1[name_]:=Block[{pos,sub,coup,pos2},
+SA`GBS=Select[Transpose[GoldstoneBosons[EWSB]][[2]] /. A_[{b_Integer}]->A,getElectricCharge[#]=!=0&];
+sub={VectorW->SA`GBS[[1]]};
+pos=Position[SPhenoCouplingsAll,name][[1,1]];
+pos2=Position[SPhenoCouplingsAll,name][[1,-1]];
+pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{2}]];
+If[pos=!={},
+Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];,
+Print["getGBCoup1 ",name];
+Return[False];
+];
+];
+
+getGBCoup2[name_]:=Block[{pos,sub,coup,pos2},
+SA`GBS=Select[Transpose[GoldstoneBosons[EWSB]][[2]] /. A_[{b_Integer}]->A,getElectricCharge[#]=!=0&];
+sub={VectorW->SA`GBS[[1]]};
+pos=Position[SPhenoCouplingsAll,name][[1,1]];
+pos2=Position[SPhenoCouplingsAll,name][[1,-1]];
+pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{3}]];
+If[pos=!={},
+Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];,
+Print["getGBCoup2 ",name];
 Return[False];
 ];
 ];
@@ -598,6 +630,8 @@ WriteString[outfile,"Complex(dp) :: AmpTreeZ"<>name<>dimAmp<>",AmpWaveZ"<>name<>
 WriteString[outfile,"Real(dp) :: AmpSq"<>name<>dim<>",  AmpSqTree"<>name<>dim<>" \n"];
 j++;];
 
+WriteString[outfile,"Write(*,*) \"Calculating one-loop decays of "<>SPhenoForm[pD]<>" \" \n"];
+
 WriteString[outfile,"kont = 0 \n"];
 WriteString[outfile,ToString[SPhenoMass[VectorG]]<>" = MLambda \n"];
 WriteString[outfile,ToString[SPhenoMass[VectorP]]<>" = MLambda \n"];
@@ -615,8 +649,6 @@ If[pD===HiggsBoson || pD===PseudoScalar,
 WriteString[outfile,"isave = "<>ToString[Position[Select[savedDecayInfos,#[[1]]===pD&][[1,2]],getSPhenoCoupling[decays[[1,3]]][[1,1]]][[1,1]]]<>"\n\n"];,
 WriteString[outfile,"isave = 1 \n\n"];
 ];
-
-getSPhenoCoupling[Cp[hh,Ah,Ah]][[1,1]]
 
 For[j=1,j<=Length[decays],
 p1=decays[[j,1]];
@@ -649,6 +681,15 @@ subGZ=Table[getGBCoup[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup[coups[[
 subGZ=Join[subGZ,Table[cHPWlist[[i]]->ToExpression["GZ"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
 subG=Table[getGBCoup[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
 subG=Join[subG,Table[cHPWlist[[i]]->ToExpression["G"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
+
+If[{getBlank[p1],getBlank[p2]}==={VectorW,VectorW},
+subGZOS=Join[subGZOS,Table[getGBCoup1[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
+subGZ=Join[subGZ,Table[getGBCoup1[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
+subG=Join[Table[getGBCoup1[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
+subGZOS=Join[subGZOS,Table[getGBCoup2[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
+subGZ=Join[subGZ,Table[getGBCoup2[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
+subG=Join[Table[getGBCoup2[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
+];
 ];
 WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
 MakeCall["Amplitude_Tree_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{},{"AmpTree"<>name},outfile];
@@ -1332,6 +1373,7 @@ i++;];
 CounterTerm[x_]:=Switch[Head[x],
 Sin,Return[ToExpression["dSin"<>SPhenoForm[x[[1]]]]];,
 Cos,Return[ToExpression["dCos"<>SPhenoForm[x[[1]]]]];,
+Tan,Return[ToExpression["dTan"<>SPhenoForm[x[[1]]]]];,
 _,Return[ToExpression["d"<>SPhenoForm[x]]];];
 
  InitSelfEnergies[Eigenstates_]:=Block[{i,j,k,dim,dimS,par,fields,ind,pos,nameDR,nameOS},
@@ -1768,6 +1810,17 @@ WriteString[sphenoLD,"MLambda = Mass_Regulator_PhotonGluon \n"];
 WriteString[sphenoLD,"divset=SetDivonlyAdd(INT(divonly_save)) \n"];
 WriteString[sphenoLD,"divvalue=SetDivergenceAdd(divergence_save) \n"];
 
+WriteString[sphenoLD,"If (.not.CalculateOneLoopMasses) Then \n"];
+WriteString[sphenoLD," If (OSkinematics) Then \n"];
+WriteString[sphenoLD,"  Write(*,*) \"Loop masses not calculated: tree-level masses used for kinematics\" \n"];
+WriteString[sphenoLD,"  OSkinematics = .false. \n"];
+WriteString[sphenoLD," End if\n"];
+WriteString[sphenoLD," If (ExternalZfactors) Then \n"];
+WriteString[sphenoLD,"  Write(*,*) \"Loop masses not calculated: no U-factors are applied\" \n"];
+WriteString[sphenoLD,"  ExternalZfactors = .false. \n"];
+WriteString[sphenoLD," End if\n"];
+WriteString[sphenoLD,"End if\n\n"];
+
 
 WriteString[sphenoLD,"If (Extra_scale_loopDecays) Then \n"];
 WriteString[sphenoLD,"q2_save = GetRenormalizationScale() \n"];
@@ -1824,6 +1877,29 @@ WriteString[sphenoLD,"! -------------------------------------------- \n\n"];
 WriteString[sphenoLD,"! DR parameters \n"];
 WriteTadpoleSolution[sphenoLD];
 MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLD];
+
+WriteString[sphenoLD,"! Stabilize numerics \n"];
+For[i=1,i<=Length[PART[S]],
+If[FreeQ[massless,PART[S][[i,1]]],
+If[getGen[PART[S][[i,1]]]>1,
+WriteString[sphenoLD,"Where (Abs("<>SPhenoForm[SPhenoMass[PART[S][[i,1]]]]<>").lt.1.0E-15_dp) "<>SPhenoForm[SPhenoMass[PART[S][[i,1]]]]<>"=0._dp\n"];
+WriteString[sphenoLD,"Where (Abs("<>SPhenoForm[SPhenoMassSq[PART[S][[i,1]]]]<>").lt.1.0E-30_dp) "<>SPhenoForm[SPhenoMassSq[PART[S][[i,1]]]]<>"=0._dp\n"];,
+WriteString[sphenoLD,"If (Abs("<>SPhenoForm[SPhenoMass[PART[S][[i,1]]]]<>").lt.1.0E-15_dp) "<>SPhenoForm[SPhenoMass[PART[S][[i,1]]]]<>"=0._dp\n"];
+WriteString[sphenoLD,"If (Abs("<>SPhenoForm[SPhenoMassSq[PART[S][[i,1]]]]<>").lt.1.0E-30_dp) "<>SPhenoForm[SPhenoMassSq[PART[S][[i,1]]]]<>"=0._dp\n"];
+];
+];
+i++;];
+
+For[i=1,i<=Length[PART[F]],
+If[FreeQ[massless,PART[F][[i,1]]],
+If[getGen[PART[F][[i,1]]]>1,
+WriteString[sphenoLD,"Where (Abs("<>SPhenoForm[SPhenoMass[PART[F][[i,1]]]]<>").lt.1.0E-15_dp) "<>SPhenoForm[SPhenoMass[PART[F][[i,1]]]]<>"=0._dp\n"];
+WriteString[sphenoLD,"Where (Abs("<>SPhenoForm[SPhenoMassSq[PART[F][[i,1]]]]<>").lt.1.0E-30_dp) "<>SPhenoForm[SPhenoMassSq[PART[F][[i,1]]]]<>"=0._dp\n"];,
+WriteString[sphenoLD,"If (Abs("<>SPhenoForm[SPhenoMass[PART[F][[i,1]]]]<>").lt.1.0E-15_dp) "<>SPhenoForm[SPhenoMass[PART[F][[i,1]]]]<>"=0._dp\n"];
+WriteString[sphenoLD,"If (Abs("<>SPhenoForm[SPhenoMassSq[PART[F][[i,1]]]]<>").lt.1.0E-30_dp) "<>SPhenoForm[SPhenoMassSq[PART[F][[i,1]]]]<>"=0._dp\n"];
+];
+];
+i++;];
 
 (*
 WriteString[sphenoLD,"If (ewOSinDecays) Then \n"];
@@ -2033,13 +2109,16 @@ i++;];
 
 
 (* ::Input::Initialization:: *)
- WriteSelfEnergyScalar[Name_,particle_,parameters_,masses_,couplings_,contributions_, tree_,addTad_,mixed_,rotate_]:=Block[{i1,i2,i3,suffix,matname},
+ WriteSelfEnergyScalar[Name_,particle_,parameters_,masses_,couplings_,contributions_, tree_,addTad_,mixed_,rotate_]:=Block[{i1,i2,i3,suffix,matname,pos},
 WriteString[sphenoLD, "p2 = "<>SPhenoMassSq[particle,i1]<> "\n"];
 If[getGen[particle]>1,suffix="(i1,:,:)";,suffix="";];
 MakeCall["Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","Pi"<>Name<>suffix},sphenoLD];
 
 If[FreeQ[ScalarsForTadpoles,particle]==False,
+pos=Position[ScalarsForTadpoles,particle][[1,1]];
+If[Intersection[listVEVseparated[[pos]]]=!={0},
 WriteString[sphenoLD,"Pi"<>Name<>suffix<>" = Pi"<>Name<>suffix<>" + MatTad_"<>ToString[particle]<>"\n"];
+];
 ];
 
 MakeCall["DerPi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","DerPi"<>Name<>suffix},sphenoLD];
@@ -2238,7 +2317,7 @@ GenerateOneLoopDecayRoutines[eigenstates_]:=Block[{i,j,DecayingParticle,decays},
  SA`ParticlesDecays1Loop=Select[DeleteCases[DeleteCases[DeleteCases[DeleteCases[DeleteCases[Join[Transpose[PART[F]][[1]],Select[Transpose[PART[S]][[1]],SMQ[#]\[Equal]False&]],hh],Hpm],Ah],Hm],Hp],FreeQ[massless,#]&]; 
 *)
 (* SA`ParticlesDecays1Loop=Transpose[ListDecayParticles3B][[1]]; *)
-SA`ParticlesDecays1Loop=ListDecayParticles;
+SA`ParticlesDecays1Loop=Select[ListDecayParticles,getType[#]=!=V&];
 (* SA`ParticlesDecays1Loop=Select[Transpose[PART[F]][[1]],FreeQ[massless,#]&]; *)
 DynamicLoopDecayParticleNr=1;
 DynamicLoopDecayTotal=1;
@@ -2383,7 +2462,7 @@ allDiagrams={{{C[f1,f2,f3]},{External[1]->f1,External[2]->f2,External[3]->f3,  I
 {masses,couplings}=GetCouplingsMasses[allDiagrams];
 
 
-NRoutine=NModule<>"To"<>ToString[If[ToString[Head[f2/.replaceexternalparticles]]==ToString[conj],c,""]]<>ToString[RE[f2/.replaceexternalparticles]]<>ToString[If[ToString[Head[f3/.replaceexternalparticles]]==ToString[conj],c,""]]<>ToString[RE[f3/.replaceexternalparticles]];
+NRoutine=NModule<>"To"<>ToString[If[(ToString[Head[f2/.replaceexternalparticles]]==ToString[conj]) ||(ToString[Head[f2/.replaceexternalparticles]]==ToString[bar]),c,""]]<>ToString[RE[f2/.replaceexternalparticles]]<>ToString[If[(ToString[Head[f3/.replaceexternalparticles]]==ToString[conj])||(ToString[Head[f3/.replaceexternalparticles]]==ToString[bar]),c,""]]<>ToString[RE[f3/.replaceexternalparticles]];
 
 (* WriteTreeLevelDecay[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,type]; *)
 WriteTreeLevelDecayAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,type];
@@ -2393,9 +2472,27 @@ SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformatio
 SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["Z"<>ToString[#]]&/@couplings];
 
 If[FreeQ[{getBlank[DecayingParticle],OneLtbds[[1]],OneLtbds[[2]]},VectorW]==False,
-SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["G"<>ToString[getGBCoup[#]]]&/@couplings,ToExpression["G"<>ToString[#]]&/@cHPWlist]];
-SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["GZ"<>ToString[getGBCoup[#]]]&/@couplings,ToExpression["GZ"<>ToString[#]]&/@cHPWlist]];
-SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["GosZ"<>ToString[getGBCoup[#]]]&/@couplings,ToExpression["GosZ"<>ToString[#]]&/@cHPWlist]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["G"<>ToString[#]]&/@cHPWlist];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["GZ"<>ToString[#]]&/@cHPWlist];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["GosZ"<>ToString[#]]&/@cHPWlist];
+If[getGBCoup[couplings[[1]]]=!=False,
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["G"<>ToString[getGBCoup[#]]]&/@couplings,{}]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["GZ"<>ToString[getGBCoup[#]]]&/@couplings,{}]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["GosZ"<>ToString[getGBCoup[#]]]&/@couplings,{}]];
+];
+];
+
+If[{OneLtbds[[1]],OneLtbds[[2]]}==={conj[VectorW],VectorW}||{OneLtbds[[1]],OneLtbds[[2]]}==={VectorW,conj[VectorW]},
+If[getGBCoup2[couplings[[1]]]=!=False,
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[{},ToExpression["G"<>ToString[getGBCoup2[#]]]&/@couplings]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[{},ToExpression["GZ"<>ToString[getGBCoup2[#]]]&/@couplings]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[{},ToExpression["GosZ"<>ToString[getGBCoup2[#]]]&/@couplings]];
+];
+If[getGBCoup1[couplings[[1]]]=!=False,
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["G"<>ToString[getGBCoup1[#]]]&/@couplings,{}]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["GZ"<>ToString[getGBCoup1[#]]]&/@couplings,{}]];
+SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[ToExpression["GosZ"<>ToString[getGBCoup1[#]]]&/@couplings,{}]];
+];
 ];
 
 SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]],masses];
@@ -2412,7 +2509,7 @@ allDiagrams=GenerateDiagramsDecayVertexCorrections[AntiField[DecayingParticle],O
 
 replaceexternalparticles={f1->AntiField[DecayingParticle],f2->OneLtbds[[1]],f3->OneLtbds[[2]]};
 
-NRoutine=NModule<>"To"<>ToString[If[ToString[Head[f2/.replaceexternalparticles]]==ToString[conj],c,""]]<>ToString[RE[f2/.replaceexternalparticles]]<>ToString[If[ToString[Head[f3/.replaceexternalparticles]]==ToString[conj],c,""]]<>ToString[RE[f3/.replaceexternalparticles]];
+NRoutine=NModule<>"To"<>ToString[If[(ToString[Head[f2/.replaceexternalparticles]]==ToString[conj])||(ToString[Head[f2/.replaceexternalparticles]]==ToString[bar]),c,""]]<>ToString[RE[f2/.replaceexternalparticles]]<>ToString[If[(ToString[Head[f3/.replaceexternalparticles]]==ToString[conj])||(ToString[Head[f3/.replaceexternalparticles]]==ToString[bar]),c,""]]<>ToString[RE[f3/.replaceexternalparticles]];
 
 SA`SavedInformationOneLoopDecaysVertex=Join[SA`SavedInformationOneLoopDecaysVertex,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings}}}];
 (* WriteOneLoopCorrectionsDecay[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,type,"VERTEX"]; *)
@@ -2481,7 +2578,7 @@ masses=Intersection[Join[masses,DeleteCases[DeleteCases[Intersection[{SPhenoMass
 
 
 
-NRoutine=NModule<>"To"<>ToString[If[ToString[Head[f2]]==ToString[conj],c,""]]<>ToString[RE[f2]]<>ToString[If[ToString[Head[f3]]==ToString[conj],c,""]]<>ToString[RE[f3]];
+NRoutine=NModule<>"To"<>ToString[If[(ToString[Head[f2]]==ToString[conj])||ToString[Head[f2]]==ToString[bar],c,""]]<>ToString[RE[f2]]<>ToString[If[(ToString[Head[f3]]==ToString[conj])||(ToString[Head[f3]]==ToString[bar]),c,""]]<>ToString[RE[f3]];
 (* Zconst =ToExpression["Z"<>ToString[#]]&/@DeleteCases[Intersection[Flatten[Select[{f1,f2,f3}/. bar[x_]\[Rule]x /. conj[x_]\[Rule]x,FreeQ[massless,#]&]  /. diracSub[EWSB]/. bar[x_]\[Rule]x /. conj[x_]\[Rule]x]],0]; *)
 Zconst =ToExpression["Zf"<>ToString[#]]&/@DeleteCases[Intersection[Flatten[{f1,f2,f3}/. bar[x_]->x /. conj[x_]->x  /. diracSub[EWSB]/. bar[x_]->x /. conj[x_]->x]],0];
 
@@ -3871,6 +3968,17 @@ If[getGen[f3]>1,ind1r=ind1r<>"1";];
 ind1r=ind1r<>")";
 ind1r=StringReplace[ind1r,{",)"->")","()"->""}];
 ind2r=StringReplace[ind2r,{",)"->")","()"->""}];
+If[vcoup==={},
+
+WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,3]]]<>ind1r<>" = 0._dp\n"];
+
+WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,3]]]<>ind1r<>" = 0._dp\n"];
+
+WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,3]]]<>ind1r<>" = 0._dp\n"];,
+
 WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<>SPhenoMassOS[f1,i1]<>"*"<>ToString[vcoup[[1,2,2]]]<>ind2r<>" - "<>SPhenoMassOS[f2,i2]<>"*"<>ToString[vcoup[[1,2,3]]]<>ind2r<>")/"<>SPhenoForm[SPhenoMassOS[vf3]]<>"\n"];
 WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,3]]]<>ind1r<>" = -("<>SPhenoMassOS[f2,i2]<>"*"<>ToString[vcoup[[1,2,2]]]<>ind2r<>" - "<>SPhenoMassOS[f1,i1]<>"*"<>ToString[vcoup[[1,2,3]]]<>ind2r<>")/"<>SPhenoForm[SPhenoMassOS[vf3]]<>"\n"];
 
@@ -3879,6 +3987,7 @@ WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,3]]]<>ind1r<>" = -("<>SPhenoM
 
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<>SPhenoMass[f1,i1]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>" - "<>SPhenoMass[f2,i2]<>"*Z"<>ToString[vcoup[[1,2,3]]]<>ind2r<>")/"<>SPhenoForm[SPhenoMass[vf3]]<>"\n"];
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,3]]]<>ind1r<>" = -("<>SPhenoMass[f2,i2]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>" - "<>SPhenoMass[f1,i1]<>"*Z"<>ToString[vcoup[[1,2,3]]]<>ind2r<>")/"<>SPhenoForm[SPhenoMass[vf3]]<>"\n"];
+];
 
 
 If[getGen[f2]>1,WriteString[sphenoLD," End Do\n"];];
@@ -3902,9 +4011,14 @@ If[getGen[f3]>1,ind1r=ind1r<>"1";];
 ind1r=ind1r<>")";
 ind1r=StringReplace[ind1r,{",)"->")","()"->""}];
 ind2r=StringReplace[ind2r,{",)"->")","()"->""}];
+If[vcoup==={},
+WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];,
 WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<>  SPhenoForm[getSignVertex[Cp[f1 /. A_[{b__}]->A ,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A  /. getBlank[f3]->vf3],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSqOS[f1,i1]<>" - "<>SPhenoMassSqOS[f2,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf3]]<>"*"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A ,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A  /. getBlank[f3]->vf3],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSqOS[f1,i1]<>" - "<>SPhenoMassSqOS[f2,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf3]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A ,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A  /. getBlank[f3]->vf3],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSq[f1,i1]<>" - "<>SPhenoMassSq[f2,i2]<>")/"<>SPhenoForm[SPhenoMass[vf3]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
+];
 If[getGen[f2]>1,WriteString[sphenoLD," End Do\n"];];
 If[getGen[f1]>1,WriteString[sphenoLD,"End Do \n"];];,
 2,
@@ -3919,9 +4033,14 @@ ind1r=ind1r<>")";
 ind2r=ind2r<>")";
 ind1r=StringReplace[ind1r,{",)"->")","()"->""}];
 ind2r=StringReplace[ind2r,{",)"->")","()"->""}];
+If[vcoup==={},
+WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];,
 WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A ,f2  /. A_[{b__}]->A  /. getBlank[f2]->vf2,f3 /. A_[{b__}]->A ],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSqOS[f1,i1]<>" - "<>SPhenoMassSqOS[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf2]]<>"*"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A ,f2  /. A_[{b__}]->A  /. getBlank[f2]->vf2,f3 /. A_[{b__}]->A ],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSqOS[f1,i1]<>" - "<>SPhenoMassSqOS[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf2]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A ,f2  /. A_[{b__}]->A  /. getBlank[f2]->vf2,f3 /. A_[{b__}]->A ],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSq[f1,i1]<>" - "<>SPhenoMassSq[f3,i2]<>")/"<>SPhenoForm[SPhenoMass[vf2]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
+];
 If[getGen[f3]>1,WriteString[sphenoLD," End Do\n"];];
 If[getGen[f1]>1,WriteString[sphenoLD,"End Do \n"];];,
 1,
@@ -3936,11 +4055,16 @@ ind1r=ind1r<>")";
 ind2r=ind2r<>")";
 ind1r=StringReplace[ind1r,{",)"->")","()"->""}];
 ind2r=StringReplace[ind2r,{",)"->")","()"->""}];
+If[vcoup==={},
+WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];,
 WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSqOS[f2,i1]<>" - "<>SPhenoMassSqOS[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf1]]<>"*"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<>  SPhenoForm[getSignVertex[Cp[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSqOS[f2,i1]<>" - "<>SPhenoMassSqOS[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf1]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<>SPhenoForm[  getSignVertex[Cp[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],vcoup[[1,6]],SSV]]<>")*("<>SPhenoMassSq[f2,i1]<>" - "<>SPhenoMassSq[f3,i2]<>")/"<>SPhenoForm[SPhenoMass[vf1]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
+];
 If[getGen[f3]>1,WriteString[sphenoLD," End Do\n"];];
-If[getGen[f1]>1,WriteString[sphenoLD,"End Do \n"];];
+If[getGen[f2]>1,WriteString[sphenoLD,"End Do \n"];];
 ];,
 SSV,
 Switch[Position[{f1,f2,f3},SA`GBS[[1]]][[1,1]],
@@ -3996,9 +4120,14 @@ f3=gListGB[[i,-1,3]];
 vf1=(GoldstoneBosons[EWSB][[Position[GoldstoneBosons[EWSB],getBlank[f1]][[1,1]]]])[[1]];
 vcoup=Select[SPhenoCouplingsAll,FreeQ[#,C[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ]]==False&];
 If[getGen[f1]>1,ind1r="(1)";,ind1r="";];
+If[vcoup==={},
+WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp\n"];
+WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0._dp \n"];,
 WriteString[sphenoLD,"G"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],vcoup[[1,6]],VVV]]<>")*("<>SPhenoMassSqOS[f2,i1]<>" - "<>SPhenoMassSqOS[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf1]]<>"*"<>ToString[vcoup[[1,2,2]]]<>"\n"];
 WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<> SPhenoForm[ getSignVertex[Cp[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],vcoup[[1,6]],VVV]]<>")*("<>SPhenoMassSqOS[f2,i1]<>" - "<>SPhenoMassSqOS[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf1]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>"\n"];
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = ("<>  SPhenoForm[getSignVertex[Cp[f1 /. A_[{b__}]->A /. getBlank[f1]->vf1,f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],vcoup[[1,6]],VVV]]<>")*("<>SPhenoMassSq[f2,i1]<>" - "<>SPhenoMassSq[f3,i2]<>")/"<>SPhenoForm[SPhenoMassOS[vf1]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>" \n"];
+];
 ];
 i++;];
 

@@ -349,7 +349,7 @@ If[getGenSPheno[HiggsBoson]>1,addgen="(i1)";,addgen="";];
 WriteString[sphenoCoup,"cplHiggsPP"<>addgen<>" = coup*Alpha \n"]; 
 WriteString[sphenoCoup,"CoupHPP"<>addgen<>" = coup \n"];
 MakeCall["CoupHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"gNLO","coup"},sphenoCoup];
-WriteString[sphenoCoup,"ratioPP"<>addgen<>" = Abs(cplHiggsPP"<>addgen<>"/(coup*Alpha))**2 \n"];
+WriteString[sphenoCoup,"ratioPP"<>addgen<>" = Abs(cplHiggsPP"<>addgen<>"/(coup*Alpha)) \n"];
 
 WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
 MakeCall["CoupHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon}],{"m_in","i1"},{"gNLO","coup"},sphenoCoup];
@@ -372,7 +372,7 @@ WriteString[sphenoCoup,"cplHiggsGG"<>addgen<>" = cplHiggsGG"<>addgen<>"*Sqrt(1._
 
 
 WriteString[sphenoCoup,"CoupHGG"<>addgen<>"=cplHiggsGG"<>addgen<>" \n"];
-WriteString[sphenoCoup,"ratioGG"<>addgen<>" = Abs(cplHiggsGG"<>addgen<>"/(coup*AlphaSQ))**2 \n"];
+WriteString[sphenoCoup,"ratioGG"<>addgen<>" = Abs(cplHiggsGG"<>addgen<>"/(coup*AlphaSQ)) \n"];
 
 
 
@@ -420,7 +420,7 @@ WriteString[sphenoCoup,"CoupAPP"<>addgen<>" = 2._dp*coup \n"];
 (* MakeCall["CoupPseudoHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"gNLO","coup"},sphenoCoup]; 
 WriteString[sphenoCoup,"ratioPPP"<>addgen<>" = Abs(cplPseudoHiggsPP"<>addgen<>"/(2._dp*coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2))**2 \n"]; *)
 MakeCall["CoupHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"gNLO","coup"},sphenoCoup]; 
-WriteString[sphenoCoup,"ratioPPP"<>addgen<>" = Abs(cplPseudoHiggsPP"<>addgen<>"/(coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2))**2 \n"];
+WriteString[sphenoCoup,"ratioPPP"<>addgen<>" = Abs(cplPseudoHiggsPP"<>addgen<>"/(coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2)) \n"];
 
 WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
 MakeCall["CoupPseudoHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluonPseudo,NeededMassesLoopGluon}],{"m_in","i1"},{"gNLO","coup"},sphenoCoup];
@@ -444,7 +444,7 @@ WriteString[sphenoCoup,"coup = coup*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"];
 WriteString[sphenoCoup,"ratioPGG"<>addgen<>" = Abs(cplPseudoHiggsGG"<>addgen<>"/(2._dp*coup*AlphaSQ))**2 \n"]; *)
 MakeCall["CoupHiggsToGluonSM",Flatten[{NeededMassesLoopGluon}],{"m_in"},{"gNLO","coup"},sphenoCoup];
 WriteString[sphenoCoup,"coup = coup*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"];
-WriteString[sphenoCoup,"ratioPGG"<>addgen<>" = Abs(cplPseudoHiggsGG"<>addgen<>"/(coup*AlphaSQ))**2 \n"]; 
+WriteString[sphenoCoup,"ratioPGG"<>addgen<>" = Abs(cplPseudoHiggsGG"<>addgen<>"/(coup*AlphaSQ)) \n"]; 
 
 WriteString[sphenoCoup, "\n"];
 

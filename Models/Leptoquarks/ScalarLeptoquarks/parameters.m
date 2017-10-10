@@ -131,6 +131,11 @@ ParameterDefinitions = {
     	 	 LesHouches -> UCHI, 
    		  	 LaTeX -> "{U}_{\\chi}", 
     		 OutputName -> UChi}},
+    		 
+{ZC0,    {Real -> False, 
+    	 	 LesHouches -> ZCHI0, 
+   		  	 LaTeX -> "{Z}_{0}", 
+    		 OutputName -> ZC0}},   		 
 			 
 {Mass[VWp],	{Real -> False, 
 			 LesHouches -> {SCALARLEPTOQUARKS,24},

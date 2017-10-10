@@ -19,9 +19,11 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 
 
+(* ::Input::Initialization:: *)
 (* Begin["`Lagrange`"] *)
 
 
@@ -50,6 +52,7 @@ listSMadd = {};
 
 
 
+(* ::Input::Initialization:: *)
 (*-------------------------------------------------------------*)
 (* Particles Interactions *)
 (*-------------------------------------------------------------*)
@@ -143,6 +146,7 @@ CheckChargeConservation;
 
 
 
+(* ::Input::Initialization:: *)
 CalcFTerms:=Block[{s,j,i,c},
 
 
@@ -167,6 +171,7 @@ DynamicFTermName="All Done";
 ];
 
 
+(* ::Input::Initialization:: *)
 CalcMatter := Block[{s,t,g,c2,i,c1,h,j,k,l,m,Dim5Lag, Dim5FieldsFermion,Dim5FieldsScalar,posls},
 PrintDebug["Calculate Fermion-Scalar"];
 Print["Calculate Matter interactions: ",Dynamic[DynamicMatterNr],"/",Length[SFieldList]^2," (",Dynamic[DynamicMatterName],")"];
@@ -194,6 +199,7 @@ Matter = FTerms + (Wij +conj[Wij /. {Ferm_[1]->Ferm[2],Ferm_[2]->Ferm[1]} ])+ (W
 
 
 
+(* ::Input::Initialization:: *)
 (*------------------------------------------------------*)
 (* Softbreaking *)
 (*------------------------------------------------------*)
@@ -269,7 +275,6 @@ temp= conj[part[SFields[[i]],1]] part[SFields[[i]],2]*genTest[MassScalar[Fields[
 term=SumOverExpandedIndizes[temp, {Fields[[i,3]],Fields[[i,3]]}];
 
 SoftScalarMass += term;
-
 
 (*
 Adj[MassScalar[Fields[[i,3]]]]=MassScalar[Fields[[i,3]]];
@@ -457,6 +462,7 @@ DynamicSoftTermsCurrent="All Done";
 
 
 
+(* ::Input::Initialization:: *)
 GetDiracGauginos:=Block[{i,j,k,l,res=0,fields,dim,add,indexB,mName,currentDirac},
 PrintDebug["Adding dirac gaugino soft terms"];
 Print["Calculate Dirac Gaugino masses: ", Dynamic[DynamicDGnr],"/",Length[Gauge]," (",Dynamic[DynamicDGname],")"];
@@ -514,11 +520,13 @@ Return[res+conj[res]];
 ];
 
 
+(* ::Input::Initialization:: *)
 (*-----------------------------------------*)
 (* Kinetic Part *)
 (*-----------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 CalcKinetic:=Block[{i,Bg12,gen1,gen2,Bg22,Bg23,a,g, gauge,realF},
 
 PrintAll["Calculate kinetic Terms"];
@@ -687,11 +695,13 @@ LgolFFSV=tempC+conj[tempC] /. conj[gamma[a_]]->gamma[a];
 
 
 
+(* ::Input::Initialization:: *)
 (*-----------------------------------------*)
 (* Gauge Part *)
 (*-----------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 
 (*------------ D-Terms -------------*)
 
@@ -838,6 +848,7 @@ Return[temp];
 
 
 
+(* ::Input::Initialization:: *)
 CalcGaugino:=Block[{i,j,k,g,c,a,ai},
 
 PrintDebug["Calc Gaugino Interactions"];
@@ -1023,11 +1034,13 @@ Return[{LagRe,LagAddVVV,LagAddVVVV,AddPot,AddKin}];
 
 
 
+(* ::Input::Initialization:: *)
 (*-----------------------------------------*)
 (* Complete Lagrangian  *)
 (*-----------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 CalcLagrangian:=Block[{},
 
 If[AddGravitino=!=True,

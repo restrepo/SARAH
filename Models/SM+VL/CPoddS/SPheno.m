@@ -128,3 +128,9 @@ DefaultInputValues ={Lambdainput -> 0.17,
                      YF12input -> 0,
                      YF13input -> 0
                      };
+                     
+(* turn off loop-decays => one should study them in a model with selected VL states *)                                         
+SA`AddOneLoopDecay = False;
+
+(* loop matching not working because of arbitrarily large masses *)
+ForceSimplifiedMatching=True;

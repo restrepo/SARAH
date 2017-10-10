@@ -92,3 +92,6 @@ SetOptions[CalcRGEs,IgnoreAt2Loop->{L1, L2, T[L1], T[L2]}];
 DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 10, SignumMu -> 1, Azero->-2000 };
 
 
+(* loop decays won't work unless the neutralino-neutrino and electron-chargino mixing 
+is included; if you want to study this, use the other RpV files with this mixing *)                     
+SA`AddOneLoopDecay = False;

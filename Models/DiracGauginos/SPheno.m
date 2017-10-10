@@ -108,3 +108,9 @@ DefaultInputValues = {mSUSY->1500, TanBeta->2, vSinput ->-400, vTinput->1, LSinp
 BMuInput->10^6, MuInput->0, MSinput->0, MTinput->0, MOinput->0, BMSinput->-10^6, BMTinput->10^6,BMOinput->10^6, MDBinput->200, MDWinput->500, MDOinput->1400, LTinput-> -0.001, ALTinput -> 0,LSTinput-> 0, ALSTinput -> 0,  TadInput->0,LTadInput ->0};
 
 
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};

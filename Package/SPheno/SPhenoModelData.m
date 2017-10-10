@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 MakeModelData:=Block[{i,k,i2,temp,dim,pos,name,templist},
 If[Head[RegimeNr]===Integer,
 AddParametersFromOtherRegimes;
@@ -61,9 +62,11 @@ For[i=1,i<=Length[ListDecayParticles3B],
 WriteString[ModelData,"Logical, Save :: Calc3BodyDecay_"<>SPhenoForm[ListDecayParticles3B[[i,1]]]<>"=.True.\n"];
 i++;];
 
-If[Include2LoopCorrections===False,
+(*
+If[Include2LoopCorrections=!=False&&SkipEffPot=!=True,
 WriteString[ModelData,"Real(dp) :: hstep_pn, hstep_sa \n"];
 ];
+*)
 If[IncludeFlavorKit=!=True||SkipFlavorKit===True,
 WriteString[ModelData,"Real(dp) :: tau_pi0=26033._dp, tau_pip,tau_rho0,tau_rhop,tau_Dp= 1.040E-12_dp,tau_D0,tau_DSp,tau_DSsp, & \n & tau_eta,tau_etap,tau_omega,tau_phi, tau_KL0,tau_KS0,tau_K0,tau_Kp=1238.0E-11_dp,tau_B0s=1.472E-12_dp, tau_B0d=1.525E-12_dp, tau_B0p,tau_B0c,tau_Bpc,tau_Bs0c, tau_Bp=1.519E-12_dp, & \n & tau_Bcp,tau_Bcpc,tau_K0c,tau_Kpc,tau_etac,tau_JPsi,tau_Ups,tau_etab  \n"];
 WriteString[ModelData,"Real(dp) :: mass_pi0=0.1396_dp, mass_pip,mass_rho0,mass_rhop,mass_Dp,mass_D0=1.8648_dp,mass_DSp,mass_DSsp, & \n & mass_eta,mass_etap,mass_omega,mass_phi, mass_KL0,mass_KS0,mass_K0=0.4937_dp,mass_Kp=0.493_dp,mass_B0s=5.3663_dp, mass_B0d=5.2795_dp,mass_B0p=5.279_dp,mass_B0c,mass_Bpc,mass_Bs0c, & \n & mass_Bcp,mass_Bcpc,mass_K0c=0.8959_dp,mass_Kpc,mass_etac,mass_JPsi,mass_Ups,mass_etab  \n"];
@@ -105,7 +108,7 @@ WriteString[ModelData,"Logical :: KineticMixingSave = .True. \n"];
 
 WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleSolutions = .False. \n"];
 WriteString[ModelData,"Logical :: WriteHiggsDiphotonLoopContributions = .False. \n"];
-WriteString[ModelData,"Logical :: WriteEffHiggsCouplingRatios = .True. \n"];
+WriteString[ModelData,"Logical :: WriteEffHiggsCouplingRatios = .False. \n"];
 
 
 temp=Transpose[ListMixingMat][[1]];
@@ -430,17 +433,35 @@ i++;];
 ];
 
 WriteString[ModelData,"! For HiggsBounds \n"];
+WriteString[ModelData,"Real(dp) :: BR_HpHW("<>ToString[getGen[ChargedHiggs]]<>","<>ToString[getGen[HiggsBoson]]<>")  = 0._dp\n"];
+WriteString[ModelData,"Real(dp) :: BR_HpAW("<>ToString[getGen[ChargedHiggs]]<>","<>ToString[getGen[PseudoScalar]]<>") = 0._dp\n"];
 If[getGen[ChargedHiggs]>1,
-WriteString[ModelData,"Real(dp) :: BR_tHb("<>ToString[getGen[ChargedHiggs]]<>")\n"];
-WriteString[ModelData,"Real(dp) :: BR_Hcs("<>ToString[getGen[ChargedHiggs]]<>"), BR_Hcb("<>ToString[getGen[ChargedHiggs]]<>"), BR_Htaunu("<>ToString[getGen[ChargedHiggs]]<>"), BR_tWb\n"];,
-WriteString[ModelData,"Real(dp) :: BR_tHb\n"];
-WriteString[ModelData,"Real(dp) :: BR_Hcs, BR_Hcb, BR_Htaunu, BR_tWb\n"];
+WriteString[ModelData,"Real(dp) :: BR_HpTB("<>ToString[getGen[ChargedHiggs]]<>") = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_HpWZ("<>ToString[getGen[ChargedHiggs]]<>") = 0._dp\n"];
+WriteString[ModelData,"Real(dp) :: BR_tHb("<>ToString[getGen[ChargedHiggs]]<>") = 0._dp\n"];
+WriteString[ModelData,"Real(dp) :: BR_Hcs("<>ToString[getGen[ChargedHiggs]]<>")= 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_Hcb("<>ToString[getGen[ChargedHiggs]]<>")=0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_Htaunu("<>ToString[getGen[ChargedHiggs]]<>")=0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_tWb = 0._dp\n"];,
+WriteString[ModelData,"Real(dp) :: BR_tHb = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_Hcs = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_Hcb = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_Htaunu = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_tWb = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_HpTB = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: BR_HpWZ =0._dp \n"];
 ];
 
 
-WriteString[ModelData, "Real(dp) :: BRHHH("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>"), BRHAA("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>") \n "];
-WriteString[ModelData, "Real(dp) :: BRAHH("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>"), BRAAA("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>") \n "];
-WriteString[ModelData, "Real(dp) :: BRinvH("<>ToString[getGenSPheno[HiggsBoson]]<>"), BRinvA("<>ToString[getGenSPheno[PseudoScalar]]<>") \n"];
+WriteString[ModelData, "Real(dp) :: BRHll("<>ToString[getGenSPheno[HiggsBoson]] <>",3,3)  = 0._dp\n"];WriteString[ModelData, "Real(dp) :: BRAll("<>ToString[getGenSPheno[PseudoScalar]] <>",3,3)   = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRHHH("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHAA("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>")= 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRAHH("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRAAA("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRHHHijk("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHHAijk("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHAAijk("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRAHHijk("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRAHAijk("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) ::  BRAAAijk("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]]<>","<>ToString[getGenSPheno[PseudoScalar]] <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRHHZ("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHAZ("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]]  <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRAHZ("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") =0._dp\n"];WriteString[ModelData, "Real(dp) :: BRAAZ("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]]  <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRAHpW("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[ChargedHiggs]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHhpW("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[ChargedHiggs]]  <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRinvH("<>ToString[getGenSPheno[HiggsBoson]]<>"), BRinvA("<>ToString[getGenSPheno[PseudoScalar]]<>")  = 0._dp \n"];
 
 For[i=1,i<=Length[SMParticles],
 Switch[getType[SMParticles[[i]]],
@@ -458,27 +479,27 @@ i++;];
 
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False && FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
 If[getGen[HiggsBoson]>1 && getGen[PseudoScalar]>1,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") \n "];,
+WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")  =0._dp \n "];,
 If[getGen[HiggsBoson]>1,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>") \n "];,
+WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>")  =0._dp \n "];,
 If[getGen[PseudoScalar]>1,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>") \n "];,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z \n "];
+WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>")  =0._dp \n "];,
+WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z  =0._dp \n "];
 ];
 ];
 ];
 ];
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
-WriteString[ModelData, "Complex(dp) :: CPL_H_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") \n "];
+WriteString[ModelData, "Complex(dp) :: CPL_H_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") =0._dp \n "];
 If[getGen[HiggsBoson]>1,
-WriteString[ModelData, "Complex(dp) :: CoupHPP("<>ToString[getGen[HiggsBoson]]<>"), CoupHGG("<>ToString[getGen[HiggsBoson]]<>") \n"];,
+WriteString[ModelData, "Complex(dp) :: CoupHPP("<>ToString[getGen[HiggsBoson]]<>"), CoupHGG("<>ToString[getGen[HiggsBoson]]<>") =0._dp \n"];,
 WriteString[ModelData, "Complex(dp) :: CoupHPP, CoupHGG \n"];
 ];
 ];
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
-WriteString[ModelData, "Complex(dp) :: CPL_A_A_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>") \n "];
+WriteString[ModelData, "Complex(dp) :: CPL_A_A_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>") =0._dp \n "];
 If[getGen[PseudoScalar]>1,
-WriteString[ModelData, "Complex(dp) :: CoupAPP("<>ToString[getGen[PseudoScalar]]<>"), CoupAGG("<>ToString[getGen[PseudoScalar]]<>") \n"];,
+WriteString[ModelData, "Complex(dp) :: CoupAPP("<>ToString[getGen[PseudoScalar]]<>"), CoupAGG("<>ToString[getGen[PseudoScalar]]<>") =0._dp \n"];,
 WriteString[ModelData, "Complex(dp) :: CoupAPP, CoupAGG \n"];
 ];
 ];
@@ -783,7 +804,7 @@ WriteString[ModelData,"Real(dp), save :: Mass_Regulator_PhotonGluon = 1.0E-10_dp
 
 WriteString[ModelData,"Logical, Save :: SimplisticLoopDecays=.False.\n"];
 WriteString[ModelData,"Logical, Save :: ShiftIRdiv=.True.\n"];
-WriteString[ModelData,"Logical, Save :: DebugLoopDecays=.True.\n"];
+WriteString[ModelData,"Logical, Save :: DebugLoopDecays=.False.\n"];
 WriteString[ModelData,"Logical, Save :: OnlyTreeLevelContributions= .false. \n"];
 WriteString[ModelData,"Logical, Save :: ExternalZfactors=.True.\n"];
 WriteString[ModelData,"Logical, Save :: OSkinematics=.True.\n"];
@@ -819,7 +840,7 @@ WriteString[ModelData,"Real(dp) :: err2L = 0._dp \n"];
 WriteString[ModelData,"Real(dp) :: nDown = 3._dp \n"];
 WriteString[ModelData,"Real(dp) :: MaxMassLoop = 1.0E16_dp \n"];
 WriteString[ModelData,"Real(dp) :: MinWidth = 1.0E-30_dp \n"];
-(* WriteString[ModelData,"Real(dp) :: hstep_pn=0.1_dp, hstep_sa=0.001_dp \n"]; *)
+ WriteString[ModelData,"Real(dp) :: hstep_pn=0.1_dp, hstep_sa=0.001_dp \n"];
 WriteString[ModelData,"Real(dp) :: MaxMassNumericalZero = 1.0E-8_dp \n"];
 WriteString[ModelData,"Logical :: runningTopMZ= .False. \n"];
 WriteString[ModelData,"Logical :: PrintDebugInformation = .False. \n"];
@@ -853,6 +874,7 @@ Close[ModelData];
 
 
 
+(* ::Input::Initialization:: *)
 LookForAdditionalParameter:=Block[{k,temp},
 temp={};
 If[Head[BoundaryHighScale]===List&&Flatten[BoundaryHighScale]=!={},

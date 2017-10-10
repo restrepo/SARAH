@@ -215,7 +215,7 @@ ParticleDefinitionsMain = {
                  
                  
 (*----------------------------------------*)
-(* MSSM Mass Eigenstates                  *)
+(* MSSM Mass ECP-even Sneutrinoigenstates                  *)
 (*----------------------------------------*)
                  
 (* --------------------------------------- Squarks --------------------------------------*)                 
@@ -968,6 +968,7 @@ ParticleDefinitionsMain = {
          OutputName -> "nR",
          FeynArtsNr -> 41,
          LHPC -> {5, "blue"},
+         ElectricCharge->0,
          PDG->{1000012,1000014,1000016,2000012,2000014,2000016},
          PDG.IX ->{200000001,200000002,200000003,200000004,200000005,200000006} }}, 
                                
@@ -975,6 +976,7 @@ ParticleDefinitionsMain = {
          LaTeX -> "\\nu^I",
          OutputName -> "nI",
          FeynArtsNr -> 40,
+         ElectricCharge->0,         
          LHPC -> {5, "turquoise"},
          PDG->{4000012,4000014,4000016,5000012,5000014,5000016},
          PDG.IX ->{202000001,202000002,202000003,202000004,202000005,202000006}}},       

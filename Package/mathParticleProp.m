@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 (* ------------------------------------*)
 (* Zeros                               *)
@@ -66,6 +67,7 @@ vacHead[x_]:= Return[x->zero[x]];
 
 
 
+(* ::Input::Initialization:: *)
 
 
 
@@ -233,6 +235,7 @@ Return[x];
 Mom[x_,l_]:=Mom[x /. zero[y_]->y,l] /;FreeQ[x,zero]== False; 
 
 
+(* ::Input::Initialization:: *)
 (* ------------------------------------------- *)
 (* Generation Handling *)
 (* ------------------------------------------- *)
@@ -332,6 +335,7 @@ Return[{{coeff/. {Delta[a__]->1,epsTensor[a__]->1, CG[a__][b__]->1},par ,coeff/(
 
 
 
+(* ::Input::Initialization:: *)
 (* ------------------------------------------- *)
 (* Particle Insertion *)
 (* ------------------------------------------- *)
@@ -514,10 +518,13 @@ If[Head[partList[[i]]]===conj,sign=Join[sign,{-1}];,sign=Join[sign,{1}];];
 i++;];
 IndexTypes=Intersection[Table[IndexTypes[[i,3]],{i,1,Length[IndexTypes]}]];
 structure=1;
+Off[Part::"pspec"];
+Off[Part::"pkspec1"];
 For[i=1,i<=Length[IndexTypes],
 pos=Position[Gauge,IndexTypes[[i]]][[1,1]];
 CGc=GenerateInvariantsTensor[Gauge[[pos,2]],Gauge[[pos,3]],Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
 structure=structure*CGc;
+
 If[FreeQ[SA`KnonwCG,Head[CGc]] && Length[partList]<5 && FreeQ[CGc,CG]==False &&Head[CGc]=!=Times,
 If[Length[Head[CGc][[2]]]===4,
 If[(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i1,i2}]]==False ) &&(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i3,i4}]]==False ) ,
@@ -528,6 +535,8 @@ structure=structure /. CG[a_,b_]:>InvariantMatrixSusyno[Gauge[[pos,2]],getDynkin
 ];
 ];
 i++;];
+On[Part::"pspec"];
+On[Part::"pkspec1"];
 Return[structure];
 ];
 
@@ -1090,11 +1099,13 @@ Return[temp];];
 
 
 
+(* ::Input::Initialization:: *)
 (* ------------------------------------------- *)
 (* Particle Properties *)
 (* ------------------------------------------- *)
 
 
+(* ::Input::Initialization:: *)
 
 getGenerator[k_,dim_,lor_,p1_,p2_]:=If[Gauge[[k,2]]===U[1],dim,
 If[Gauge[[k,5]]===True,
@@ -1184,6 +1195,7 @@ Return[ToExpression["A"<>StringDrop[ToString[vector],1]]];
 ]; 
 
 
+(* ::Input::Initialization:: *)
 UseSymmASymm=False;
 
 SymmetriceIndices[Operator_,length_,SameInd_,preFac_]:=Block[{i,Op,Op2,GEN1,GEN2,OP,OP2},
@@ -1387,6 +1399,7 @@ Hermitian,
 ];
 ];
 ];
+
 ];
 
 CheckSymmetry[Op_,part_,sameInd_]:=Block[{pos},
@@ -1456,7 +1469,6 @@ listPGen = DeleteCases[(listP /. conj[x_]->x),_?((getGenSF[RE[#]]<2)&)];
 If[listPGen=!={},
 sameIndices = Flatten/@Table[Position[Count[listPGen/. a_?(TrueQ[#=!=Intersection[listPGen][[i]]] && Head[#]=!=List&)->NIX,#]&/@listPGen,_?((#>1)&),3],{i,1,Length[Intersection[listPGen]]}];
 ];
-
 If[AddSB==True,
 Switch[Length[listP],
 4, SBHeader = Q;,
@@ -1502,7 +1514,6 @@ _,
 res=DeleteCases[Opc@@pT,0] /. A_[]->A;
 genStruct = 1;	
 ];
-
 genStruct= genStruct /. {DeltaF[a_,b_]->Delta[a,b], DeltaF[a_,b_,c_]->Delta[a,b] Delta[b,c] Delta[a,c]};
 
 
@@ -1616,6 +1627,7 @@ GetGen[x_]:= getGen[x] /; (SetGenerations==True);
 GetGenStart[x_]:= getGenStart[x] /; (SetGenerations==True);
 
 
+(* ::Input::Initialization:: *)
 
 getNumberStatesAdjoint[group_]:=Block[{},
 Switch[Head[group],
@@ -1688,6 +1700,7 @@ Return[NoField];
 
 
 
+(* ::Input::Initialization:: *)
 
 getParticleName[part_]:=
 If[MemberQ[diracFermions[SA`CurrentStates],getBlank[part]]==True,
@@ -1755,6 +1768,7 @@ Return[particle/.sub];
 ];
 
 
+(* ::Input::Initialization:: *)
 getIndizes[part_]:= Block[{list},
 If[FreeQ[Particles[Current],getParticleName[part]],
 (* Print["error get Indizes", part]; *)
@@ -2066,6 +2080,7 @@ Return[External];
 
 
 
+(* ::Input::Initialization:: *)
 getBlank[part_]:=RE[part] /.{x_[{a__}][b_]->x,x_[{a__}]->x, x_[b_Integer]->x}; 
 getBlankSF[part_]:=RE[part] /.{x_[{a__}][{b__}]->x,x_[{a__}]->x};
 
@@ -2181,6 +2196,7 @@ NoFermionQ[x_]:=If[getType[x]===F,Return[False];,Return[True];];
 
 
 
+(* ::Input::Initialization:: *)
 MakeTypeListParticles[ES_]:=Block[{i,diracTemp},
 SA`CurrentStates=ES;
 

@@ -170,3 +170,7 @@ DefaultInputValues ={vHRinput -> 1000,
         etainput -> 0,
         kapinput -> -0.1
                      };
+                     
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = False;
+                     

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 getbremsgeneral[e1_,p1_,p2_,gaugegroupnr_]:=Block[{i,j,k,ps,cps,pos,toordered,coup,colstr,colindices,colindices1,colindices2,colindices3,colindices4,treecf,cf12,cf13,cf23,otherindices,otherfactor,totherfactor,cgsub,Casvec,Dynvec,colpair,colordimp,Colourpresent,dimvec,tdimvec,conjcoup,gen1,gen2,Coloureasy,cin1,cin2,cin3,cin4,cin5,cin6,cin7,ctvlist,cttarlist,ctrepr,tpos,cinlist,ggname,ggtype,pindices,othergroups,sumline,Casarr,jmap,colstrord,treetosum},
 tdimvec={1,0,0};
 Casarr=Array[0&,{6}];
@@ -130,7 +131,7 @@ Casarr[[5]]=cf23;
 Return[{treecf,Casarr}]];
 MakeRealCorrections[NModule_,DecayingParticle_,twobodydecays_,OneLtbds_,type_]:=Block[{i,j,k,replaceexternalparticles,NRoutine,treecolourfactor,Casarr,Q2arr,Casvec,Chargevec,ps,colourpresent,chargepresent,coloreasy,chargeeasy,colordimp},
 replaceexternalparticles={f1->DecayingParticle,f2->OneLtbds[[1]],f3->OneLtbds[[2]]};
-NRoutine=NModule<>"To"<>ToString[If[ToString[Head[f2/.replaceexternalparticles]]==ToString[conj],c,""]]<>ToString[RE[f2/.replaceexternalparticles]]<>ToString[If[ToString[Head[f3/.replaceexternalparticles]]==ToString[conj],c,""]]<>ToString[RE[f3/.replaceexternalparticles]];
+NRoutine=NModule<>"To"<>ToString[If[(ToString[Head[f2/.replaceexternalparticles]]==ToString[conj])||(ToString[Head[f2/.replaceexternalparticles]]==ToString[bar]),c,""]]<>ToString[RE[f2/.replaceexternalparticles]]<>ToString[If[(ToString[Head[f3/.replaceexternalparticles]]==ToString[conj])||(ToString[Head[f3/.replaceexternalparticles]]==ToString[bar]),c,""]]<>ToString[RE[f3/.replaceexternalparticles]];
 WriteRealCorrections[NRoutine,DecayingParticle,twobodydecays,OneLtbds,type];
 SA`SavedInformationOneLoopDecaysReal=Join[SA`SavedInformationOneLoopDecaysReal,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,OneLtbds}}];];
 

@@ -68,3 +68,11 @@ ListDecayParticles3B = Automatic;
 QuadruplePrecision = {Chi};
 
 DefaultInputValues = {m0 -> 1500, m12->1500, TanBeta -> 10, Azero -> -2500, LambdaInput ->0.1, KappaInput ->0.1, vR1Input ->1000, vL1Input->0.0, vL2Input->0.0, vL3Input->0.0};
+
+
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
+};

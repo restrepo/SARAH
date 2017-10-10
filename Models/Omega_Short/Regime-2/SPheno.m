@@ -117,3 +117,5 @@ InitializationValues = {
  {Momega, SignumMomega*(aInput^2*vBLinput^2)/(8 Mdelta)}
 };
 
+SA`AddOneLoopDecay = True;
+

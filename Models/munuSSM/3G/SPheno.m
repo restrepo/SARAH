@@ -79,14 +79,10 @@ QuadruplePrecision = {Chi};
 
 DEFINITION[MatchingConditions]=Default[THDMII];
 
-ConditionForMassOrdering={
-{Chi,
-"If ((Abs(UV(1,2)).gt.Abs(UV(2,1))).And.(MChi(1).lt.1.0E-15_dp).And.(MChi(2).lt.1.0E-15_dp)) Then \n
-   MChitemp = MChi \n
-   UVtemp = UV \n
-   UV(1,:) = UVtemp(2,:) \n
-   UV(2,:) = UVtemp(1,:) \n
-   MChi(1) = MChitemp(2) \n
-   MChi(2) = MChitemp(1) \n
-End If \n \n"}
+
+RenConditionsDecays={
+{dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },
+{dSinTW, -dCosTW/Tan[ThetaW]},
+{dg2, 1/2*g2*(derPiVPheavy0 + PiVPlightMZ/MVZ^2 - (-(PiVWm/MVWm^2) + PiVZ/MVZ^2)/Tan[ThetaW]^2 + (2*PiVZVP*Tan[ThetaW])/MVZ^2)  },
+{dg1, dg2*Tan[ThetaW]+g2*dSinTW/Cos[ThetaW]- dCosTW*g2*Tan[ThetaW]/Cos[ThetaW]}
 };

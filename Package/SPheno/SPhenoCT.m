@@ -72,7 +72,7 @@ i++;];
 ];
 
 ExpandCT[vert_]:=Block[{temp},
-temp=Expand[Expand[vert /. subListCounter]-vert]/. conj[dd[a_]]->dd[conj[a]]/. sum->SUM //. SUM[a__, d_ SUM[f__,g_]]->SUM[a,SUM[f,d g]]//. SUM[a_,b_,c_,d_Times]:>SUM[a,b,c,Expand[d]] //.SUM[a_,b_,c_,d_ + e_]:>SUM[a,b,c,d]+SUM[a,b,c,e]//. sum[a_,b_,c_,d_Times]:>sum[a,b,c,Expand[d]] //.sum[a_,b_,c_,d_ + e_]:>sum[a,b,c,d]+sum[a,b,c,e];
+temp=Expand[Expand[TrigExpand[vert] /. subListCounter]-TrigExpand[vert]]/. conj[dd[a_]]->dd[conj[a]]/. sum->SUM //. SUM[a__, d_ SUM[f__,g_]]->SUM[a,SUM[f,d g]]//. SUM[a_,b_,c_,d_Times]:>SUM[a,b,c,Expand[d]] //.SUM[a_,b_,c_,d_ + e_]:>SUM[a,b,c,d]+SUM[a,b,c,e]//. sum[a_,b_,c_,d_Times]:>sum[a,b,c,Expand[d]] //.sum[a_,b_,c_,d_ + e_]:>sum[a,b,c,d]+sum[a,b,c,e];
 temp=Expand[temp]//. dd[a__] dd[b__]->0 //.dd[a__]^b__->0//. dd[a_] SUM[___,y___ dd[b_]]->0 //. dd[a_] SUM[__,SUM[___,y___ dd[b_]]]->0//. SUM[__, y___ dd[a_]] SUM[___,w___ dd[b_]]->0 //. SUM[__, dd[a_]] SUM[___,  dd[b_]]->0 //. SUM[__,SUM[__, x_ dd[a_]]] SUM[__,SUM[___,y_  dd[b_]]]->0/. SUM->sum;
 If[Head[temp]===Plus,temp=Plus@@(Select[(List@@temp),Count[#,dd[x_],99]<2 &]);];
 Return[temp /.dd[conj[a_]]->conj[dd[a]]/. subListCounterNames];

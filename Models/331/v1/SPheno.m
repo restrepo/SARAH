@@ -92,3 +92,6 @@ DefaultInputValues = {
   yu3t[1] -> 0.2,
   yu3Xt[1] -> 0.2
 };
+
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = False;

@@ -65,3 +65,6 @@ vRinput -> 8000,
 gRinput -> 0.5,
 vSinput -> 1000
 };
+
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = False;

@@ -57,11 +57,12 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 <<SPheno2LPole`;
 ];
 
-Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran",IncludeFlavorKit->True};
+Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran",IncludeFlavorKit->True,IncludeLoopDecays->True};
 
-MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno],IncludeFlavorKit/.{opt}/.Options[MakeSPheno]];
+MakeSPhenoFast[opt___]:=MakeSPheno[IncludeLoopDecays->False,IncludeFlavorKit->False,ReadLists->True];
+MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno],IncludeFlavorKit/.{opt}/.Options[MakeSPheno],IncludeLoopDecays/.{opt}/.Options[MakeSPheno]];
 
-MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_,flavorkit_]:=Block[{i,i1,i2,temp,startedtime},
+MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_,flavorkit_,loopdecays_]:=Block[{i,i1,i2,temp,startedtime},
 startedtime=TimeUsed[];
 Print[StyleForm["Generate SPheno Source Code","Section"]];
 
@@ -75,6 +76,8 @@ SA`CurrentStates=Eigenstates;
 If[flavorkit===False || SkipFlavorKit===True,
 SkipFlavorKit=True;
 ];
+SA`AddOneLoopDecay=loopdecays;
+
 
 AbortStartSPheno=False;
 SARAHFortran=True;
@@ -92,6 +95,11 @@ Print["File for SPheno-Output does not exist!"];
 AbortStartSPheno=True;,
 Get[SPhenoFile];
 If[SA`Version === "SARAHVERSION",FlagLoopContributions=True;];
+];
+
+If[Count[Table[Gauge[[i,2]],{i,1,Length[Gauge]}],SU[3]]>1 || Count[Table[Gauge[[i,2]],{i,1,Length[Gauge]}],SU[2]]>1 ||Count[Table[Gauge[[i,2]],{i,1,Length[Gauge]}],SU[4]]>0,
+Print["Loop decays are turned off because of the presence of additional, non-Abelian gauge groups "];
+SA`AddOneLoopDecay=False;
 ];
 
 If[EXTPAR==={},
@@ -168,7 +176,7 @@ getUnmixedMassesDummy[Eigenstates]; ,
 
 
 If[OnlyLowEnergySPheno===True,
-If[SA`AddOneLoopDecay===True,
+If[SA`AddOneLoopDecay===True && SA`NoRGEsforDecays=!=True,
 Print[" Include 1-loop RGEs to check cancellations of divergencies"];
 ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->True,VerticesForLoops->True,TwoLoopRGEs->False];,
 MakeDummyListRGEs;
@@ -355,7 +363,15 @@ GenerateSPhenoLoopCouplings[Eigenstates];
 
 
 If[Include2LoopCorrections=!=False,
+$sarahSPhenoTwoLoopDir=ToFileName[{$sarahCurrentSPhenoDir,"TwoLoopMasses"}];
+If[FileExistsQ[$sarahSPhenoTwoLoopDir]=!=True,CreateDirectory[$sarahSPhenoTwoLoopDir];];
+
+If[SkipEffPot=!=True&&SupersymmetricModel===True,
 GenerateSPhenoEffPot;
+,
+SkipEffPot=True;
+];
+
 GenerateSPheno2LPole[ReadL];
 ];
 GenerateSPhenoLoopMasses[Eigenstates];
@@ -372,9 +388,10 @@ GenerateSPhenoHiggsCS[Eigenstates];
 
 MakePDGList[Eigenstates];
 MakeModelData;
-If[OnlyLowEnergySPheno=!=True,
+
+(* If[OnlyLowEnergySPheno=!=True, *)
 GenerateBoundaries;
-];
+(* ]; *)
 
 If[SPhenoOnlyForHM=!=True,
 If[SPhenoLowEnergyIncluded =!=True, AddLowEnergyConstraint=False;];
@@ -806,6 +823,7 @@ If[ListDecayParticles===Automatic,
 TwoBDList=Automatic;
 ListDecayParticles = Join[Join[Join[AllScalarNonSM,AllVectorNonSM],AllFermionNonSM],{TopQuark}];
 ListDecayParticles = Select[ListDecayParticles,(getGenSPhenoStart[#]<=getGenSPheno[#])&];  (* Filter Goldstones *)
+ListDecayParticles=Select[ListDecayParticles,FreeQ[massless,#]&];
  ];
 
 If[ListDecayParticles3B===Automatic,
@@ -1802,7 +1820,7 @@ equ=equTemp[[i]];];
 i++;];,
 equ=equ[[1]];
 ];
-sol=Select[Solve[equ[[1]]==equ[[2]],{g1SM}],FreeQ[#,-a_]&][[1]];
+sol=Select[Solve[equ[[1]]==equ[[2]],{g1SM}],FreeQ[#,b_->-a_]&][[1]];
 ExpressionAuxHypercharge=g1SM /.sol[[1]]; 
 ];
 ];

@@ -57,7 +57,8 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {95},
                  LaTeX -> {"O","O^*"},
                  OutputName -> {"O","Oc"},
-                 FeynArtsNr -> 10
+                 FeynArtsNr -> 10,
+                 ElectricCharge->0
                  }},                                                  
 
 

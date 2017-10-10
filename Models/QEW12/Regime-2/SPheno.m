@@ -214,3 +214,5 @@ DefaultInputValues = {
     };
 
 
+(* loop decays not supported for this model *)                     
+SA`AddOneLoopDecay = False;

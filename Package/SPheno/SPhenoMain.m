@@ -54,9 +54,9 @@ WriteString[spheno,"Use Model_Data_"<>ModelName<>"\n"];
 WriteString[spheno,"Use Tadpoles_"<>ModelName<>" \n "];
 If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"Use RGEs_"<>ModelName<>"\n"];
+];
 WriteString[spheno,"!Use StandardModel\n"];
 WriteString[spheno,"Use Boundaries_"<>ModelName<>"\n "];
-];
 
 
 If[IncludeFineTuning===True,
@@ -78,10 +78,10 @@ WriteString[spheno, "Real(dp) :: mGut = -1._dp, ratioWoM = 0._dp\n"];
 WriteString[spheno, "Integer :: kont \n \n"];
 WriteString[spheno, "Integer,Parameter :: p_max=100\n"];
 WriteString[spheno, "Real(dp) :: Ecms(p_max),Pm(p_max),Pp(p_max), dt, tz, Qin, gSM(11) \n"];
-If[OnlyLowEnergySPheno===True,
-WriteString[spheno, "Real(dp) :: vev, sinw2, f_GMSB\n"];,
+(* If[OnlyLowEnergySPheno===True,
+WriteString[spheno, "Real(dp) :: vev, sinw2, f_GMSB\n"];, *)
 WriteString[spheno, "Real(dp) :: vev, sinw2\n"];
-];
+(* ]; *)
 (* If[SupersymmetricModel===False, *)
 WriteString[spheno, "Complex(dp) :: YdSM(3,3), YuSM(3,3), YeSM(3,3)\n"];
 WriteString[spheno, "Real(dp) :: vSM, g1SM, g2SM, g3SM\n"];
@@ -173,9 +173,14 @@ temp2=Join[temp2,{temp1[[i]]/. subLowEnergyParameters}];
 ];
 i++;];
 
-If[OnlyLowEnergySPheno=!=True,
+If[OnlyLowEnergySPheno===True,
+WriteString[spheno," HighScaleModel = \"LOW\" \n"];
+WriteString[spheno,"If (.not.DecoupleAtRenScale) Then ! No longer used by default \n "];,
 WriteString[spheno,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then ! No longer used by default \n "];
 ];
+
+
+
 WriteString[spheno,"! Setting values \n "];
 For[i=1,i<=Length[listVEVsIN],
 If[MemberQ[ParametersToSolveTadpoles,listVEVs[[i]]]==False,
@@ -216,49 +221,6 @@ WriteString[spheno,"\n \n ! Setting VEVs used for low energy constraints \n "];
 For[i=1,i<=Length[listVEVsIN],
 WriteString[spheno,StringDrop[SPhenoForm[listVEVsIN[[i]]],-2] <>"MZ = " <>StringDrop[SPhenoForm[listVEVsIN[[i]]],-2]<>" \n "];
 i++;];
-
-(*
-If[SupersymmetricModel===True,
- If[AddSMrunning=!=False && SPhenoOnlyForHM=!=True,
-WriteString[spheno,"\n \n ! RGE running for gauge and Yukawa couplings from M_Z to M_SUSY \n "];
-WriteString[spheno,"Qin=sqrt(getRenormalizationScale()) \n"];
-WriteString[spheno,"If (SMrunningLowScaleInput) Then \n"];
-If[DEFINITION[UseNonStandardYukwas]=!=True,
-If[AddOHDM=!=True,
-WriteString[spheno,"Call RunSM(Qin,deltaM,tanbeta,"<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[VEVSM2]<>") \n"];,
-WriteString[spheno,"Call RunSMohdm(Qin,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
-];,
-WriteString[spheno,"Call RunSMohdm(Qin,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>",YuSM,YdSM,YeSM, vSM) \n"];
-If[AddOHDM=!=True,
-WriteString[spheno,"vd_aux =  vSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2)  \n"];
-WriteString[spheno,"vu_aux =  vd_aux*"<>SPhenoForm[TanBeta]<>"\n"];
-];
-For[i=1,i\[LessEqual]Length[DEFINITION[MoreEWvevs]],
-WriteString[spheno,StringReplace[DEFINITION[MoreEWvevs][[i]],{"vev2"\[Rule]"vSM**2"}] <>"\n"];
-i++;];
-For[i=1,i\[LessEqual]Length[DEFINITION[NonStandardYukawasRelations]],
-WriteString[spheno,StringReplace[DEFINITION[NonStandardYukawasRelations][[i]],{"vd"\[Rule]"vd_aux","vu"\[Rule]"vu_aux","Y_u"\[Rule]"YuSM","Y_d"\[Rule]"YdSM","Y_l"\[Rule]"YeSM"}] <>"\n"];
-i++;];
-];
-WriteString[spheno,"End if \n"];
-];,
-WriteString[spheno,"If (SMrunningLowScaleInput) Then \n"];
-WriteString[spheno,"  Qin=sqrt(getRenormalizationScale()) \n"];
-WriteString[spheno,"  Call RunSMohdm(Qin,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
-WriteString[spheno,"Else \n"];
-WriteString[spheno,"   sinW2=1._dp-mW2/mZ2 \n"];
-WriteString[spheno,"   vSM=1/Sqrt((G_F*Sqrt(2._dp)))\n"];
-WriteString[spheno,"   g1SM=sqrt(4*Pi*Alpha_MZ/(1-sinW2)) \n"];
-WriteString[spheno,"   g2SM=sqrt(4*Pi*Alpha_MZ/Sinw2 ) \n"];
-WriteString[spheno,"   g3SM=sqrt(AlphaS_MZ*4*Pi) \n"];
-WriteString[spheno,"   Do i1=1,3 \n"];
-WriteString[spheno,"      YuSM(i1,i1)=sqrt(2._dp)*mf_u(i1)/vSM \n"];
-WriteString[spheno,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
-WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
-WriteString[spheno,"    End Do \n"];
-WriteString[spheno,"End if \n"];
-];
-*)
 
 WriteString[spheno,"If (SMrunningLowScaleInput) Then \n"];
 WriteString[spheno,"  Qin=sqrt(getRenormalizationScale()) \n"];
@@ -360,11 +322,11 @@ WriteString[spheno,"  kont=0 \n"];
 WriteString[spheno," End If \n"];
 WriteString[spheno,"End If \n\n"];
 
-If[OnlyLowEnergySPheno=!=True,
+(* If[OnlyLowEnergySPheno=!=True, *)
 WriteString[spheno,"Else \n "];
 MakeCall["CalculateSpectrum",Join[NewMassParameters,Join[listVEVs,listAllParameters ]],{"n_run","delta_mass","WriteOut","kont"},{"mGUT"},spheno];
 WriteString[spheno,"End If \n "];
-];
+(* ]; *)
 
 WriteString[spheno, "! Save correct Higgs masses for calculation of L -> 3 L' \n"];
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
@@ -466,9 +428,9 @@ If[WriteCKMBasis===True,
 AppendSourceCode["SwitchFromSCKM.f90",spheno];
 ];
 
-If[OnlyLowEnergySPheno=!=True,
+(* If[OnlyLowEnergySPheno=!=True, *)
 GenerateCalculateSpectrum;
-];
+(* ]; *)
 GenerateReadingData;
 
 If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
@@ -568,11 +530,19 @@ WriteString[spheno,"!If (kont.ne.0) Call TerminateProgram \n \n"];
 WriteString[spheno,"If (SPA_Convention) Call SetRGEScale(1.e3_dp**2) \n \n"];
 
 
+If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"If (.not.DecoupleAtRenScale) Then \n"];
 MakeCall["Sugra",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
 WriteString[spheno,"Else \n"];
 MakeCall["Match_and_Run",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
-WriteString[spheno,"End If \n \n"];
+WriteString[spheno,"End If \n \n"];,
+WriteString[spheno,"If (.Not.UseFixedScale) Then \n"];
+WriteString[spheno," Call SetRGEScale(160._dp**2) \n"];
+WriteString[spheno,"End If\n"];
+
+
+MakeCall["Match_and_Run",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
+];
 
 
 WriteString[spheno,"If (kont.ne.0) Then \n"];

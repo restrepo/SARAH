@@ -42,6 +42,9 @@ RenormalizationScale = MSu[1]*MSu[6];
  ConditionGUTscale = {gB1 == -gB2, g1 == 10 };
  
  DEFINITION[MatchingConditions]=Default[THDMII];
+ 
+ (* loop decays not supported for this model *)                     
+SetOptions[MakeSPheno, IncludeLoopDecays -> False];
 
 BoundaryHighScale={
     {YK,     YKInput},
@@ -194,3 +197,4 @@ DefaultInputValues = {
 };
 
 
+SA`AddOneLoopDecay = False;
