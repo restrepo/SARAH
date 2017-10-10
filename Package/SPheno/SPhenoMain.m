@@ -469,6 +469,7 @@ MakeVariableList[listVEVs,",Intent(inout)",spheno];
 WriteString[spheno,"kont = 0 \n"];
 
 If[Length[UseParameterAsGUTscale]>0,
+If[FreeQ[MINPAR,UseParameterAsGUTscale[[1]]]===False,
 If[Head[MINPAR[[1,1]]]=!=List,
 temp=Select[Transpose[MINPAR][[2]],(FreeQ[UseParameterAsGUTscale,#]==False)&];
 If[temp=!={},WriteString[spheno,"Call SetGUTscale("<>SPhenoForm[temp[[1]]]<>") \n"];];,
@@ -482,7 +483,9 @@ WriteString[spheno,"  ! Free GUT scale \n"];
 ];
 j++;];
 WriteString[spheno,"End Select \n\n"];
-];
+];,
+temp=Select[Transpose[EXTPAR][[2]],(FreeQ[UseParameterAsGUTscale,#]==False)&];
+WriteString[spheno,"Call SetGUTscale("<>SPhenoForm[temp[[1]]]<>") \n"];];
 ];
 
 MakeCall["FirstGuess",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},spheno];

@@ -51,24 +51,6 @@ AddMixedSofts=False;
 
 NameOfStates={GaugeES, EWSB};
 
-(* ----- Before EWSB ----- *)
-
-
-DEFINITION[GaugeES][DiracSpinors]={
-  Bino ->{fB, conj[fB]},
-  Wino -> {fWB, conj[fWB]},
-  Glu -> {fG, conj[fG]},
-  H0 -> {FHd0, conj[FHu0]},
-  HC -> {FHdm, conj[FHup]},
-  Fd1 -> {FdL, 0},
-  Fd2 -> {0, FdR},
-  Fu1 -> {FuL, 0},
-  Fu2 -> {0, FuR},
-  Fe1 -> {FeL, 0},
-  Fe2 -> {0, FeR},
-  Fv -> {FvL, conj[FvL]}
-};
-
 
 (* ----- After EWSB ----- *)
 
@@ -118,7 +100,7 @@ DEFINITION[EWSB][DiracSpinors]={
  Fd ->{  FDL, conj[FDR]},
  Fe ->{  FEL, conj[FER]},
  Fu ->{  FUL, conj[FUR]},
- Fv -> {FvL, conj[FvL]},
+ Fv -> {FvL, 0},
  Chi ->{ L0, conj[L0]},
  Cha ->{ Lm, conj[Lp]},
  Glu ->{ fG, conj[fG]}

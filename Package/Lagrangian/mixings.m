@@ -296,6 +296,24 @@ If[Head[newRealStates]===List,
 realVar=Join[realVar,newRealStates];
 ];
 
+If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][AdditionalFinal]]]=!=DEFINITION,
+PrintAll["Adding terms to the Lagrangian: "];
+add=DEFINITION[NameOfStates[[rotNr]]][AdditionalFinal];
+sumLagInput=0;
+For[j=1,j<=Length[add],
+Print[" ... adding: ",add[[j,1]], " (",Dynamic[DynamicStatusAddTerms[ADD]]/. ADD->add[[j,1]],")"];
+
+PrintDebug[" ... adding: ",add[[j,1]]];
+newTerms=CreateLagrangian[add[[j,1]],AddHC /. add[[j,2]] /. {AddHC->False},Overwrite /. add[[j,2]] /. {Overwrite->False}];
+sumLagInput+=Plus@@newTerms;
+LagReDef+=newTerms[[1]];
+LagrangianVVV+=newTerms[[2]];
+LagrangianVVVV+=newTerms[[3]];
+Potential-=newTerms[[4]];
+Kinetic +=newTerms[[5]];
+j++;];
+LagInput[NameOfStates[[rotNr]]]=sumLagInput;
+];
 
 (* -------------------------------- Effective after Particle Mixing ------------------ *)
 

@@ -326,7 +326,7 @@ WriteString[sphenoTree,"Integer :: i1,i2,i3,i4,j1,j2,j3,kontSave \n"];
 
 nmixF=Select[listNotMixedMasses,getType[#[[1]]]===F&&#[[2]]=!=0&];
 For[i=1,i<=Length[nmixF],
-WriteString[sphenoTree,"Complex(dp) :: "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>"C \n"];
+WriteString[sphenoTree,"Complex(dp) :: "<>ToString[SPhenoMass[nmixF[[i,1]]]]<>"C \n"];
 i++];
 
 

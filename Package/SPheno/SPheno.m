@@ -92,6 +92,10 @@ Get[SPhenoFile];
 If[SA`Version === "SARAHVERSION",FlagLoopContributions=True;];
 ];
 
+If[EXTPAR==={},
+Clear[EXTPAR];
+];
+
 If[UseHiggs2LoopMSSM===True || Use2LoopFromLiterature===True,
 UseHiggs2LoopMSSM=True;
 ];

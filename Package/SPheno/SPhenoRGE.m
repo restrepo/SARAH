@@ -887,7 +887,10 @@ i++;];
 
 For[i=1,i<=Length[listTr[[1]]],
 If[FreeQ[realVar,listTr[[1,i,1]]],
-WriteString[sphenoRGE," "<>ToString[listTr[[1,i,2]]]<> " = Real(cTrace(" <>ToString[listTr[[1,i,1]]]  <>"),dp) \n"];,
+If[listTr[[1,i,3]]===False,
+WriteString[sphenoRGE," "<>ToString[listTr[[1,i,2]]]<> " = cTrace(" <>ToString[listTr[[1,i,1]]]  <>") \n"];,
+WriteString[sphenoRGE," "<>ToString[listTr[[1,i,2]]]<> " = Real(cTrace(" <>ToString[listTr[[1,i,1]]]  <>"),dp) \n"];
+];,
 WriteString[sphenoRGE," "<>ToString[listTr[[1,i,2]]]<> " = Trace(" <>ToString[listTr[[1,i,1]]]  <>") \n"];
 ];
 i++;];
@@ -940,7 +943,10 @@ i++;];
 
 For[i=1,i<=Length[listTrace[[2]]],
 If[FreeQ[realVar,listTr[[2,i,1]]],
-WriteString[sphenoRGE," "<>ToString[listTr[[2,i,2]]]<> " = cTrace(" <>ToString[listTr[[2,i,1]]]  <>") \n"];,
+If[listTr[[2,i,3]]===False,
+WriteString[sphenoRGE," "<>ToString[listTr[[2,i,2]]]<> " = cTrace(" <>ToString[listTr[[2,i,1]]]  <>")\n"];,
+WriteString[sphenoRGE," "<>ToString[listTr[[2,i,2]]]<> " = Real(cTrace(" <>ToString[listTr[[2,i,1]]]  <>"),dp)  \n"];
+];,
 WriteString[sphenoRGE," "<>ToString[listTr[[2,i,2]]]<> " = Trace(" <>ToString[listTr[[2,i,1]]]  <>") \n"];
 ];
 i++;];
@@ -1489,7 +1495,13 @@ _,
 i++;];
 subSPhenoMatTr = Join[subSPhenoMatTr,{listTrace[[k,j]]->ToExpression[NewString]}];
 SPhenoParameters = Join[SPhenoParameters,{{ToExpression[NewString],{},{1}}}];
- listTr[[k]] = Join[listTr[[k]],{{Apply[MatMul,listTrace[[k,j]]] //. subSPhenoMatTr,ToExpression[NewString]}}];
+
+If[Reverse[Tp/@Conj/@(listTrace[[k,j]]/.conj->Conj)]===(listTrace[[k,j]]/.conj->Conj),
+hermitian=True;,
+hermitian=False;
+];
+
+ listTr[[k]] = Join[listTr[[k]],{{Apply[MatMul,listTrace[[k,j]]] //. subSPhenoMatTr,ToExpression[NewString],hermitian}}];
 j++;];
 
 
