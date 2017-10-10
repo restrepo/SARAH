@@ -149,7 +149,8 @@ ListAllInputParameters=Join[ListAllInputParameters,Replace[DeleteCases[DeleteCas
 
 ];
 
-AddParametersToList[list_]:=Block[{i},
+AddParametersToList[listIn_]:=Block[{i,list},
+list=If[Head[listIn]===List,DeleteDuplicates[listIn],listIn];
 For[i=1,i<=Length[list],
 par=DeleteCases[DeleteCases[DeleteCases[DeleteCases[list[[i]],gen1,3],gen2,3],gen3,3],gen4,3] /. XX_[]->XX;
 dim = getDimParameters[par];
@@ -674,7 +675,7 @@ WriteString[sphenoInOut, "\n \n"];
 ];
 
 If[SPhenoOnlyForHM=!=True,
-If[getGen[HiggsBoson]>1,WriteInOutHiggsObservables;];
+If[getGen[HiggsBoson]>1 || (1+getGen[PseudoScalar]-getGenSPhenoStart[PseudoScalar])>0,WriteInOutHiggsObservables;];
 WriteInOutLowEnergyObservables;
 If[IncludeFineTuning===True,WriteInOutFT;];
 WriteInOutDecays;
@@ -2136,6 +2137,7 @@ Clear[i1];
 
 WriteString[sphenoInOut, "\n \n"];
 WriteString[sphenoInOut,"If (L_BR) Then \n"];
+If[getGen[HiggsBoson]>1,
 WriteString[sphenoInOut,"Write(io_L,100) \"Block HiggsLHC7 # Higgs production cross section at LHC7 [pb] \" \n"];
 WriteString[sphenoInOut,"Do i1="<>ToString[getGenSPhenoStart[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>"\n"];
 WriteString[sphenoInOut, "CurrentPDG2(1) = Abs("<>SPhenoPDG[HiggsBoson,i1]<>") \n"];
@@ -2154,6 +2156,7 @@ WriteString[sphenoInOut,"If (CS_Higgs_LHC(2,i1,3).gt.0._dp) Write(io_L,119) 3, C
 WriteString[sphenoInOut,"If (CS_Higgs_LHC(2,i1,4).gt.0._dp) Write(io_L,119) 4, CurrentPDG2(1), CS_Higgs_LHC(2,i1,4), \" # Z-H production \" \n"]; 
 WriteString[sphenoInOut,"If (CS_Higgs_LHC(2,i1,5).gt.0._dp) Write(io_L,119) 5, CurrentPDG2(1), CS_Higgs_LHC(2,i1,5), \" # t-t-H production \" \n"]; 
 WriteString[sphenoInOut,"End Do \n"];
+];
 
 WriteString[sphenoInOut,"If (WriteEffHiggsCouplingRatios) Then \n"];
 WriteString[sphenoInOut, "Write(io_L,100) \"Block HiggsBoundsInputHiggsCouplingsFermions # \" \n"];
@@ -2195,11 +2198,11 @@ For[i=getGenSPhenoStart[PseudoScalar],i<=getGen[PseudoScalar],
 WriteString[sphenoInOut,"Write(io_L,1102) "<>SPhenoRatioPseudoHB[VectorW,i,3]<>","<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[Abs[getPDG[VectorW,1]]]<>","<>ToString[Abs[getPDG[VectorW,1]]]<> ", \" # A_"<>ToString[i]<>" W W coupling \" \n"];
 WriteString[sphenoInOut,"Write(io_L,1102) "<>SPhenoRatioPseudoHB[VectorZ,i,3]<>","<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[getPDG[VectorZ,1]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # A_"<>ToString[i]<>" Z Z coupling \" \n"];
 WriteString[sphenoInOut,"Write(io_L,1102) 0._dp ,"<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[getPDG[VectorZ,1]]<>","<>ToString[getPDG[VectorP,1]]<> ", \" # A_"<>ToString[i]<>" Z gamma coupling \" \n"];
-If[getGen[HiggsBoson]>1,
+If[getGen[PseudoScalar]>1,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(ratioPPP("<>ToString[i]<>"),dp),"<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[getPDG[VectorP,1]]<>","<>ToString[getPDG[VectorP,1]]<> ", \" # A_"<>ToString[i]<>" gamma gamma coupling \" \n"];,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(ratioPPP,dp),"<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[getPDG[VectorP,1]]<>","<>ToString[getPDG[VectorP,1]]<> ", \" # A_"<>ToString[i]<>" gamma gamma coupling \" \n"];
 ];
-If[getGen[HiggsBoson]>1,
+If[getGen[PseudoScalar]>1,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(ratioPGG("<>ToString[i]<>"),dp),"<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[getPDG[VectorG,1]]<>","<>ToString[getPDG[VectorG,1]]<> ", \" # A_"<>ToString[i]<>" g g coupling \" \n"];,
 WriteString[sphenoInOut,"Write(io_L,1102) Real(ratioPGG,dp),"<>"3 ,"<>ToString[getPDG[PseudoScalar,i]]<>","<>ToString[getPDG[VectorG,1]]<>","<>ToString[getPDG[VectorG,1]]<> ", \" # A_"<>ToString[i]<>" g g coupling \" \n"];
 ];
@@ -2212,7 +2215,16 @@ WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_H_H_Z("<>ToString[i]<>","<>To
 j++;];
 If[getGen[PseudoScalar]<99,
 For[j=getGenSPhenoStart[PseudoScalar],j<=getGen[PseudoScalar],
-WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[j]<>","<>ToString[i]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];
+If[getGen[PseudoScalar]>1 && getGen[HiggsBoson]>1,
+WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[j]<>","<>ToString[i]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];,
+If[getGen[PseudoScalar]>1 ,
+WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[j]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];,
+If[getGen[HiggsBoson]>1 ,
+WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z("<>ToString[i]<>"), dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];,
+WriteString[sphenoInOut,"Write(io_L,1102) Real(CPL_A_H_Z, dp),"<>"3 ,"<>ToString[getPDG[HiggsBoson,i]]<>","<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorZ,1]]<> ", \" # h_"<>ToString[i]<>" A_"<>ToString[j]<> " Z coupling \" \n"];
+];
+];
+];
 j++;];
 j++;];
 i++;];
@@ -2251,9 +2263,9 @@ WriteString[sphenoInOut, "\n \n"];
 
 WriteString[sphenoInOut,"Write(io_L,100) \"Block EFFHIGGSCOUPLINGS # values of loop-induced couplings \" \n"];
 WriteString[sphenoInOut,"facPP = Alpha*Sqrt(2._dp*G_F/sqrt(2._dp))/(2._dp*Pi) \n"];
-WriteString[sphenoInOut,"facGG = AlphaS_MZ*Sqrt(2._dp*G_F/sqrt(2._dp))/(Sqrt(2._dp)*2._dp*Pi)\n"];
+WriteString[sphenoInOut,"facGG = Sqrt(2._dp*G_F/sqrt(2._dp))/(Sqrt(2._dp)*2._dp*Pi)*sqrt(8._dp/9._dp)\n"];
 WriteString[sphenoInOut,"facPZ = 0._dp \n"];
-If[getGen[HiggsBososn]>1,addGen="(i1)";,addGEN="";];
+If[getGen[HiggsBoson]>1,addGen="(i1)";,addGen="";];
 WriteString[sphenoInOut,"Do i1="<>ToString[getGenSPhenoStart[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>"\n"];
 WriteString[sphenoInOut, "CurrentPDG3(1) = Abs("<>SPhenoPDG[HiggsBoson,i1]<>") \n"];
 WriteString[sphenoInOut, "CurrentPDG3(2) = Abs("<>SPhenoPDG[VectorP,i1]<>") \n"];

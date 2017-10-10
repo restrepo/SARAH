@@ -404,6 +404,8 @@ WriteString[sphenoSugra,SPhenoForm[VEVSM]<>" = vev \n"];
 
 WriteTadpoleSolutionOnlyHigh[sphenoSugra];
 
+WriteBoundaryConditionsEWSB[sphenoSugra];
+
 WriteString[sphenoSugra,"If (IgnoreNegativeMassesMZ) Then \n"];
 WriteString[sphenoSugra,"  SignMassChangedSave = SignOfMassChanged \n"];
 WriteString[sphenoSugra,"End if \n"];

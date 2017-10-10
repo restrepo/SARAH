@@ -555,7 +555,16 @@ For[i=1,i<=AnzahlChiral,
 DynamicKineticScalarNr=i;
 DynamicKineticScalarName=SFields[[i]];
 PrintDebug["   ",SFields[[i]]];
-If[FreeQ[RealScalars,SFields[[i]]//.A_[b_List]->A],realF=1;,realF=1/2;];
+If[FreeQ[RealScalars,SFields[[i]]//.A_[b_List]->A],
+If[Head[SFieldsMultiplets[[i]]]===List && Length[RealScalars]>0,
+If[Select[RealScalars,FreeQ[Flatten[SFieldsMultiplets[[i]]],#]==False&]==={},
+realF=1;,
+realF=1/2;
+];,
+realF=1;
+];,
+realF=1/2;];
+
 temp= - g[lor4,lor3]*realF((conj[part[SFields[[i]],2]]  I KovariantDerivative[i,2,1,3]Deri[part[SFields[[i]],1],lor4])  + part[SFields[[i]],1]  (- I KovariantDerivative[i,2,1,4]) Deri[conj[part[SFields[[i]],2]],lor3]);
 KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne; 
 SumFactor=getSumFields[i,5];

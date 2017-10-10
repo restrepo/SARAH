@@ -104,9 +104,9 @@ i++;];
 MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},sphenoBR];
 
 If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False && FreeQ[ParticleDefinitions[Eigenstates],"Pseudo-Scalar Higgs"]===False,
-If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]==False,
+If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]\[Equal]False,
 WriteString[sphenoBR,"CPL_A_H_Z = Transpose("<>ToString[SPhenoCoupling[CS[HiggsBoson,PseudoScalar,VectorZ]]]<>")**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
-If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]==False,
+If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]\[Equal]False,
 WriteString[sphenoBR,"CPL_A_H_Z = "<>ToString[SPhenoCoupling[CS[PseudoScalar,HiggsBoson,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
 WriteString[sphenoBR,"CPL_A_H_Z = 0 \n"];
 ];
@@ -115,14 +115,14 @@ WriteString[sphenoBR,"CPL_A_H_Z = 0 \n"];
 
 
 If[FreeQ[ParticleDefinitions[Eigenstates],"Higgs"]===False ,
-If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,HiggsBoson,VectorZ]]]==False,
+If[FreeQ[namesAll,SPhenoCoupling[CS[HiggsBoson,HiggsBoson,VectorZ]]]\[Equal]False,
 WriteString[sphenoBR,"CPL_H_H_Z = "<>ToString[SPhenoCoupling[CS[HiggsBoson,HiggsBoson,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
 WriteString[sphenoBR,"CPL_H_H_Z = 0._dp \n"];
 ];
 ];
 
 If[FreeQ[ParticleDefinitions[Eigenstates],"Pseudo-Scalar Higgs"]===False,
-If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]==False,
+If[FreeQ[namesAll,SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]\[Equal]False,
 WriteString[sphenoBR,"CPL_A_A_Z = "<>ToString[SPhenoCoupling[CS[PseudoScalar,PseudoScalar,VectorZ]]]<>"**2/("<>ToString[leftCoupling]<>"**2/(cos("<>SPhenoForm[Weinberg]<>")*4._dp))\n"];,
 WriteString[sphenoBR,"CPL_A_A_Z = 0._dp \n"];
 ];
@@ -155,9 +155,11 @@ If[FreeQ[GoldstoneGhost,savedDecayInfos[[i,1]]]==False,
 WriteString[sphenoBR,"! Set Goldstone Widhts \n"];
 pos = Position[GoldstoneGhost,savedDecayInfos[[i,1]]];
 For[k=1,k<=Length[pos],
+If[FreeQ[ListDecayParticles,GoldstoneGhost[[pos[[k,1]],2]]/. A_[{b__}]->A]==False,
 If[Head[GoldstoneGhost[[pos[[k,1]],2]]]===Symbol,
 WriteString[sphenoBR,SPhenoWidth[GoldstoneGhost[[pos[[k,1]],2]],1]<>"="<>SPhenoWidth[GoldstoneGhost[[pos[[k,1]],1]],i] <>"\n" ];,
 WriteString[sphenoBR,SPhenoWidth[GoldstoneGhost[[pos[[k,1]],2,0]],GoldstoneGhost[[pos[[k,1]],2,1,1]]]<>"="<>SPhenoWidth[GoldstoneGhost[[pos[[k,1]],1]],i] <>"\n" ];
+];
 ];
 k++;];
 WriteString[sphenoBR,"\n\n"];

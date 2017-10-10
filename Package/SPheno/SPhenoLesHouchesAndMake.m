@@ -133,7 +133,11 @@ WriteString[filenames[[l]]," 38 2               # 1- or 2-Loop RGEs \n"];
 WriteString[filenames[[l]]," 50 1               # Majorana phases: use only positive masses (put 0 to use file with CalcHep/Micromegas!) \n"];
 WriteString[filenames[[l]]," 51 0               # Write Output in CKM basis \n"];
 WriteString[filenames[[l]]," 52 0               # Write spectrum in case of tachyonic states \n"];
-WriteString[filenames[[l]]," 55 1               # Calculate loop corrected masses \n"];
+If[SupersymmetricModel=!=False,
+WriteString[filenames[[l]]," 55 1               # Calculate loop corrected masses \n"];,
+WriteString[filenames[[l]]," 55 0               # Calculate loop corrected masses \n"];
+WriteString[filenames[[l]]," 61 0               # Running SM parameters\n"];
+];
 WriteString[filenames[[l]]," 57 1               # Calculate low energy constraints \n"];
 If[Count[Gauge,U[1],3]>1,WriteString[filenames[[l]]," 60 1               # Include possible, kinetic mixing \n"];];
 If[SeveralIndependentTadpoleSolutions=!=True,
@@ -147,6 +151,7 @@ If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          #
 WriteString[filenames[[l]],"510 0.              # Write tree level values for tadpole solutions \n"];
 WriteString[filenames[[l]],"515 0               # Write parameter values at GUT scale \n"];
 WriteString[filenames[[l]],"520 1.              # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! \n"];
+WriteString[filenames[[l]],"521 1.              # Diphoton/Digluon widths including higher order \n"];
 WriteString[filenames[[l]],"525 0.              # Write loop contributions to diphoton decay of Higgs \n"];
 WriteString[filenames[[l]],"530 1.              # Write Blocks for Vevacious \n"];
 If[IncludeFineTuning===True,
@@ -160,17 +165,17 @@ WriteString[filenames[[l]],ToString[1100+i]<>" 1             # Include "<>SPheno
 i++;];
 
 For[i=1,i<=Length[PART[S]],
-WriteString[sphenoInOut,"Case("<>ToString[1200+i]<>") \n"];
+(* WriteString[filenames[[l]],"Case("<>ToString[1200+i]<>") \n"]; *)
 WriteString[filenames[[l]],ToString[1200+i]<>" 1             # Include "<>SPhenoForm[PART[S][[i,1]]]<>" in 1.loop corrections \n"];
 i++;];
 
 For[i=1,i<=Length[PART[V]],
-WriteString[sphenoInOut,"Case("<>ToString[1300+i]<>") \n"];
+(* WriteString[sphenoInOut,"Case("<>ToString[1300+i]<>") \n"]; *)
 WriteString[filenames[[l]],ToString[1300+i]<>" 1             # Include "<>SPhenoForm[PART[V][[i,1]]]<>" in 1.loop corrections \n"];
 i++;];
 
 For[i=1,i<=Length[PART[G]],
-WriteString[sphenoInOut,"Case("<>ToString[1400+i]<>") \n"];
+(* WriteString[sphenoInOut,"Case("<>ToString[1400+i]<>") \n"]; *)
 WriteString[filenames[[l]],ToString[1400+i]<>" 1             # Include "<>SPhenoForm[PART[G][[i,1]]]<>" in 1.loop corrections \n"];
 i++;];
 
@@ -183,8 +188,13 @@ WriteString[filenames[[l]],ToString[1502]<>" 1               # Include Box diagr
 
 If[l==1 && OnlyLowEnergySPheno=!=True,
 listIn = Intersection[Select[Flatten[{BoundaryHighScale,BoundarySUSYScale,BoundaryEWSBScale,BoundaryConditionsUp,BoundaryConditionsDown}],(Head[#]==LHInput)&,99] /. LHInput[x_]->x];,
-listIn = Intersection[DeleteCases[DeleteCases[listAllParametersAndVEVs,x_?(MemberQ[Transpose[BoundaryLowScaleInput][[1]],#]&)],x_?(MemberQ[ParametersToSolveTadpolesLowScaleInput,#]&)]];
+If[Head[BoundaryLowScaleInput]===List,
+listIn = Intersection[DeleteCases[DeleteCases[listAllParametersAndVEVs,x_?(MemberQ[Transpose[BoundaryLowScaleInput][[1]],#]&)],x_?(MemberQ[ParametersToSolveTadpolesLowScaleInput,#]&)]];,
+listIn = Intersection[DeleteCases[listAllParametersAndVEVs,x_?(MemberQ[ParametersToSolveTadpolesLowScaleInput,#]&)]];
+];
+If[Head[BoundaryLowScaleInput]===List,
 listIn =Join[listIn, Select[Flatten[BoundaryLowScaleInput],(Head[#]==LHInput)&,99] /. LHInput[x_]->x];
+];
 ];
 If[AddSMrunning===True,
 listIn = Complement[listIn,{ElectronYukawa,UpYukawa,DownYukawa,strongCoupling,leftCoupling,hyperchargeCoupling,VEVSM1,VEVSM2, VEVSM}];

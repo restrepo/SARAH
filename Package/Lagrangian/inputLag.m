@@ -32,7 +32,7 @@ LagInputIncludeHC = HC;
 lVVV = Select[TermList,(getPartCode[#[[3]]]==30)&];
 lVVVV = Select[TermList,(getPartCode[#[[3]]]==40)&];
 pCodeKin={20,2010,210,220,120};
-pCodePot={2000,200,300,400,2100};
+pCodePot={2000,100,200,300,400,2100};
 lKin = Select[TermList,(FreeQ[pCodeKin,getPartCode[#[[3]]]]==False)&];
 lPot = Select[TermList,(FreeQ[pCodePot,getPartCode[#[[3]]]]==False)&];
 DynamicStatusAddTerms[terms]="checking charge conservation";
@@ -81,8 +81,13 @@ list=Join[list,{{numerical,coupling,fields,potenz}}];
 Return[list];
 ]; *)
 
-CreateTermList[terms_]:=Block[{i,j,pos,temp,fields,list={},coup,coeff,potenz,structure,coupling},fields=Select[List@@terms,(Head[#]==Dot)&][[1]];
-coupling=List@@Select[List@@terms,(Head[#]=!=Dot&&(Head[#]==Symbol || MemberQ[{B,T,L},Head[#]])&&Head[#]=!=Delta&&Head[#]=!=epsTensor&&Head[#]=!=Sig && Head[#]=!=Lam &&Head[Head[#]]=!=CG)&];
+CreateTermList[terms_]:=Block[{i,j,pos,temp,fields,list={},coup,coeff,potenz,structure,coupling},
+If[FreeQ[FullForm[terms],Dot]==False,
+fields=Select[List@@terms,(Head[#]==Dot)&][[1]];,
+fields=Select[List@@terms,(FreeQ[SFields,#]==False || FreeQ[FFields,#]==False )&];
+];
+
+coupling=List@@Select[List@@terms,(Head[#]=!=Dot&&(Head[#]==Symbol || MemberQ[{B,T,L},Head[#]])&&Head[#]=!=Delta&&Head[#]=!=epsTensor&&Head[#]=!=Sig && Head[#]=!=Lam &&Head[Head[#]]=!=CG  && FreeQ[SFields,#]  && FreeQ[FFields,#]) &];
 coupling=Select[coupling,FreeQ[Transpose[parameters][[1]],#]&];
 If[coupling==={},
 LagInput::NoCoupling="No coupling defined for term in Lagrangian involving ``";

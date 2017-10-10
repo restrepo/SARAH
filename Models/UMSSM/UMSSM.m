@@ -36,7 +36,7 @@ SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, QHu, RpP};
 SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, Qd, RpM};
 SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, Qu, RpM};
 SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, Qe, RpM};
-SuperFields[[8]] = {vR, 3, conj[vR],      1, 1,  1, Qv, RpM};
+SuperFields[[8]] = {vR, 3, conj[vR],      0, 1,  1, Qv, RpM};
 
 SuperFields[[9]] = {s, 1, sR,     0, 1,  1, Qs, RpP};
 

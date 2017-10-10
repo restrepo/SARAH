@@ -573,8 +573,12 @@ Format[Sqrt[2],CForm]:=Format["sqrt2",OutputForm] /; UseCHForm ==True;
 For[i=1,i<=Length[parameters],
 If[(FreeQ[parDepNeeded,parameters[[i,1]]]==False ||FreeQ[parDep,parameters[[i,1]]]==False || FreeQ[parNum,parameters[[i,1]]]==False  || FreeQ[VertexList3,parameters[[i,1]]]==False || FreeQ[VertexList4,parameters[[i,1]]] ==False ), 
 If[Length[parameters[[i,2]]]>0,
-temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]][a__],CForm],Format[CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->99}];
+If[parameters[[i,3,1]]>9,
+temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]][a__],CForm],Format[CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"k","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->99}];
 ReleaseHold[temp];,
+temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]][a__],CForm],Format[CHName[parameters[[nr,1]],maxLength]<>StringReplace[ToString[CForm/@{a}],{" "->"",","->"","{"->"","}"->""}],OutputForm]]], {nr->i,maxLength->99}];
+ReleaseHold[temp];
+];,
 temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]],CForm],Format[CHName[parameters[[nr,1]],maxLength],OutputForm]]], {nr->i,maxLength->99}];
 ReleaseHold[temp];
 If[CPV==True && FreeQ[realVar,parameters[[i,1]]],
@@ -760,7 +764,10 @@ Switch[Length[parameters[[i,2]]],
 	ReplacementsWO=Join[ReplacementsWO,Table[parameters[[i,1]][j1]->ToExpression[CHName[parameters[[i,1]]]<>ToString[j1]],{j1,1,parameters[[i,3,1]]}]];,
 
 2,
-	ReplacementsWO=Join[ReplacementsWO,Table[parameters[[i,1]][j1,j2]->ToExpression[CHName[parameters[[i,1]]]<>ToString[j1]<>ToString[j2]],{j1,1,parameters[[i,3,1]]},{j2,1,parameters[[i,3,2]]}]];,
+	If[parameters[[i,3,1]]>9,
+	ReplacementsWO=Join[ReplacementsWO,Table[parameters[[i,1]][j1,j2]->ToExpression[CHName[parameters[[i,1]]]<>ToString[j1]<>"k"<>ToString[j2]],{j1,1,parameters[[i,3,1]]},{j2,1,parameters[[i,3,2]]}]];,
+	ReplacementsWO=Join[ReplacementsWO,Table[parameters[[i,1]][j1,j2]->ToExpression[CHName[parameters[[i,1]]]<>ToString[j1]<>ToString[j2]],{j1,1,parameters[[i,3,1]]},{j2,1,parameters[[i,3,2]]}]];
+	];,
 3,
 	ReplacementsWO=Join[ReplacementsWO,Table[parameters[[i,1]][j1,j2,j3]->ToExpression[CHName[parameters[[i,1]]]<>ToString[j1]<>ToString[j2]<>ToString[j3]],{j1,1,parameters[[i,3,1]]},{j2,1,parameters[[i,3,2]]},{j3,1,parameters[[i,3,3]]}]];
 	If[FreeQ[parameters[[i,2]],flavor]==False,

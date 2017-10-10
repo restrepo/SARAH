@@ -96,7 +96,8 @@ temp=Select[temp,((Length[Intersection[RE/@(#[[1,1]]/. A_[{b__}]->A)]]<3) && (Mo
 CouplingUsedForEffPot=True; (* in order to apply the correct color sum *)
 
 (*Remove the couplings which are zero in gaugeless limit *)
-listBrokenGaugeCouplings=DeleteCases[Transpose[BetaGauge][[1]],strongCoupling];
+ listBrokenGaugeCouplings=DeleteCases[Transpose[BetaGauge][[1]],strongCoupling]; 
+(* listBrokenGaugeCouplings=Extract[Gauge,Join[#,{4}]&/@(Position[SGauge /. A_[{b__}]\[Rule]A,#][[1]]&/@Select[SGauge /. A_[{b__}]\[Rule]A,FreeQ[Particles[SA`CurrentStates],#]&])]; *)
 subZeroGaugeLess=Table[listBrokenGaugeCouplings[[i]]->0,{i,1,Length[listBrokenGaugeCouplings]}];
 temp = Select[temp /. subZeroGaugeLess,#[[1,2,1]]=!=0&];
 
@@ -701,14 +702,18 @@ WriteString[sphenoCoup, "End Subroutine "<>RoutineName<>"\n\n"];
 sumOverNonAbelianIndizesEffPot[coup_]:=Block[{i, p1, p2, ind, temp, index1, index2, index1b, index2b, p1b, p2b,tosum,subind,delta},
 tosum=Flatten[Table[DeleteCases[DeleteCases[getIndizesWI[coup[[1,1,i]]] ,{generation,_}],{lorentz,4}]/. subGC[i] /. subIndFinal[i,i],{i,1,4}],1];
 delta=1;
-If[(coup[[1,1,1]] /. A_[{b__}]->A)===conj[(coup[[1,1,2]] /. A_[{b__}]->A)],
+If[(coup[[1,1,1]] /. A_[{b__}]->A)===conj[(coup[[1,1,2]] /. A_[{b__}]->A)] (*|| (coup[[1,1,1]] /. A_[{b__}]\[Rule]A)===(coup[[1,1,2]] /. A_[{b__}]\[Rule]A)*),
 If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*((coup[[1,1,1]] /. A_[{b__}]->{b}).(RE[coup[[1,1,2]]]/. A_[{b__}]->{b}) /. Times->Delta);];
 If[FreeQ[coup[[1,1,3]],List]===False,delta=delta*((coup[[1,1,3]]/. A_[{b__}]->{b}).(RE[coup[[1,1,4]]]/. A_[{b__}]->{b}) /. Times->Delta);];,
 If[(coup[[1,1,1]] /. A_[{b__}]->A)===conj[(coup[[1,1,3]] /. A_[{b__}]->A)],
 If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*((RE[coup[[1,1,1]]] /. A_[{b__}]->{b}).(RE[coup[[1,1,3]]]/. A_[{b__}]->{b}) /. Times->Delta);];
 If[FreeQ[coup[[1,1,2]],List]===False,delta=delta*((RE[coup[[1,1,2]] ]/. A_[{b__}]->{b}).(RE[coup[[1,1,4]]]/. A_[{b__}]->{b}) /. Times->Delta);];,
+If[(coup[[1,1,1]] /. A_[{b__}]->A)===(coup[[1,1,2]] /. A_[{b__}]->A),
+If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*((coup[[1,1,1]] /. A_[{b__}]->{b}).(RE[coup[[1,1,2]]]/. A_[{b__}]->{b}) /. Times->Delta);];
+If[FreeQ[coup[[1,1,3]],List]===False,delta=delta*((coup[[1,1,3]]/. A_[{b__}]->{b}).(RE[coup[[1,1,4]]]/. A_[{b__}]->{b}) /. Times->Delta);];,
 If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*((RE[coup[[1,1,1]] ]/. A_[{b__}]->{b}).(RE[coup[[1,1,4]]]/. A_[{b__}]->{b}) /. Times->Delta);];
 If[FreeQ[coup[[1,1,2]],List]===False,delta=delta*((RE[coup[[1,1,2]]] /. A_[{b__}]->{b}).(RE[coup[[1,1,3]]]/. A_[{b__}]->{b}) /. Times->Delta);];
+];
 ];
 ];
 delta=delta/. Plus->Times /. {Delta[lt1,__]->1,Delta[lt2,__]->1,Delta[lt3,__]->1,Delta[lt4,__]->1} ;

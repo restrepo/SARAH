@@ -153,6 +153,3 @@ DEFINITION[EWSB][MatterSector]=
 DEFINITION[EWSB][DiracSpinors]={
  Chi ->{ L0, conj[L0]}
 };	
-
-
-GenerateSPhenoCodeForModel = "MSSM"; 

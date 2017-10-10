@@ -56,6 +56,7 @@ WriteString[spheno,"!Use StandardModel\n"];
 WriteString[spheno,"Use SugraRuns_"<>ModelName<>"\n "];
 ];
 
+
 If[IncludeFineTuning===True,
 WriteString[spheno,"Use FineTuning_"<>ModelName<>"\n"];
 ];
@@ -84,7 +85,18 @@ WriteString[spheno, "Real(dp) :: vev, sinw2\n"];
 If[SupersymmetricModel===False,
 WriteString[spheno, "Complex(dp) :: YdSM(3,3), YuSM(3,3), YeSM(3,3)\n"];
 WriteString[spheno, "Real(dp) :: vSM, g1SM, g2SM, g3SM\n"];
+WriteString[spheno, "Integer :: i1 \n"];
 ];
+
+If[DEFINITION[UseNonStandardYukwas]===True,
+WriteString[spheno,"Real(dp) :: vd_aux, vu_aux\n"];
+];
+
+If[SupersymmetricModel===True && DEFINITION[UseNonStandardYukwas]===True,
+WriteString[spheno, "Complex(dp) :: YdSM(3,3), YuSM(3,3), YeSM(3,3)\n"];
+WriteString[spheno, "Real(dp) :: vSM\n"];
+];
+
 WriteString[spheno, "Logical :: ISR(p_max)=.False.\n"];
 WriteString[spheno, "Logical :: CalcTBD\n"];
 (* MakeVariableList[NewParametersFromTadpoles,"",spheno]; *)
@@ -197,16 +209,41 @@ If[SupersymmetricModel===True,
  If[AddSMrunning=!=False && SPhenoOnlyForHM=!=True,
 WriteString[spheno,"\n \n ! RGE running for gauge and Yukawa couplings from M_Z to M_SUSY \n "];
 WriteString[spheno,"Qin=sqrt(getRenormalizationScale()) \n"];
-
 WriteString[spheno,"If (SMrunningLowScaleInput) Then \n"];
+If[DEFINITION[UseNonStandardYukwas]=!=True,
 If[AddOHDM=!=True,
 WriteString[spheno,"Call RunSM(Qin,deltaM,tanbeta,"<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[VEVSM2]<>") \n"];,
 WriteString[spheno,"Call RunSMohdm(Qin,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
+];,
+WriteString[spheno,"Call RunSMohdm(Qin,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>",YuSM,YdSM,YeSM, vSM) \n"];
+If[AddOHDM=!=True,
+WriteString[spheno,"vd_aux =  vSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2)  \n"];
+WriteString[spheno,"vu_aux =  vd_aux*"<>SPhenoForm[TanBeta]<>"\n"];
+];
+For[i=1,i<=Length[DEFINITION[MoreEWvevs]],
+WriteString[spheno,StringReplace[DEFINITION[MoreEWvevs][[i]],{"vev2"->"vSM**2"}] <>"\n"];
+i++;];
+For[i=1,i<=Length[DEFINITION[NonStandardYukawasRelations]],
+WriteString[spheno,StringReplace[DEFINITION[NonStandardYukawasRelations][[i]],{"vd"->"vd_aux","vu"->"vu_aux","Y_u"->"YuSM","Y_d"->"YdSM","Y_l"->"YeSM"}] <>"\n"];
+i++;];
 ];
 WriteString[spheno,"End if \n"];
 ];,
-WriteString[spheno,"Qin=sqrt(getRenormalizationScale()) \n"];
-WriteString[spheno,"Call RunSMohdm(Qin,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
+WriteString[spheno,"If (SMrunningLowScaleInput) Then \n"];
+WriteString[spheno,"  Qin=sqrt(getRenormalizationScale()) \n"];
+WriteString[spheno,"  Call RunSMohdm(Qin,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
+WriteString[spheno,"Else \n"];
+WriteString[spheno,"   sinW2=1._dp-mW2/mZ2 \n"];
+WriteString[spheno,"   vSM=1/Sqrt((G_F*Sqrt(2._dp)))\n"];
+WriteString[spheno,"   g1SM=sqrt(4*Pi*Alpha_MZ/(1-sinW2)) \n"];
+WriteString[spheno,"   g2SM=sqrt(4*Pi*Alpha_MZ/Sinw2 ) \n"];
+WriteString[spheno,"   g3SM=sqrt(AlphaS_MZ*4*Pi) \n"];
+WriteString[spheno,"   Do i1=1,3 \n"];
+WriteString[spheno,"      YuSM(i1,i1)=sqrt(2._dp)*mf_u(i1)/vSM \n"];
+WriteString[spheno,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
+WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
+WriteString[spheno,"    End Do \n"];
+WriteString[spheno,"End if \n"];
 ];
 
 If[SPhenoOnlyForHM=!=True,
@@ -301,7 +338,8 @@ WriteString[spheno,SPhenoForm[VEVSM]<>"MZ = vev\n"];
 
 If[SPhenoOnlyForHM=!=True,
 If[NonSUSYModel=!=True,
-MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[Map[ToExpression[ToString[#]<>"MZ"]&,listVEVs],listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];,
+(* MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[Map[ToExpression[ToString[#]<>"MZ"]&,listVEVs],listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];, *)
+MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs/. {VEVSM1->vdMZ,VEVSM2->vuMZ},listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];,
 MakeCall["CalculateBR",Join[Join[NewMassParameters,Join[listVEVs,listAllParameters]],SPhenoWidthBR],{"CalcTBD","ratioWoM","epsI","deltaM","kont"},{},spheno];
 ];
 
@@ -587,6 +625,9 @@ mfe=MassMatrix[Electron];
 mfu[[1;;3,1;;3]]=0;
 mfd[[1;;3,1;;3]]=0;
 mfe[[1;;3,1;;3]]=0;
+mfu[[4;;getGen[TopQuark],4;;getGen[TopQuark]]]=0;
+mfd[[4;;getGen[BottomQuark],4;;getGen[BottomQuark]]]=0;
+mfe[[4;;getGen[Electron],4;;getGen[Electron]]]=0;
 For[j=4,j<=getGen[BottomQuark],mfd[[j,j]]=0;j++;];
 For[j=4,j<=getGen[TopQuark],mfu[[j,j]]=0;j++;];
 For[j=4,j<=getGen[Electron],mfe[[j,j]]=0;j++;];

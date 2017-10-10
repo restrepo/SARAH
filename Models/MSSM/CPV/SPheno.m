@@ -11,7 +11,7 @@ ParametersToSolveTadpoles = {\[Mu],re[B[\[Mu]]],im[B[\[Mu]]]};
 Tad1Loop[4]=Tad1Loop[3]*vd/vu;
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
-RenormalizationScale = MSu[1]*MSu[6];
+RenormalizationScale = Sqrt[(mq2[3, 3] + (vu^2*conj[Yu[3, 3]]*Yu[3, 3])/2)*(mu2[3, 3] + (vu^2*conj[Yu[3, 3]]*Yu[3, 3])/2)-((vd*\[Mu]*conj[Yu[3, 3]] - vu*conj[T[Yu][3, 3]])*(vd*conj[\[Mu]]*Yu[3, 3] - vu*T[Yu][3, 3]))/2];
 
 ConditionGUTscale = g1 == g2;
 
@@ -20,8 +20,6 @@ BoundarySUSYScale={
 };
 
 BoundaryHighScale={
-{g1, Sqrt[(g1^2 + g2^2)/2]},
-{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},

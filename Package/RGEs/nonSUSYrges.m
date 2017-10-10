@@ -171,7 +171,10 @@ Return[{Flatten[temp],tempR}];
 
 SplitScalarCouplings[list_]:=Block[{i,j,temp,fields,res={},resOne={},added=False,nonzero},
 For[i=1,i<=Length[list],
-added=False;
+If[FreeQ[Take[list,{1,i-1}],list[[i,2]]/. InvMat[a__][__]->1 /. Delta[a__]->1 /.epsTensor[a__]->1],
+added=False;,
+added=True;
+];
 term=Expand[Times@@(list[[i,1]] /. subComplexScalarsSum /. conj[x_]->x)*list[[i,2]]];
 
 If[Length[list[[i,1]]]===4,
@@ -1121,14 +1124,22 @@ j++;];
 i++;];
 GenerateCouplingLists;
 GenerateCouplingVariables[False,False];
-BetaYijk=Table[{lW3one[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1 /. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lW3one]}];
+BetaYijk=Table[{If[Head[lW3one[[i,2,1]]]===Plus,lW3one[[i,2,1,1]],lW3one[[i,2,1]]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1 /. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lW3one]}];
 BetaMFij=Table[{lW2one[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lW2one]}];
 BetaMuij=BetaMFij;
-BetaLijkl=Table[{lA4one[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lA4one]}];
-BetaTijk=Table[{lA3one[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lA3one]}];
+BetaLijkl=Table[{If[Head[lA4one[[i,2,1]]]===Plus,lA4one[[i,2,1,1]],lA4one[[i,2,1]]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lA4one]}];
+BetaTijk=Table[{If[Head[lA3one[[i,2,1]]]===Plus,lA3one[[i,2,1,1]],lA3one[[i,2,1]]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lA3one]}];
 BetaBij=Table[{lA2one[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[lA2one]}];
 BetaGauge=Table[{SA`ListGC[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[SA`ListGC]}];
 BetaVEV=Table[{SA`ListVEVi[[i,2,1]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1/. A_[b__]+A_[c__]->A,0,0},{i,1,Length[SA`ListVEVi]}];
+
+BetaYijk=Select[BetaYijk,#[[1]]=!=1&];
+BetaLijkl=Select[BetaLijkl,#[[1]]=!=1&];
+BetaMFij=Select[BetaMFij,#[[1]]=!=1&];
+BetaMuij=Select[BetaMuij,#[[1]]=!=1&];
+BetaBij=Select[BetaBij,#[[1]]=!=1&];
+
+
 UseSymmASymm=False;
 ];
 

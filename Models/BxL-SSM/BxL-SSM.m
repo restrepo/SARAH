@@ -77,6 +77,7 @@ Wchi = Lambda1 q.q5.C1 + Lambda2 u.u5.C2 + Lambda3 d.d5.C2 + MuX C1.C2;
 
 SuperPotential = WMSSM + WBaryon + WLepton + Wchi;
 
+NoU1Mixing=True;
 
 (*----------------------------------------------*)
 (*   DEFINITION                                  *)

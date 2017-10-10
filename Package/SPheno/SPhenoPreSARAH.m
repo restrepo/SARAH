@@ -21,7 +21,6 @@
 
 AddBoxContributionsPreSARAH[box_,name_,mb_,file_]:=Block[{start1,start2,start3,start4,i,j,i1,i2,i3,i4,SMinv,SMinvS,string,colorconstraint},
 (* This routine takes a list of box diagrams and writes the expressions for the amplitude to the SPheno code *)
-
 WriteString[sphenoTeX,"\\subsection{Box contributions} \n\n"];
 For[i=1,i<=Length[box],
 DynamicNumberDiagram[name]++;
@@ -35,6 +34,8 @@ p4 =(Internal[4] /. box[[i,2]]);
 
 (* write a comment to the Fortran code what particles are in the loop *)
 WriteString[file,"! "<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>","<>ToString[p4] <>"\n"]; 
+WriteString[FKout,"(* "<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>","<>ToString[p4] <>"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>","<>ToString[p4] <>"},"];
 
 colorconstraint=1;
 (*
@@ -65,6 +66,7 @@ cfactor = getChargeFactor[box[[i]],{{{External[1],ex1},{AntiField[Internal[1]],i
 
 If[cfactor===0,
 WriteString[file,"! Vanishing contribution because of color flow \n\n"];
+WriteString[FKout,"}"<>If[i<Length[box],",",""]<>"\n"];
 i++;
 Return[];
 ];
@@ -72,6 +74,7 @@ Return[];
 
 (* Write the color factor to Fortran code *)
 WriteString[file,"chargefactor = "<>SPhenoForm[cfactor]<>" \n"];
+WriteString[FKout,"chargefactor -> "<>ToString[InputForm[cfactor]]<>","];
 
 Switch[cfactor,
 1,SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"chargefactor"->""}];,
@@ -87,11 +90,15 @@ c4=getSPhenoCoupling2[box[[i,1,4]],SPhenoCouplingsAll];
 
 (* Generate the index structure *)
 
-ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.box[[i,2]],{AntiField[Internal[1]],i1}/.box[[i,2]],{Internal[4],i4}/.box[[i,2]],c1[[2]]];
+ind1 =MakeIndicesCouplingPS[{External[1],Index[1]}/.box[[i,2]],{AntiField[Internal[1]],i1}/.box[[i,2]],{Internal[4],i4}/.box[[i,2]],c1[[2]]];
 ind2 =MakeIndicesCouplingPS[{External[2],Index[2]}/.box[[i,2]],{Internal[1],i1}/.box[[i,2]],{AntiField[Internal[2]],i2}/.box[[i,2]],c2[[2]]]; 
-ind3 = MakeIndicesCouplingPS[{External[3],Index[3]}/.box[[i,2]],{Internal[2],i2}/.box[[i,2]],{AntiField[Internal[3]],i3}/.box[[i,2]],c3[[2]]];
-ind4 = MakeIndicesCouplingPS[{External[4],Index[4]}/.box[[i,2]],{AntiField[Internal[4]],i4}/.box[[i,2]],{Internal[3],i3}/.box[[i,2]],c4[[2]]];
+ind3 =MakeIndicesCouplingPS[{External[3],Index[3]}/.box[[i,2]],{Internal[2],i2}/.box[[i,2]],{AntiField[Internal[3]],i3}/.box[[i,2]],c3[[2]]];
+ind4 =MakeIndicesCouplingPS[{External[4],Index[4]}/.box[[i,2]],{AntiField[Internal[4]],i4}/.box[[i,2]],{Internal[3],i3}/.box[[i,2]],c4[[2]]];
 
+FKv1=ind1[[3]];
+FKv2=ind2[[3]];
+FKv3=ind3[[3]];
+FKv4=ind4[[3]];
 
 Switch[InsertionOrder /. box[[i,2]],
 1,
@@ -160,6 +167,15 @@ SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 WriteVertexToFile[4,c4,ind4,getVertexType[box[[i,1,4]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 
+WriteString[FKout,"{"];
+WriteVertexToFKout[1,FKv1,ind1,getVertexType[box[[i,1,1]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[2,FKv2,ind2,getVertexType[box[[i,1,2]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[3,FKv3,ind3,getVertexType[box[[i,1,3]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[4,FKv4,ind4,getVertexType[box[[i,1,4]]],FKout];
+WriteString[FKout,"},"];
 (* Write the masses to Fortran code *)
 
 
@@ -172,6 +188,12 @@ WriteString[file,"m"<>ToString[getType[p3]]<>"22 = "<>SPhenoMassSq[p3,i3]<>"\n"]
 WriteString[file,"m"<>ToString[getType[p2]]<>"2 = "<>SPhenoMass[p2,i2]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p2]]<>"22 = "<>SPhenoMassSq[p2,i2]<>"\n"];
 
+(*
+WriteString[FKout,"{m"<>ToString[getType[p1]]<>"1 -> "<>SPhenoMassFK[p1,i1]<>","];
+WriteString[FKout,"m"<>ToString[getType[p4]]<>"1 -> "<>SPhenoMassFK[p4,i4]<>","];
+WriteString[FKout,"m"<>ToString[getType[p3]]<>"2 -> "<>SPhenoMassFK[p3,i3]<>","];
+WriteString[FKout,"m"<>ToString[getType[p2]]<>"2 -> "<>SPhenoMassFK[p2,i2]<>"},"];
+*)
 
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"m"<>ToString[getType[p1]]<>"12" -> TeXOutput[Mass2[p1[{j1}]]],"m"<>ToString[getType[p1]]<>"1" ->TeXOutput[Mass[p1[{j1}]]],"m"<>ToString[getType[p2]]<>"12" ->TeXOutput[Mass2[p2[{j2}]]],"m"<>ToString[getType[p2]]<>"1" -> TeXOutput[Mass[p2[{j2}]]],"m"<>ToString[getType[p3]]<>"22" -> TeXOutput[Mass2[p3[{j3}]]],"m"<>ToString[getType[p3]]<>"2" -> TeXOutput[Mass[p3[{j3}]]],"m"<>ToString[getType[p4]]<>"22" -> TeXOutput[Mass2[p4[{j4}]]],"m"<>ToString[getType[p4]]<>"2" ->TeXOutput[Mass[p4[{j4}]]]}];
 
@@ -196,7 +218,7 @@ If[getGenSPheno[p2]>1,WriteString[file,"   End Do \n"];];
 If[getGenSPheno[p3]>1,WriteString[file,"  End Do \n"];];
 If[getGenSPheno[p4]>1,WriteString[file,"End Do \n"];];
 If[FlagLoopContributions===True,WriteString[file, "End if \n"];];
-
+WriteString[FKout,"}"<>If[i<Length[box],",",""]<>"\n"];
 WriteString[file, "\n\n "];
 i++;];
 
@@ -221,9 +243,13 @@ If[nf===4,
 (*Propagator *)
 p4 =(Propagator /. diagrams[[i,2]]);
 WriteString[file,"! Propagator: "<>ToString[p4]<>", Loop particles: "<> ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3]  <>"\n"];
-WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"];, 
+WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"];
+WriteString[FKout,"(* "<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>", Propagator: "<>ToString[p4] <>"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>", Propagator ->"<>ToString[p4] <>"},"];,
 WriteString[file,"! Loop particles: "<> ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3]  <>"\n"];
 WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"];
+WriteString[FKout,"(* "<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>"},"];
 ];
 
 
@@ -231,32 +257,6 @@ CurrentInsertionOrder = InsertionOrder /. diagrams[[i,2]];
 
 (* Calculate the color factor of the particles in the loop *)
 If[nf===4,
-(*
-cfactor = getChargeFactor[diagrams[[i]] /. {Cp[a__],Cp[b__],Cp[c__],Cp[d__]}\[Rule]{Cp[a],Cp[b],Cp[c]}/. {External[3]\[Rule]NONE[3],External[4]\[Rule]NONE[4]},{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,ex3},{Internal[2],in2},{AntiField[Internal[3]],in3}}} /. diagrams[[i,2]]];
-
-Print[CurrentInsertionOrder];
-Switch[CurrentInsertionOrder,
-1,cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[3],ex3},{External[4],ex4}}} /. diagrams[[i,2]]];,
-2,cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[3],ex3},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[2],ex2},{External[4],ex4}}} /. diagrams[[i,2]]];,
-3,cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[4],ex4},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[3],ex3},{External[2],ex2}}} /. diagrams[[i,2]]];,
-4,cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[1],ex3},{External[2],ex2}}} /. diagrams[[i,2]]];,
-5,cfactor =  getChargeFactor[diagrams[[i]],{{{External[2],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[4],ex4},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[1],ex2},{External[3],ex3}}} /. diagrams[[i,2]]];,
-6,cfactor =  getChargeFactor[diagrams[[i]],{{{External[2],ex2},{Internal[1],in1},{AntiField[Internal[2]],in2}},
-{{External[3],ex3},{AntiField[Internal[1]],in1},{Internal[3],in3}},
-{{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[1],ex2},{External[4],ex4}}} /. diagrams[[i,2]]];
-]; *)
 cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
 {{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[3],in3}},
 {{Propagator,in4},{Internal[2],in2},{AntiField[Internal[3]],in3}},{{AntiField[Propagator],in4},{External[3],ex3},{External[4],ex4}}} /. diagrams[[i,2]]];, 
@@ -274,6 +274,8 @@ Return[];
 
 (* Write the color factor to fortran code *)
 WriteString[file,"chargefactor = "<>SPhenoForm[cfactor]<>" \n"];
+WriteString[FKout,"chargefactor -> "<>ToString[InputForm[cfactor]]<>","];
+
 
 Switch[cfactor,
 1,SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"chargefactor"->""}];,
@@ -296,7 +298,13 @@ ind3 = MakeIndicesCouplingPS[{External[3],Index[3]}/.diagrams[[i,2]],{AntiField[
 ];
 If[nf===4,
 ind4 = MakeIndicesCouplingPS[{External[4],Index[4]}/.diagrams[[i,2]],{AntiField[Propagator],iProp}/.diagrams[[i,2]],{External[3],Index[3]}/.diagrams[[i,2]],c4[[2]]];
+FKv4=ind4[[3]];
 ];
+
+FKv1=ind1[[3]];
+FKv2=ind2[[3]];
+FKv3=ind3[[3]];
+
 
 c1=CheckFermionFlipPS[{Internal[1],AntiField[Internal[2]],External[1]}/.diagrams[[i,2]],c1,ind1];(* NEW FLIP *)
 ind1=c1[[2]];c1=c1[[1]];
@@ -363,10 +371,27 @@ WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[i,1,2]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 WriteVertexToFile[3,c3,ind3,getVertexType[diagrams[[i,1,3]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
+
+
+WriteString[FKout,"{"];
+WriteVertexToFKout[1,FKv1,ind1,getVertexType[diagrams[[i,1,1]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[2,FKv2,ind2,getVertexType[diagrams[[i,1,2]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[3,FKv3,ind3,getVertexType[diagrams[[i,1,3]]],FKout];
+
+
+
+
+
 If[nf===4,
+WriteString[FKout,","];
 WriteVertexToFile[4,c4,ind4,getVertexType[diagrams[[i,1,4]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
+WriteVertexToFKout[4,FKv4,ind4,getVertexType[diagrams[[i,1,4]]],FKout];
 ];
+WriteString[FKout,"},"];
+
 (* Writing the masses to Fortran code *)
 WriteString[file,"! Masses in loop\n"];
 WriteString[file,"m"<>ToString[getType[p1]]<>"1 = "<>SPhenoMass[p1,i1]<>"\n"];
@@ -375,10 +400,15 @@ WriteString[file,"m"<>ToString[getType[p2]]<>"1 = "<>SPhenoMass[p2,i2]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p2]]<>"12 = "<>SPhenoMassSq[p2,i2]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p3]]<>"2 = "<>SPhenoMass[p3,i3]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p3]]<>"22 = "<>SPhenoMassSq[p3,i3]<>"\n"];
-
+(*
+WriteString[FKout,"{m"<>ToString[getType[p1]]<>"1 -> "<>SPhenoMassFK[p1,i1]<>","];
+WriteString[FKout,"m"<>ToString[getType[p3]]<>"2 -> "<>SPhenoMassFK[p3,i3]<>","];
+WriteString[FKout,"m"<>ToString[getType[p2]]<>"1 -> "<>SPhenoMassFK[p2,i2]<>"},"];
+*)
 If[nf===4,
 WriteString[file,"! Propagator and inverse propagator mass \n"];
 If[FreeQ[massless,p4],
+WriteString[FKout,"MP -> "<>SPhenoMassFK[p4,iProp]<>","];
 WriteString[file,"MP = "<>SPhenoMass[p4,iProp]<>"\n"];
 WriteString[file,"MP2 = "<>SPhenoMassSq[p4,iProp]<>"\n"];
 WriteString[file,"IMP = 1._dp/MP  \n"];
@@ -415,7 +445,7 @@ If[getGenSPheno[p2]>1,WriteString[file,"   End Do \n"];];
 If[getGenSPheno[p3]>1,WriteString[file,"  End Do \n"];];
 If[nf===4,If[getGenSPheno[p4]>1,WriteString[file,"End Do \n"];];];
 If[FlagLoopContributions===True,WriteString[file, "End if \n"];];
-
+WriteString[FKout,"}"<>If[i<Length[diagrams],",",""]<>"\n"];
 WriteString[file, "\n\n "];
 i++;];
 
@@ -443,9 +473,13 @@ If[nf===4,
 (* 'main' Propagator *)
 p4 =(Propagator /. diagrams[[i,2]]);
 WriteString[file,"! Propagator: "<>ToString[p4]<>", Loop particles: "<> ToString[p1] <>","<>ToString[p2] <>", Internal fermion: "<>ToString[p3]  <>"\n"]; 
-WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"];,
+WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"];
+WriteString[FKout,"(* "<>ToString[p1] <>","<>ToString[p2] <>", Internal:"<>ToString[p3] <>", Propagator: "<>ToString[p4] <>"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p1] <>","<>ToString[p2] <>", Internal->"<>ToString[p3] <>", Propagator ->"<>ToString[p4] <>"},"];,
 WriteString[file,"! Loop particles: "<> ToString[p1] <>","<>ToString[p2] <>", Internal fermion: "<>ToString[p3]  <>"\n"]; 
 WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"];
+WriteString[FKout,"(* "<>ToString[p1] <>","<>ToString[p2] <>", Internal:"<>ToString[p3] <>"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p1] <>","<>ToString[p2] <>",Internal->"<>ToString[p3] <>"},"];
 ];
 
 
@@ -478,6 +512,7 @@ cfactor = getChargeFactor[diagrams[[i]] /. {C[a__],C[b__],C[c__]}->{Cp[b],Cp[c]}
 
 If[cfactor===0,
 WriteString[file,"! Vanishing contribution because of color flow \n\n"];
+WriteString[FKout,"}"<>If[i<Length[box],",",""]<>"\n"];
 i++;
 Return[];
 ];
@@ -485,6 +520,8 @@ Return[];
 
 (* Write the color factor to fortran code *)
 WriteString[file,"chargefactor = "<>SPhenoForm[cfactor]<>" \n"];
+WriteString[FKout,"chargefactor -> "<>ToString[InputForm[cfactor]]<>","];
+
 
 Switch[cfactor,
 1,SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"chargefactor"->""}];,
@@ -502,21 +539,26 @@ If[nf===4,c4=getSPhenoCoupling2[diagrams[[i,1,4]],SPhenoCouplingsAll];];
 Switch[InsertionOrder/.diagrams[[i,2]],
 1|3|5|7|9|11,
 ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{AntiField[Internal[2]],i2}/.diagrams[[i,2]],{Internal[1],i1}/.diagrams[[i,2]],c1[[2]]];
+FKv1=ind1[[3]];
 c1=CheckFermionFlipPS[{AntiField[Internal[2]],Internal[1],External[1]}/.diagrams[[i,2]],c1,ind1]; (* NEW FLIP *)
 ind1=c1[[2]];c1=c1[[1]];
 ind2 =MakeIndicesCouplingPS[{Internal[3],i3}/.diagrams[[i,2]],{AntiField[Internal[1]],i1}/.diagrams[[i,2]],{Internal[2],i2}/.diagrams[[i,2]],c2[[2]]]; 
+FKv2=ind2[[3]];
 c2=CheckFermionFlipPS[{Internal[3],AntiField[Internal[1]],Internal[2]}/.diagrams[[i,2]],c2,ind2];(* NEW FLIP *)
 ind2=c2[[2]];c2=c2[[1]];
 If[nf===4,
 ind3 = MakeIndicesCouplingPS[{Propagator,iProp}/.diagrams[[i,2]],{External[2],Index[2]}/.diagrams[[i,2]],{AntiField[Internal[3]],i3}/.diagrams[[i,2]],c3[[2]]];
+FKv3=ind3[[3]];
 c3=CheckFermionFlipPS[{Propagtor, External[2],AntiField[Internal[3]]}/.diagrams[[i,2]],c3,ind3];(* NEW FLIP *)
 ind3=c3[[2]];c3=c3[[1]];,
 ind3 = MakeIndicesCouplingPS[{External[3],Index[3]}/.diagrams[[i,2]],{External[2],Index[2]}/.diagrams[[i,2]],{AntiField[Internal[3]],i3}/.diagrams[[i,2]],c3[[2]]];
+FKv3=ind3[[3]];
 c3=CheckFermionFlipPS[{External[3], External[2],AntiField[Internal[3]]}/.diagrams[[i,2]],c3,ind3];(* NEW FLIP *)
 ind3=c3[[2]];c3=c3[[1]];
 ];
 If[nf===4,
 ind4 = MakeIndicesCouplingPS[{External[4],Index[4]}/.diagrams[[i,2]],{AntiField[Propagator],iProp}/.diagrams[[i,2]],{External[3],Index[3]}/.diagrams[[i,2]],c4[[2]]];
+FKv4=ind4[[3]];
 c4=CheckFermionFlipPS[{Propagator,External[4],External[3]}/.diagrams[[i,2]],c4,ind4];
 ind4=c4[[2]];c4=c4[[1]];
 ];,
@@ -527,21 +569,26 @@ ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{Propagator
 c1=CheckFermionFlipPS[{Propagagor,AntiField[Internal[3]],External[1]}/.diagrams[[i,2]],c1,ind1]; (* NEW FLIP *)
 ind1=c1[[2]];c1=c1[[1]];,
 ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{External[3],Index[3]}/.diagrams[[i,2]],{AntiField[Internal[3]],i3}/.diagrams[[i,2]]/.diagrams[[i,2]],c1[[2]]];
+FKv1=ind1[[3]];
 c1=CheckFermionFlipPS[{External[3],AntiField[Internal[3]],External[1]}/.diagrams[[i,2]],c1,ind1]; (* NEW FLIP *)
 ind1=c1[[2]];c1=c1[[1]];
 ];
 ind2 =MakeIndicesCouplingPS[{Internal[2],i2}/.diagrams[[i,2]],{AntiField[Internal[1]],i1}/.diagrams[[i,2]],{Internal[3],i3}/.diagrams[[i,2]],c2[[2]]]; 
 ind3 = MakeIndicesCouplingPS[{External[2],Index[2]}/.diagrams[[i,2]],{Internal[1],i1}/.diagrams[[i,2]],{AntiField[Internal[2]],i2}/.diagrams[[i,2]],c3[[2]]];
+FKv2=ind2[[3]];
+FKv3=ind3[[3]];
 c2=CheckFermionFlipPS[{Internal[2],AntiField[Internal[1]],Internal[3]}/.diagrams[[i,2]],c2,ind2]; (* NEW FLIP *)
 ind2=c2[[2]];c2=c2[[1]];
 c3=CheckFermionFlipPS[{External[2],Internal[1],AntiField[Internal[2]]}/.diagrams[[i,2]],c3,ind3];(* NEW FLIP *)
 ind3=c3[[2]];c3=c3[[1]];
 If[nf===4,
 ind4 = MakeIndicesCouplingPS[{External[4],Index[4]}/.diagrams[[i,2]],{AntiField[Propagator],iProp}/.diagrams[[i,2]],{External[3],Index[3]}/.diagrams[[i,2]],c4[[2]]];
+FKv4=ind4[[3]];
 c4=CheckFermionFlipPS[{AntiField[Propagator],External[4],External[3]}/.diagrams[[i,2]],c4,ind4];
 ind4=c4[[2]];c4=c4[[1]];
 ];
 ];
+
 
 
 
@@ -583,6 +630,7 @@ WriteString[file,"If (.not.OnlySM) Then \n"];
 
 (* Writing the vertices to Fortran code *)
 
+WriteString[FKout,"{"];
 Switch[InsertionOrder/.diagrams[[i,2]],
 1|3|5|7|9|11,
 WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[i,1,1]]],file];
@@ -591,8 +639,17 @@ WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[i,1,2]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 WriteVertexToFile[3,c3,ind3,getVertexType[diagrams[[i,1,3]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
+
+WriteVertexToFKout[1,FKv1,ind1,getVertexType[diagrams[[i,1,1]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[2,FKv2,ind2,getVertexType[diagrams[[i,1,2]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[3,FKv3,ind3,getVertexType[diagrams[[i,1,3]]],FKout];
+
 If[nf===4,
+WriteString[FKout,","];
 WriteVertexToFile[4,c4,ind4,getVertexType[diagrams[[i,1,4]]],file];
+WriteVertexToFKout[4,FKv4,ind4,getVertexType[diagrams[[i,1,4]]],FKout];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 ];,
 2 | 4| 6|8|10|12,
@@ -602,30 +659,40 @@ WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[i,1,2]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 WriteVertexToFile[1,c3,ind3,getVertexType[diagrams[[i,1,3]]],file];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
+WriteVertexToFKout[3,FKv1,ind1,getVertexType[diagrams[[i,1,1]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[2,FKv2,ind2,getVertexType[diagrams[[i,1,2]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[1,FKv3,ind3,getVertexType[diagrams[[i,1,3]]],FKout];
 If[nf===4,
+WriteString[FKout,","];
 WriteVertexToFile[4,c4,ind4,getVertexType[diagrams[[i,1,4]]],file];
+WriteVertexToFKout[4,FKv4,ind4,getVertexType[diagrams[[i,1,4]]],FKout];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 ];
 ];
+WriteString[FKout,"},"];
 
-(*
-WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[i,1,1]]],file];
-WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[i,1,2]]],file];
-WriteVertexToFile[3,c3,ind3,getVertexType[diagrams[[i,1,3]]],file];
-WriteVertexToFile[4,c4,ind4,getVertexType[diagrams[[i,1,4]]],file];,
-*)
+
 (* Writing the masses to Fortran code *)
 WriteString[file,"! Masses in loop\n"];
 WriteString[file,"m"<>ToString[getType[p1]]<>"1 = "<>SPhenoMass[p1,i1]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p1]]<>"12 = "<>SPhenoMassSq[p1,i1]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p2]]<>"1 = "<>SPhenoMass[p2,i2]<>"\n"];
 WriteString[file,"m"<>ToString[getType[p2]]<>"12 = "<>SPhenoMassSq[p2,i2]<>"\n"];
+
+WriteString[FKout,"{m"<>ToString[getType[p1]]<>"1 -> "<>SPhenoMassFK[p1,i1]<>","];
+WriteString[FKout,"m"<>ToString[getType[p2]]<>"1 -> "<>SPhenoMassFK[p2,i2]<>","];
+
+
 WriteString[file,"! Mass of internal fermion \n"];
 Switch[InsertionOrder/.diagrams[[i,2]],
 1 | 3 | 5|7|9|11,
+	WriteString[FKout,"MFin -> "<>SPhenoMassFK[p3,i3]<>"-"<>SPhenoMassFK[External[1]/.diagrams[[i,2]],Index[1]/.diagrams[[i,2]]]<>""];
 	WriteString[file,"MFin = "<>SPhenoMass[p3,i3]<>"-"<>SPhenoMass[External[1]/.diagrams[[i,2]],Index[1]/.diagrams[[i,2]]]<>"\n"];
 	WriteString[file,"MFin2 = "<>SPhenoMassSq[p3,i3]<>"-"<>SPhenoMassSq[External[1]/.diagrams[[i,2]],Index[1]/.diagrams[[i,2]]]<>"\n"];,
 2 | 4 | 6|8|10|12,
+	WriteString[FKout,"MFin -> "<>SPhenoMassFK[p3,i3]<>"-"<>SPhenoMassFK[External[2]/.diagrams[[i,2]],Index[2]/.diagrams[[i,2]]]<>""];
 	WriteString[file,"MFin = "<>SPhenoMass[p3,i3]<>"-"<>SPhenoMass[External[2]/.diagrams[[i,2]],Index[2]/.diagrams[[i,2]]]<>"\n"];
 	WriteString[file,"MFin2 = "<>SPhenoMassSq[p3,i3]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[i,2]],Index[2]/.diagrams[[i,2]]]<>"\n"];
 ];
@@ -634,14 +701,6 @@ WriteString[file,"MFin = "<>SPhenoMass[p3,i3]<>"\n"];
 WriteString[file,"MFin2 = "<>SPhenoMassSq[p3,i3]<>"\n"];
 
 
-(*
-WriteString[file,"IMFin = 1._dp/MFin  \n"];
-WriteString[file,"IMFin2 = 1._dp/MFin2 \n"];
-WriteString[file,"Else \n"];
-WriteString[file,"IMFin = 0._dp \n"];
-WriteString[file,"IMFin2 = 0._dp \n"];
-WriteString[file,"End if \n"]; *)
-
 If[nf===4,
 If[FreeQ[massless,p4],
 WriteString[file,"! Propagator and inverse propagator mass \n"];
@@ -649,8 +708,11 @@ WriteString[file,"MP = "<>SPhenoMass[p4,iProp]<>"\n"];
 WriteString[file,"MP2 = "<>SPhenoMassSq[p4,iProp]<>"\n"];
 WriteString[file,"IMP = 1._dp/MP  \n"];
 WriteString[file,"IMP2 = 1._dp/MP2 \n"];
+WriteString[FKout,","];
+WriteString[FKout,"MP -> "<>SPhenoMassFK[p4,iProp]];
 ];
 ];
+WriteString[FKout,"}"];
 
 If[nf===4,
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"m"<>ToString[getType[p1]]<>"12" -> TeXOutput[Mass2[p1[{j1}]]],"m"<>ToString[getType[p1]]<>"1" ->TeXOutput[Mass[p1[{j1}]]],"m"<>ToString[getType[p2]]<>"12" ->TeXOutput[Mass2[p2[{j2}]]],"m"<>ToString[getType[p2]]<>"1" -> TeXOutput[Mass[p2[{j2}]]],"MFin2" -> TeXOutput[Mass2[p3[{j3}]]],"MFin" -> TeXOutput[Mass[p3[{j3}]]],"MP2" ->TeXOutput[Mass2[p4[{iProp}]]],"MP" -> TeXOutput[Mass[p4[{iProp}]]],"IMP2" -> "\\frac{1}{"<>TeXOutput[Mass2[p4[{iProp}]]]<>"}","IMP" -> "\\frac{1}{"<>TeXOutput[Mass[p4[{iProp}]]]<>"}"}];,
@@ -682,7 +744,7 @@ If[getGenSPheno[p2]>1,WriteString[file,"   End Do \n"];];
 If[getGenSPheno[p3]>1,WriteString[file,"  End Do \n"];];
 If[nf===4,If[getGenSPheno[p4]>1,WriteString[file,"End Do \n"];];];
 If[FlagLoopContributions===True,WriteString[file, "End if \n"];];
-
+WriteString[FKout,"}"<>If[i<Length[diagrams],",",""]<>"\n"];
 WriteString[file, "\n\n "];
 i++;];
 
@@ -703,6 +765,9 @@ p1 =(Propagator /. diagrams[[i,2]]);
 WriteString[file,"! Propagator: "<>ToString[p4]<>"\n"];
 WriteString[file,"! InsertionOrder: "<> ToString[InsertionOrder/.diagrams[[i,2]]]<>"\n"]; 
 
+WriteString[FKout,"(*"<>ToString[p4] <>"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p4] <>"},"];
+
 CurrentInsertionOrder = InsertionOrder /. diagrams[[i,2]];
 
 (* Calculate the color factor of the particles in the loop *)
@@ -713,12 +778,15 @@ cfactor=1;
 
 If[cfactor===0,
 WriteString[file,"! Vanishing contribution because of color flow \n\n"];
+WriteString[FKout,"}"<>If[i<Length[box],",",""]<>"\n"];
 i++;
 Return[];
 ];
 
 (* Write the color factor to fortran code *)
 WriteString[file,"chargefactor = "<>SPhenoForm[cfactor]<>" \n"];
+WriteString[FKout,"chargefactor -> "<>ToString[InputForm[cfactor]]<>","];
+
 
 Switch[chargefactor,
 1,SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"chargefactor*"->""}];,
@@ -735,9 +803,11 @@ c2=getSPhenoCoupling2[diagrams[[i,1,2]],SPhenoCouplingsAll];
 (* generate the index structure *)
 If[nf===4,
 ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{External[2],Index[2]}/.diagrams[[i,2]],{Propagator,iProp}/.diagrams[[i,2]],c1[[2]]];
-ind2 =MakeIndicesCouplingPS[{External[3],Index[3]}/.diagrams[[i,2]],{External[4],Index[4]}/.diagrams[[i,2]],{AntiField[Propagator],iProp}/.diagrams[[i,2]],c2[[2]]]; ,
+ind2 =MakeIndicesCouplingPS[{External[3],Index[3]}/.diagrams[[i,2]],{External[4],Index[4]}/.diagrams[[i,2]],{AntiField[Propagator],iProp}/.diagrams[[i,2]],c2[[2]]]; 
+FKv2=ind2[[3]];,
 ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{External[2],Index[2]}/.diagrams[[i,2]],{External[3],Index[3]}/.diagrams[[i,2]],c1[[2]]];
 ];
+FKv1=ind1[[3]];
 
 (* start the loop with the first generation of each particles; might change if we go to another gauge *)
 start1=1; 
@@ -759,13 +829,19 @@ WriteString[file,"If ((OnlySM).or.(.not.OnlySM)) Then \n"];
 ];
 
 
+
 (* Writing the vertices to Fortran code *)
+WriteString[FKout,"{"];
 WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[i,1,1]]],file];
+WriteVertexToFKout[1,FKv1,ind1,getVertexType[diagrams[[i,1,1]]],FKout];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 If[nf===4,
+WriteString[FKout,","];
 WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[i,1,2]]],file];
+WriteVertexToFKout[2,FKv2,ind2,getVertexType[diagrams[[i,1,2]]],FKout];
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex];
 ];
+WriteString[FKout,"},"];
 
 If[nf===4,
 WriteString[file,"! Propagator and inverse propagator mass \n"];
@@ -774,6 +850,7 @@ WriteString[file,"MP = "<>SPhenoMass[p1,iProp]<>"\n"];
 WriteString[file,"MP2 = "<>SPhenoMassSq[p1,iProp]<>"\n"];
 WriteString[file,"IMP = 1._dp/MP  \n"];
 WriteString[file,"IMP2 = 1._dp/MP2 \n"];
+WriteString[FKout,"{MP -> "<>SPhenoMassFK[p1,iProp]<>"}"];
 ];
 
 
@@ -800,6 +877,7 @@ WriteString[file," End if \n"];
 If[nf===4,
 If[getGenSPheno[p1]>1,WriteString[file,"End Do \n"];];
 ];
+WriteString[FKout,"}"<>If[i<Length[diagrams],",",""]<>"\n"];
 WriteString[file, "\n\n "];
 i++;];
 
@@ -821,6 +899,9 @@ p3 =(Internal[3] /. diagrams[[i,2]]);
 WriteString[file,"! Loop particles: "<> ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3]  <>"\n"];
 WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>"\n"]; 
 
+WriteString[FKout,"(* "<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3]"*) \n"]; 
+WriteString[FKout,"{{"<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] "},"];
+
 (* Calculate the color factor of the particles in the loop *)
 cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
 {{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[3],in3}},
@@ -828,12 +909,15 @@ cfactor = getChargeFactor[diagrams[[i]],{{{External[1],ex1},{Internal[1],in1},{A
 
 If[cfactor===0,
 WriteString[file,"! Vanishing contribution because of color flow \n\n"];
+WriteString[FKout,"}"<>If[i<Length[box],",",""]<>"\n"];
 i++;
 Return[];
 ];
 
 (* Write the color factor to fortran code *)
 WriteString[file,"chargefactor = "<>SPhenoForm[cfactor]<>" \n"];
+WriteString[FKout,"chargefactor -> "<>ToString[InputForm[cfactor]]<>","];
+
 
 (*
 Switch[chargefactor,
@@ -853,6 +937,10 @@ c3=getSPhenoCoupling2[diagrams[[i,1,3]],SPhenoCouplingsAll];
 ind1 = MakeIndicesCouplingPS[{External[1],Index[1]}/.diagrams[[i,2]],{Internal[1],i1}/.diagrams[[i,2]],{AntiField[Internal[2]],i2}/.diagrams[[i,2]],c1[[2]]];
 ind2 =MakeIndicesCouplingPS[{External[2],Index[2]}/.diagrams[[i,2]],{AntiField[Internal[1]],i1}/.diagrams[[i,2]],{Internal[3],i3}/.diagrams[[i,2]],c2[[2]]]; 
 ind3 = MakeIndicesCouplingPS[{External[3],Index[3]}/.diagrams[[i,2]],{AntiField[Internal[3]],i3}/.diagrams[[i,2]],{Internal[2],i2}/.diagrams[[i,2]],c3[[2]]]; 
+
+FKv1=ind1[[3]];
+FKv2=ind2[[3]];
+FKv3=ind3[[3]];
 
 If[getVertexType[diagrams[[i,1,3]]]===SSV||getVertexType[diagrams[[i,1,3]]]===VVV ,
 c3[[1]] = getSignVertex[(Cp[External[3],Internal[2],AntiField[Internal[3]]] /.diagrams[[i,2]]),c3[[2]],getVertexType[diagrams[[i,1,3]]]]c3[[1]];
@@ -898,6 +986,14 @@ WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[i,1,2]]],file];
 WriteVertexToFile[3,c3,ind3,getVertexType[diagrams[[i,1,3]]],file];
 (* SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,SA`SubSPhenoTeXVertex]; *)
 
+WriteString[FKout,"{"];
+WriteVertexToFKout[1,FKv1,ind1,getVertexType[diagrams[[i,1,1]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[2,FKv2,ind2,getVertexType[diagrams[[i,1,2]]],FKout];
+WriteString[FKout,","];
+WriteVertexToFKout[3,FKv3,ind3,getVertexType[diagrams[[i,1,3]]],FKout];
+WriteString[FKout,"},"];
+
 (* Writing the masses to Fortran code *)
 WriteString[file,"! Masses in loop\n"];
 WriteString[file,"m"<>ToString[getType[p1]]<>"1 = "<>SPhenoMass[p1,i1]<>"\n"];
@@ -929,7 +1025,7 @@ If[getGenSPheno[p2]>1,WriteString[file,"   End Do \n"];];
 If[getGenSPheno[p3]>1,WriteString[file,"  End Do \n"];];
 If[FlagLoopContributions===True,WriteString[file, "End if \n"];];
 
-
+WriteString[FKout,"}"<>If[i<Length[diagrams],",",""]<>"\n"];
 
 WriteString[file, "\n\n "];
 i++;];
@@ -1063,6 +1159,12 @@ temp=GeneratePenguinDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,ScalarPropagators[[i]]]
 tempWave=GenerateWaveDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,ScalarPropagators[[i]]];
 tempTree=GenerateTreeDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,ScalarPropagators[[i]]];
 
+If[AntiField[ScalarPropagators[[i]]]=!=ScalarPropagators[[i]],
+temp=Join[temp,GeneratePenguinDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,conj[ScalarPropagators[[i]]]]];
+tempWave=Join[tempWave,GenerateWaveDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,conj[ScalarPropagators[[i]]]]];
+tempTree=Join[tempTree,GenerateTreeDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,conj[ScalarPropagators[[i]]]]];
+];
+
 (*
 temp = Select[temp,FreeQ[NeglectInsertionOrderPenguin[name],(InsertionOrder/.#[[2]])]&];
 tempWave = Select[tempWave,FreeQ[NeglectInsertionOrderWave[name],(InsertionOrder/.#[[2]])]&];
@@ -1106,6 +1208,12 @@ For[i=1,i<=Length[VectorPropagators],
 temp=GeneratePenguinDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,VectorPropagators[[i]]];
 tempWave=GenerateWaveDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,VectorPropagators[[i]]];
 tempTree=GenerateTreeDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,VectorPropagators[[i]]];
+
+If[AntiField[VectorPropagators[[i]]]=!=VectorPropagators[[i]],
+temp=Join[temp,GeneratePenguinDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,conj[VectorPropagators[[i]]]]];
+tempWave=Join[tempWave,GenerateWaveDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,conj[VectorPropagators[[i]]]]];
+tempTree=Join[tempTree,GenerateTreeDiagramsPreSARAH[Pex1,Pex2,Pex3,Pex4,conj[VectorPropagators[[i]]]]];
+];
 
 (*
 temp = Select[temp,FreeQ[NeglectInsertionOrderPenguin[name],(InsertionOrder/.#[[2]])]&];
@@ -1538,7 +1646,7 @@ CheckForPreSARAH:=Block[{i,j,k,l,list,type},
 Print["# Checking for FlavorKit input files # "];
 Print["# Reference: 1405.1434               # "];
 *)
-
+getGenSM[x_]:=If[getType[x]===F,3,getGen[x]];
 PrintAll[StyleForm["Checking for FlavorKit input files","Section",FontSize->10]];
 PrintAll[StyleForm["Reference: 'A Flavor Kit for BSM models' by W. Porod, F. Staub, A.Vicente; 1405.1434","Section",FontSize->10]];
 
@@ -1554,6 +1662,11 @@ PreSARAHobservablesQFV={};
 PreSARAHoperatorsQFV={};
 
 If[SkipFlavorKit===True,Return[];];
+
+$sarahCurrentFlavorKitDir=ToFileName[{$sarahCurrentOutputDir,"FlavorKit"}];
+If[FileExistsQ[$sarahCurrentFlavorKitDir]=!=True,CreateDirectory[$sarahCurrentFlavorKitDir];];
+$sarahCurrentFlavorKitDirWrapper=ToFileName[{$sarahCurrentFlavorKitDir,"Wrappers"}];
+If[FileExistsQ[$sarahCurrentFlavorKitDirWrapper]=!=True,CreateDirectory[$sarahCurrentFlavorKitDirWrapper];];
 
 For[l=1,l<=2,
 If[l==1,type="LFV";,type="QFV";];
@@ -1576,6 +1689,7 @@ ProcessWrapper=False;
 Get[listfilesOperators[[i]]];
 DynamicListOperators[type]=Join[DynamicListOperators[type],{NameProcess}];
 If[ProcessWrapper==True, 
+Run["cp "<>listfilesOperators[[i]]<>" "<>$sarahCurrentFlavorKitDirWrapper];
 NamesParticles=ExternalFields;
 Clear[ExternalFields];
 If[l==1,
@@ -1599,38 +1713,38 @@ i++;
 For[i=1,i<=Length[PreSARAHoperatorsLFV],
 For[j=1,j<=Length[PreSARAHoperatorsLFV[[i,3]]],
 If[getType[PreSARAHoperatorsLFV[[i,2,3]]]===S,
-SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsLFV[[i,3,j]]]<>"check"],DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],0]}}];,
-SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsLFV[[i,3,j]]]<>"check"],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsLFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsLFV[[i,3,j]]]<>"check"],DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],0]}}];,
+SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsLFV[[i,3,j]],DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsLFV[[i,3,j]]]<>"check"],DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsLFV[[i,2]],1],0]}}];
 ];
 j++;];
 i++;];
 
 For[i=1,i<=Length[WrappersLFV],
 For[j=1,j<=Length[WrappersLFV[[i,3]]],
-SPhenoParameters=Join[SPhenoParameters,{{WrappersLFV[[i,3,j]],DeleteCases[DeleteCases[getGen/@WrappersLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@WrappersLFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{WrappersLFV[[i,3,j]],DeleteCases[DeleteCases[getGenSM/@WrappersLFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@WrappersLFV[[i,2]],1],0]}}];
 j++;];
 i++;];
 
 For[i=1,i<=Length[PreSARAHoperatorsQFV],
 For[j=1,j<=Length[PreSARAHoperatorsQFV[[i,3]]],
 If[getType[PreSARAHoperatorsQFV[[i,2,3]]]===S,
-SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsQFV[[i,3,j]],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"check"],DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],0]}}];,
-SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsQFV[[i,3,j]],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"check"],DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsQFV[[i,3,j]],DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"check"],DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],0] /.a_Integer ->generation,DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],0]}}];,
+SPhenoParameters=Join[SPhenoParameters,{{PreSARAHoperatorsQFV[[i,3,j]],DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"SM"],DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[PreSARAHoperatorsQFV[[i,3,j]]]<>"check"],DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@PreSARAHoperatorsQFV[[i,2]],1],0]}}];
 ];
 j++;];
 i++;];
 
 For[i=1,i<=Length[WrappersQFV],
 For[j=1,j<=Length[WrappersQFV[[i,3]]],
-SPhenoParameters=Join[SPhenoParameters,{{WrappersQFV[[i,3,j]],DeleteCases[DeleteCases[getGen/@WrappersQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@WrappersQFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{WrappersQFV[[i,3,j]],DeleteCases[DeleteCases[getGenSM/@WrappersQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@WrappersQFV[[i,2]],1],0]}}];
 
-SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[WrappersQFV[[i,3,j]]]<>"SM"],DeleteCases[DeleteCases[getGen/@WrappersQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGen/@WrappersQFV[[i,2]],1],0]}}];
+SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[WrappersQFV[[i,3,j]]]<>"SM"],DeleteCases[DeleteCases[getGenSM/@WrappersQFV[[i,2]],1],0] /.a_Integer ->generation,DeleteCases[DeleteCases[getGenSM/@WrappersQFV[[i,2]],1],0]}}];
 
 j++;];
 i++;];
@@ -1695,16 +1809,32 @@ DynamicNumberTotalDiagram[currentNameOp]="(Generating Diagrams)";
 $sarahCurrentTeXDir=ToFileName[{$sarahCurrentOutputDir,"TeX"}];
 If[FileExistsQ[$sarahCurrentTeXDir]=!=True,CreateDirectory[$sarahCurrentTeXDir];];
 $sarahCurrentTeXFlavorKitDir=ToFileName[{$sarahCurrentTeXDir,"FlavorKit"}];
+$sarahCurrentFlavorKitDir=ToFileName[{$sarahCurrentOutputDir,"FlavorKit"}];
 If[FileExistsQ[$sarahCurrentTeXFlavorKitDir]=!=True,CreateDirectory[$sarahCurrentTeXFlavorKitDir];];
+If[FileExistsQ[$sarahCurrentFlavorKitDir]=!=True,CreateDirectory[$sarahCurrentFlavorKitDir];];
 
 $sarahSPhenoTeXDir=ToFileName[{$sarahCurrentTeXFlavorKitDir,ToString[PreSARAHnames[[i,1]]]}];
+$sarahCurrenFKDir=ToFileName[{$sarahCurrentFlavorKitDir,"Amplitudes"}];
 $sarahSPhenoDiagramsDir=ToFileName[{$sarahSPhenoTeXDir,"Diagrams"}];
 If[FileExistsQ[$sarahSPhenoTeXDir]=!=True,
 CreateDirectory[$sarahSPhenoTeXDir];
 CreateDirectory[$sarahSPhenoDiagramsDir];
 ];
+If[FileExistsQ[$sarahCurrenFKDir]=!=True,CreateDirectory[$sarahCurrenFKDir];];
 WriteMakeTeXobservable[ToString[PreSARAHnames[[i,1]]]];
 sphenoTeX=OpenWrite[ToFileName[$sarahSPhenoTeXDir,"Observable_"<>ToString[PreSARAHnames[[i,1]]]<>".tex"]];
+FKout=OpenWrite[ToFileName[$sarahCurrenFKDir,ToString[PreSARAHnames[[i,1]]]<>".m"]];
+
+WriteString[FKout, "(* ----------------------------------------------------------------------------- *) \n"];
+WriteString[FKout, "(* This model was automatically created by SARAH version"<>SA`Version<>"  *) \n"];
+WriteString[FKout, "(* SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223 *) \n"];
+WriteString[FKout, "(* (c) Florian Staub, 2013  *) \n"];
+WriteString[FKout, "(* ----------------------------------------------------------------------------- *) \n"];
+Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
+WriteString[FKout, "(* File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  *) \n"];
+WriteString[FKout, "(* ---------------------------------------------------------------------- *) \n \n \n"];
+WriteString[FKout,"LoopContributions["<>ToString[PreSARAHnames[[i,1]]]<>"]={\n"];
+
 WriteString[sphenoTeX,"\\documentclass[A4,landscape]{article} \n"];
 WriteString[sphenoTeX,"\\usepackage{amsmath}\n"];
 WriteString[sphenoTeX,"\\usepackage[T1]{fontenc}\n"];
@@ -1735,6 +1865,8 @@ Generate[PreSARAHnames[[i,1]]][file];
 
 WriteString[sphenoTeX,"\\end{document}\n"];
 Close[sphenoTeX];
+WriteString[FKout,"};"];
+Close[FKout];
 i++;];
 
 DynamicNamePS[type] = "All Done";

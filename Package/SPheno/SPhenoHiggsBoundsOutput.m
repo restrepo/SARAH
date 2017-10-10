@@ -315,7 +315,16 @@ For[i=genhhS,i<=j,
 If[j<=genhh,
 WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_H_H_Z("<>ToString[i]<>","<>ToString[j]<>"), dp) \n " ];,
 If[i<=genhh,
+If[genhh>1 && genAh>1,
 WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_H_Z("<>ToString[j-genhh+genAhS-1]<>","<>ToString[i]<>"), dp) \n " ];,
+If[genhh>1,
+WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_H_Z("<>ToString[j-genhh+genAhS-1]<>"), dp) \n " ];,
+If[genAh>1,
+WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_H_Z("<>ToString[i]<>"), dp) \n " ];,
+WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_H_Z, dp) \n " ];
+];
+];
+];,
 WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_A_Z("<>ToString[j-genhh+genAhS-1]<>","<>ToString[i-genhh+genAhS-1]<>"), dp) \n " ];
 ];
 ];

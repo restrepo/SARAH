@@ -769,6 +769,15 @@ WriteString[sphenoLoop,"MAps = -Bmu*(vu/vd+vd/vu)\n"];
 
 tpos=Position[ParameterDefinitions,"Singlet-Higgs-Interaction"];
 If[tpos=!={},
+If[FreeQ[ParameterDefinitions,"Mu-parameter"],
+tpos=Position[SuperPotential,ParameterDefinitions[[tpos[[1,1]],1]]];
+tvarres=SuperPotential[[tpos[[1,1]]]];
+If[FreeQ[tvarres,{___,Hu,___,Hd,___}]==False,
+WriteString[sphenoLoop,"MAps = MAps + TLam*vS/Sqrt(2._dp)/sin(Atan(vu/vd))/cos(Atan(vu/vd)) \n"];
+WriteString[sphenoLoop,"mu_asat =  lam*vS/Sqrt(2._dp) \n"];,
+WriteString[sphenoLoop,"MAps = MAps - TLam*vS/Sqrt(2._dp)/sin(Atan(vu/vd))/cos(Atan(vu/vd))\n"];
+WriteString[sphenoLoop,"mu_asat =  - lam*vS/Sqrt(2._dp) \n"];
+];,
 tpos=Position[SuperPotential,ParameterDefinitions[[tpos[[1,1]],1]]];
 tvarres=SuperPotential[[tpos[[1,1]]]];
 If[FreeQ[tvarres,{___,Hu,___,Hd,___}]==False,
@@ -776,6 +785,7 @@ WriteString[sphenoLoop,"MAps = MAps + TLam*vS/Sqrt(2._dp)/sin(Atan(vu/vd))/cos(A
 WriteString[sphenoLoop,"mu_asat = mu + lam*vS/Sqrt(2._dp) \n"];,
 WriteString[sphenoLoop,"MAps = MAps - TLam*vS/Sqrt(2._dp)/sin(Atan(vu/vd))/cos(Atan(vu/vd))\n"];
 WriteString[sphenoLoop,"mu_asat = mu - lam*vS/Sqrt(2._dp) \n"];
+];
 ];
 ];
 
@@ -2134,7 +2144,7 @@ WriteString[sphenoLoop,"coupR2 =  Conjg(" <>ToString[getSPhenoCoupling[contribut
 WriteString[sphenoLoop,"SumS(gO1,gO2) = coupR1*coupL2*B0m2 \n"];
 WriteString[sphenoLoop,"sumR(gO1,gO2) = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL(gO1,gO2) = coupL1*coupL2*B1m2 \n"];,
-WriteString[sphenoLoop, "B1m2 = -2._dp*B1(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B1m2 = -2._dp*(B1(p2,"<>m12<>","<>m22<>") + 0.5_dp*rMS) \n"];
 WriteString[sphenoLoop, "B0m2 = -8._dp*"<>m1<>"*(B0(p2,"<>m12<>","<>m22<>") - 0.5_dp*rMS) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
@@ -2244,7 +2254,7 @@ WriteString[sphenoLoop,"coupR2 =  Conjg(" <>ToString[getSPhenoCoupling[contribut
 WriteString[sphenoLoop,"SumS = coupR1*coupL2*B0m2 \n"];
 WriteString[sphenoLoop,"sumR = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL = coupL1*coupL2*B1m2 \n"];,
-WriteString[sphenoLoop, "B1m2 = -2._dp*B1(p2,"<>m12<>","<>m22<>") \n"];
+WriteString[sphenoLoop, "B1m2 = -2._dp*(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS) \n"];
 WriteString[sphenoLoop, "B0m2 = -8._dp*"<>m1<>"*(B0(p2,"<>m12<>","<>m22<>") - 0.5_dp*rMS) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];
@@ -2363,13 +2373,13 @@ WriteString[sphenoLoop,"sumR(gO1,gO2) = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL(gO1,gO2) = coupL1*coupL2*B1m2 \n"];,
 
 If[setOnShell==False,
-WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS,dp) \n"];
 WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];,
 WriteString[sphenoLoop, "If(gO1.eq.gO2) Then \n"];
 WriteString[sphenoLoop, "B1m2 = - Real(B1("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>"),dp) \n"];
 WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0("<>SPhenoMassSq[particle,gO1]<>","<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];
 WriteString[sphenoLoop, "Else \n"];
-WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS,dp) \n"];
 WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];
 WriteString[sphenoLoop, "End If \n"];
 ];
@@ -2482,7 +2492,7 @@ WriteString[sphenoLoop,"coupR2 =  Conjg(" <>ToString[getSPhenoCoupling[contribut
 WriteString[sphenoLoop,"SumS = coupR1*coupL2*B0m2 \n"];
 WriteString[sphenoLoop,"sumR = coupR1*coupR2*B1m2 \n"];
 WriteString[sphenoLoop,"sumL = coupL1*coupL2*B1m2 \n"];,
-WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>"),dp) \n"];
+WriteString[sphenoLoop, "B1m2 = - Real(B1(p2,"<>m12<>","<>m22<>")+ 0.5_dp*rMS,dp) \n"];
 WriteString[sphenoLoop, "B0m2 = -4._dp*"<>m1<>"*Real(B0(p2,"<>m12<>","<>m22<>")-0.5_dp*rMS,dp) \n"];
 WriteString[sphenoLoop,"coupL1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,1]]] <>ind1<> "\n"];
 WriteString[sphenoLoop,"coupR1 = " <>ToString[getSPhenoCoupling[contributions[[i,3]],SPhenoCouplingsLoop][[1,2]]] <>ind1<> "\n"];

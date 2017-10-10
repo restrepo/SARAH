@@ -47,9 +47,15 @@ ParameterDefinitions = {
 {ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
 {ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
 {ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
-(* {ZH,        { Description->"Scalar-Mixing-Matrix"}},
-{ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix"}}, 
-{ZP,        { Description->"Charged-Mixing-Matrix"}},       *)               
+{ZH,        { Description->"Scalar-Mixing-Matrix", 
+              Dependence->None,
+              DependenceOptional->None}},
+{ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix", 
+              Dependence->None,
+              DependenceOptional->None}}, 
+{ZP,        { Description->"Charged-Mixing-Matrix", 
+              Dependence->None,
+              DependenceOptional->None}},       
                                           
  
 {ZN,        { Description->"Neutralino Mixing-Matrix" }}, 

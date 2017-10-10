@@ -77,8 +77,8 @@ i++;];
 DynamicRunCoupNameD3B="All Done";
 
 (*
-For[i=1,i<=Length[savedDecayInfos3Body],
-For[j=1,j<=Length[Last[savedDecayInfos3Body[[i]]]],
+For[i=1,i\[LessEqual]Length[savedDecayInfos3Body],
+For[j=1,j\[LessEqual]Length[Last[savedDecayInfos3Body[[i]]]],
 GenerateRunningCouplings[savedDecayInfos3Body[[i,1]],Flatten[Last[savedDecayInfos3Body[[i]]][[j]]],"3B"<>"_"<>ToString[j]];
 j++;];
 i++;];
@@ -127,9 +127,15 @@ If[particle===HiggsBoson  || particle === PseudoScalar,
 MakeVariableList[NeededRatiosLoopCouplings,"",sphenoCoup];
 MakeVariableList[NeededRatiosLoopCouplingsPseudo,"",sphenoCoup];
 WriteString[sphenoCoup,"Complex(dp) :: coup \n"];
-WriteString[sphenoCoup,"Real(dp) :: vev, rq, rsq \n"];
+WriteString[sphenoCoup,"Real(dp) :: vev, gNLO, NLOqcd, NNLOqcd, NNNLOqcd, AlphaSQ \n"];
+WriteString[sphenoCoup,"Real(dp) :: g1SM,g2SM,g3SM,vSM\n"];
+WriteString[sphenoCoup,"Complex(dp) ::YuSM(3,3),YdSM(3,3),YeSM(3,3)\n"];
 ];
 WriteString[sphenoCoup,"Real(dp) :: gSM(11), sinW2, dt, tz, Qin \n"];
+If[DEFINITION[UseNonStandardYukwas]===True,
+WriteString[sphenoCoup,"Real(dp) :: vSM, vd_aux, vu_aux\n"];
+WriteString[sphenoCoup,"Complex(dp) :: Y_u(3,3), Y_d(3,3), Y_l(3,3) \n"];
+];
 
 WriteString[sphenoCoup, "Iname = Iname + 1 \n"];
 WriteString[sphenoCoup, "NameOfUnit(Iname) = 'Couplings_"<>SPhenoForm[particle]<>"_"<>suffix<>"'\n \n"];
@@ -169,24 +175,61 @@ WriteRemoveGUTnormalization[sphenoCoup];
 
  If[AddSMrunning=!=False, 
 If[getRParity[particle,SA`CurrentStates]===1,
-
 WriteString[sphenoCoup,"If (m_in.le.Qin) Then \n"];
+
+If[DEFINITION[UseNonStandardYukwas]=!=True,
 WriteString[sphenoCoup,"  If (m_in.le.mz) Then \n"];
 If[AddOHDM=!=True,
 WriteString[sphenoCoup,"    Call RunSM(mz,deltaM,"<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[VEVSM2]<>") \n"];,
-WriteString[spheno,"Call RunSMohdm(mz,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
+WriteString[sphenoCoup,"Call RunSMohdm(mz,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
 ];
 WriteString[sphenoCoup,"  Else \n"];
 If[AddOHDM=!=True,
 WriteString[sphenoCoup,"    Call RunSM(m_in,deltaM,"<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[VEVSM2]<>") \n"];,
-WriteString[spheno,"Call RunSMohdm(m_in,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
+WriteString[sphenoCoup,"Call RunSMohdm(m_in,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
 ];
 WriteString[sphenoCoup,"  End if \n"];
+WriteString[sphenoCoup,"End if \n"];,
+WriteString[sphenoCoup,"  If (m_in.le.mz) Then \n"];
+WriteString[sphenoCoup,"Call RunSMohdm(mz,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>",Y_u,Y_d,Y_l, vSM) \n"];
+WriteString[sphenoCoup,"  Else \n"];
+WriteString[sphenoCoup,"Call RunSMohdm(m_in,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>",Y_u,Y_d,Y_l, vSM) \n"];
+WriteString[sphenoCoup,"  End if \n"];
+If[AddOHDM=!=True,
+WriteString[sphenoCoup,"vd_aux =  vSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2)  \n"];
+WriteString[sphenoCoup,"vu_aux =  vd_aux*"<>SPhenoForm[TanBeta]<>"\n"];
+WriteString[sphenoCoup,"Y_u=Y_u*vSM/vu_aux\n"];
+WriteString[sphenoCoup,"Y_d=Y_d*vSM/vd_aux\n"];
+WriteString[sphenoCoup,"Y_l=Y_l*vSM/vd_aux\n"];
+];
+For[i=1,i<=Length[DEFINITION[MoreEWvevs]],
+WriteString[sphenoCoup,StringReplace[DEFINITION[MoreEWvevs][[i]],{"vev2"->"vSM**2"}] <>"\n"];
+i++;];
+For[i=1,i<=Length[DEFINITION[NonStandardYukawasRelations]],
+WriteString[sphenoCoup,StringReplace[DEFINITION[NonStandardYukawasRelations][[i]],{"vd"->"vd_aux","vu"->"vu_aux"}] <>"\n"];
+i++;];
 WriteString[sphenoCoup,"End if \n"];
-
+];
 ];
 ]; 
+If[(particle===HiggsBoson || particle===PseudoScalar) &&  SupersymmetricModel===False,
+WriteString[sphenoCoup,"! Run always SM gauge couplings if present \n"];
+WriteString[sphenoCoup,"  Qin=sqrt(getRenormalizationScale()) \n"];
+WriteString[sphenoCoup,"  Call RunSMohdm(Qin,deltaM,g1SM,g2SM,g3SM,YuSM,YdSM,YeSM,vSM) \n"];
+For[i=1,i<=Length[BoundaryLowScaleInput],
+If[Select[{vSM,YdSM,YeSM,YuSM,g1SM,g2SM,g3SM},FreeQ[BoundaryLowScaleInput[[i,2]],#]==False&]=!={},
+WriteString[sphenoCoup,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"="<>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
+];
+i++;];
+];
 
+If[(particle===HiggsBoson || particle===PseudoScalar) && FreeQ[parameters,hyperchargeCoupling] ==False && FreeQ[parameters,strongCoupling] ==False&& FreeQ[parameters,leftCoupling] ==False,
+WriteString[sphenoCoup,"! Run always SM gauge couplings if present \n"];
+WriteString[sphenoCoup,"Call RunSMgauge(m_in,deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>") \n"];
+];
+If[(particle===HiggsBoson || particle===PseudoScalar),
+WriteString[sphenoCoup,"AlphaSQ="<>SPhenoForm[strongCoupling]<>"**2/(4._dp*Pi) \n"];
+];
 
 WriteTadpoleSolution[sphenoCoup];
 
@@ -234,8 +277,10 @@ i++;];
 
 Clear[i1,i2,i3,i4];
 
-
-WriteString[sphenoCoup, "vev = "<>SPhenoForm[2Sqrt[- Vertex[{VectorW,conj[VectorW]}][[2,1]]/leftCoupling^2] /. sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]] <>"\n"];
+If[SupersymmetricModel===True,
+WriteString[sphenoCoup,"vev = "<>SPhenoForm[2Sqrt[- Vertex[{VectorW,conj[VectorW]}][[2,1]]/leftCoupling^2] /. sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]] <>"\n"];,
+WriteString[sphenoCoup,"vev=1/Sqrt((G_F*Sqrt(2._dp)))\n"];
+];
 
 
 (* couplings have to be weightet with doublet-fraction! *)
@@ -253,33 +298,41 @@ WriteString[sphenoCoup, "cplHiggsZZvirt = " <>ToString[getSPhenoCoupling[C[Higgs
 
 If[particle===HiggsBoson && suffix ==="2B",
 WriteScalarHiggsCouplingsRatio[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
-WriteString[sphenoCoup, "rq = 1._dp - oo4pi2*"<>SPhenoForm[strongCoupling]<>"**2 \n"];
-WriteString[sphenoCoup, "rsq = 1._dp + 2._dp*oo3pi2*"<>SPhenoForm[strongCoupling]<>"**2\n"];
+WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
+WriteString[sphenoCoup, "  gNLO = g3 \n"];
+WriteString[sphenoCoup,"Else  \n"];
+WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
+WriteString[sphenoCoup,"End if \n"];
 
-(* MakeCall["CoupHiggsToPhoton",Flatten[{NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton}],{SPhenoMass[HiggsBoson,i1]},{"rq","rsq","coup"},sphenoCoup]; *)
-MakeCall["CoupHiggsToPhoton",Flatten[{NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton}],{"m_in","i1"},{"rq","rsq","coup"},sphenoCoup];
+MakeCall["CoupHiggsToPhoton",Flatten[{NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton}],{"m_in","i1"},{"gNLO","coup"},sphenoCoup];
 If[getGenSPheno[HiggsBoson]>1,addgen="(i1)";,addgen="";];
-(* WriteString[sphenoCoup,"cplHiggsPP"<>addgen<>" = coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2 \n"];  *)
 WriteString[sphenoCoup,"cplHiggsPP"<>addgen<>" = coup*Alpha \n"]; 
 WriteString[sphenoCoup,"CoupHPP"<>addgen<>" = coup \n"];
-(* MakeCall["CoupHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{SPhenoMass[HiggsBoson,i1]},{"rq","coup"},sphenoCoup]; *)
-MakeCall["CoupHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"rq","coup"},sphenoCoup];
-(* WriteString[sphenoCoup,"ratioPP"<>addgen<>" = Abs(cplHiggsPP"<>addgen<>"/(coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2))**2 \n"]; *)
+MakeCall["CoupHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"gNLO","coup"},sphenoCoup];
 WriteString[sphenoCoup,"ratioPP"<>addgen<>" = Abs(cplHiggsPP"<>addgen<>"/(coup*Alpha))**2 \n"];
 
-WriteString[sphenoCoup, "rq = rsq \n"];
-
-(* MakeCall["CoupHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon}],{SPhenoMass[HiggsBoson,i1]},{"rq","rsq","coup"},sphenoCoup]; *)
-MakeCall["CoupHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon}],{"m_in","i1"},{"rq","rsq","coup"},sphenoCoup];
-(* WriteString[sphenoCoup,"cplHiggsGG"<>addgen<>" = coup*oo4pi*"<>SPhenoForm[strongCoupling]<>"**2\n"];  *)
-WriteString[sphenoCoup,"cplHiggsGG"<>addgen<>" = coup*AlphaS_MZ \n"]; 
+WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
+MakeCall["CoupHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon}],{"m_in","i1"},{"gNLO","coup"},sphenoCoup];
+WriteString[sphenoCoup,"cplHiggsGG"<>addgen<>" = coup*AlphaSQ \n"]; 
 WriteString[sphenoCoup,"CoupHGG"<>addgen<>" = coup \n"];
-(* MakeCall["CoupHiggsToGluonSM",Flatten[{NeededMassesLoopGluon}],{SPhenoMass[HiggsBoson,i1]},{"rq","coup"},sphenoCoup]; *)
-MakeCall["CoupHiggsToGluonSM",Flatten[{NeededMassesLoopGluon}],{"m_in"},{"rq","coup"},sphenoCoup];
-(* WriteString[sphenoCoup,"ratioGG"<>addgen<>" = Abs(cplHiggsGG"<>addgen<>"/(coup*oo4pi*"<>SPhenoForm[strongCoupling]<>"**2))**2 \n"]; *)
-WriteString[sphenoCoup,"coup = coup*Sqrt(1._dp + 12._dp*oo48pi2*(95._dp/4._dp - 7._dp/6._dp*NFlav(m_in)) *"<>SPhenoForm[strongCoupling]<>"**2) \n"];
-WriteString[sphenoCoup,"cplHiggsGG"<>addgen<>" = cplHiggsGG"<>addgen<>"*Sqrt(1._dp + 12._dp*oo48pi2*(95._dp/4._dp - 7._dp/6._dp*NFlav(m_in)) *"<>SPhenoForm[strongCoupling]<>"**2) \n"];
-WriteString[sphenoCoup,"ratioGG"<>addgen<>" = Abs(cplHiggsGG"<>addgen<>"/(coup*AlphaS_MZ))**2 \n"];
+MakeCall["CoupHiggsToGluonSM",Flatten[{NeededMassesLoopGluon}],{"m_in"},{"gNLO","coup"},sphenoCoup];
+
+WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
+WriteString[sphenoCoup,"  NLOqcd = 12._dp*oo48pi2*(95._dp/4._dp - 7._dp/6._dp*NFlav(m_in))*"<>SPhenoForm[strongCoupling]<>"**2 \n"];
+WriteString[sphenoCoup,"  NNLOqcd = 0.0005785973353112832_dp*(410.52103034222284_dp - 52.326413200014684_dp*NFlav(m_in)+NFlav(m_in)**2 & \n & +(2.6337085360233763_dp +0.7392866066030529_dp *NFlav(m_in))*Log(m_in**2/mf_u(3)**2))*"<>SPhenoForm[strongCoupling]<>"**4 \n"];
+WriteString[sphenoCoup,"  NNNLOqcd = 0.00017781840290519607_dp*(42.74607514668917_dp + 11.191050460173795_dp*Log(m_in**2/mf_u(3)**2) + Log(m_in**2/mf_u(3)**2)**2)*"<>SPhenoForm[strongCoupling]<>"**6 \n"];
+WriteString[sphenoCoup,"Else \n"];
+WriteString[sphenoCoup,"  NLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"  NNLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"  NNNLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"End if \n"];
+
+WriteString[sphenoCoup,"coup = coup*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"];
+WriteString[sphenoCoup,"cplHiggsGG"<>addgen<>" = cplHiggsGG"<>addgen<>"*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"]; 
+
+
+WriteString[sphenoCoup,"CoupHGG"<>addgen<>"=cplHiggsGG"<>addgen<>" \n"];
+WriteString[sphenoCoup,"ratioGG"<>addgen<>" = Abs(cplHiggsGG"<>addgen<>"/(coup*AlphaSQ))**2 \n"];
 
 
 
@@ -310,19 +363,48 @@ WriteString[sphenoCoup,"End if \n"];
 If[particle===PseudoScalar && suffix ==="2B",
 WritePseudoScalarCouplingsRatio[sphenoCoup,SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 If[getGenSPheno[PseudoScalar]>1,addgen="(i1)";,addgen="";];
-MakeCall["CoupPseudoHiggsToPhoton",Flatten[{NeededRatiosLoopCouplingsPhotonPseudo,NeededMassesLoopPhoton}],{"m_in","i1"},{"coup"},sphenoCoup];
-(* WriteString[sphenoCoup,"cplPseudoHiggsPP"<>addgen<>" = coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2 \n"];  *)
+WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
+WriteString[sphenoCoup, "  gNLO = g3 \n"];
+WriteString[sphenoCoup,"Else  \n"];
+WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
+WriteString[sphenoCoup,"End if \n"];
+
+
+
+
+
+
+MakeCall["CoupPseudoHiggsToPhoton",Flatten[{NeededRatiosLoopCouplingsPhotonPseudo,NeededMassesLoopPhoton}],{"m_in","i1"},{"gNLO","coup"},sphenoCoup];
 WriteString[sphenoCoup,"cplPseudoHiggsPP"<>addgen<>" = 2._dp*coup*Alpha \n"]; 
 WriteString[sphenoCoup,"CoupAPP"<>addgen<>" = 2._dp*coup \n"];
-MakeCall["CoupPseudoHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"coup"},sphenoCoup];
+MakeCall["CoupPseudoHiggsToPhotonSM",Flatten[{NeededMassesLoopPhoton}],{"m_in"},{"gNLO","coup"},sphenoCoup];
 WriteString[sphenoCoup,"ratioPPP"<>addgen<>" = Abs(cplPseudoHiggsPP"<>addgen<>"/(2._dp*coup*oo4pi*(1._dp-mW2/mZ2)*"<>SPhenoForm[leftCoupling]<>"**2))**2 \n"]; 
 
-MakeCall["CoupPseudoHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluonPseudo,NeededMassesLoopGluon}],{SPhenoMass[HiggsBoson,i1],"i1"},{"coup"},sphenoCoup];
-WriteString[sphenoCoup,"cplPseudoHiggsGG"<>addgen<>" = 2._dp*coup*AlphaS_MZ \n"]; 
-WriteString[sphenoCoup,"CoupAGG"<>addgen<>" = 2._dp*coup \n"];
-MakeCall["CoupPseudoHiggsToGluonSM",Flatten[{NeededMassesLoopGluon}],{"m_in"},{"coup"},sphenoCoup];
-WriteString[sphenoCoup,"ratioPGG"<>addgen<>" = Abs(cplPseudoHiggsGG"<>addgen<>"/(2._dp*coup*oo4pi*"<>SPhenoForm[strongCoupling]<>"**2))**2 \n"]; 
+WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
+MakeCall["CoupPseudoHiggsToGluon",Flatten[{NeededRatiosLoopCouplingsGluonPseudo,NeededMassesLoopGluon}],{SPhenoMass[HiggsBoson,i1],"i1"},{"gNLO","coup"},sphenoCoup];
+
+
+WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
+WriteString[sphenoCoup,"  NLOqcd = 12._dp*oo48pi2*(97._dp/4._dp - 7._dp/6._dp*NFlav(m_in))*"<>SPhenoForm[strongCoupling]<>"**2 \n"];
+WriteString[sphenoCoup,"  NNLOqcd = (171.544_dp +  5._dp*Log(m_in**2/mf_u(3)**2))*"<>SPhenoForm[strongCoupling]<>"**4/(4._dp*Pi**2)**2 \n"];
+WriteString[sphenoCoup,"  NNNLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"Else \n"];
+WriteString[sphenoCoup,"  NLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"  NNLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"  NNNLOqcd = 0._dp \n"];
+WriteString[sphenoCoup,"End if \n"];
+
+WriteString[sphenoCoup,"cplPseudoHiggsGG"<>addgen<>" = 2._dp*coup*AlphaSQ*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"]; 
+WriteString[sphenoCoup,"CoupAGG"<>addgen<>" = 2._dp*coup*AlphaSQ*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"];
+
+MakeCall["CoupPseudoHiggsToGluonSM",Flatten[{NeededMassesLoopGluon}],{"m_in"},{"gNLO","coup"},sphenoCoup];
+WriteString[sphenoCoup,"coup = coup*Sqrt(1._dp + NLOqcd+NNLOqcd+NNNLOqcd) \n"];
+WriteString[sphenoCoup,"ratioPGG"<>addgen<>" = Abs(cplPseudoHiggsGG"<>addgen<>"/(2._dp*coup*AlphaSQ))**2 \n"]; 
 WriteString[sphenoCoup, "\n"];
+
+
+
+
 WriteHiggsBoundsRatiosPseudoScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 
 
@@ -340,8 +422,8 @@ WriteString[sphenoCoup, "End if \n"];
 
 
 (* WriteString[sphenoCoup,"! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- \n"];
-For[i=1,i<=Length[NewMassParameters],
-If[Length[getDimSPheno[NewMassParameters[[i]]]]==2 && FreeQ[{ElectronMatrixL, ElectronMatrixR, UpMatrixR, UpMatrixL, DownMatrixR,DownMatrixL,HiggsMixingMatrix},NewMassParameters[[i]]],
+For[i=1,i\[LessEqual]Length[NewMassParameters],
+If[Length[getDimSPheno[NewMassParameters[[i]]]]\[Equal]2 && FreeQ[{ElectronMatrixL, ElectronMatrixR, UpMatrixR, UpMatrixL, DownMatrixR,DownMatrixL,HiggsMixingMatrix},NewMassParameters[[i]]],
 WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
 ];
 i++;]; *)

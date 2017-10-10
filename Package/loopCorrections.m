@@ -101,7 +101,7 @@ If[Head[DEFINITION[Eigenstates][VEVs]]===List,
 Tadpoles1LoopList[Eigenstates]={};
 For[i=1,i<=Length[LoopCorrectionTadpoles[Eigenstates]],
 If[LoopCorrectionTadpoles[Eigenstates][[i]]=!={},
-(* Tadpoles1LoopList[Eigenstates]=Join[Tadpoles1LoopList[Eigenstates],{ Delete[LoopCorrectionTadpoles[Eigenstates][[i]],2] /. gI2->gI1}]; *)
+(* Tadpoles1LoopList[Eigenstates]=Join[Tadpoles1LoopList[Eigenstates],{ Delete[LoopCorrectionTadpoles[Eigenstates][[i]],2] /. gI2\[Rule]gI1}]; *)
 Tadpoles1LoopList[Eigenstates]=Join[Tadpoles1LoopList[Eigenstates],{ LoopCorrectionTadpoles[Eigenstates][[i]]/. gI2->gI1}];
 ];
 i++];,
@@ -592,7 +592,7 @@ Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1
 temp=OrderMasses[corrections[[1]],corrections[[2]],S];
 m11=temp[[1]]; m12=temp[[1]]/. Mass->Mass2; m21=temp[[2]]; m22=temp[[2]]/. Mass->Mass2;
 
-If[FreeQ[m11,corrections[[1]]] && FreeQ[m21,corrections[[2]]] ,
+If[FreeQ[m11,RE[corrections[[1]]]] && FreeQ[m21,RE[corrections[[2]]]] ,
 m11 = m11 /. gI1->gI2;
 m12 = m12 /. gI1->gI2;
 m22 = m22 /. gI2->gI1;
@@ -676,13 +676,13 @@ m21 = m21 /. gI2->gI1;
 Switch[corrections[[4]],
 	FFS,
 		Sigma1LoopS= sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],m11 coupR1*coupL2*B0[p^2,m12,m22] corrections[[6]]*corrections[[5]]]];
-		Sigma1LoopR =sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]], -1/2coupR1*coupR2*B1[p^2,m12,m22] corrections[[6]]*corrections[[5]]]];
-		Sigma1LoopL=sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],-1/2coupL1*coupL2*B1[p^2,m12,m22] corrections[[6]]*corrections[[5]]]];,
+		Sigma1LoopR =sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]], -1/2coupR1*coupR2*(B1[p^2,m12,m22]) corrections[[6]]*corrections[[5]]]];
+		Sigma1LoopL=sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],-1/2coupL1*coupL2*(B1[p^2,m12,m22]) corrections[[6]]*corrections[[5]]]];,
 
 	FFV,
 		Sigma1LoopS= sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],-4 m11 coupL1*coupR2*(B0[p^2,m12,m22] -1/2 rMS)corrections[[6]]*corrections[[5]]]];
-		Sigma1LoopR = sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],- coupL1*coupL2*B1[p^2,m12,m22]corrections[[6]]*corrections[[5]]]];
-		Sigma1LoopL=sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]], -coupR1*coupR2*B1[p^2,m12,m22] corrections[[6]]*corrections[[5]]]];
+		Sigma1LoopR = sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],- coupL1*coupL2*(B1[p^2,m12,m22]+1/2 rMS)corrections[[6]]*corrections[[5]]]];
+		Sigma1LoopL=sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]], -coupR1*coupR2*(B1[p^2,m12,m22]+1/2 rMS) corrections[[6]]*corrections[[5]]]];
 	];
 
 

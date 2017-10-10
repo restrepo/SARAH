@@ -417,34 +417,28 @@ Return[getChargeFactor[{{Cp[Ex1,Ex2,Int1,Int2]},{External[1]->Ex1,External[2]->E
 CalculateColorFactorDecay[pD_,p1_,p2_]:=ChargeFactor[pD,p1,p2];
 
 ChargeFactor[Ext_,Int1_,Int2_]:=Block[{pos,temp},
-pos=Select[{Position[getBlank/@Gauginos,getBlank[Ext]]/2,
-Position[getBlank/@SGauge,getBlank[Ext]]},(#1=!={})&];
-If[pos=!={},
-If[Gauge[[pos[[1,1,1]],2]]=!=U[1],
-Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]/.diracSubBack[ALL]];,
-Return[1];
-];
-];
-pos = Select[{Position[getBlank/@Gauginos,getBlank[Int1]]/2,
-Position[getBlank/@SGauge,getBlank[Int1]],Position[getBlank/@Gauginos,getBlank[Int2]]/2,
-Position[getBlank/@SGauge,getBlank[Int2]]},(#1=!={})&];
-If[pos=!={},
-If[Gauge[[pos[[1,1,1]],2]]=!=U[1],
-Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]]];,
-Return[1];
-];
-];
-If[Select[getIndexRange[Int1],(FreeQ[getIndexRange[Ext],#1] ==False && FreeQ[getIndexRange[Int2],#1] ==False  && #1[[1]]=!=generation)&]=!={},
-Return[Abs[getChargeFactor[{{Cp[Ext,Int1,Int2],Cp[AntiField[Ext],AntiField[Int1],AntiField[Int2]]},{External[1]->Ext,External[2]->AntiField[Ext],Internal[1]->Int1,Internal[2]->Int2}},{{{Ext,ex1},{Int1,in1},{Int2,in2}},{{AntiField[Ext],ex2},{AntiField[Int1],in1},{AntiField[Int2],in2}}},Delta[ex1,ex2]]]];
-Return[999];
-];
+(*Is the external field a gauge boson?*)
+pos=Select[{Position[getBlank/@SGauge,getBlank[Ext]]},(#1=!={})&];
+If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]];,Return[1];];];
+(*----*)
+(*Is an internal field a gauge boson?*)
+pos=Select[{Position[getBlank/@SGauge,getBlank[Int1]],Position[getBlank/@SGauge,getBlank[Int2]]},(#1=!={})&];
+If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]]];,Return[1];];];
 
-temp=Select[getIndexRange[Int1],(FreeQ[getIndexRange[Ext],#1] && #1[[1]]=!=generation)&];
-If[temp=!={},
-Return[Times@@Transpose[temp][[2]]];,
-Return[1];
+If[AddDiracGauginos=!=True,(* if true, then can have different couplings *)
+(*Is the external field a gaugino?*)
+pos=Select[{Position[getBlank/@Gauginos,getBlank[Ext]]/2},(#1=!={})&];
+If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]];,Return[1];];];
+(*----*)
+(*Is an internal field a gaugino?*)
+pos=Select[{Position[getBlank/@Gauginos,getBlank[Int1]],Position[getBlank/@Gauginos,getBlank[Int2]]},(#1=!={})&];
+If[pos=!={},If[Gauge[[pos[[1,1,1]]/2,2]]=!=U[1],Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]/2]];,Return[1];];];
 ];
-]; 
+(*-- Otherwise do the calculation the hard way --*)
+If[Select[getIndizes[Int1],(FreeQ[getIndizes[Ext],#]==False&&FreeQ[getIndizes[Int2],#]==False&&#=!=generation &&#=!=lorentz)&]=!={},Return[Abs[getChargeFactor[{{Cp[Ext,Int1,Int2],Cp[AntiField[Ext],AntiField[Int1],AntiField[Int2]]},{External[1]->Ext,External[2]->AntiField[Ext],Internal[1]->Int1,Internal[2]->Int2}},{{{Ext,ex1},{Int1,in1},{Int2,in2}},{{AntiField[Ext],ex2},{AntiField[Int1],in1},{AntiField[Int2],in2}}},Delta[ex1,ex2]]]];
+Return[999];];
+temp=Select[getIndizesWI[Int1],(FreeQ[getIndizesWI[Ext],#1]&&#1[[1]]=!=generation &&#1[[1]]=!=lorentz)&];
+If[temp=!={},Return[Times@@Transpose[temp][[2]]];,Return[1];];];
 
 
 CalculateSymmetryFactor[p1_,p2_]:=Block[{},

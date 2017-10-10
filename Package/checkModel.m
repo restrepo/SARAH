@@ -619,11 +619,13 @@ On[General::stop];
 ];
 
 
-CheckReducibility[mat_]:=Block[{i,j,k,l,dim,zeroC,zeroR,NZC,NZR,k1,k2,newC, newR,irred=False,startold, startnew,count0=0},
-dim=Length[mat];
+CheckReducibility[mat_]:=Block[{i,j,k,l,dim1,dim2,zeroC,zeroR,NZC,NZR,k1,k2,newC, newR,irred=False,startold, startnew,count0=0},
+(* dim=Length[mat]; *)
+dim1=Dimensions[mat][[1]];
+dim2=Dimensions[mat][[2]];
 
-For[i=1,i<=dim,
-For[j=1,j<=dim,
+For[i=1,i<=dim1,
+For[j=1,j<=dim2,
 If[mat[[i,j]]=!=0,
 NZEC[i,j] = Flatten[Position[Transpose[mat][[j]],x_?((#=!=0 && #=!=List)&)]];
 NZER[i,j] = Flatten[Position[mat[[i]],x_?((#=!=0 && #=!=List)&)]];,
@@ -634,8 +636,8 @@ count0++;
 j++;];
 i++;];
 
-For[i=1,i<=dim,
-For[j=1,j<=dim,
+For[i=1,i<=dim1,
+For[j=1,j<=dim2,
 If[mat[[i,j]]=!=0,
 newC = Table[{NZEC[i,j][[k]],j},{k,1,Length[NZEC[i,j]]}];
 newR = Table[{i,NZER[i,j][[k]]},{k,1,Length[NZER[i,j]]}];

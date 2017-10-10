@@ -33,7 +33,7 @@ FermionFields[[5]] = {e, 3, conj[eR],      1, 1,  1};
 ScalarFields[[1]] = {H,    1, {Hp, H0},                           1/2, 2, 1};
 ScalarFields[[2]] = {trip, 1, {{T0/Sqrt[2],conj[Tm]},{Tm,-T0/Sqrt[2]}},    0, 3, 1};
 
-RealScalars = {trip};
+RealScalars = {T0};
 
 
 

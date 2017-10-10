@@ -412,6 +412,12 @@
        WriteEffHiggsCouplingRatios=.True.
       End If
 
+     Case(521)
+      If (wert.Ne.1._dp) Then
+       HigherOrderDiboson=.False.
+      Else
+       HigherOrderDiboson=.True.
+      End If      
 
      Case(525)
       If (wert.Ne.1._dp) Then

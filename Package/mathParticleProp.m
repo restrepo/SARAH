@@ -109,6 +109,15 @@ Return[{(tempList[[1]]),listNew}];
 
 
 
+(* getDimFundamentalAux[nr_]:=Block[{},
+If[GaugeListAux[[nr,1]]\[Equal]False,
+Return[getDimFundamental[Gauge[[nr,2]]]];,
+Return[GaugeListAux[[nr,2]]];
+];
+]; *)
+
+getDimFundamentalAux[nr_]:=getDimFundamental[Gauge[[nr,2]]];
+
 GenerateAllIndizes[Nr_]:=Block[{i,j,k,l,m,n,res,states,templ,resSusyno,temp,temp2},
 notExpanded={{generation,Fields[[Nr,2]]}}; expanded={};
 notShort={{generation,Fields[[Nr,2]]}}; expShort={};
@@ -117,26 +126,26 @@ For[k=1,k<=AnzahlGauge,
 temp={};
 searchedDim=FieldDim[Nr,k];
 If[Gauge[[k,2]]=!=U[1] && searchedDim=!=1,
-If[Gauge[[k,5]]==False || Abs[searchedDim]==getDimFundamental[Gauge[[k,2]]],
+If[Gauge[[k,5]]===False || Abs[searchedDim]==getDimFundamental[Gauge[[k,2]]],
 If[searchedDim===getDimAdjoint[Gauge[[k,2]]],
 temp= {{getAdjointIndex[Gauge[[k,3]]],Abs[searchedDim]}};
 temp2= {{getAdjointIndex[Gauge[[k,3]]],Abs[searchedDim]}};,
-temp= {{Gauge[[k,3]],Abs[searchedDim]}};
-temp2= {{Gauge[[k,3]],Abs[searchedDim]}};
+temp= {{Gauge[[k,3]],If[Gauge[[k,5]]===False ,Abs[searchedDim],getDimFundamentalAux[k]]}};
+temp2= {{Gauge[[k,3]],If[Gauge[[k,5]]===False ,Abs[searchedDim],getDimFundamentalAux[k]]}};
 ];,
 If[Head[Gauge[[k,2]]=!=SU], Print["Only SU(N) groups can be definite explicitly as broken!"]; Abort[]];
 If[searchedDim===getNumberStatesAdjoint[Gauge[[k,2]]],
-temp={{Gauge[[k,3]],getDimFundamental[Gauge[[k,2]]]},{IndexName[Gauge[[k,3]],2],getDimFundamental[Gauge[[k,2]]]}};
-temp2={{Gauge[[k,3]],getDimFundamental[Gauge[[k,2]]]},{-Gauge[[k,3]],getDimFundamental[Gauge[[k,2]]]}};, 
+temp={{Gauge[[k,3]],getDimFundamentalAux[k]},{IndexName[Gauge[[k,3]],2],getDimFundamentalAux[k]}};
+temp2={{Gauge[[k,3]],getDimFundamentalAux[k]},{-Gauge[[k,3]],getDimFundamentalAux[k]}};, 
 If[Head[Fields[[Nr,k+3]]]===List,
 res=TestDim[Abs/@Fields[[Nr,k+3]],Gauge[[k,2,1]]];,
 res=TestDim[Abs[Fields[[Nr,k+3]]],Gauge[[k,2,1]]];
 ];
-temp=Join[Table[{IndexName[Gauge[[k,3]],j],getDimFundamental[Gauge[[k,2]]]},{j,1,res[[2]]}],Table[{-IndexName[Gauge[[k,3]],j+res[[2]]],getDimFundamental[Gauge[[k,2]]]},{j,1,res[[3]]}]];
-temp2=Join[Table[{Gauge[[k,3]],getDimFundamental[Gauge[[k,2]]]},{j,1,res[[2]]}],Table[{-Gauge[[k,3]],getDimFundamental[Gauge[[k,2]]]},{j,1,res[[3]]}]];
+temp=Join[Table[{IndexName[Gauge[[k,3]],j],getDimFundamentalAux[k]},{j,1,res[[2]]}],Table[{-IndexName[Gauge[[k,3]],j+res[[2]]],getDimFundamentalAux[k]},{j,1,res[[3]]}]];
+temp2=Join[Table[{Gauge[[k,3]],getDimFundamentalAux[k]},{j,1,res[[2]]}],Table[{-Gauge[[k,3]],getDimFundamentalAux[k]},{j,1,res[[3]]}]];
 ];
 ];
-If[Gauge[[k,5]]==False,
+If[Gauge[[k,5]]===False,
 notShort = Join[notShort,temp];
 notExpanded=Join[notExpanded,temp2];,
 expShort = Join[expShort,temp];
@@ -950,18 +959,23 @@ Return[CG[group,dyn]@@inds];
 
 SumOverExpandedIndizes[term_,partList_]:=SumOverExpandedIndizes[term,partList,False];
 
-SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos,IndexNames={},iter,fin},
+SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos,IndexNames={},IndexNamesSub={},iter,fin,SUB},
 For[i=1,i<=Length[partList],
 If[partList[[i]]=!=None,
 pos=Position[ListFields,partList[[i]]][[1,1]];
 IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];
-
+(* IndexNamesSub = Join[IndexNamesSub,Table[(ListFields[[pos,2,1,j]] /. subGC[i])\[Rule]IndexNR[ListFields[[pos,2,1,j]],i,ListFields[[pos,2,1,j]] /. subGC[i]],{j,1,Length[ListFields[[pos,2,2]]]}]]; *)
 ];
 i++;];
 
 
 If[Matrix==False,
 temp=term;
+(*
+For[i=1, i\[LessEqual]Length[IndexNames],
+temp1 =Hold[Sum[TEMP,{iter,1,fin}]] /. {iter \[Rule] IndexNames[[i,1]], fin \[Rule] IndexNames[[i,2]],TEMP->(temp /. IndexNamesSub[[i]])};
+temp = ReleaseHold[temp1]/. Extract[a_,{IndexNR[b_,c_]}]\[RuleDelayed]Extract[a,c]; 
+i++;]; *)
 For[i=1, i<=Length[IndexNames],
 temp1 =Hold[Sum[temp,{iter,1,fin}]] /. {iter -> IndexNames[[i,1]], fin -> IndexNames[[i,2]]};
 temp = ReleaseHold[temp1]; 

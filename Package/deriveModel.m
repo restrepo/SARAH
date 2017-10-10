@@ -417,7 +417,7 @@ Print["The vertices are saved in ",StyleForm[ToString[$sarahCurrentVerticesDir ]
 
 InitAutomaticCalc[ES_]:=Block[{},
 
-(* subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]->1,epsTensor[a__]->1, g[a__]->1, Sig[a__]->1,Lam[a__]->1, Mom[a_,b_]->1, T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]->1 ,fSU2[a__]->1, fSU3[a__]->1, pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1};  *)
+(* subNonFields = {sum[a_,b_,c_]\[Rule]1,  Delta[a_,b_]\[Rule]1,epsTensor[a__]\[Rule]1, g[a__]\[Rule]1, Sig[a__]\[Rule]1,Lam[a__]\[Rule]1, Mom[a_,b_]\[Rule]1, T[a_]\[Rule] 1, B[a_]\[Rule]1, L[a_]\[Rule]1,gamma[a_]\[Rule]1 ,fSU2[a__]\[Rule]1, fSU3[a__]\[Rule]1, pmue[a__]\[Rule]a,RXi[a__]\[Rule]1, Mass[x_]\[Rule]1,Inv[a__][b__]\[Rule]1};  *)
 subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]:>Random[], T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]:>Random[] ,fSU2[a__]->1, fSU3[a__]->1, pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[], LorentzProduct[a___]:>Random[]}; 
 subPar=Flatten[{T[a___]->1, B[a__]->1,L[a___]->1,Table[parameters[[i,1]][b__][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]]->1,{i,1,Length[parameters]}]}] /. conj[x_]->x;
 
@@ -527,17 +527,19 @@ startedtime=TimeUsed[];
 
 If[Head[VertexListNonCC]=!=List,VertexListNonCC={};];
 If[AtomQ[LAG[Type][Eigenstates] ]=!=True,
-If[((List@@Expand[LAG[Type][Eigenstates] /.subNonFields  /. subGeneric[Type]]  )/.subPar /.A_[{x__}]->A )===0,
+If[((List@@Expand[LAG[Type][Eigenstates] /.subNonFields  /. subGeneric[Type]/.subPar ]  )/.subPar /.A_[{x__}]->A )===0,
 SA`VertexList[temp][Type]={};,
 
 SA`VertexList[temp][Type]={};
 
-list=Intersection[Select[Intersection[COUP/@((List@@Expand[LAG[Type][Eigenstates] +1/.subNonFields  ]/. subGeneric[Type]/. diracSubBack[Eigenstates]  )/.subPar /.A_[{x__}]->A ) /. COUP -> Cp ] /. Cp[x_Times]:>Cp@@x /. conj -> AntiField /. Cp->C /. C -> List ,(VType@@getType/@#1===Type)&]];
-
+list=Intersection[Select[Intersection[COUP/@((List@@Expand[LAG[Type][Eigenstates] +1/.subNonFields /.subPar  ]/. subGeneric[Type]/. diracSubBack[Eigenstates]  )/.subPar /.A_[{x__}]->A ) /. COUP -> Cp ] /. Cp[x_Times]:>Cp@@x /. conj -> AntiField /. Cp->C /. C -> List ,(VType@@getType/@#1===Type)&]];
 
 list = SortCoup/@list;
-
 SA`listSave=list;
+
+If[Type===SVV,
+list=Select[list,(Count[#,VP]<2)&];
+];
 
 timestamp=StringJoin[ToString/@Date[]];
 progressNrGV[Type]=0;
@@ -604,6 +606,38 @@ Return[False];
 CountFields[x_]:=Block[{},
 Do[Set[n[vacuum[[i]]],0],{i,1,Length[vacuum]}];
 Return[x/. subCount];
+];
+
+
+MakeFlavorKitOutput[Eigenstates_]:=Block[{},
+SPhenoParameters = parameters;
+MakeSPhenoFortran;
+SPheno`Eigenstates=Eigenstates;
+$sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
+CreateTeXForm;
+MakeCouplingLists;
+ListOfLowEnergyNames={};
+
+AllRelevant=getAllRelevantCouplings[VertexListNonCC];
+temp=SPhenoCouplingList[AllRelevant];
+SPhenoCouplingsAll=temp[[1]];
+parametersAll=temp[[2]];
+namesAll=temp[[3]];
+
+Print["Checking For PreSARAH"];
+Get[ToFileName[$sarahSPhenoPackageDir,"SPhenoPreSARAH.m"]];
+CheckForPreSARAH;
+
+(* First, the FlavorKit observables *)
+sphenoFlavorKitLFV=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FlavorKit_LFV_"<>ModelName<>".f90"]];
+sphenoFlavorKitQFV=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FlavorKit_QFV_"<>ModelName<>".f90"]];
+sphenoFlavorKitObs=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FlavorKit_Observables_"<>ModelName<>".f90"]];
+GeneratePreSARAHObservables["LFV",sphenoFlavorKitLFV];
+GeneratePreSARAHObservables["QFV",sphenoFlavorKitQFV];
+Close[sphenoFlavorKitLFV];
+Close[sphenoFlavorKitQFV];
+Close[sphenoFlavorKitObs];
+
 ];
 
 

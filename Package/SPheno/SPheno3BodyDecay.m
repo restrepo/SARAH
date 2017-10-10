@@ -1153,7 +1153,7 @@ LRconjugated1={"1","2","5","6"};,
 LRconjugated1={"2","1","6","5"};
 ];
 
-If[getType[prop2]===S, (* CHANGED *)
+If[getType[prop2]===S, 
 LRconjugated2={"3","4","7","8"};,
 LRconjugated2={"4","3","8","7"};
 ];

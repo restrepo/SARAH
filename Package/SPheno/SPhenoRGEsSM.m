@@ -60,6 +60,10 @@ WriteString[sphenoSM,"Integer :: kont \n"];
 WriteString[sphenoSM,"Logical :: OnlyDiagonal \n"];
 WriteString[sphenoSM,"Logical :: realCKM \n"];
 WriteString[sphenoSM,"Real(dp) :: deltaM = 0.000001_dp, test(3)  \n"];
+If[Head[DEFINITION[MoreEWvevs]]===List,
+WriteString[sphenoSM,"Real(dp) :: vd_aux, vu_aux\n"];
+];
+
 If[WriteCKMBasis===True,
 WriteString[sphenoSM,"Complex(dp) :: Yd_ckm(3,3), Yu_ckm(3,3), Tu_ckm(3,3), Td_ckm(3,3), mq2_ckm(3,3), mu2_ckm(3,3), md2_ckm(3,3) \n"];
 WriteString[sphenoSM,"Complex(dp) :: Yd_out(3,3), Yu_out(3,3), Tu_out(3,3), Td_out(3,3), mq2_out(3,3), mu2_out(3,3), md2_out(3,3) \n"];
@@ -240,6 +244,20 @@ If[FreeQ[ParameterDefinitions,"Up-VEV"]==False && FreeQ[parameters,VEVSM2]===Fal
 If[FreeQ[ParameterDefinitions,"EW-VEV"]==False  && FreeQ[parameters,VEVSM]===False ,WriteString[file,SPhenoForm[VEVSM]<>"=vevSM \n"];];
 ];
 
+If[Head[DEFINITION[MoreEWvevs]]===List,
+WriteString[file,"! Set things in case of non-standard Yukawas or VEVs\n"];
+For[i=1,i<=Length[DEFINITION[MoreEWvevs]],
+WriteString[file,StringReplace[DEFINITION[MoreEWvevs][[i]],{"vev2"->"vevSM**2"}] <>"\n"];
+i++;];
+];
+
+If[AddOHDM=!=True && Head[DEFINITION[MoreEWvevs]]===List,
+WriteString[file,"vd_aux =  vevSM/Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2)  \n"];
+WriteString[file,"vu_aux =  vd_aux*"<>SPhenoForm[TanBeta]<>"\n"];
+];
+
+
+If[DEFINITION[UseNonStandardYukwas]=!=True,
 If[AddOHDM=!=True,
 If[FreeQ[ParameterDefinitions,"Up-Yukawa-Coupling"]==False,WriteString[file,SPhenoForm[UpYukawa]<> " = YuSM*Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2)/"<>SPhenoForm[TanBeta]<>" \n"];];
 If[FreeQ[ParameterDefinitions,"Down-Yukawa-Coupling"]==False,WriteString[file,SPhenoForm[DownYukawa]<> " = YdSM*Sqrt(1._dp+"<>SPhenoForm[TanBeta]<>"**2) \n"]; ];
@@ -247,9 +265,11 @@ If[FreeQ[ParameterDefinitions,"Lepton-Yukawa-Coupling"]==False,WriteString[file,
 If[FreeQ[ParameterDefinitions,"Up-Yukawa-Coupling"]==False,WriteString[file,SPhenoForm[UpYukawa]<> " = YuSM \n"];];
 If[FreeQ[ParameterDefinitions,"Down-Yukawa-Coupling"]==False,WriteString[file,SPhenoForm[DownYukawa]<> " = YdSM \n"]; ];
 If[FreeQ[ParameterDefinitions,"Lepton-Yukawa-Coupling"]==False,WriteString[file,SPhenoForm[ElectronYukawa]<> " = YeSM \n"]; ];
-	];
-
-
+	];,
+For[i=1,i<=Length[DEFINITION[NonStandardYukawasRelations]],
+WriteString[file,StringReplace[DEFINITION[NonStandardYukawasRelations][[i]] ,{"Y_l"->"YeSM","Y_d"->"YdSM","Y_u"->"YuSM","vd"->"vd_aux","vu"->"vu_aux"}]<>"\n"];
+i++;];
+];
 
 WriteString[sphenoSM,"! Calculate running CKM matrix \n"];
 WriteString[file, "Call FermionMass(YuSM,1._dp,test,dummy,CKMout,kont) \n \n"];

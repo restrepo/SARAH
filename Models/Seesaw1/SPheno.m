@@ -69,3 +69,4 @@ BoundaryConditionsDown[[3]]={
 
 (* Example for input values *)
 DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta->20, SignumMu ->1, Azero -> -1500, Yv[1,1]->0.001, Yv[2,2]->0.001, Yv[3,3]->0.001, Mv[1,1]->10^15, Mv[2,2]->10^15, Mv[3,3]->10^15};
+

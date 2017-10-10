@@ -280,24 +280,32 @@ FieldNames ={Fields[[i,1]]};
 
 subScalar={};
 subFermion={};
-(* subAux={}; *)
 
-If[Last[Fields[[i]]]===S,If[SupersymmetricModel===False,scalarSF=Fields[[i,3]];,scalarSF = ToExpression["S"<>ToString[Fields[[i,3]]]];];
-If[FreeQ[RealScalars,Fields[[i,3]]]==False,realVar=Join[realVar,{scalarSF}];];,scalarSF=0;];
-If[Last[Fields[[i]]]===F,If[SupersymmetricModel===False,fermionSF=Fields[[i,3]];,fermionSF = ToExpression["F"<>ToString[Fields[[i,3]]]];];,fermionSF=0;];
-(* auxiliarySF = ToExpression["A"<>ToString[Fields[[i,3]]]]; *)
+If[Last[Fields[[i]]]===S,
+scalarSF=Fields[[i,3]];
+If[FreeQ[RealScalars,Fields[[i,3]]]==False,realVar=Join[realVar,{scalarSF}];];,
+scalarSF=0;];
+If[Last[Fields[[i]]]===F,
+fermionSF=Fields[[i,3]];,
+fermionSF=0;];
+
 
 For[j=1,j<=Length[FieldNames],
 If[Head[FieldNames[[j]]]===conj,
 name= ToString[FieldNames[[j,1]]];,
 name = ToString[FieldNames[[j]]];
 ];
-
+(*
+If[FreeQ[FieldNames[[j]],AuxGauges[[1]]]===False,
+name=ToExpression[name]/.A_[AuxGauges[[1]]]\[Rule]A;
+name[AuxGauges[[1]]][{d__}]=name[{d,AuxGauges[[1]]}];
+name=ToString[name];
+]; *)
 If[Last[Fields[[i]]]===S,
-If[SupersymmetricModel===False,scalar=ToExpression[name];,scalar = ToExpression["S"<>name]; ];
+scalar=ToExpression[name];
 If[FreeQ[RealScalars,Fields[[i,3]]]==False && FreeQ[Fields[[i,1]],conj[scalar]],realVar=Join[realVar,{scalar}];];,
 scalar=0;];
-If[Last[Fields[[i]]]===F,If[SupersymmetricModel===False,fermion=ToExpression[name];,fermion = ToExpression["F"<>name];];,fermion=0;];
+If[Last[Fields[[i]]]===F,fermion=ToExpression[name];,fermion=0;];
 
 
 (* auxiliary = ToExpression["A"<>name]; *)
@@ -320,11 +328,6 @@ _,
 	valueGenerator= 0;,
 	valueCasimir= SA`Casimir[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
 	valueDynkin= SA`Dynkin[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
-(*
-	If[Gauge[[j2,5]]===True && Gauge[[j2,2]]=!=U[1],
-	valueGenerator= GeneratorB[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];,
-	valueGenerator= Generator[getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]],Gauge[[j2,2]]];
-	]; *)
 	If[Gauge[[j2,5]]===True && Gauge[[j2,2]]=!=U[1],
 	valueGenerator= GeneratorB[Gauge[[j2,2]],getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]]];,
 	valueGenerator= Generator[Gauge[[j2,2]],getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]]];
@@ -352,7 +355,6 @@ SA`MulFactor[scalar,Gauge[[j2,3]]]=valueMulFactor;
 If[Last[Fields[[i]]]===F,
 SA`Casimir[fermion,Gauge[[j2,3]]]=valueCasimir;
 SA`Casimir[fermion[a__],Gauge[[j2,3]]]=valueCasimir;
- SA`Casimir[auxiliary,Gauge[[j2,3]]]=valueCasimir;
 SA`Dynkin[fermion,Gauge[[j2,3]]]=valueDynkin; 
 SA`Dynkin[fermion[a__],Gauge[[j2,3]]]=valueDynkin;
 Generator[fermion,Gauge[[j2,3]]]=valueGenerator;
@@ -422,7 +424,6 @@ If[Last[Fields[[i]]]===F,SA`DynL[fermionSF,Gauge[[j2,3]]]=Fields[[i,j2+3]];];
 If[Gauge[[j2,2]]===U[1],
 If[Last[Fields[[i]]]===S,SA`ChargeGG[scalar,j2] = Fields[[i,j2+3]];];
 If[Last[Fields[[i]]]===F,SA`ChargeGG[fermion,j2] = Fields[[i,j2+3]];];
-(* SA`ChargeGG[auxiliary,j2] = Fields[[i,j2+3]]; *)
 ];
 
 j2++;];
@@ -452,6 +453,13 @@ If[Head[Fields[[i,1]]]=!=List,
 usedInd=absI;,
 usedInd={}
 ];
+absIsave=absI;
+(*
+If[FreeQ[FieldNames[[j]],AuxGauges[[1]]]===False,
+FieldNames[[j]]=FieldNames[[j]]/.A_[AuxGauges[[1]]]\[Rule]A;
+absI=Join[absI,{AuxGauges[[1]]}];
+ChangedAbsI=True;
+]; *)
 If[Head[FieldNames[[j]]]===conj,
 subScalar=Join[subScalar,{FieldNames[[j]]->conj[scalar[usedInd]]}];
 subFermion=Join[subFermion,{FieldNames[[j]]->conj[fermion[usedInd]]}];
@@ -483,18 +491,12 @@ If[Last[Fields[[i]]]===S,typeList=Join[typeList,{{SFields[[i]],S}}];];
 If[Last[Fields[[i]]]===F,typeList=Join[typeList,{{FFields[[i]],F}}];];,
 
 If[Last[Fields[[i]]]===S,
-If[SupersymmetricModel===False,
-SFields[[i]]=ToExpression[ToString[Fields[[i,3]]]][absE][absI] /. A_[{}]->A;,
-SFields[[i]]=ToExpression["S"<>ToString[Fields[[i,3]]]][absE][absI] /. A_[{}]->A;
-];,
+SFields[[i]]=ToExpression[ToString[Fields[[i,3]]]][absE][absIsave] /. A_[{}]->A;,
 SFields[[i]]=0;];
 If[Last[Fields[[i]]]===F,
-If[SupersymmetricModel===False,
-FFields[[i]]=ToExpression[ToString[Fields[[i,3]]]][absE][absI] /. A_[{}]->A;,
-FFields[[i]]=ToExpression["F"<>ToString[Fields[[i,3]]]][absE][absI] /. A_[{}]->A;
-];,
+FFields[[i]]=ToExpression[ToString[Fields[[i,3]]]][absE][absIsave] /. A_[{}]->A;,
 FFields[[i]]=0;];
-(* AFields[[i]]=ToExpression["A"<>ToString[Fields[[i,3]]]][absE][absI]; *)
+
 
 If[Head[Fields[[i,1]]]=!=List,
 If[Last[Fields[[i]]]===S,
@@ -504,35 +506,28 @@ If[Last[Fields[[i]]]===F,
 subFieldsOne=Join[subFieldsOne,{Fields[[i,3]][{c__}][d_]->(FFieldsMultiplets [[i]]/. A_[{x__}]->A)[{c}][d]}];
 ];,
 If[Last[Fields[[i]]]===S,
-If[SupersymmetricModel===False,
-Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];,
-Set[ToExpression["S"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];
-];
+Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];
 ];
 If[Last[Fields[[i]]]===F,
-If[SupersymmetricModel===False,
-Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}][d]] /. NR->i];,
-Set[ToExpression["F"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}][d]] /. NR->i];
-];
+Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}][d]] /. NR->i];
 ];
 
 ];
-(*
-Set[ToExpression["A"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[AFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[AFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[AFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}]] /. NR\[Rule]i]; 
-*)
-If[Last[Fields[[i]]]===S,typeList=Join[typeList,{{If[SupersymmetricModel===False,ToExpression[ToString[Fields[[i,3]]]],ToExpression["S"<>ToString[Fields[[i,3]]]]],S}}];];
-If[Last[Fields[[i]]]===F,typeList=Join[typeList,{{If[SupersymmetricModel===False,ToExpression[ToString[Fields[[i,3]]]],ToExpression["F"<>ToString[Fields[[i,3]]]]],F}}];];
-(* typeList=Join[typeList,{{ToExpression["A"<>ToString[Fields[[i,3]]]],A}}]; *)
 
+If[Last[Fields[[i]]]===S,typeList=Join[typeList,{{ToExpression[ToString[Fields[[i,3]]]],S}}];];
+If[Last[Fields[[i]]]===F,typeList=Join[typeList,{{ToExpression[ToString[Fields[[i,3]]]],F}}];];
 
 ];
 
 ListFields = Join[ListFields,{{Fields[[i,3]],{absE,Expandedindizes},{absI,indizes}}}];
 SA`ListAllFieldsInit=Join[SA`ListAllFieldsInit,{{SFields[[i]],absEFull,absIFull}}];
 SA`ListAllFieldsInit=Join[SA`ListAllFieldsInit,{{FFields[[i]],absEFull,absIFull}}];
-(* SA`ListAllFieldsInit=Join[SA`ListAllFieldsInit,{{AFields[[i]],absEFull,absIFull}}];  *)
 
-(* SFieldsTensor[[i]] = {SFields[[i]],Product[sum[absEFull[[j,1]],1,absEFull[[j,2]]],{j,1,Length[absEFull]}]*Product[If[FreeQ[Gauge,absIFull[[j,1]]]\[Equal]False,sum[absIFull[[j,1]],1,absIFull[[j,2]]],1],{j,1,Length[absIFull]}],ind}; *)
+If[ChangedAbsI===True,
+ChangedAbsI=False;
+absI=absIsave;
+];
+
 i++;
 ];
 
@@ -553,7 +548,6 @@ ind={};
 For[i=1,i<=Length[Gauge],If[Gauge[[i,2]]=!=U[1],temp=Intersection[Abs/@Select[Transpose[Fields][[3+i]],((#!=1)&)]];
 ind=Join[ind,Table[{Gauge[[i,2]],temp[[j]]},{j,1,Length[temp]}]];];
 i++;];
-
 
 
 ];

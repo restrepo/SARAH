@@ -25,12 +25,12 @@
 
 
 
-Options[MakeCHep]={FeynmanGauge->True, CPViolation -> False, ModelNr->1, CompHep->False,NoSplittingWith->{},NoSplittingOnly->{}, UseRunningCoupling->True, SLHAinput->True, WriteMOfile->True, CalculateMasses->True, RunSPhenoViaCalcHep->False, IncludeEffectiveHiggsVertices->False,DMcandidate1->Default,DMcandidate2->None};
+Options[MakeCHep]={FeynmanGauge->True, CPViolation -> False, ModelNr->1, CompHep->False,NoSplittingWith->{},NoSplittingOnly->{}, UseRunningCoupling->True, SLHAinput->True, WriteMOfile->True, CalculateMasses->True, RunSPhenoViaCalcHep->False, IncludeEffectiveHiggsVertices->False,DMcandidate1->Default,DMcandidate2->None,Exclude->{}};
 
-MakeCHep[opt___ ]:=MakeCalcHepOutput[FeynmanGauge/.{opt}/.Options[MakeCHep],CPViolation/.{opt}/.Options[MakeCHep],ModelNr/.{opt}/.Options[MakeCHep],CompHep/.{opt}/.Options[MakeCHep],NoSplittingWith/.{opt}/.Options[MakeCHep],NoSplittingOnly/.{opt}/.Options[MakeCHep],UseRunningCoupling/.{opt}/.Options[MakeCHep], SLHAinput/.{opt}/.Options[MakeCHep], WriteMOfile/.{opt}/.Options[MakeCHep], CalculateMasses/.{opt}/.Options[MakeCHep], RunSPhenoViaCalcHep/.{opt}/.Options[MakeCHep],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeCHep],DMcandidate1/.{opt}/.Options[MakeCHep],DMcandidate2/.{opt}/.Options[MakeCHep]];
+MakeCHep[opt___ ]:=MakeCalcHepOutput[FeynmanGauge/.{opt}/.Options[MakeCHep],CPViolation/.{opt}/.Options[MakeCHep],ModelNr/.{opt}/.Options[MakeCHep],CompHep/.{opt}/.Options[MakeCHep],NoSplittingWith/.{opt}/.Options[MakeCHep],NoSplittingOnly/.{opt}/.Options[MakeCHep],UseRunningCoupling/.{opt}/.Options[MakeCHep], SLHAinput/.{opt}/.Options[MakeCHep], WriteMOfile/.{opt}/.Options[MakeCHep], CalculateMasses/.{opt}/.Options[MakeCHep], RunSPhenoViaCalcHep/.{opt}/.Options[MakeCHep],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeCHep],DMcandidate1/.{opt}/.Options[MakeCHep],DMcandidate2/.{opt}/.Options[MakeCHep],Exclude/.{opt}/.Options[MakeCHep]];
 
 
-MakeCalcHepOutput[FeynmanGauge_,CPViolation_,ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_, RunningCoup_, SLHA_, WriteMO_, CalcMM_,RunSPhenoCH_,effHiggsV_,DMc1_,DMc2_]:=Block[{startedtime},
+MakeCalcHepOutput[FeynmanGauge_,CPViolation_,ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_, RunningCoup_, SLHA_, WriteMO_, CalcMM_,RunSPhenoCH_,effHiggsV_,DMc1_,DMc2_,exclude_]:=Block[{startedtime},
 startedtime=TimeUsed[];
 (*If[FreeQ[NameOfStates,InitalizedVertexCalculaton]\[Equal]True,
 Message[ModelFile::NoVertices];,
@@ -47,6 +47,8 @@ CreateTeXNameList[SA`CurrentStates];
 CH`NotWriteMassMatrices={};
 StringReplaceExtra={};
 WritingCalcHep=True;
+
+ListVerticesExpandedCH={};
 
 (*
 Print["--------------------------------------"];
@@ -100,6 +102,20 @@ SortDependendParameters[RunningCoup];
 Particles[Current]=Particles[EigenstateName];
 InitSMParameters[EigenstateName];
 
+If[effHiggsV==True,
+RealScalarsCPeven=Select[Select[Transpose[PART[S]][[1]],conj[#]==#&],FreeQ[SA`ScalarsCPodd,#]&];
+RealScalarsCPodd=Select[Select[Transpose[PART[S]][[1]],conj[#]==#&],FreeQ[RealScalarsCPeven,#]&];
+RealScalarsAll=Join[RealScalarsCPeven,RealScalarsCPodd];
+ListPhotonS=Select[Transpose[PART[S]][[1]],getElectricCharge[#]=!=0&];
+ListPhotonF=Select[Transpose[PART[F]][[1]],getElectricCharge[#]=!=0&];
+ListPhotonV=Select[Transpose[PART[V]][[1]],getElectricCharge[#]=!=0&];
+
+ListGluonS=Select[Transpose[PART[S]][[1]],SA`DimensionGG[#,Position[Gauge,color][[1,1]]]=!=1&];
+ListGluonF=Select[Transpose[PART[F]][[1]],SA`DimensionGG[#,Position[Gauge,color][[1,1]]]=!=1&];
+ListGluonV=Select[Transpose[PART[V]][[1]],SA`DimensionGG[#,Position[Gauge,color][[1,1]]]=!=1&];
+
+];
+
 
 If[CalcMM==True && SLHA==False,
 InitCalcHepMM;
@@ -110,7 +126,7 @@ GetSPhenoParameters["SPheno.m"];
 ];
 
 CalcHepParticles[CPViolation,ModelNr, CompHep,RunningCoup,SLHA,CalcMM,RunSPhenoCH,effHiggsV,DMc1,DMc2];
-CalcHepVertices[FeynmanGauge,CPViolation,ModelNr, CompHep,NoSplitWith,NoSplitOnly,RunningCoup,SLHA,CalcMM,RunSPhenoCH,effHiggsV];
+CalcHepVertices[FeynmanGauge,CPViolation,ModelNr, CompHep,NoSplitWith,NoSplitOnly,RunningCoup,SLHA,CalcMM,RunSPhenoCH,effHiggsV,exclude];
 
 
 If[RunSPhenoCH==True,
@@ -130,6 +146,12 @@ Print["Output is saved in ", StyleForm[$sarahCurrentCalcHepDir,"Section",FontSiz
 If[WriteModelDirectories==True,
 WriteString[DirectoryNamesFile,"CHepDir="<>ToString[$sarahCurrentCalcHepDir] <>"\n"];
 ];
+
+For[i=1,i<=Length[angles],
+If[FreeQ[parDep,angles[[i]]],
+UnsetAbbreviateAngle[angles[[i]]];
+];
+i++;];
 
 WriteErrorNum=saveWriteErrorNum;
 SetNaNtoZero=False;
@@ -359,6 +381,7 @@ WriteString[varsFile, InsString[ToString[CForm[NumericalValue[Re[parameters[[i,1
 ];
 i++;];
 
+
 If[SLHA==False && effHiggsV==True,
 If[getGen[HiggsBoson]<99,
 For[iter1=1,iter1<=getGen[HiggsBoson],
@@ -395,12 +418,13 @@ iter1++;];
 ];
 ];
 
+
 ];
 
 
 
 
-CalcHepVertices[FeynmanGauge_,CPViolation_, ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_,RunningCoup_,SLHA_,CalcMM_,RunSPhenoCH_,effHiggsV_]:=Block[{i,particle1,particle2,particle3,particle4,iter1,iter2,iter3,iter4,Minutes},
+CalcHepVertices[FeynmanGauge_,CPViolation_, ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_,RunningCoup_,SLHA_,CalcMM_,RunSPhenoCH_,effHiggsV_,exclude_]:=Block[{i,particle1,particle2,particle3,particle4,iter1,iter2,iter3,iter4,Minutes},
 
 Print["Writing Lagrangian and Functions"];
 
@@ -449,45 +473,53 @@ goldfak=0;
 StringReplaceExtra={};
 
 Print["Writing all vertices"];
-(* Print["  Three Scalar Interaction"]; *)
+
+If[FreeQ[exclude,SSS],
 WriteVerticesCHep[SA`VertexList[SSS],CPViolation,FeynmanGauge, SSS,NoSplitWith,NoSplitOnly,False];
+];
 
-(* Print["  Two Scalar - One Vector Boson - Interaction"]; *)
+If[FreeQ[exclude,SSV],
 WriteVerticesCHep[SA`VertexList[SSV],CPViolation,FeynmanGauge, SSV,NoSplitWith,NoSplitOnly,False];
+];
 
-(* Print["  One Scalar - Two Vector Boson - Interaction"]; *)
+If[FreeQ[exclude,SVV],
 WriteVerticesCHep[SA`VertexList[SVV],CPViolation,FeynmanGauge, SVV,NoSplitWith,NoSplitOnly,False];
+];
 
-(* Print["  Two Ghost - One Vector Boson - Interaction"]; *)
+If[FreeQ[exclude,GGV],
 WriteVerticesCHep[SA`VertexList[GGV],CPViolation,FeynmanGauge, GGV,NoSplitWith,NoSplitOnly,False];
+];
 
-(* Print["  Two Ghost - One Scalar - Interaction"]; *)
+If[FreeQ[exclude,GGS],
 WriteVerticesCHep[SA`VertexList[GGS],CPViolation,FeynmanGauge, GGS,NoSplitWith,NoSplitOnly,False];
+];
 
-(* Print["  Two Fermion - One Scalar - Interaction"]; *)
+If[FreeQ[exclude,FFS],
 WriteVerticesCHep[SA`VertexList[FFS],CPViolation,FeynmanGauge, FFS,NoSplitWith,NoSplitOnly,False];
+];
 
-(* Print["  Two Fermion - One Vector Boson - Interaction"]; *)
+If[FreeQ[exclude,FFV],
 WriteVerticesCHep[SA`VertexList[FFV],CPViolation,FeynmanGauge, FFV,NoSplitWith,NoSplitOnly,False];
-
-(* Print["  Four Scalar - Interaction"]; *)
+]
+;
+If[FreeQ[exclude,SSSS],
 WriteVerticesCHep4[SA`VertexList[SSSS],CPViolation,FeynmanGauge, SSSS,NoSplitWith,NoSplitOnly,SupersymmetricModel];
-
+];
 
 StringReplaceExtra={"Sig(1,1,2)"->"1","Sig(1,2,1)"->"1","Sig(3,1,1)"->"1","Sig(3,2,2)"->"(-1)","Sig(2,1,2)"->"(-1)","Sig(2,2,1)"->"1"};
-(* Print["  Two Scalar - One Auxiliary Field - Interaction"]; *)
-(* WriteVerticesCHep[SA`VertexList[SSA],CPViolation,FeynmanGauge, SSA, NoSplitWith,NoSplitOnly,True]; *)
+If[FreeQ[exclude,ASS],
 WriteVerticesCHep[Expand[SA`VertexList[ASS]],CPViolation,FeynmanGauge, SSA, NoSplitWith,NoSplitOnly,True];
+];
 
 StringReplaceExtra={};
-(* Print["  Three Vector Boson - Interaction"]; *)
+If[FreeQ[exclude,VVV],
 WriteVerticesCHep[SA`VertexList[VVV],CPViolation,FeynmanGauge, VVV,NoSplitWith,NoSplitOnly,False];
-
+];
 (* SSVV *)
 
-(* Print["  Two Scalar - Two Vector Boson - Interaction"]; *)
+If[FreeQ[exclude,SSVV],
 WriteVerticesCHep4[SA`VertexList[SSVV],CPViolation,FeynmanGauge, SSVV,NoSplitWith,NoSplitOnly,False];
-
+];
 
 WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[VG,1,1],lP]<>"|"];
@@ -501,7 +533,7 @@ WriteString[lagrangeFile,"|m1.M3*m2.m3-m1.m3*m2.M3 \n"];
 (* V V V V*)
 
 (* Print["  Four Vector Boson - Interaction"]; *)
-
+If[FreeQ[exclude,VVVV],
 startedtimeVVVV=TimeUsed[];
 Print["   ... Generic class: ",StyleForm[VVVV,"Section",FontSize->10],". Expanding and writing: ",Dynamic[progressNrCH[VVVV]] ,"/",Length[SA`VertexList[VVVV]]". (",Dynamic[progressCoupCH[VVVV]],")"];
 
@@ -561,14 +593,13 @@ WriteString[lagrangeFile,"|"<>c1<>"m1.m2*m3.m4"<>c2<>"m1.m3*m2.m4"<>c3<>"m1.m4*m
 
 i++;];
 progressCoupCH[VVVV]="All done in "<>ToString[TimeUsed[]-startedtimeVVVV]<>"s";
+];
 
 
 
-
-(* Print["  One Scalar - One Vector Boson - One Auxiliary Field - Interaction"]; *)
 
 (* S V A *)
-
+If[FreeQ[exclude,SVA],
 startedtimeSVA=TimeUsed[];
 Print["   ... Generic class: ",StyleForm[SVA,"Section",FontSize->10],". Expanding and writing: ",Dynamic[progressNrCH[SVA]] ,"/",Length[PART[S]]". (",Dynamic[progressCoupCH[SVA]],")"];
 
@@ -597,62 +628,61 @@ iter1++;];
 ];
 i++;];
 progressCoupCH[SVA]="All done in "<>ToString[TimeUsed[]-startedtimeSVA]<>"s";
-
+];
 If[effHiggsV==True,
 Print["  Loop induced Scalar - Two Vector Boson - Interaction"];
-If[getGen[HiggsBoson]<99,
-For[iter1=1,iter1<=getGen[HiggsBoson],
-For[fiter1=1,fiter1<=getFla[HiggsBoson],
+
+(*
+For[i=1,i\[LessEqual]Length[RealScalarsAll],
+For[iter1=getGenSPhenoStart[RealScalarsAll[[i]]],iter1\[LessEqual]getGen[RealScalarsAll[[i]]],
 WriteString[lagrangeFile," "];
+WriteString[lagrangeFile,InsString[CalcHepName[RealScalarsAll[[i]],iter1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CHepName[VectorP,1,1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CalcHepName[VectorP,1,1],lP]<>"|        |"];
+WriteString[lagrangeFile,InsString["-16*"<>getOutputName[RealScalarsAll[[i]]]<>"PP"<>ToString[iter1],lF]];
+WriteString[lagrangeFile,"| (p2.p3*m2.m3-p2.m3*p3.m2) \n"];
+
+WriteString[lagrangeFile," "];
+WriteString[lagrangeFile,InsString[CalcHepName[RealScalarsAll[[i]],iter1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CHepName[VectorG,1,1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CalcHepName[VectorG,1,1],lP]<>"|        |"];
+WriteString[lagrangeFile,InsString["-16*"<>getOutputName[RealScalarsAll[[i]]]<>"GG"<>ToString[iter1],lF]];
+WriteString[lagrangeFile,"| (p2.p3*m2.m3-p2.m3*p3.m2) \n"];
+iter1++;];
+i++;];
+*)
+
+If[getGen[HiggsBoson]<99,For[iter1=1,iter1<=getGen[HiggsBoson],For[fiter1=1,fiter1<=getFla[HiggsBoson],WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[HiggsBoson,iter1,fiter1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CHepName[VectorP,1,1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CalcHepName[VectorP,1,1],lP]<>"|        |"];
-If[getFla[HiggsBoson]>1,
-WriteString[lagrangeFile,InsString["HPP"<>ToString[iter1]<>ToString[fiter1],lF]];,
-WriteString[lagrangeFile,InsString["HPP"<>ToString[iter1],lF]];
-];
+If[getFla[HiggsBoson]>1,WriteString[lagrangeFile,InsString["HPP"<>ToString[iter1]<>ToString[fiter1],lF]];,WriteString[lagrangeFile,InsString["HPP"<>ToString[iter1],lF]];];
 WriteString[lagrangeFile,"| (p2.p3*m2.m3-p2.m3*p3.m2) \n"];
-
 WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[HiggsBoson,iter1,fiter1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CHepName[VectorG,1,1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CalcHepName[VectorG,1,1],lP]<>"|        |"];
-If[getFla[HiggsBoson]>1,
-WriteString[lagrangeFile,InsString["HGG"<>ToString[iter1]<>ToString[fiter1],lF]];,
-WriteString[lagrangeFile,InsString["HGG"<>ToString[iter1],lF]];
-];
+If[getFla[HiggsBoson]>1,WriteString[lagrangeFile,InsString["HGG"<>ToString[iter1]<>ToString[fiter1],lF]];,WriteString[lagrangeFile,InsString["HGG"<>ToString[iter1],lF]];];
 WriteString[lagrangeFile,"| (p2.p3*m2.m3-p2.m3*p3.m2) \n"];
-
 fiter1++;];
-iter1++;];
-];
+iter1++;];];
 
-If[getGen[PseudoScalar]<99,
-For[iter1=getGenSPhenoStart[PseudoScalar],iter1<=getGen[PseudoScalar],
-For[fiter1=1,fiter1<=getFla[PseudoScalar],
-WriteString[lagrangeFile," "];
+If[getGen[PseudoScalar]<99,For[iter1=getGenSPhenoStart[PseudoScalar],iter1<=getGen[PseudoScalar],For[fiter1=1,fiter1<=getFla[PseudoScalar],WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[PseudoScalar,iter1,fiter1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CHepName[VectorP,1,1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CalcHepName[VectorP,1,1],lP]<>"|        |"];
-If[getFla[PseudoScalar]>1,
-WriteString[lagrangeFile,InsString["APP"<>ToString[iter1]<>ToString[fiter1],lF]];,
-WriteString[lagrangeFile,InsString["APP"<>ToString[iter1],lF]];
-];
+If[getFla[PseudoScalar]>1,WriteString[lagrangeFile,InsString["APP"<>ToString[iter1]<>ToString[fiter1],lF]];,WriteString[lagrangeFile,InsString["APP"<>ToString[iter1],lF]];];
 WriteString[lagrangeFile,"| (p2.p3*m2.m3-p2.m3*p3.m2) \n"];
-
 WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[PseudoScalar,iter1,fiter1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CHepName[VectorG,1,1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CalcHepName[VectorG,1,1],lP]<>"|        |"];
-If[getFla[PseudoScalar]>1,
-WriteString[lagrangeFile,InsString["AGG"<>ToString[iter1]<>ToString[fiter1],lF]];,
-WriteString[lagrangeFile,InsString["AGG"<>ToString[iter1],lF]];
-];
+If[getFla[PseudoScalar]>1,WriteString[lagrangeFile,InsString["AGG"<>ToString[iter1]<>ToString[fiter1],lF]];,WriteString[lagrangeFile,InsString["AGG"<>ToString[iter1],lF]];];
 WriteString[lagrangeFile,"| (p2.p3*m2.m3-p2.m3*p3.m2) \n"];
-
 fiter1++;];
-iter1++;];
-];
+iter1++;];];
+
+(* WriteLoopInducedCouplingsCH; *)
 ];
 
 (*
@@ -673,6 +703,125 @@ i++;
 
 Close[lagrangeFile];
 Close[funcFile];
+];
+
+WriteLoopInducedCouplingsCH:=Block[{i,j,gt1,gt2,k,counterS=1,counterT=1,pos,suffix},
+
+For[i=1,i<=Length[RealScalarsAll],
+If[FreeQ[RealScalarsCPodd,RealScalarsAll[[i]]],
+suffix="even",
+suffix="odd";
+];
+
+For[gt1=getGenSPhenoStart[RealScalarsAll[[i]]],gt1<=getGen[RealScalarsAll[[i]]],
+WriteString[funcFile,InsString["aQCD"<>ToString[counterS],lFF]<>"|"];
+WriteString[funcFile,"alphaQCD("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>")/pi\n"];
+
+For[j=1,j<=Length[ListPhotonF],
+For[gt2=1,gt2<=getGen[ListPhotonF[[j]]],
+If[FreeQ[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListPhotonF[[j]],gt2,1},{AntiField[ListPhotonF[[j]]],gt2,1}}]]==False,
+WriteString[funcFile,InsString["aT"<>ToString[counterT],lFF]<>"|"];
+pos=Position[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListPhotonF[[j]],gt2,1},{AntiField[ListPhotonF[[j]]],gt2,1}}]][[1,1]];
+WriteString[funcFile,ListVerticesExpandedCH[[pos,2]]<>"/"<>CalcHepMass[ListPhotonF[[j]],gt2,1]<>" \n"];
+WriteString[funcFile,InsString["sT"<>ToString[counterT],lFF]<>"|"];
+WriteString[funcFile,If[j>1 || gt2>1,"sT"<>ToString[counterT-1],""]<>"-("<>ToString[InputForm[getElectricCharge[ListPhotonF[[j]]]]]<>")^2*cabs(hAA"<>suffix<>"("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>",aQCD"<>ToString[counterS]<>",1,1,"<>ToString[SA`DimensionGG[ListPhotonF[[j]],Position[Gauge,color][[1,1]]]/. SA`DimensionGG[a__]->1]<>","<>CalcHepMass[ListPhotonF[[j]],gt2,1]<>",aT"<>ToString[counterT]<>")) \n"];
+counterT++;
+];
+gt2++;];
+j++;];
+
+If[FreeQ[RealScalarsCPodd,RealScalarsAll[[i]]],
+For[j=1,j<=Length[ListPhotonS],
+For[gt2=getGenSPhenoStart[ListPhotonS[[j]]],gt2<=getGen[ListPhotonS[[j]]],
+If[FreeQ[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListPhotonS[[j]],gt2,1},{AntiField[ListPhotonS[[j]]],gt2,1}}]]==False,
+WriteString[funcFile,InsString["aT"<>ToString[counterT],lFF]<>"|"];
+pos=Position[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListPhotonS[[j]],gt2,1},{AntiField[ListPhotonS[[j]]],gt2,1}}]][[1,1]];
+WriteString[funcFile,ListVerticesExpandedCH[[pos,2]]<>"/(2*"<>CalcHepMass[ListPhotonS[[j]],gt2,1]<>"^2) \n"];
+WriteString[funcFile,InsString["sT"<>ToString[counterT],lFF]<>"|"];
+WriteString[funcFile,"sT"<>ToString[counterT-1]<>"-("<>ToString[InputForm[getElectricCharge[ListPhotonS[[j]]]]]<>")^2*cabs(hAAeven("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>",aQCD"<>ToString[counterS]<>",1,0,"<>ToString[SA`DimensionGG[ListPhotonS[[j]],Position[Gauge,color][[1,1]]]]<>","<>CalcHepMass[ListPhotonS[[j]],gt2,1]<>",aT"<>ToString[counterT]<>")) \n"];
+counterT++;
+];
+gt2++;];
+j++;];
+
+For[j=1,j<=Length[ListPhotonV],
+For[gt2=1,gt2<=getGen[ListPhotonV[[j]]],
+If[FreeQ[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListPhotonV[[j]],gt2,1},{AntiField[ListPhotonV[[j]]],gt2,1}}]]==False,
+WriteString[funcFile,InsString["aT"<>ToString[counterT],lFF]<>"|"];
+pos=Position[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListPhotonV[[j]],gt2,1},{AntiField[ListPhotonV[[j]]],gt2,1}}]][[1,1]];
+WriteString[funcFile,"-"<>ListVerticesExpandedCH[[pos,2]]<>"/"<>CalcHepMass[ListPhotonV[[j]],gt2,1]<>"^2 \n"];
+WriteString[funcFile,InsString["sT"<>ToString[counterT],lFF]<>"|"];
+WriteString[funcFile,"sT"<>ToString[counterT-1]<>"-("<>ToString[InputForm[getElectricCharge[ListPhotonV[[j]]]]]<>")^2*cabs(hAAeven("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>",aQCD"<>ToString[counterS]<>",1,2,1,"<>CalcHepMass[ListPhotonV[[j]],gt2,1]<>",aT"<>ToString[counterT]<>")) \n"];
+counterT++;
+];
+gt2++;];
+j++;];
+];
+WriteString[funcFile,InsString[getOutputName[RealScalarsAll[[i]]]<>"PP"<>ToString[gt1],lFF]<>"|"];
+WriteString[funcFile,"sT"<>ToString[counterT-1]<>" \n"];
+
+counterS++;
+gt1++;];
+i++;];
+
+
+For[i=1,i<=Length[RealScalarsAll],
+If[FreeQ[RealScalarsCPodd,RealScalarsAll[[i]]],
+suffix="even",
+suffix="odd";
+];
+
+For[gt1=getGenSPhenoStart[RealScalarsAll[[i]]],gt1<=getGen[RealScalarsAll[[i]]],
+WriteString[funcFile,InsString["aQCD"<>ToString[counterS],lFF]<>"|"];
+WriteString[funcFile,"alphaQCD("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>")/pi\n"];
+
+For[j=1,j<=Length[ListGluonF],
+For[gt2=1,gt2<=getGen[ListGluonF[[j]]],
+If[FreeQ[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListGluonF[[j]],gt2,1},{AntiField[ListGluonF[[j]]],gt2,1}}]]==False,
+WriteString[funcFile,InsString["aT"<>ToString[counterT],lFF]<>"|"];
+pos=Position[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListGluonF[[j]],gt2,1},{AntiField[ListGluonF[[j]]],gt2,1}}]][[1,1]];
+WriteString[funcFile,ListVerticesExpandedCH[[pos,2]]<>"/"<>CalcHepMass[ListGluonF[[j]],gt2,1]<>" \n"];
+WriteString[funcFile,InsString["sT"<>ToString[counterT],lFF]<>"|"];
+WriteString[funcFile,If[j>1 || gt2>1,"sT"<>ToString[counterT-1],""]<>"-cabs(hGG"<>suffix<>"("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>",aQCD"<>ToString[counterS]<>",1,1,"<>ToString[SA`DimensionGG[ListGluonF[[j]],Position[Gauge,color][[1,1]]]/. SA`DimensionGG[a__]->1]<>","<>CalcHepMass[ListGluonF[[j]],gt2,1]<>",aT"<>ToString[counterT]<>")) \n"];
+counterT++;
+];
+gt2++;];
+j++;];
+
+If[FreeQ[RealScalarsCPodd,RealScalarsAll[[i]]],
+For[j=1,j<=Length[ListGluonS],
+For[gt2=getGenSPhenoStart[ListGluonS[[j]]],gt2<=getGen[ListGluonS[[j]]],
+If[FreeQ[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListGluonS[[j]],gt2,1},{AntiField[ListGluonS[[j]]],gt2,1}}]]==False,
+WriteString[funcFile,InsString["aT"<>ToString[counterT],lFF]<>"|"];
+pos=Position[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListGluonS[[j]],gt2,1},{AntiField[ListGluonS[[j]]],gt2,1}}]][[1,1]];
+WriteString[funcFile,ListVerticesExpandedCH[[pos,2]]<>"/(2*"<>CalcHepMass[ListGluonS[[j]],gt2,1]<>"^2) \n"];
+WriteString[funcFile,InsString["sT"<>ToString[counterT],lFF]<>"|"];
+WriteString[funcFile,"sT"<>ToString[counterT-1]<>"-cabs(hGGeven("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>",aQCD"<>ToString[counterS]<>",1,0,"<>ToString[SA`DimensionGG[ListGluonS[[j]],Position[Gauge,color][[1,1]]]]<>","<>CalcHepMass[ListGluonS[[j]],gt2,1]<>",aT"<>ToString[counterT]<>")) \n"];
+counterT++;
+];
+gt2++;];
+j++;];
+
+For[j=1,j<=Length[ListGluonV],
+For[gt2=1,gt2<=getGen[ListGluonV[[j]]],
+If[FreeQ[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListGluonV[[j]],gt2,1},{AntiField[ListGluonV[[j]]],gt2,1}}]]==False,
+WriteString[funcFile,InsString["aT"<>ToString[counterT],lFF]<>"|"];
+pos=Position[ListVerticesExpandedCH,Sort[{{RealScalarsAll[[i]],gt1,1},{ListGluonV[[j]],gt2,1},{AntiField[ListGluonV[[j]]],gt2,1}}]][[1,1]];
+WriteString[funcFile,"-"<>ListVerticesExpandedCH[[pos,2]]<>"/"<>CalcHepMass[ListGluonV[[j]],gt2,1]<>"^2 \n"];
+WriteString[funcFile,InsString["sT"<>ToString[counterT],lFF]<>"|"];
+WriteString[funcFile,"sT"<>ToString[counterT-1]<>"-cabs(hGGeven("<>CalcHepMass[RealScalarsAll[[i]],gt1,1]<>",aQCD"<>ToString[counterS]<>",1,2,1,"<>CalcHepMass[ListGluonV[[j]],gt2,1]<>",aT"<>ToString[counterT]<>")) \n"];
+counterT++;
+];
+gt2++;];
+j++;];
+];
+WriteString[funcFile,InsString[getOutputName[RealScalarsAll[[i]]]<>"GG"<>ToString[gt1],lFF]<>"|"];
+WriteString[funcFile,"sT"<>ToString[counterT-1]<>" \n"];
+
+counterS++;
+gt1++;];
+i++;];
+
 
 ];
 
@@ -775,6 +924,7 @@ WriteString[funcFile,"slhaVal(\"IM"<>LHBlockName[parameters[[i,1]]]<>"\",Q,1,"<>
 ];
 i++;];
 ];
+
 
 If[SLHA==True && effHiggsV==True,
 If[getGen[HiggsBoson]<99,
@@ -891,6 +1041,37 @@ Unprotect[Cos,Sin,Tan];
 Format[Cos[list[[pos]]],CForm]=Format["C"<>ToString[abbr[[pos]]],OutputForm];
 Format[Sin[list[[pos]]],CForm]=Format["S"<>ToString[abbr[[pos]]],OutputForm];
 Format[Tan[list[[pos]]],CForm]=Format["T"<>ToString[abbr[[pos]]],OutputForm];
+Protect[Cos,Sin,Tan];
+];
+];
+
+UnsetAbbreviateAngle[ang_]:=Block[{i,pos,abn},
+
+list={\[Alpha],\[Beta],\[Gamma],\[Delta],\[Lambda],\[Epsilon], ThetaW};
+abbr={a,b,g,d,k,e,TW};
+name={alpha,beta,gamma,delta,lambda,epsilon,ThetaW}; 
+
+pos=Position[list,ang];
+
+
+If[pos==={},
+If[StringLength[ToString[ang]]>2,
+abn=StringTake[ToString[ang],2];,
+abn = ToString[ang];
+];
+
+Unprotect[Cos,Sin,Tan];
+Format[Cos[ang],CForm]=.;
+Format[Sin[ang],CForm]=.;
+Format[Tan[ang],CForm]=.;
+Protect[Cos,Sin,Tan];,
+
+pos=pos[[1,1]];
+
+Unprotect[Cos,Sin,Tan];
+Format[Cos[list[[pos]]],CForm]=.;
+Format[Sin[list[[pos]]],CForm]=.;
+Format[Tan[list[[pos]]],CForm]=.;
 Protect[Cos,Sin,Tan];
 ];
 ];
@@ -1617,6 +1798,7 @@ WriteString[lagrangeFile,InsString[CHepName[particle2,iter2,fiter2],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CHepName[particle3,iter3,fiter3],lP]<>"|        |"];
 
 If[type===FFS || type===FFV,
+ListVerticesExpandedCH=Join[ListVerticesExpandedCH,{{Sort[{{particle1,iter1,fiter1},{particle2,iter2,fiter2},{particle3,iter3,fiter3}}],facNameA}}];
 If[type===FFV,fac="G(m3)*";,fac="";];
 WriteString[lagrangeFile,InsString[Imc<>"/2",lF]];
 If[CPViolation==True,
@@ -1644,7 +1826,7 @@ VVV, lorentzfactor = MakeThreeVBLF[SA`VertexList[VVV][[i,2,2]] ];
 	];
 ];
 
-
+ListVerticesExpandedCH=Join[ListVerticesExpandedCH,{{Sort[{{particle1,iter1,fiter1},{particle2,iter2,fiter2},{particle3,iter3,fiter3}}],facName}}];
 If[CPViolation==True,
 WriteString[lagrangeFile,InsString[Imc,lF]];
 If[type===SSV,
@@ -1808,9 +1990,13 @@ WriteString[particlesFile,ToString[indWI[[Position[indWI,color][[1,1]],2]]]<>"  
 
 
 If[NumericQ[(getElectricCharge[list[[i,1]]]//. Hold->ReleaseHold)]=!=False,
+If[Head[(3 getElectricCharge[list[[i,1]]]//. Hold ->ReleaseHold)]=!=Integer,
+CalcHep::ChargeProblem="There is a particle (``) whose charge times 3 is not an integer. Be prepared that CalcHep might break. ";
+Message [CalcHep::ChargeProblem,list[[i,1]]]; 
+];
 If[(getElectricCharge[list[[i,1]]]//. Hold ->ReleaseHold)<0,
-WriteString[particlesFile,ToString[3*(getElectricCharge[list[[i,1]]]//. Hold ->ReleaseHold)]];,
-WriteString[particlesFile,ToString[3*(getElectricCharge[list[[i,1]]]//. Hold ->ReleaseHold)]<>" "];
+WriteString[particlesFile,ToString[InputForm[3*(getElectricCharge[list[[i,1]]]//. Hold ->ReleaseHold)]]];,
+WriteString[particlesFile,ToString[InputForm[3*(getElectricCharge[list[[i,1]]]//. Hold ->ReleaseHold)]]<>" "];
 ];,
 WriteString[particlesFile,"  "];
 ];
@@ -2416,7 +2602,7 @@ If[Max[colorflow]==0,Return[True];];
 Switch[type,
 SSSS,
 	colorflow=DeleteCases[colorflow,0];
-	If[colorflow==={4/3,-4/3} || colorflow==={-4/3,4/3} || colorflow==={-4/3,-4/3,4/3,4/3}|| colorflow==={4/3,4/3,-4/3,-4/3},
+	If[colorflow==={4/3,-4/3} || colorflow==={-4/3,4/3} || colorflow==={3,3}  (*|| colorflow==={-4/3,-4/3,4/3,4/3}|| colorflow==={4/3,4/3,-4/3,-4/3} *),
 	Return[True];
 	];,
 SSVV,
@@ -2426,24 +2612,25 @@ SSVV,
 		If[cfsub1==={4/3,-4/3} || cfsub1==={-4/3,4/3},Return[True];];
 	];, 
 SSV,
-	If[colorflow==={4/3,-4/3,0} || colorflow==={-4/3,4/3,0} || colorflow==={4/3,-4/3,3} || colorflow==={-4/3,4/3,3} || colorflow==={3,3,3}|| colorflow==={-3,3,3} || colorflow==={3,-3,3} || colorflow==={-3,-3,3}, Return[True];];,
-ASS | SSS,
+	If[colorflow==={4/3,-4/3,0} || colorflow==={-4/3,4/3,0} || colorflow==={4/3,-4/3,3}  || colorflow==={3,3,0} || colorflow==={-4/3,4/3,3} || colorflow==={3,3,3}|| colorflow==={-3,3,3} || colorflow==={3,-3,3} || colorflow==={-3,-3,3}, Return[True];];,
+ASS, Return[True];,
+SSS,
 	cfsub={colorflow[[2]],colorflow[[3]]};
 	Switch[colorflow[[1]],
 	0,
-		If[cfsub==={4/3,-4/3} || cfsub==={-4/3,4/3},Return[True];];,
+		If[cfsub==={4/3,-4/3} || cfsub==={-4/3,4/3} || cfsub==={3,3},Return[True];];,
 	4/3,
 		If[cfsub==={-4/3,0} || cfsub==={0,-4/3} || cfsub==={-4/3,3} || cfsub==={3,-4/3} ,Return[True];];,
 	-4/3,
 		If[cfsub==={4/3,0} || cfsub==={0,4/3} || cfsub==={4/3,3} || cfsub==={3,4/3} ,Return[True];];,
 	3,
-	         If[cfsub==={-4/3,4/3} || cfsub==={4/3,-4/3} || cfsub==={3,3},Return[True];];
+	         If[cfsub==={-4/3,4/3} || cfsub==={4/3,-4/3} || cfsub==={3,3} || cfsub==={3,0} || cfsub==={0,3},Return[True];];
 	];,
 FFS,
 	cfsub={colorflow[[1]],colorflow[[2]]};
 	Switch[colorflow[[3]],
 	0,
-		If[cfsub==={4/3,-4/3} || cfsub==={-4/3,4/3},Return[True];];,
+		If[cfsub==={4/3,-4/3} || cfsub==={-4/3,4/3} || cfsub==={3,3} || cfsub==={3,-3},Return[True];];,
 	4/3,
 		If[cfsub==={-4/3,0} || cfsub==={0,-4/3} || cfsub==={-4/3,3} || cfsub==={3,-4/3} ,Return[True];];,
 	-4/3,
@@ -2452,7 +2639,7 @@ FFS,
 	         If[cfsub==={-4/3,4/3} || cfsub==={4/3,-4/3} || cfsub==={3,3},Return[True];];
 	];,
 FFV,
-	If[colorflow==={4/3,-4/3,0} || colorflow==={-4/3,4/3,0} || colorflow==={4/3,-4/3,3} || colorflow==={-4/3,4/3,3} || colorflow==={3,3,3}, Return[True];];,
+	If[colorflow==={4/3,-4/3,0} || colorflow==={-4/3,4/3,0}  || colorflow==={3,3,0}  || colorflow==={-3,3,0} || colorflow==={4/3,-4/3,3} || colorflow==={-4/3,4/3,3} || colorflow==={3,3,3}, Return[True];];,
 VVV,
 	If[colorflow==={3,3,3}, Return[True];];,
 GGV,

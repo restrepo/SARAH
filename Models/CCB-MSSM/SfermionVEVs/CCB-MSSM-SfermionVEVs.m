@@ -23,7 +23,7 @@ RpP = {1,1,-1};
 
 Gauge[[1]]={B,   U[1], hypercharge, g1,False,RpM};
 Gauge[[2]]={WB, SU[2], left,        g2,True, RpM};
-Gauge[[3]]={G,  SU[3], color,       g3,False,RpM};
+Gauge[[3]]={G,  SU[3], color,       g3,True,RpM};
 
 
 
@@ -32,7 +32,7 @@ Gauge[[3]]={G,  SU[3], color,       g3,False,RpM};
 SuperFields[[1]] = {q, 3, {{uLr,uLg,uLb},  {dLr,dLg,dLb}},   1/6, 2, 3, RpM};  
 SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, RpM};
 SuperFields[[3]] = {Hd,1, {Hd0, Hdm},  -1/2, 2, 1, RpP};
-SuperFields[[4]] = {Hu,1, {Hup, Hu0},   1/2, 2, 1}, RpP};
+SuperFields[[4]] = {Hu,1, {Hup, Hu0},   1/2, 2, 1, RpP};
 
 SuperFields[[5]] = {d, 3, {conj[dRr],conj[dRg],conj[dRb]},   1/3, 1, -3, RpM};
 SuperFields[[6]] = {u, 3, {conj[uRr],conj[uRg],conj[uRb]},  -2/3, 1, -3, RpM};

@@ -108,20 +108,20 @@ GeneratePreSARAHObservables["LFV",sphenoFlavorKitLFV];
 GeneratePreSARAHObservables["QFV",sphenoFlavorKitQFV];
 
 If[IncludeOldObservables===True,
-(* leptonic observables l -> 3 l' and l -> l' gamma *)
+(* leptonic observables l \[Rule] 3 l' and l \[Rule] l' gamma *)
 Generate1LeptonTo3Leptons;
 GenerateLgammaLp;
 
-(* Z ->  l l' decays *)
+(* Z \[Rule]  l l' decays *)
 GenerateZLLp;
 
-(*B0 (s,d) meson -> l l decays *)
+(*B0(s,d) meson \[Rule] l l decays *)
 GenerateB0LLp;
 
 (* mu - e conversion and tau to meson decays *)
 GenerateLLpHadron;
 
-(* Hadronic observables; so far only b -> s gamma *)
+(* Hadronic observables; so far only b \[Rule] s gamma *)
 GenerateC7andC8;
 WriteBtoQGamma;
 ];
@@ -155,7 +155,7 @@ i++;];
 
 GenerateB0LLp:=Block[{i,j,temp,AllInternalParticles={},AllPenguinDiagrams={},AllBoxDiagrams={},AllWaveDiagrams={},AllInfoList,AllInfoList2,AllInfoList3},
 
-(* This function generates all possible diagrams for B0 (s,d) -> ll; checks for necessary couplings and other parameters and passes this information to another routine which writes the Fortran function afterwards *)
+(* This function generates all possible diagrams for B0 (s,d) \[Rule] ll; checks for necessary couplings and other parameters and passes this information to another routine which writes the Fortran function afterwards *)
 
 Print["Write Function for B0(s,d) to l l  (by Kilian Nickel)"];
 
@@ -221,7 +221,7 @@ NeededMassesB0LLp=Intersection[NeededMassesB0LLp];(*remove duplicates*)
 (*generate wave diagrams*)
 
 (* Changed by FS to work with getChargeFactor *)
-(* AllWaveDiagrams=InsFields[{{C[BottomQuark,FieldToInsert[1],AntiField[FieldToInsert[2]]]},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],External[1]->BottomQuark}}]; *)
+(* AllWaveDiagrams=InsFields[{{C[BottomQuark,FieldToInsert[1],AntiField[FieldToInsert[2]]]},{Internal[1]\[Rule]FieldToInsert[1], Internal[2]\[Rule]FieldToInsert[2],External[1]\[Rule]BottomQuark}}]; *)
 (*generate wave diagrams*)
 AllWaveDiagrams=InsFields[{{C[BottomQuark,FieldToInsert[1],AntiField[FieldToInsert[2]]],C[AntiField[BottomQuark],AntiField[FieldToInsert[1]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],External[1]->BottomQuark,External[2]->AntiField[BottomQuark]}}];
 
@@ -255,7 +255,7 @@ WriteB0LLp[NeededMassesB0LLp,NeededCouplingsB0LLp,AllBoxDiagrams,AllPenguinDiagr
 WriteB0LLp[masses_,couplings_,boxdiagrams_,penguindiagrams_,wavediagrams_]:=Block[{i,j,k,MassBound="MassB02",ampSquaredstring,NrBoxDiagrams,NrPenguinDiagrams,NrWaveDiagrams,NrAllDiagrams,VtxBottomBottom,VtxElectronElectron,prop,string1,string2,string3,string4,MassPropSq,subB={"coup1L"->"coup1R","coup2L"->"coup2R","coup3L"->"coup3R","coup4L"->"coup4R","coup1R"->"coup1L","coup2R"->"coup2L","coup3R"->"coup3L","coup4R"->"coup4L","coup5L"->"coup5R","coup5R"->"coup5L"},VtxBottomElectronC,VtxBottomElectron},
 
 
-(* This function writes the Fortran code for B0 (s,d) ->ll' for SPheno *)
+(* This function writes the Fortran code for B0(s,d) \[Rule]ll' for SPheno *)
 
 (* --- Create the header of the subroutine --- *)
 (* The syntax of MakeSubroutineTitle is: Name of Subroutine; main part of parameters; some additional parameters which should appear at the beginning; some additional parameters which should appear at the end; file name *)
@@ -269,7 +269,7 @@ MakeSubroutineTitle["BrB0LLp",Flatten[{masses,couplings}],{"inState1","inState2"
 (* --- Here starts the variable declaration --- *)
 WriteString[sphenoLow,"Implicit None \n"];
 
-(* 'MakeVariableList' takes a list of parameters and checks itself if they are real or complex and adds the dimension. Only the scope has to be given as second (Intent (in), Intent (out), Intent (inout), "")argument *)
+(* 'MakeVariableList' takes a list of parameters and checks itself if they are real or complex and adds the dimension. Only the scope has to be given as second (Intent(in), Intent(out), Intent(inout), "")argument *)
 MakeVariableList[Flatten[{couplings,masses}],",Intent(in)",sphenoLow];
 NrBoxDiagrams=Length[boxdiagrams];
 NrPenguinDiagrams=Length[penguindiagrams];
@@ -599,7 +599,7 @@ WriteString[sphenoLow,"End Subroutine BrB0LLp  \n\n"];
 
 GenerateLgammaLp:=Block[{i,j,temp,AllInternalParticles={},AllAddedCouplings={}},
 
-(* This function generate all possible diagrams for l -> l' gamma; checks for necessary couplings and other parameters  and passes this information to another routine which writes the Fortran function afterwards *)
+(* This function generate all possible diagrams for l \[Rule] l' gamma; checks for necessary couplings and other parameters  and passes this information to another routine which writes the Fortran function afterwards *)
 
 Print["Write Function for l to l' gamma"];
 
@@ -626,7 +626,7 @@ WriteLgammaLp[NeededMassesLLp,NeededCouplingsLLp,AllDiagrams];
 ];
 
 WriteLgammaLp[masses_,couplings_,diagrams_]:=Block[{i,j,k},
-(* This function writes the Fotrance code for l -> l' gamma for SPheno *)
+(* This function writes the Fotrance code for l \[Rule] l' gamma for SPheno *)
 
 (* --- Create the header of the subroutine --- *)
 (* The syntax if MakeSubroutineTitle is: Name of Subroutine; main part of parameters; some additional parameters which should appear at the beginning; some additional parameters which should appear at the end; file name *)
@@ -636,7 +636,7 @@ MakeSubroutineTitle["BrLgammaLp",Flatten[{masses,couplings}],{"inState","outStat
 (* --- Here starts the variable declaration --- *)
 WriteString[sphenoLow,"Implicit None \n"];
 
-(* 'MakeVariableList' takes a list of parameters and checks itself if they are real or complex and adds the dimension. Only the scope has to be given as second (Intent (in), Intent (out), Intent (inout), "")argument *)
+(* 'MakeVariableList' takes a list of parameters and checks itself if they are real or complex and adds the dimension. Only the scope has to be given as second (Intent(in), Intent(out), Intent(inout), "")argument *)
 MakeVariableList[Flatten[{couplings,masses}],",Intent(in)",sphenoLow];
 
 WriteString[sphenoLow,"Integer,Intent(in) :: inState, outState \n"];
@@ -750,7 +750,7 @@ temp=GeneratePenguinDiagrams[Electron,bar[Electron],VectorPropagators[[i]]];
 
 For[j=1,j<=Length[temp],
  If[FreeQ[(* massless *) {VP,VG},(getBlank[Internal[1] /. temp[[j,2]]]) |  (getBlank[Internal[2] /. temp[[j,2]]]) | (getBlank[Internal[3] /. temp[[j,2]]])],
-(* PenguinContributionsVector[[i]]= Join[PenguinContributionsVector[[i]],{temp[[j]]/. C[a__]->Cp[a]}]; *)
+(* PenguinContributionsVector[[i]]= Join[PenguinContributionsVector[[i]],{temp[[j]]/. C[a__]\[Rule]Cp[a]}]; *)
 PenguinContributionsVector[[i]]= Join[PenguinContributionsVector[[i]],{temp[[j]]}];
 AllInternalParticles=Join[AllInternalParticles,{Internal[1],Internal[2],Internal[3]}/. temp[[j,2]]];
 AllAddedCouplings = Join[AllAddedCouplings,temp[[j,1]]];
@@ -2026,11 +2026,11 @@ WriteString[sphenoLow,"End Subroutine BrLLpHadron \n\n"];
 
 GenerateZLLp:=Block[{i,j,temp,AllInternalParticles={},AllAddedCouplings={}},
 
-(* This function generates all possible diagrams for Z -> ll'; checks for necessary couplings and other parameters and passes this information to another routine which writes the Fortran function afterwards *)
+(* This function generates all possible diagrams for Z \[Rule] ll'; checks for necessary couplings and other parameters and passes this information to another routine which writes the Fortran function afterwards *)
 
 Print["Write Function for Z to l l'  (by Kilian Nickel)"];
 
-(* Generates all Penguin (Triangle) diagrams with a Z boson coming in and two external charged leptons (here only called 'Electron', but the generation is NOT fixed!) coming out. The diagrams generic structure is the same as for L->gammaLp. Note, a list with names for physical parameters can be found in Packages/init.nb in the function InitSMParameters. The function InsFields is similar to the function 'InsertFields' known by FeynArts *)
+(* Generates all Penguin (Triangle) diagrams with a Z boson coming in and two external charged leptons (here only called 'Electron', but the generation is NOT fixed!) coming out. The diagrams generic structure is the same as for L\[Rule]gammaLp. Note, a list with names for physical parameters can be found in Packages/init.nb in the function InitSMParameters. The function InsFields is similar to the function 'InsertFields' known by FeynArts *)
 (* A diagram is a list with two entries. The first is a list of couplings, the second a list of replacement rules for internal and external particles. *)
 (* first vertex: outgoing antilepton, outState1. second vertex: outgoing lepton, outState2. *)
 AllPenguinDiagrams = 
@@ -2063,7 +2063,7 @@ j++;];
 (* Here, we check for doublets, add the mass of the external particles (charged Leptons, again called just 'Eletron'; remove again mass=0 particles (just to be really sure); and replace the couplings by their SPheno specific names (done with 'getSPhenoCoupling' *)
 (* NeededMasses=DeleteCases[Intersection[Join[SPhenoMass/@AllInternalParticles,{SPhenoMass[Electron]}]],0.];
 NeededMassesZLLp =Join[NeededMasses, MakeSquaredMass/@NeededMasses];
-NeededCouplingsZLLp=Intersection[Flatten[(getSPhenoCoupling[#,SPhenoCouplingsAll][[1]]&)/@Intersection[AllAddedCouplings /. C[a__]->Cp[a]]]];
+NeededCouplingsZLLp=Intersection[Flatten[(getSPhenoCoupling[#,SPhenoCouplingsAll][[1]]&)/@Intersection[AllAddedCouplings /. C[a__]\[Rule]Cp[a]]]];
 *)
 
 (* Add the Electron and Z mass to the list of needed couplings, remove duplicates, replace all by SPheno specific names *)
@@ -2080,7 +2080,7 @@ WriteZLLp[NeededMassesZLLp,NeededCouplingsZLLp,AllPenguinDiagrams,AllWaveDiagram
 ];
 
 WriteZLLp[masses_,couplings_,penguindiagrams_,wavediagrams_]:=Block[{i,j,k},
-(* This function writes the Fortran code for Z ->ll' for SPheno *)
+(* This function writes the Fortran code for Z \[Rule]ll' for SPheno *)
 
 (* --- Create the header of the subroutine --- *)
 (* The syntax of MakeSubroutineTitle is: Name of Subroutine; main part of parameters; some additional parameters which should appear at the beginning; some additional parameters which should appear at the end; file name *)
@@ -2090,7 +2090,7 @@ MakeSubroutineTitle["BrZLLp",Flatten[{masses,couplings}],{"outState1","outState2
 (* --- Here starts the variable declaration --- *)
 WriteString[sphenoLow,"Implicit None \n"];
 
-(* 'MakeVariableList' takes a list of parameters and checks itself if they are real or complex and adds the dimension. Only the scope has to be given as second (Intent (in), Intent (out), Intent (inout), "")argument *)
+(* 'MakeVariableList' takes a list of parameters and checks itself if they are real or complex and adds the dimension. Only the scope has to be given as second (Intent(in), Intent(out), Intent(inout), "")argument *)
 MakeVariableList[Flatten[{couplings,masses}],",Intent(in)",sphenoLow];
 NrPenguinDiagrams=Length[penguindiagrams];
 NrWaveDiagrams=Length[wavediagrams];
@@ -2302,7 +2302,7 @@ For[i=1,i<=Length[NameOfStates],
 temp=DEFINITION[NameOfStates[[i]]][VEVs];
 If[Head[temp]===List,
 For[j=1,j<=Length[temp],
-iso=SA`DynL[temp[[j,1]],posL] /. {0}->0 /. {1}->1/2 /. {2}->1;
+iso=SA`DynL[temp[[j,1]],posL] /. {0}->0 /. {1}->1/2  /. {-1}->1/2 /. {2}->1;
 y= 2 Abs[SA`ChargeGG[temp[[j,1]],posH]];
 (* 1310.0763; eq. (1.124) *)
 upS+=(4 iso (iso+1)-3 y^2)temp[[j,2,1]]^2;

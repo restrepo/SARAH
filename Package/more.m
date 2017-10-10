@@ -750,7 +750,7 @@ If[val=!=None,
 Switch[name,
 LaTeX | OutputName,
 If[Length[val]===2,
-Return[ToString[name]<>" -> {\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\",\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\"}"];,
+Return[ToString[name]<>" -> {\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\",\""<>StringReplace[ToString[val[[2]]],"\\"->"\\\\"]<>"\"}"];,
 Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];
 ];,
 _,

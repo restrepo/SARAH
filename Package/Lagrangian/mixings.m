@@ -163,7 +163,7 @@ Print[" ... adding: ",add[[j,1]], " (",Dynamic[DynamicStatusAddTerms[ADD]]/. ADD
 
 PrintDebug[" ... adding: ",add[[j,1]]];
 newTerms=CreateLagrangian[add[[j,1]],AddHC /. add[[j,2]] /. {AddHC->False},Overwrite /. add[[j,2]] /. {Overwrite->False}];
-sumLagInput+=newTerms[[1]];
+sumLagInput+=Plus@@newTerms;
 LagReDef+=newTerms[[1]];
 LagrangianVVV+=newTerms[[2]];
 LagrangianVVVV+=newTerms[[3]];
