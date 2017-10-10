@@ -335,8 +335,8 @@ WriteString[sphenoMake,"F90="<>StandardCompiler<>"\n"];
 If[SA`Version === "SARAHVERSION",
 WriteString[sphenoMake,"comp= -c -g -module ${Mdir} -I${InDir}  \n"];
 WriteString[sphenoMake,"LFlagsB= -g  \n"];,
-WriteString[sphenoMake,"comp= -c -O -module ${Mdir} -I${InDir}  \n"];
-WriteString[sphenoMake,"LFlagsB= -O  \n"];
+WriteString[sphenoMake,"comp= -c -g -module ${Mdir} -I${InDir}  \n"];
+WriteString[sphenoMake,"LFlagsB= -g  \n"];
 ];
 
 WriteString[sphenoMake,"# Intels ifort,debug modus  \n"];

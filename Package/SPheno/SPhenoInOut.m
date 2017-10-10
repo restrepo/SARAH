@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 InitInputOutput:=Block[{i},
 LowScaleList={};
 HighScaleList={};
@@ -170,6 +171,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateInOut:=Block[{i1,i2,i3,i4},
 
 (*
@@ -253,6 +255,7 @@ Close[sphenoInOut];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLesHouchesIn:=Block[{},
 
 Print["  Writing input routines"];
@@ -682,6 +685,7 @@ WriteString[sphenoInOut,"End Subroutine Read_"<>name<>" \n \n \n"];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLesHouchesOut:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2},
 
 Print["  Writing output routines"];
@@ -844,6 +848,7 @@ WriteString[sphenoInOut,"End Subroutine LesHouches_Out \n \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 
 
@@ -1068,6 +1073,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateMixedLHBlock:=Block[{i,temp,ParticlePhasesTEMP},
 CombindedBlock={};
 NewLHoutputBlocks={};
@@ -1176,6 +1182,7 @@ treeleveltadpolesLOW=temp2;
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteReadInFunctions:=Block[{i,j,temp,temp2},
 For[i=1,i<=Length[CombindedBlock],
 temp={};
@@ -2249,17 +2256,17 @@ i++;];
 
 
 WriteString[sphenoInOut, "! Information needed by MadGraph \n"];
-
+WriteString[sphenoInOut, "If (OutputForMG) Then \n"];
 For[i=1,i<=Length[PART[V]],
 If[FreeQ[Transpose[savedDecayInfos][[1]],PART[V][[i,1]]],
-WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[V][[i,1]],1]<>"),"<>SPhenoForm[getWidthNumerical[PART[V][[i,1]],1,1]/.External->0]<>", \""<>SPhenoForm[PART[V][[i,1]]]<>"\" \n"];
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[V][[i,1]],1]<>"),"<>SPhenoForm[1. getWidthNumerical[PART[V][[i,1]],1,1]/.External->0]<>", \""<>SPhenoForm[PART[V][[i,1]]]<>"\" \n"];
 ];
 i++;];
 
 For[i=1,i<=Length[PART[F]],
 If[FreeQ[Transpose[savedDecayInfos][[1]],PART[F][[i,1]]],
 For[j=1,j<=getGen[PART[F][[i,1]]],
-WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[F][[i,1]],j]<>"),"<>SPhenoForm[getWidthNumerical[PART[F][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[F][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[F][[i,1]],j]<>"),"<>SPhenoForm[1. getWidthNumerical[PART[F][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[F][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
 j++;];
 ];
 i++;];
@@ -2267,10 +2274,11 @@ i++;];
 For[i=1,i<=Length[PART[S]],
 If[FreeQ[Transpose[savedDecayInfos][[1]],PART[S][[i,1]]],
 For[j=1,j<=getGen[PART[S][[i,1]]],
-WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[S][[i,1]],j]<>"),"<>SPhenoForm[getWidthNumerical[PART[S][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[S][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
+WriteString[sphenoInOut,"Write(io_L,200) "<>"INT("<>SPhenoPDG[PART[S][[i,1]],j]<>"),"<>SPhenoForm[1. getWidthNumerical[PART[S][[i,1]],j,1]/.External->0]<>", \""<>SPhenoForm[PART[S][[i,1]]]<>"_"<>ToString[j]<>"\" \n"];
 j++;];
 ];
 i++;];
+WriteString[sphenoInOut, "End if \n"];
 ];
 
 

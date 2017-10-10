@@ -49,7 +49,7 @@ $sarahRGEsDir=ToFileName[{$sarahDir,"RGEs"}]
 $sarahInputDir=ToFileName[{$sarahDir,"Input"}]
 $sarahSusynoDir=ToFileName[{$sarahDir,"Susyno"}]
 
-SA`Version = "4.10.1";
+SA`Version = "4.10.2";
 
 
 
@@ -58,7 +58,7 @@ If[NumericQ[ToExpression[SA`Version]],
 Print[StyleForm["SARAH ","Section",FontSize->14],StyleForm[SA`Version ,"Section",FontSize->14] ],
 Print[StyleForm["SARAH ","Section",FontSize->14],StyleForm["(Private Version)","Section",FontSize->14] ]
 ]
-Print["by Florian Staub, 2015"]
+Print["by Florian Staub, 2017"]
 Print[StyleForm["contributions by M. D. Goodsell, K. Nickel",FontSize->10] ];
 Print[""];
 Print[StyleForm["References:","Section",FontSize->10]]
