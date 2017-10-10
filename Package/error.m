@@ -19,8 +19,11 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 ModelFile::undefinedSF="Superfield `` in Superpotential not defined.";
+
+Vertex::ChargeViolating="Non-zero result for `` vertex which violates charge. (This might just be a problem with simplifying the vertex, but could also point towards a mistake in the implementation.)";
 
 TeXOutput::NoRGEs ="\n RGEs not calculated so far. Skipping this parts.\n
 Use CalcRGEs[] to calculated RGEs and start MakeTeX again to include them in the output.";
@@ -606,6 +609,7 @@ Message[RParity::obsolete];
 ];
 
 
+(* ::Input::Initialization:: *)
 CheckConsistency[ES_]:=Block[{i, missingParticle={},missingParameter={},missingPDG={}, missingLHparameter={},allParticleNames,allParameterNames,missingOutputNames,missingPDGIX,UsePDGIXsave},
 
 Print["Checking model for missing definitions"];

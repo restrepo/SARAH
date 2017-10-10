@@ -777,7 +777,7 @@ Implicit None
 Real(dp), Intent(in) :: Mex1,Mex2,Mex3 
 Complex(dp), Intent(in) :: Amplitude(2), AmplitudeC(2) 
 Real(dp), Intent(out) :: AmpSquared 
-Real(dp) :: LorentzFactor 
+Real(dp) :: LorentzFactor, dummy=123.4_dp
  
 AmpSquared = 0._dp 
 
@@ -805,19 +805,19 @@ Else If (Mex2.gt.1_dp) Then
 
 
 ! Pair[ec[3], k[1]] x Pair[ec[3], k[1]]
-LorentzFactor = Mex1**2 - Mex2**2 
+LorentzFactor =  Mex1**2/Mex2**2!Mex1**2 - Mex2**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
 
 ! Pair[ec[3], k[1]] x Pair[ec[3], k[2]]
-LorentzFactor = Mex1**2 - Mex2**2 
+LorentzFactor = (-3*Mex1**2+Mex2**2+Mex1**4/Mex2**2)/2._dp  !Mex1**2 - Mex2**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
 
 ! Pair[ec[3], k[2]] x Pair[ec[3], k[1]]
-LorentzFactor = Mex1**2 - Mex2**2 
+LorentzFactor = (-3*Mex1**2+Mex2**2+Mex1**4/Mex2**2)/2._dp  !Mex1**2 - Mex2**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
 
 ! Pair[ec[3], k[2]] x Pair[ec[3], k[2]]
-LorentzFactor = Mex1**2 - Mex2**2 
+LorentzFactor = (Mex1**6 - 4*Mex1**4*Mex2**2 + 2*Mex1**2*Mex2**4 - Mex2**6)/(4.*Mex2**2) !Mex1**2 - Mex2**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
 
 
@@ -826,19 +826,19 @@ AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2))
 Else If (Mex3.gt.1_dp) Then
 
 ! Pair[ec[3], k[1]] x Pair[ec[3], k[1]]
-LorentzFactor = Mex1**2 - Mex3**2 
+LorentzFactor =  Mex1**2/Mex3**2 !Mex1**2 - Mex3**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
 
 ! Pair[ec[3], k[1]] x Pair[ec[3], k[2]]
-LorentzFactor = Mex1**2 - Mex3**2 
+LorentzFactor = (-3*Mex1**2+Mex3**2+Mex1**4/Mex3**2)/2._dp   !Mex1**2 - Mex3**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
 
 ! Pair[ec[3], k[2]] x Pair[ec[3], k[1]]
-LorentzFactor = Mex1**2 - Mex3**2 
+LorentzFactor = (-3*Mex1**2+Mex3**2+Mex1**4/Mex3**2)/2._dp     !Mex1**2 - Mex3**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
 
 ! Pair[ec[3], k[2]] x Pair[ec[3], k[2]]
-LorentzFactor = Mex1**2 - Mex3**2 
+LorentzFactor = (Mex1**6 - 4*Mex1**4*Mex3**2 + 2*Mex1**2*Mex3**4 - Mex3**6)/(4.*Mex3**2)    !Mex1**2 - Mex3**2 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
 
 
@@ -846,20 +846,37 @@ AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2))
 Else
 
 ! Pair[ec[2], ec[3]] x Pair[ec[2], ec[3]]
-LorentzFactor = Mex1**2 
+LorentzFactor = 1._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
 
 ! Pair[ec[2], ec[3]] x Pair[ec[2], k[1]] Pair[ec[3], k[1]]
-LorentzFactor =  Mex1**2 
+LorentzFactor =  Mex1**2 /2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
 
 ! Pair[ec[2], k[1]] Pair[ec[3], k[1]] x Pair[ec[2], ec[3]]
-LorentzFactor =  Mex1**2 
+LorentzFactor =  Mex1**2 /2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
 
 ! Pair[ec[2], k[1]] Pair[ec[3], k[1]] x Pair[ec[2], k[1]] Pair[ec[3], k[1]]
-LorentzFactor =  Mex1**2
+LorentzFactor =  Mex1**4 /2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
+
+! ! Pair[ec[2], ec[3]] x Pair[ec[2], ec[3]]
+! LorentzFactor = Mex1**2 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
+! 
+! ! Pair[ec[2], ec[3]] x Pair[ec[2], k[1]] Pair[ec[3], k[1]]
+! LorentzFactor =  Mex1**2 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
+! 
+! ! Pair[ec[2], k[1]] Pair[ec[3], k[1]] x Pair[ec[2], ec[3]]
+! LorentzFactor =  Mex1**2 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
+! 
+! ! Pair[ec[2], k[1]] Pair[ec[3], k[1]] x Pair[ec[2], k[1]] Pair[ec[3], k[1]]
+! LorentzFactor =  Mex1**2
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
+
 
 End if
 

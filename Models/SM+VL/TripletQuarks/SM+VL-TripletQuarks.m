@@ -57,7 +57,7 @@ DEFINITION[GaugeES][LagrangianInput]= {
 };
 
 Vpot = -(-mu2 conj[H].H + Lambda1 conj[H].H.conj[H].H + (1/2) mS2 S.S + Lambda2 S.S.S.S + Lambda3 S.S.conj[H].H);
-LagYSM =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagYSM =  -(Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q);
 LagYBSM = -(y1 conj[q].conj[F1R].conj[H] + y2 conj[q].conj[F2R].H + yy1 F1L.F1R.S + yy2 F2L.F2R.S);
 LagMass = -(M1 F1L.F1R + M2 F2L.F2R);
 

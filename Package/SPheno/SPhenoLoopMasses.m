@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateSPhenoLoopMasses[Eigenstates_]:=Block[{i,k,pos,list},
 (*
 Print["--------------------------------------"];
@@ -227,6 +228,7 @@ Close[sphenoLoop];
 ];
 
 
+(* ::Input::Initialization:: *)
 MakeListsLoopContributions[loopContribution_,couplings_]:=Block[{i,NeededMassesLoop,NeededCouplingsLoop,CorrectionTypeLoop},
 
 NeededMassesLoop=Table[{},{Length[loopContribution]}];
@@ -368,6 +370,7 @@ CorrectionTypeSV=Intersection/@temp[[3]];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteCalcLoopMasses:=Block[{i,j,count1,count2,ii1,ii2,solHighScale,higgsdim,higgsdimstr},
 
 posZ =Position[listNotMixedMasses,VectorZ][[1,1]];
@@ -527,7 +530,7 @@ WriteString[sphenoLoop,SPhenoForm[SA`GaugeFixingRXi[[i,1]]]<>" = RXi \n"];
 i++;];
 *)
 
-WriteString[sphenoLoop, "If (DecoupleAtRenScale) Then \n"];
+WriteString[sphenoLoop, "If ((DecoupleAtRenScale).and.(Abs(1._dp-RXiNew).lt.0.01_dp)) Then \n"];
 WriteString[sphenoLoop,"vSM=vSM_Q \n"];
 For[i=1,i<=Length[MatchingForVEVs],
 WriteString[sphenoLoop,SPhenoForm[MatchingForVEVs[[i,1]]]<>"="<>SPhenoForm[MatchingForVEVs[[i,2]]/. subRunningAngles]<>" \n"];
@@ -693,7 +696,11 @@ WriteString[sphenoLoop,"   where (aint(Abs("<>SPhenoForm[ArrayParameters[[i]]]<>
 i++;];
 WriteString[sphenoLoop,"\n"];
 
+WriteString[sphenoLoop,"If (NewGBC) Then \n"];
+MakeCall["CalculatePi2S",Join[listVEVs,listAllParameters],{"125._dp**2"},{"kont","ti_ep2L","Pi2S_EffPot","PiP2S_EffPot"},sphenoLoop];
+WriteString[sphenoLoop,"Else \n"];
 MakeCall["CalculatePi2S",Join[listVEVs,listAllParameters],{"0._dp"},{"kont","ti_ep2L","Pi2S_EffPot","PiP2S_EffPot"},sphenoLoop];
+WriteString[sphenoLoop,"End if \n"];
 
 For[i=1,i<=Length[ArrayParameters],
 WriteString[sphenoLoop,"   "<>SPhenoForm[ArrayParameters[[i]]]<> " ="<>SPhenoForm[ArrayParameters[[i]] ]<>"_saveEP \n"];
@@ -1076,13 +1083,16 @@ mixing2="None2";
 
 Switch[listNotMixedMasses[[i,6]],
 ScalarMass,
-MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];,
+If[listNotMixedMasses[[i,1]]===conj[listNotMixedMasses[[i,1]]],
+MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent/. subTadpolesHiggs2Loop2L,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];,
+MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent/. subTadpolesHiggs2Loop,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];
+];,
 FermionMassSymm,
-MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];,
+MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent/. subTadpolesHiggs2Loop,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];,
 FermionMassNonSymm,
-MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];,
+MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent/. subTadpolesHiggs2Loop,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];,
 VectorMass,
-MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];
+MakeCall["OneLoop"<>particleCurrent,Flatten[{parametersCurrent/. subTadpolesHiggs2Loop,NeededMassesUnmixed[[i]],NeededCouplingsUnmixed[[i]]}],{},{"0.1_dp*delta_mass",nameCurrent<>"_1L",nameCurrent<>"2_1L","kont"},sphenoLoop];
 ];
 ];
 i++;]; 
@@ -1162,6 +1172,7 @@ WriteString[sphenoLoop,"End Subroutine OneLoopMasses \n \n"];
 
 
 
+(* ::Input::Initialization:: *)
 
 
 WriteLoopMassScalar[Name_,particle_,parameters_,masses_,couplings_,contributions_, tree_,addTad_,mixed_]:=Block[{i2,i3},
@@ -1436,6 +1447,7 @@ WriteString[sphenoLoop,"End Subroutine OneLoop"<>Name <> "\n \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteLoopMassFermionSymm[NameP_,particle_,parameters_,masses_,couplings_,contributions_, tree_, Name_,MixingName_,mixed_]:=Block[{i2,i3},
 
 If[PrintDebgu,Print["Subroutine for 1 Loop Correction of ", Name];];
@@ -1609,6 +1621,7 @@ WriteString[sphenoLoop,"End Subroutine OneLoop"<>NameP <> "\n \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 AddLoopCorrectionRoutineSymmFermions[Name_,MixingName_,dimMatrix_]:=Block[{},
 (* WriteString[sphenoLoop,"mat1 = mat1a - 0.5_dp*(SigS + Transpose(SigS) + & \n"]; *)
 WriteString[sphenoLoop,"mat1 = mat1a - 0.5_dp*(Conjg(SigSL) + SigSR + & \n"];
@@ -1698,6 +1711,7 @@ WriteString[sphenoLoop, "End If \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteLoopMassFermionNonSymm[NameP_,particle_,parameters_,masses_,couplings_,contributions_, tree_, Name_,MixingName1_,MixingName2_, mixed_]:=Block[{i2,i3},
 
 If[PrintDebug,Print["Subroutine for 1 Loop Correction of ", NameP];];
@@ -1913,6 +1927,7 @@ WriteString[sphenoLoop,"End Subroutine OneLoop"<>NameP <> "\n \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteScalarProp[Name_,particle_,masses_,couplings_,contributions_]:=WriteScalarProp[Name,particle,masses,couplings,contributions,""];
 WriteScalarProp[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 MakeSubroutineTitle[pre<>"Pi1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"kont","res"},sphenoLoop];
@@ -2343,6 +2358,7 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Pi1Loop"<>Name  <>" \n \n"];
 
 
 
+(* ::Input::Initialization:: *)
 WriteFermionProp[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionProp[Name,particle,masses,couplings,contributions,""];
 WriteFermionProp[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigSL","sigSR"},sphenoLoop];
@@ -2496,6 +2512,7 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteFermionPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionPropSingle[Name,particle,masses,couplings,contributions,""];
 WriteFermionPropSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"SigL","SigR","SigSL","SigSR"},sphenoLoop];
@@ -2620,6 +2637,7 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteFermionPropNonSymm[Name_,particle_,masses_,couplings_,contributions_,setOnShell_]:=WriteFermionPropNonSymm[Name,particle,masses,couplings,contributions,setOnShell,""];
 WriteFermionPropNonSymm[Name_,particle_,masses_,couplings_,contributions_,setOnShell_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigSL","sigSR"},sphenoLoop];
@@ -2771,6 +2789,7 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteFermionPropNonSymmSingle[Name,particle,masses,couplings,contributions,""];
 WriteFermionPropNonSymmSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 MakeSubroutineTitle[pre<>"Sigma1Loop"<>Name,Flatten[{masses,couplings}],{"p2"},{"sigL","sigR","sigSL","sigSR"},sphenoLoop];
@@ -2902,6 +2921,7 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Sigma1Loop"<>Name  <>" \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteHeaderLoopMasses:=Block[{i,dim,dim2,files},
 
 files={"AddLoopFunctions.f90","Kinematics.f90"};
@@ -2976,13 +2996,14 @@ WriteString[sphenoLoop, "Real(dp) :: pi2A0  \n"];
 WriteString[sphenoLoop, "Real(dp) :: ti_ep2L("<>ToString[getGen[HiggsBoson]]<>")  \n"];
 WriteString[sphenoLoop, "Real(dp) :: pi_ep2L("<>ToString[getGen[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>")\n"];
 WriteString[sphenoLoop, "Real(dp) :: Pi2S_EffPot("<>ToString[getGen[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>")\n"];
-WriteString[sphenoLoop,"Real(dp) :: PiP2S_EffPot("<>ToString[getGen[HiggsBoson]]<>","<>ToString[getGen[HiggsBoson]]<>")\n"];
+WriteString[sphenoLoop,"Real(dp) :: PiP2S_EffPot("<>ToString[getGen[PseudoScalar]]<>","<>ToString[getGen[PseudoScalar]]<>")\n"];
 ];
 WriteString[sphenoLoop,"Contains \n \n"];
 
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteLoopTadpole[Lvevs_,particle_,masses_,couplings_,contributions_]:=Block[{i,jj,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 
 If[PrintDebug,Print["Subroutien for 1 Loop Tadpoles: ", Lvevs];];
@@ -3095,6 +3116,7 @@ WriteString[sphenoLoop,"End Subroutine OneLoopTadpoles"<>ToString[particle]<>" \
 ];
 
 
+(* ::Input::Initialization:: *)
 
 WriteVectorPropSingle[Name_,particle_,masses_,couplings_,contributions_]:=WriteVectorPropSingle[Name,particle,masses,couplings,contributions,""];
 WriteVectorPropSingle[Name_,particle_,masses_,couplings_,contributions_,pre_]:=Block[{i,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
@@ -3305,6 +3327,7 @@ WriteString[sphenoLoop, "End Subroutine "<>pre<>"Pi1Loop"<>Name  <>" \n \n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteLoopMassSingle[Name_,particle_,parameters_,masses_,couplings_,contributions_, tree_,addTad_]:=Block[{i2,i3,m1,m12,m2,m22,ind1,ind2,dim1,dim2,type,factor},
 
 If[PrintDebug,Print["Subroutine for 1 Loop Correction of ", Name];];

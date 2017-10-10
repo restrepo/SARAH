@@ -84,7 +84,7 @@ LagNoHC = -(-mu2 conj[H].H +  1/2 MS s.s +  1/2 mDMS SDM.SDM
 (* 11:YX, 12:mX, 13:YT, 14:mT, 15:YQ, 16:mQ, 17:YQT, 
 18:YQTp, 19:mDMF, 20:YDMF *)
             
-LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q 
+LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q 
           + mDMF PSIR.PSIL
           + YDMF s.PSIR.PSIL 
           + YT s.TL.TR + mT TL.TR

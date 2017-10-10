@@ -60,7 +60,7 @@ LagNoHC = -(MHD conj[Hd].Hd + MHU conj[Hu].Hu + Lambda1 conj[Hd].Hd.conj[Hd].Hd 
 		Lambda2 conj[Hu].Hu.conj[Hu].Hu + Lambda3 conj[Hu].Hu.conj[Hd].Hd  + Lambda4 conj[Hu].Hd.Hu.conj[Hd]);
 
 
-LagHC = -(Lambda5/2 Hu.Hd.Hu.Hd + Yd Hd.q.d + Ye Hd.l.e + Yu conj[Hd].q.u);
+LagHC = -(Lambda5/2 Hu.Hd.Hu.Hd + Yd Hd.q.d + Ye Hd.l.e - Yu conj[Hd].q.u);
 
 
 

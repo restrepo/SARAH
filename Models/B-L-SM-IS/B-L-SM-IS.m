@@ -60,7 +60,7 @@ DEFINITION[GaugeES][Additional]= {
 LagNoHC = -(Mu1 conj[H].H + Mu2 conj[chi].chi + 1/2 L1 conj[H].H.conj[H].H + \
               L2 conj[chi].chi.conj[chi].chi  + 1/2 L3 conj[H].H.conj[chi].chi  );
 
-LagHC = - (+ Yd H.d.q + Ye H.e.l + Yu conj[H].u.q + Yv conj[H].l.vR + Ys chi.vR.s2 + MUS s2.s2 + MUS1 s1.s1  );
+LagHC = - (+ Yd H.d.q + Ye H.e.l - Yu conj[H].u.q + Yv conj[H].l.vR + Ys chi.vR.s2 + MUS s2.s2 + MUS1 s1.s1  );
 
 	  		  
 

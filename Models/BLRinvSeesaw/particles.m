@@ -248,6 +248,7 @@ ParticleDefinitions[EWSB] = {
       {gZR,  { 	       PDG -> 0,
                Width -> 0,
                Mass -> Automatic,
+               ElectricCharge->0,
                LaTeX -> "\\eta^{Z_R}",
                FeynArtsNr -> 7,
                OutputName -> "gZR" }},

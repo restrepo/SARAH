@@ -529,823 +529,895 @@ Return[False];
 ];
 ];
 
-GenerateCalculateOneLoopWidths:=Block[{i,j,k,pD,p1,p2,pos,jj,ii,coups,ctcoups,masses,name,dim,decays,dimAmp,dimIn,Zconst,factor,st,partinv,fin,subZ,subG,subGZ,subGZOS,coupsWithGB,outfile},
-Print["  Writing wrapper code for ",Dynamic[DynamicWrapperParticle],"(",Dynamic[DynamicWrapperParticleNr],"/",Length[SA`ParticlesDecays1Loop],")"];
-
-
-For[i=1,i<=Length[SA`ParticlesDecays1Loop],
-
-DynamicWrapperParticle=SA`ParticlesDecays1Loop[[i]];
-DynamicWrapperParticleNr=i;
-pD=SA`ParticlesDecays1Loop[[i]];
-
-outfile=OpenWrite[ToFileName[$sarahSPhenoLoopDecayDir,"Wrapper_LoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>".f90"]];
-WriteCopyRight[outfile];
-WriteString[outfile,"Module Wrapper_OneLoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>"\n"];
-
-
-WriteString[outfile, "Use Model_Data_"<>ModelName<>" \n"];
-WriteString[outfile,"Use Kinematics \n"];
-WriteString[outfile, "Use OneLoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>" \n"];
-WriteString[outfile,"Use Control \n"];
-WriteString[outfile,"Use Settings \n"];
-WriteString[outfile,"\n \n"];
-WriteString[outfile,"Contains\n"];
-WriteString[outfile,"\n \n"];
-
-
-(*
-MakeSubroutineTitle["OneLoopDecay_"<>SPhenoForm[pD],Flatten[{SA`massesOnlyInput,NewMassParameters,listAllParameters,listVEVs,SA`ListCounterTerms,SA`WaveFunctionNames,namesAllreallyAll,namesColoredQuartics,namesAllCT,SA`Zfactors ,SA`ZCouplings}],{},{"MLambda","deltaM","kont","gP1L"<>SPhenoForm[pD]},sphenoLD];
-*)
-
-MakeSubroutineTitle["OneLoopDecay_"<>SPhenoForm[pD],Flatten[{SA`massesOnlyInput,NewMassParameters,listAllParameters,listVEVs,SA`ListCounterTerms,SA`WaveFunctionNames,Intersection[SA`SavedInformationNeededMassesCouplingsParticle[[i,2]]] ,SA`Zfactors  }],{},{"MLambda","em","gs","deltaM","kont","gP1L"<>SPhenoForm[pD]},outfile];
-
-
-WriteString[outfile,"Implicit None \n"];
-MakeVariableList[listAllParameters,",Intent(in)",outfile];
-MakeVariableList[listVEVs,",Intent(in)",outfile];
-MakeVariableList[NewMassParameters,",Intent(in)",outfile];
-MakeVariableList[SA`ListCounterTerms,",Intent(in)",outfile];
-MakeVariableList[Intersection[SA`SavedInformationNeededMassesCouplingsParticle[[i,2]]],",Intent(in)",outfile];
-WriteString[outfile,"Real(dp), Intent(in) :: em, gs \n"];
-(*
-MakeVariableList[namesAllreallyAll,",Intent(in)",sphenoLD];
-MakeVariableList[namesColoredQuartics,",Intent(in)",sphenoLD];
-MakeVariableList[namesAllCT,",Intent(in)",sphenoLD];
-MakeVariableList[SA`ZCouplings,",Intent(in)",sphenoLD];
-*)
-
-MakeVariableList[SA`WaveFunctionNames,",Intent(in)",outfile];
-MakeVariableList[SA`massesOnlyInput,",Intent(in)",outfile];
-MakeVariableList[SA`Zfactors,",Intent(in)",outfile]; 
-massless=masslessNoPhoton;
-
-(* MakeVariableList[SA`SelfEnergieNames,",Intent(in)",sphenoLD]; *)
-WriteString[outfile,"Real(dp), Intent(in) :: MLambda, deltaM \n"];
-(* WriteString[sphenoLD,"Real(dp), Intent(out) :: gP1L"<>SPhenoForm[pD]<>"("<>ToString[getGen[pD]]<>","<>ToString[BR2and3[[Position[BR2and3,pD][[1,1]]]][[2]]]<>") \n"]; *)
-WriteString[outfile,"Real(dp), Intent(out) :: gP1L"<>SPhenoForm[pD]<>"("<>ToString[getGen[pD]]<>","<>ToString[BR2[[Position[BR2,pD][[1,1]]]][[2]]]<>") \n"];
-WriteString[outfile,"Integer, Intent(out) :: kont \n"];
-WriteString[outfile,"Real(dp) :: "<>ToString[SPhenoMass[VectorG]]<>","<>ToString[SPhenoMass[VectorP]]<>","<>ToString[SPhenoMassSq[VectorG]]<>","<>ToString[SPhenoMassSq[VectorP]]<>", helfactor, phasespacefactor \n"];
-WriteString[outfile,"Integer :: i1,i2,i3,i4, isave, gt1, gt2, gt3 \n\n"];
-
-
-For[ii=1,ii<=Length[SA`Zfactors],
-WriteString[outfile,"Complex(dp) :: "<>ToString[SA`Zfactors[[ii]]]<>"c("<>StringReplace[ToString[getDimSPheno[SA`Zfactors[[ii]]]],{"{"->"","}"->""}]<>") \n"];
-ii++;];
-
-massless=masslessSave;
-(* decays=TwoBodyDecay[pD]; *)
-decays=TwoBodyDecayAllAllowed[pD];
-decays=Select[decays,FreeSkipFields[#,SkipFields]&];
-
-massless=masslessNoPhoton;
-For[j=1,j<=Length[decays],
-DynamicLoopDecayNr=j;
-p1=decays[[j,1]];
-p2=decays[[j,2]];
-pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
-If[pos==={},
-pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];
-dim="("<>ToString[getGen[pD]]<>","<>ToString[getGen[p2]]<>","<>ToString[getGen[p1]]<>")";,
-dim="("<>ToString[getGen[pD]]<>","<>ToString[getGen[p1]]<>","<>ToString[getGen[p2]]<>")";
-];
-dim=Nest[StringReplace[#,{"(1,"->"(",",1,"->",",",1)"->")","(1)"->""}]&,dim,3];
-Switch[getVertexType[{pD,p1,p2}],
-FFV,dimAmp=StringReplace["(4)"<>dim,")("->","];,
-FFS,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SSS,dimAmp=StringReplace[""<>dim,")("->","];,
-SFF,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SSV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SVV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-_,Print["Not yet done",{pD,p1,p2}];
-];
-
-name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
-WriteString[outfile,"Real(dp) :: MRP"<>name<>dim<>",MRG"<>name<>dim<>", MRPZ"<>name<>dim<>",MRGZ"<>name<>dim<>" \n"];
-WriteString[outfile,"Real(dp) :: MVP"<>name<>dim<>" \n"];
-WriteString[outfile,"Real(dp) :: RMsqTree"<>name<>dim<>",RMsqWave"<>name<>dim<>",RMsqVertex"<>name<>dim<>" \n"];
-WriteString[outfile,"Complex(dp) :: AmpTree"<>name<>dimAmp<>",AmpWave"<>name<>dimAmp<>",AmpVertex"<>name<>dimAmp<>"& \n & ,AmpVertexIRos"<>name<>dimAmp<>",AmpVertexIRdr"<>name<>dimAmp<>", AmpSum"<>name<>dimAmp<>", AmpSum2"<>name<>dimAmp<>" \n"];
-WriteString[outfile,"Complex(dp) :: AmpTreeZ"<>name<>dimAmp<>",AmpWaveZ"<>name<>dimAmp<>",AmpVertexZ"<>name<>dimAmp<>" \n"];
-
-WriteString[outfile,"Real(dp) :: AmpSq"<>name<>dim<>",  AmpSqTree"<>name<>dim<>" \n"];
-j++;];
-
-WriteString[outfile,"Write(*,*) \"Calculating one-loop decays of "<>SPhenoForm[pD]<>" \" \n"];
-
-WriteString[outfile,"kont = 0 \n"];
-WriteString[outfile,ToString[SPhenoMass[VectorG]]<>" = MLambda \n"];
-WriteString[outfile,ToString[SPhenoMass[VectorP]]<>" = MLambda \n"];
-WriteString[outfile,ToString[SPhenoMassSq[VectorG]]<>" = MLambda**2 \n"];
-WriteString[outfile,ToString[SPhenoMassSq[VectorP]]<>" = MLambda**2 \n\n"];
-
-For[ii=1,ii<=Length[SA`Zfactors],
-WriteString[outfile,ToString[SA`Zfactors[[ii]]]<>"c = Conjg("<>ToString[SA`Zfactors[[ii]]]<>")\n"];
-ii++;];
-
-
-
-WriteString[outfile,"\n ! Counter \n"];
-If[pD===HiggsBoson || pD===PseudoScalar,
-WriteString[outfile,"isave = "<>ToString[Position[Select[savedDecayInfos,#[[1]]===pD&][[1,2]],getSPhenoCoupling[decays[[1,3]]][[1,1]]][[1,1]]]<>"\n\n"];,
-WriteString[outfile,"isave = 1 \n\n"];
-];
-
-For[j=1,j<=Length[decays],
-p1=decays[[j,1]];
-p2=decays[[j,2]];
-
-If[decays[[j,3]]=!=LOOP,WriteString[outfile,"If (.not.CalcLoopDecay_LoopInducedOnly) Then \n"];];
-WriteString[outfile,"!---------------- \n"];
-WriteString[outfile,"! "<>SPhenoForm[p1]<>" "<>SPhenoForm[p2]<>"\n"];
-WriteString[outfile,"!---------------- \n\n"];
-
-subZ={};
-If[decays[[j,3]]=!=LOOP,
-WriteString[outfile,"!Tree Level \n"];
-pos=Position[SA`SavedInformationTreeDecay,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationTreeDecay,{pD,{p2,p1},a___}];];
-If[pos=!={},
-coups=SA`SavedInformationTreeDecay[[pos[[1,1]],4,2]];
-masses=DeleteCases[SA`SavedInformationTreeDecay[[pos[[1,1]],4,1]],0.];
-name=SA`SavedInformationTreeDecay[[pos[[1,1]],3]];
-];
-(* MakeCall["Msquared_TreeSquared_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{},{"RMsqtree"<>name},sphenoLD]; *)
-subZ=Table[coups[[i]]->ToExpression["Z"<>ToString[coups[[i]]]],{i,1,Length[coups]}];
-If[FreeQ[{getBlank[p1],getBlank[p2]},VectorW],
-subGZOS={};
-subGZ={};
-subG={};,
-subGZOS=Table[getGBCoup[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
-subGZOS=Join[subGZOS,Table[cHPWlist[[i]]->ToExpression["GosZ"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
-subGZ=Table[getGBCoup[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
-subGZ=Join[subGZ,Table[cHPWlist[[i]]->ToExpression["GZ"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
-subG=Table[getGBCoup[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
-subG=Join[subG,Table[cHPWlist[[i]]->ToExpression["G"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
-
-If[{getBlank[p1],getBlank[p2]}==={VectorW,VectorW},
-subGZOS=Join[subGZOS,Table[getGBCoup1[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
-subGZ=Join[subGZ,Table[getGBCoup1[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
-subG=Join[Table[getGBCoup1[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
-subGZOS=Join[subGZOS,Table[getGBCoup2[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
-subGZ=Join[subGZ,Table[getGBCoup2[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
-subG=Join[Table[getGBCoup2[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
-];
-];
-WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
-MakeCall["Amplitude_Tree_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{},{"AmpTree"<>name},outfile];
-WriteString[outfile,"  Else \n"];
-MakeCall["Amplitude_Tree_"<>ModelName<>"_"<>name,Flatten[{ToExpression["Z"<>ToString[#]]&/@coups,masses}],{},{"AmpTree"<>name},outfile];
-WriteString[outfile,"  End if \n"];
-
-WriteString[outfile,"\n\n!Real Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysReal,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysReal,{pD,{p2,p1},a___}];];
-If[pos=!={},
-coups=getSPhenoCoupling[SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]][[1]];
-WriteString[outfile,"If (OSkinematics) Then \n"];
-masses=DeleteCases[Intersection[SPhenoMassOS/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
-WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
-WriteString[outfile," ! OS and no Z-factors \n"];
-name=SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],3]];
-MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
-WriteString[outfile,"  Else \n"];
-coups=ToExpression["Z"<>ToString[#]]&/@coups;
-WriteString[outfile," ! OS and Z-factors \n"];
-MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
-WriteString[outfile,"  End if \n"];
-
-WriteString[outfile,"Else \n"];
-coups=getSPhenoCoupling[SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]][[1]];
-masses=DeleteCases[Intersection[SPhenoMass/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
-WriteString[outfile," ! DR and no Z-factors \n"];
-WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
-MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
-WriteString[outfile,"  Else \n"];
-coups=ToExpression["Z"<>ToString[#]]&/@coups;
-WriteString[outfile," ! DR and Z-factors \n"];
-MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
-WriteString[outfile,"  End if \n"];
-WriteString[outfile,"End if \n"]; 
-,
-WriteString[outfile,"! Still missing\n"];
-];
-
-
-
-WriteString[outfile,"\n\n!Self-energy Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p2,p1},a___}];];
-masses=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,1]];
-coups=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,2]];
-ctcoups=ToExpression["ct"<>ToString[#]]&/@coups;
-Zconst=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,3]];
-name=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],3]];
-(* MakeCall["Msquared_TREExWAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses,Zconst}],{},{"RMsqWave"<>name},sphenoLD]; *)
-MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses,Zconst}],{},{"AmpWave"<>name},outfile];
-
-WriteString[outfile,"\n\n!Vertex Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];];
-masses=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,1]];
-coups=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,2]];
-name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
-(* MakeCall["Msquared_TREExVERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"RMsqVertex"<>name},sphenoLD]; *)
-MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertex"<>name},outfile];
-
-WriteString[outfile,"If (ShiftIRdiv) Then \n"];
-MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertexIRdr"<>name},outfile];
-
-WriteString[outfile," If (ExternalZfactors) Then \n"];
-WriteString[outfile, "  If (OSkinematics) Then \n"];
-WriteString[outfile," ! OS and Z-factors \n"];
-MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups/. subZ/. subGZOS}],{},{"AmpVertexIRos"<>name},outfile];
-WriteString[outfile,"   Else \n"];
-WriteString[outfile," ! DR and Z-factors \n"];
-MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups /. subZ/. subGZ}],{},{"AmpVertexIRos"<>name},outfile];
-WriteString[outfile," End if \n"];
-WriteString[outfile," Else \n"];
-WriteString[outfile, "  If (OSkinematics) Then \n"];
-WriteString[outfile," ! OS and no Z-factors \n"];
-MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups /. subG}],{},{"AmpVertexIRos"<>name},outfile];
-WriteString[outfile,"   Else \n"];
-WriteString[outfile," ! DR and no Z-factors \n"];
-MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertexIRos"<>name},outfile];
-WriteString[outfile," End if \n"];
-WriteString[outfile," End if \n"];
-
-WriteString[outfile,"AmpVertex"<>name <>" = AmpVertex"<>name <>" -  AmpVertexIRdr"<>name<>"! +  AmpVertexIRos"<>name <>" ! Shift added later\n"];
-WriteString[outfile,"End if \n"];,
-
-
-(* Loop induced decays *)
-WriteString[outfile,"If (LoopInducedDecaysOS) Then \n"];
-WriteString[outfile,"\n\n!Self-energy Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p2,p1},a___}];];
-masses=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,1]];
-coups=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,2]];
-ctcoups=ToExpression["ct"<>ToString[#]]&/@coups;
-Zconst=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,3]];
-name=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],3]];
-WriteString[outfile," If (ExternalZfactors) Then \n"];
-If[getType[pD]===F,
-MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{ToExpression["Z"<>ToString[#]]&/@coups,ctcoups,masses/.subDRtoOS,Zconst}],{},{"AmpWave"<>name},outfile];,
-MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses/.subDRtoOS,Zconst}],{},{"AmpWave"<>name},outfile];
-];
-WriteString[outfile," Else \n"];
-MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses/.subDRtoOS,Zconst}],{},{"AmpWave"<>name},outfile];
-WriteString[outfile," End if \n"];
-
-
-WriteString[outfile,"\n\n!Vertex Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];];
-masses=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,1]];
-coups=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,2]];
-name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
-WriteString[outfile," If (ExternalZfactors) Then \n"];
-If[getType[pD]===F,
-MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,ToExpression["Z"<>ToString[#]]&/@coups}],{},{"AmpVertex"<>name},outfile];,
-MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups}],{},{"AmpVertex"<>name},outfile];
-];
-
-WriteString[outfile," Else \n"];
-MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups}],{},{"AmpVertex"<>name},outfile];
-WriteString[outfile," End if \n"];
-
-
-WriteString[outfile,"Else \n"];
-WriteString[outfile,"\n\n!Self-energy Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p2,p1},a___}];];
-masses=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,1]];
-coups=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,2]];
-ctcoups=ToExpression["ct"<>ToString[#]]&/@coups;
-Zconst=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,3]];
-name=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],3]];
-MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses,Zconst}],{},{"AmpWave"<>name},outfile];
-
-WriteString[outfile,"\n\n!Vertex Corrections \n"];
-pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
-If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];];
-masses=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,1]];
-coups=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,2]];
-name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
-MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertex"<>name},outfile];
-
-WriteString[outfile,"End if \n"];
-];
-
- If[decays[[j,3]]=!=LOOP, 
-WriteString[outfile,"\n\n ! Add Z-factors to have external fields on-shell \n"];
-partinv=getPartInv[{AntiField[pD],p1,p2}];
-WriteString[outfile," If (ExternalZfactors) Then \n"];
-Switch[getType/@{pD,p1,p2},
-{S,S,S}|{S,S,V}|{S,V,V},
-If[getGen[pD]>1,
-WriteString[outfile,"! Decaying particle \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-ind1r="(gt1";
-ind2r="(gt2";
-Switch[getVertexType[{pD,p1,p2}],
-SSS,
-ind1="(gt1";
-ind2="(gt2";,
-_,
-ind1="(:,gt1";
-ind2="(:,gt2";
-];
-If[getGen[p1]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-ind1=ind1<>")";ind2=ind2<>")";
-If[getGen[p1]>1,ind1r=ind1r<>",:";ind2r=ind2r<>",:";];
-If[getGen[p2]>1,ind1r=ind1r<>",:";ind2r=ind2r<>",:";];
-ind1r=ind1r<>")";ind2r=ind2r<>")";
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[pD]]<>"\n"]; 
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>" + "<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-];
-
-If[getGen[p1]>1,
-WriteString[outfile,"! Final State 1 \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-ind1r="(";
-ind2r="(";
-Switch[getVertexType[{pD,p1,p2}],
-SSS,
-ind1="(";
-ind2="(";,
-_,
-ind1="(:,";
-ind2="(:,";
-];
-If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-ind1=ind1<>"gt1";ind2=ind2<>"gt2";
-If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-ind1=ind1<>")";ind2=ind2<>")";
-If[getGen[pD]>1,ind1r=ind1r<>":,";ind2r=ind2r<>":,";];
-ind1r=ind1r<>"gt1";ind2r=ind2r<>"gt2";
-If[getGen[p2]>1,ind1r=ind1r<>",:";ind2r=ind2r<>",:";];
-ind1r=ind1r<>")";ind2r=ind2r<>")";
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p1]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p1]]<>"\n"]; 
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,2]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,2]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-];
-
-If[getGen[p2]>1,
-WriteString[outfile,"! Final State 2 \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-ind1r="(";
-ind2r="(";
-Switch[getVertexType[{pD,p1,p2}],
-SSS,
-ind1="(";
-ind2="(";,
-_,
-ind1="(:,";
-ind2="(:,";
-];
-If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-If[getGen[p1]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-ind1=ind1<>"gt1";ind2=ind2<>"gt2";
-ind1=ind1<>")";ind2=ind2<>")";
-If[getGen[pD]>1,ind1r=ind1r<>":,";ind2r=ind2r<>":,";];
-If[getGen[p1]>1,ind1r=ind1r<>":,";ind2r=ind2r<>":,";];
-ind1r=ind1r<>"gt1";ind2r=ind2r<>"gt2";
-ind1r=ind1r<>")";ind2r=ind2r<>")";
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p2]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p2]]<>"\n"]; 
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-];,
-{F,F,S} | {F,F,V},
-
-If[getType/@{pD,p1,p2}==={F,F,S},
-fin=2;,
-fin=4;
-];
-
-If[getGen[pD]>1 && getMixingMatrix[pD]=!={NoMatrix},
-WriteString[outfile,"! Decaying particle \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[pD]]<>"\n"]; 
-
-For[jj=1,jj<=fin,
-ind1="("<>ToString[jj]<>",gt1";
-ind2="("<>ToString[jj]<>",gt2";
-If[getGen[p1]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-ind1=ind1<>")";ind2=ind2<>")";
-
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],1]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>" + "<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],1]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-jj++;];
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-
-];
-
-If[getGen[p1]>1 && getMixingMatrix[p1]=!={NoMatrix},
-WriteString[outfile,"! Final State 1 \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p1]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p1]]<>"\n"]; 
-
-For[jj=1,jj<=fin,
-ind1="("<>ToString[jj]<>",";
-ind2="("<>ToString[jj]<>",";
-
-If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-ind1=ind1<>"gt1";ind2=ind2<>"gt2";
-If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-ind1=ind1<>")";ind2=ind2<>")";
-
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],2]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],2]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-
-jj++;];
-
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-
-
-];
-
-If[getGen[p2]>1 && getMixingMatrix[p2]=!={NoMatrix},
-WriteString[outfile,"! Final State 2 \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-ind1="(:,";
-ind2="(:,";
-
-If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-If[getGen[p1]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-ind1=ind1<>"gt1";ind2=ind2<>"gt2";
-ind1=ind1<>")";ind2=ind2<>")";
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p2]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p2]]<>"\n"]; 
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-];,
-
-
-
-{S,F,F},
-If[getGen[pD]>1 && getMixingMatrix[pD]=!={NoMatrix},
-WriteString[outfile,"! Decaying particle \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-ind1="(:,gt1";
-ind2="(:,gt2";
-If[getGen[p1]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-ind1=ind1<>")";ind2=ind2<>")";
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[pD]]<>"\n"]; 
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>" + "<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-
-];
-
-If[getGen[p1]>1 && getMixingMatrix[p1]=!={NoMatrix},
-WriteString[outfile,"! Final State 1 \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p1]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p1]]<>"\n"]; 
-
-For[jj=1,jj<=2,
-ind1="("<>ToString[jj]<>",";
-ind2="("<>ToString[jj]<>",";
-
-If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-ind1=ind1<>"gt1";ind2=ind2<>"gt2";
-If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
-ind1=ind1<>")";ind2=ind2<>")";
-
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[jj,2]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[jj,2]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-jj++;];
-
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-
-];
-
-If[getGen[p2]>1 && getMixingMatrix[p2]=!={NoMatrix},
-WriteString[outfile,"! Final State 2 \n"];
-WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
-
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p2]]<>"\n"];
-WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p2]]<>"\n"]; 
-
-For[jj=1,jj<=2,
-ind1="("<>ToString[jj]<>",";
-ind2="("<>ToString[jj]<>",";
-
-If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-If[getGen[p1]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
-ind1=ind1<>"gt1";ind2=ind2<>"gt2";
-ind1=ind1<>")";ind2=ind2<>")";
-WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFac[getMixingMatrix[partinv[[jj,3]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
-WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFac[getMixingMatrix[partinv[[jj,3]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
-
-
-jj++;];
-
-
-WriteString[outfile," End Do \n"];
-WriteString[outfile,"End Do \n"];
-WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
-WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
-];,
-
-_,
-WriteString[outfile,"! not yet done \n"];
-
-];
-WriteString[outfile,"End if\n"];
-
-
-WriteString[outfile,"If (ShiftIRdiv) Then \n"];
-WriteString[outfile,"AmpVertex"<>name <>" = AmpVertex"<>name <>"  +  AmpVertexIRos"<>name <>"\n"];
-WriteString[outfile,"End if\n \n"];
-];
-
-WriteString[outfile,"\n\n !Square the amplityde \n"];
-
-WriteString[outfile,"If (DebugLoopDecays) Then \n"];
-WriteString[outfile,"Write(*,*) \"------------------ "<>ToString[pD]<>"->"<>ToString[p1]<>" "<>ToString[p2]<>" -----------------------\" \n"];
-WriteString[outfile,"End if \n"];
-
-If[decays[[j,3]]=!=LOOP,
-WriteString[outfile,"If (.not.SquareFullAmplitudeDecays) Then \n"];
-WriteString[outfile," AmpSum"<>name <>" = AmpTree"<>name <>" \n"];
-WriteString[outfile," AmpSum2"<>name <>" = AmpTree"<>name <>" + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"  \n"];
-WriteString[outfile,"Else \n"];
-WriteString[outfile," AmpSum"<>name <>" = AmpTree"<>name <>" + AmpWave"<>name<>" + AmpVertex"<>name <>"\n"];
-WriteString[outfile," AmpSum2"<>name <>" = AmpTree"<>name <>" + AmpWave"<>name<>" + AmpVertex"<>name <>" \n"];
-WriteString[outfile,"End If \n"];
-
-WriteString[outfile,"If (OnlyTreeLevelContributions) Then \n"];
-WriteString[outfile," AmpSum"<>name <>" = AmpTree"<>name <>"\n"];
-WriteString[outfile," AmpSum2"<>name <>" = AmpTree"<>name  <>" \n"];
-WriteString[outfile,"End if \n"];,
-
-
-(* Loop induced decays *)
-WriteString[outfile,"If (OnlyTreeLevelContributions) Then \n"];
-WriteString[outfile," AmpSum"<>name <>" = 0._dp \n"];
-WriteString[outfile," AmpSum2"<>name <>" = 0._dp  \n"];
-WriteString[outfile,"Else \n"];
-WriteString[outfile," AmpSum"<>name <>" = AmpVertex"<>name <>" + AmpWave"<>name<>"\n"];
-WriteString[outfile," AmpSum2"<>name <>" = AmpVertex"<>name <>" + AmpWave"<>name<>" \n"];
-WriteString[outfile,"End If \n"];
-];
-
-dimIn={};
-If[getGen[pD]>1,
-WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];dimIn=Join[dimIn,{gt1}];,
-WriteString[outfile,"gt1=1 \n"];
-];
-
-If[getVertexType[{pD,p1,p2}]===SSS,
-st="";,st="(:)"
-];
-
-WriteString[outfile,"i4 = isave \n"];
-If[getGen[p1]>1 || getGenSPhenoStart[p1]>1,WriteString[outfile,"  Do gt2="<>ToString[getGenSPhenoStart[p1]]<>","<>ToString[getGen[p1]]<>"\n"];];If[getGen[p1]>1 ,dimIn=Join[dimIn,{gt2}];];
-If[getGen[p2]>1 || getGenSPhenoStart[p2]>1,WriteString[outfile,"    Do gt3="<>If[p1===p2,"gt2",ToString[getGenSPhenoStart[p2]]]<>","<>ToString[getGen[p2]]<>"\n"];];If[getGen[p2]>1 ,dimIn=Join[dimIn,{gt3}];];
-dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
-WriteString[outfile,"If (((OSkinematics).and.("<>SPhenoMassOS[pD,gt1]<>".gt.("<>SPhenoMassOS[p1,gt2]<>"+"<>SPhenoMassOS[p2,gt3]<>"))).or.((.not.OSkinematics).and.("<>SPhenoMass[pD,gt1]<>".gt.("<>SPhenoMass[p1,gt2]<>"+"<>SPhenoMass[p2,gt3]<>")))) Then \n"];
-
-(*
-If[getVertexType[{pD,p1,p2}]===SVV,
-WriteString[sphenoLD,"  AmpSq"<>name<>dimIn<>" = 0._dp \n"];,
-*)
-If[decays[[j,3]]=!=LOOP,
-WriteString[outfile," If (DebugLoopDecays) Then \n"];
-WriteString[outfile,"  Write(*,*) "<>StringReplace[dimIn,{"("->"",")"->""}]<>" \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>"\n"];
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "Else  \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "End if  \n"];
-
-WriteString[outfile,"  Write(*,*) \"TREE x TREE: \",AmpSq"<>name<>dimIn<>" \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = 2._dp*AmpWave"<>name<>"\n"];
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "Else  \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "End if  \n"];
-
-WriteString[outfile,"  Write(*,*) \"TREE x WAVE: \",AmpSq"<>name<>dimIn<>" \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = 2._dp*AmpVertex"<>name <>"\n"];
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "Else  \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "End if  \n"];
-
-WriteString[outfile,"  Write(*,*) \"TREE x VERTEX: \",AmpSq"<>name<>dimIn<>" \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>" + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"\n"];
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "Else  \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "End if  \n"];
-WriteString[outfile,"  Write(*,*) \"TREE x (TREE+WAVE+VERTEX): \",AmpSq"<>name<>dimIn<>" \n"];
-WriteString[outfile," End if \n"];
-];
-
-
-If[decays[[j,3]]=!=LOOP,
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>"\n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "  AmpSqTree"<>name<>dimIn<>" = ("<>SPhenoForm[CalculateColorFactorDecay[AntiField[pD],p1,p2]]<>")*AmpSq"<>name<>dimIn<>"  \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"\n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "  AmpSq"<>name<>dimIn<>" = AmpSq"<>name<>dimIn<>" + AmpSqTree"<>name<>dimIn<>"  \n"];
-WriteString[outfile, "Else  \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>"\n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "  AmpSqTree"<>name<>dimIn<>" = ("<>SPhenoForm[CalculateColorFactorDecay[AntiField[pD],p1,p2]]<>")*AmpSq"<>name<>dimIn<>"  \n"];
-WriteString[outfile,"  AmpSum2"<>name <>" = + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"\n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "  AmpSq"<>name<>dimIn<>" = AmpSq"<>name<>dimIn<>" + AmpSqTree"<>name<>dimIn<>"  \n"];
- WriteString[outfile, "End if  \n"];,
-
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
-WriteString[outfile, "Else  \n"];
-WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
- WriteString[outfile, "End if  \n"];
-];
-
-(* ]; *)
-WriteString[outfile,"Else  \n"];
-WriteString[outfile,"  AmpSq"<>name<>dimIn<>" = 0._dp \n"];
-WriteString[outfile,"End if  \n"];
-WriteString[outfile,"\n! Calculate Partial widths \n"];
-(* Helicity factor *)
-
-Switch[getVertexType[{pD,p1,p2}],
-FFS, If[getType[pD]===F,WriteString[outfile,"helfactor = 2._dp \n"];,WriteString[outfile,"helfactor = 4._dp \n"];];,
-FFV, WriteString[outfile,"helfactor = 2._dp \n"];,
-_, WriteString[outfile,"helfactor = 1._dp \n"];
-];
-If[p1===p2 && getGen[p1]>1,
-WriteString[outfile,"If (gt2.ne.gt3) helfactor = 2._dp*helfactor \n"];
-];
-
-
-(*
-(* Colour factor *)
-If[decays[[j,3]]=!=LOOP,
-factor=CalculateColorFactorDecay[AntiField[pD],p1,p2]*SymmFactor2BodyDecay[pD,p1,p2];,
-(* Check colour factor! *)
-factor=SymmFactor2BodyDecay[pD,p1,p2];
-];
-*)
-factor=SymmFactor2BodyDecay[pD,p1,p2];
-(* symmetry factor *)
-Switch[getType[pD],
-S | V,
-If[AntiField[pD]===pD,
-If[(AntiField[p1]=!=p1 || AntiField[p2]=!=p2) && AntiField[p1]=!=p2,
-factor = 2*factor;
-];
-];,
-F,
-If[AntiField[pD]===pD,factor = 2*factor;];
-];
-
-Switch[getVertexType[{pD,p1,p2}],
-SVV,factor=2 factor;,
-_,factor=factor;
-];
-
-WriteString[outfile,"If (AmpSq"<>name<>dimIn<>".eq.0._dp) Then \n"];
-WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = 0._dp \n"];
-WriteString[outfile,"Else \n"];
-
-WriteString[outfile, "If (OSkinematics) Then \n"];
-WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = "<>SPhenoForm[factor]<>"*GammaTPS("<>StringReplace[SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"helfactor*AmpSq"<>name<>dimIn<>")\n"];
-WriteString[outfile, "Else \n"];
-WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = "<>SPhenoForm[factor]<>"*GammaTPS("<>StringReplace[SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"helfactor*AmpSq"<>name<>dimIn<>")\n"];
-WriteString[outfile, "End if \n"];
-
-WriteString[outfile, "If ((Abs(MRP"<>name<>dimIn<>").gt.1.0E-20_dp).or.(Abs(MRG"<>name<>dimIn<>").gt.1.0E-20_dp)) Then \n"];
-(*
-WriteString[sphenoLD, " If (.not.SimplisticLoopDecays) Then \n"];
-WriteString[sphenoLD, "  phasespacefactor = GammaTPS("<>StringReplace[SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"\[Rule]"._dp,"}]<>"1._dp)/GammaTPS("<>StringReplace[SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"\[Rule]"._dp,"}]<>"1._dp) \n"];
-WriteString[sphenoLD, " Else  \n"];
-WriteString[sphenoLD, "  phasespacefactor = 1._dp \n"];
-WriteString[sphenoLD, " End if \n"];
-*)
-WriteString[outfile, "  phasespacefactor = 1._dp \n"];
-WriteString[outfile, "End if \n"];
-
-
-
-
-WriteString[outfile," If (DebugLoopDecays) Write(*,*) \"virtual\", gP1L"<>SPhenoForm[pD]<>"(gt1,i4) \n"];
-If[decays[[j,3]]=!=LOOP,
-WriteString[outfile," ! Adding real corrections \n"];
-WriteString[outfile, "If ((Abs(MRP"<>name<>dimIn<>").gt.1.0E-20_dp).or.(Abs(MRG"<>name<>dimIn<>").gt.1.0E-20_dp)) Then \n"];
-WriteString[outfile," If (.not.OnlyTreeLevelContributions) Then \n"];
-Switch[getVertexType[{pD,p1,p2}],
-SSV | SVV,
-WriteString[outfile,"   If (DebugLoopDecays) Write(*,*) \"real\", phasespacefactor*"<>SPhenoForm[factor]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>") \n"];
-WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = gP1L"<>SPhenoForm[pD]<>"(gt1,i4) + phasespacefactor*"<>SPhenoForm[factor]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>")\n"];,
-_,
-WriteString[outfile,"   If (DebugLoopDecays) Write(*,*) \"real\", phasespacefactor*"<>SPhenoForm[factor/2]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>") \n"];
-WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = gP1L"<>SPhenoForm[pD]<>"(gt1,i4) + phasespacefactor*"<>SPhenoForm[factor/2]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>")\n"];
-];
-
-WriteString[outfile,"   If (DebugLoopDecays) Write(*,*) \"sum\",  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) \n"];
-WriteString[outfile,"  End if \n"];
-WriteString[outfile,"End if \n"];
-];
-WriteString[outfile,"End if \n"];
-WriteString[outfile,"i4=i4+1"];
-WriteString[outfile,"\n\n"];
-
-
-If[getGen[p2]>1 || getGenSPhenoStart[p2]>1,WriteString[outfile,"    End do\n"];];
-If[getGen[p1]>1 || getGenSPhenoStart[p1]>1,WriteString[outfile,"  End do\n"];];
-If[getGen[pD]>1,
-WriteString[outfile,"If (gt1.eq."<>ToString[getGen[pD]]<>") isave = i4 \n"];
-WriteString[outfile,"End do\n"];,
-WriteString[outfile,"isave = i4 \n"];
-];
-
-If[decays[[j,3]]=!=LOOP,WriteString[outfile,"End If \n"];];
-j++;];
-
-WriteString[outfile,"End Subroutine OneLoopDecay_"<>SPhenoForm[pD]<>"\n\n"];
-WriteString[outfile,"End Module Wrapper_OneLoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>"\n"];
-Close[outfile];
-i++;];
-];
-
-FreeSkipFields[process_,fields_]:=Block[{i,res},
-res=True;
-For[i=1,i<=Length[fields],
-If[FreeQ[process,fields[[i]]]==False,
-res=False;
-];
-i++;];
-Return[res];
-];
+GenerateCalculateOneLoopWidths:=
+    Block[{i,j,k,pD,p1,p2,pos,jj,ii,coups,ctcoups,masses,name,dim,decays,dimAmp,dimIn,Zconst,factor,st,partinv,fin,subZ,subG,subGZ,subGZOS,coupsWithGB,outfile,symfactor},
+	  Print["  Writing wrapper code for ",Dynamic[DynamicWrapperParticle],"(",Dynamic[DynamicWrapperParticleNr],"/",Length[SA`ParticlesDecays1Loop],")"];
+
+
+	  For[i=1,i<=Length[SA`ParticlesDecays1Loop],
+
+	      DynamicWrapperParticle=SA`ParticlesDecays1Loop[[i]];
+	      DynamicWrapperParticleNr=i;
+	      pD=SA`ParticlesDecays1Loop[[i]];
+
+	      outfile=OpenWrite[ToFileName[$sarahSPhenoLoopDecayDir,"Wrapper_LoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>".f90"]];
+	      WriteCopyRight[outfile];
+	      WriteString[outfile,"Module Wrapper_OneLoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>"\n"];
+
+
+	      WriteString[outfile, "Use Model_Data_"<>ModelName<>" \n"];
+	      WriteString[outfile,"Use Kinematics \n"];
+	      WriteString[outfile, "Use OneLoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>" \n"];
+	      WriteString[outfile,"Use Control \n"];
+	      WriteString[outfile,"Use Settings \n"];
+	      WriteString[outfile,"\n \n"];
+	      WriteString[outfile,"Contains\n"];
+	      WriteString[outfile,"\n \n"];
+
+
+	      (*
+		 MakeSubroutineTitle["OneLoopDecay_"<>SPhenoForm[pD],Flatten[{SA`massesOnlyInput,NewMassParameters,listAllParameters,listVEVs,SA`ListCounterTerms,SA`WaveFunctionNames,namesAllreallyAll,namesColoredQuartics,namesAllCT,SA`Zfactors ,SA`ZCouplings}],{},{"MLambda","deltaM","kont","gP1L"<>SPhenoForm[pD]},sphenoLD];
+		 *)
+
+	      MakeSubroutineTitle["OneLoopDecay_"<>SPhenoForm[pD],Flatten[{SA`massesOnlyInput,NewMassParameters,listAllParameters,listVEVs,SA`ListCounterTerms,SA`WaveFunctionNames,Intersection[SA`SavedInformationNeededMassesCouplingsParticle[[i,2]]] ,SA`Zfactors  }],{},{"MLambda","em","gs","deltaM","kont","gP1L"<>SPhenoForm[pD]},outfile];
+
+
+	      WriteString[outfile,"Implicit None \n"];
+	      MakeVariableList[listAllParameters,",Intent(in)",outfile];
+	      MakeVariableList[listVEVs,",Intent(in)",outfile];
+	      MakeVariableList[NewMassParameters,",Intent(in)",outfile];
+	      MakeVariableList[SA`ListCounterTerms,",Intent(in)",outfile];
+	      MakeVariableList[Intersection[SA`SavedInformationNeededMassesCouplingsParticle[[i,2]]],",Intent(in)",outfile];
+	      WriteString[outfile,"Real(dp), Intent(in) :: em, gs \n"];
+	      (*
+		 MakeVariableList[namesAllreallyAll,",Intent(in)",sphenoLD];
+		 MakeVariableList[namesColoredQuartics,",Intent(in)",sphenoLD];
+		 MakeVariableList[namesAllCT,",Intent(in)",sphenoLD];
+		 MakeVariableList[SA`ZCouplings,",Intent(in)",sphenoLD];
+		 *)
+
+	      MakeVariableList[SA`WaveFunctionNames,",Intent(in)",outfile];
+	      MakeVariableList[SA`massesOnlyInput,",Intent(in)",outfile];
+	      MakeVariableList[SA`Zfactors,",Intent(in)",outfile]; 
+	      massless=masslessNoPhoton;
+
+	      (* MakeVariableList[SA`SelfEnergieNames,",Intent(in)",sphenoLD]; *)
+	      WriteString[outfile,"Real(dp), Intent(in) :: MLambda, deltaM \n"];
+	      (* WriteString[sphenoLD,"Real(dp), Intent(out) :: gP1L"<>SPhenoForm[pD]<>"("<>ToString[getGen[pD]]<>","<>ToString[BR2and3[[Position[BR2and3,pD][[1,1]]]][[2]]]<>") \n"]; *)
+	      WriteString[outfile,"Real(dp), Intent(out) :: gP1L"<>SPhenoForm[pD]<>"("<>ToString[getGen[pD]]<>","<>ToString[BR2[[Position[BR2,pD][[1,1]]]][[2]]]<>") \n"];
+	      WriteString[outfile,"Integer, Intent(out) :: kont \n"];
+	      WriteString[outfile,"Real(dp) :: "<>ToString[SPhenoMass[VectorG]]<>","<>ToString[SPhenoMass[VectorP]]<>","<>ToString[SPhenoMassSq[VectorG]]<>","<>ToString[SPhenoMassSq[VectorP]]<>", helfactor, phasespacefactor \n"];
+	      WriteString[outfile,"Integer :: i1,i2,i3,i4, isave, gt1, gt2, gt3 \n\n"];
+
+
+	      For[ii=1,ii<=Length[SA`Zfactors],
+		  WriteString[outfile,"Complex(dp) :: "<>ToString[SA`Zfactors[[ii]]]<>"c("<>StringReplace[ToString[getDimSPheno[SA`Zfactors[[ii]]]],{"{"->"","}"->""}]<>") \n"];
+		  ii++;];
+
+	      massless=masslessSave;
+	      (* decays=TwoBodyDecay[pD]; *)
+	      decays=TwoBodyDecayAllAllowed[pD];
+	      decays=Select[decays,FreeSkipFields[#,SkipFields]&];
+
+	      massless=masslessNoPhoton;
+	      For[j=1,j<=Length[decays],
+		  DynamicLoopDecayNr=j;
+		  p1=decays[[j,1]];
+		  p2=decays[[j,2]];
+		  pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
+		  If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];
+		     dim="("<>ToString[getGen[pD]]<>","<>ToString[getGen[p2]]<>","<>ToString[getGen[p1]]<>")";,
+		     dim="("<>ToString[getGen[pD]]<>","<>ToString[getGen[p1]]<>","<>ToString[getGen[p2]]<>")";
+		    ];
+
+		  If[pos==={},Print["Strange decay vertex: ",pD,p1,p2],
+		     
+		     
+		  dim=Nest[StringReplace[#,{"(1,"->"(",",1,"->",",",1)"->")","(1)"->""}]&,dim,3];
+		  Switch[getVertexType[{pD,p1,p2}],
+			 FFV,dimAmp=StringReplace["(4)"<>dim,")("->","];,
+			 FFS,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+			 SSS,dimAmp=StringReplace[""<>dim,")("->","];,
+			 SFF,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+			 SSV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+			 SVV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+			 _,Print["Not yet done",{pD,p1,p2}];
+			];
+
+		  name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
+		  WriteString[outfile,"Real(dp) :: MRP"<>name<>dim<>",MRG"<>name<>dim<>", MRPZ"<>name<>dim<>",MRGZ"<>name<>dim<>" \n"];
+		  WriteString[outfile,"Real(dp) :: MVP"<>name<>dim<>" \n"];
+		  WriteString[outfile,"Real(dp) :: RMsqTree"<>name<>dim<>",RMsqWave"<>name<>dim<>",RMsqVertex"<>name<>dim<>" \n"];
+		  WriteString[outfile,"Complex(dp) :: AmpTree"<>name<>dimAmp<>",AmpWave"<>name<>dimAmp<>"=(0._dp,0._dp),AmpVertex"<>name<>dimAmp<>"& \n & ,AmpVertexIRos"<>name<>dimAmp<>",AmpVertexIRdr"<>name<>dimAmp<>", AmpSum"<>name<>dimAmp<>", AmpSum2"<>name<>dimAmp<>" \n"];
+		  WriteString[outfile,"Complex(dp) :: AmpTreeZ"<>name<>dimAmp<>",AmpWaveZ"<>name<>dimAmp<>",AmpVertexZ"<>name<>dimAmp<>" \n"];
+
+		  WriteString[outfile,"Real(dp) :: AmpSq"<>name<>dim<>",  AmpSqTree"<>name<>dim<>" \n"];
+		  
+
+		 ]; (* If pos==={} *)
+	      j++;
+	     ];
+
+
+
+
+	  WriteString[outfile,"Write(*,*) \"Calculating one-loop decays of "<>SPhenoForm[pD]<>" \" \n"];
+
+	  WriteString[outfile,"kont = 0 \n"];
+	  WriteString[outfile,ToString[SPhenoMass[VectorG]]<>" = MLambda \n"];
+	  WriteString[outfile,ToString[SPhenoMass[VectorP]]<>" = MLambda \n"];
+	  WriteString[outfile,ToString[SPhenoMassSq[VectorG]]<>" = MLambda**2 \n"];
+	  WriteString[outfile,ToString[SPhenoMassSq[VectorP]]<>" = MLambda**2 \n\n"];
+
+	  For[ii=1,ii<=Length[SA`Zfactors],
+	      WriteString[outfile,ToString[SA`Zfactors[[ii]]]<>"c = Conjg("<>ToString[SA`Zfactors[[ii]]]<>")\n"];
+	      ii++;];
+
+
+
+	  WriteString[outfile,"\n ! Counter \n"];
+	  If[pD===HiggsBoson || pD===PseudoScalar,
+	     WriteString[outfile,"isave = "<>ToString[Position[Select[savedDecayInfos,#[[1]]===pD&][[1,2]],getSPhenoCoupling[decays[[1,3]]][[1,1]]][[1,1]]]<>"\n\n"];,
+	     WriteString[outfile,"isave = 1 \n\n"];
+	    ];
+
+	  For[j=1,j<=Length[decays],
+	      p1=decays[[j,1]];
+	      p2=decays[[j,2]];
+
+	      If[decays[[j,3]]=!=LOOP,WriteString[outfile,"If (.not.CalcLoopDecay_LoopInducedOnly) Then \n"];];
+	      WriteString[outfile,"!---------------- \n"];
+	      WriteString[outfile,"! "<>SPhenoForm[p1]<>" "<>SPhenoForm[p2]<>"\n"];
+	      WriteString[outfile,"!---------------- \n\n"];
+
+	      subZ={};
+	      If[decays[[j,3]]=!=LOOP,
+		 WriteString[outfile,"!Tree Level \n"];
+		 pos=Position[SA`SavedInformationTreeDecay,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationTreeDecay,{pD,{p2,p1},a___}];];
+		 If[pos=!={},
+		    coups=SA`SavedInformationTreeDecay[[pos[[1,1]],4,2]];
+		    masses=DeleteCases[SA`SavedInformationTreeDecay[[pos[[1,1]],4,1]],0.];
+		    name=SA`SavedInformationTreeDecay[[pos[[1,1]],3]];
+		   ];
+		 (* MakeCall["Msquared_TreeSquared_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{},{"RMsqtree"<>name},sphenoLD]; *)
+		 subZ=Table[coups[[i]]->ToExpression["Z"<>ToString[coups[[i]]]],{i,1,Length[coups]}];
+		 If[FreeQ[{getBlank[p1],getBlank[p2]},VectorW],
+		    subGZOS={};
+		    subGZ={};
+		    subG={};,
+		    subGZOS=Table[getGBCoup[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
+		    subGZOS=Join[subGZOS,Table[cHPWlist[[i]]->ToExpression["GosZ"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
+		    subGZ=Table[getGBCoup[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
+		    subGZ=Join[subGZ,Table[cHPWlist[[i]]->ToExpression["GZ"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
+		    subG=Table[getGBCoup[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup[coups[[i]]]]],{i,1,Length[coups]}];
+		    subG=Join[subG,Table[cHPWlist[[i]]->ToExpression["G"<>ToString[cHPWlist[[i]]]],{i,1,Length[cHPWlist]}]];
+
+		    If[{getBlank[p1],getBlank[p2]}==={VectorW,VectorW},
+		       subGZOS=Join[subGZOS,Table[getGBCoup1[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
+		       subGZ=Join[subGZ,Table[getGBCoup1[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
+		       subG=Join[Table[getGBCoup1[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup1[coups[[i]]]]],{i,1,Length[coups]}]];
+		       subGZOS=Join[subGZOS,Table[getGBCoup2[coups[[i]]]->ToExpression["GosZ"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
+		       subGZ=Join[subGZ,Table[getGBCoup2[coups[[i]]]->ToExpression["GZ"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
+		       subG=Join[Table[getGBCoup2[coups[[i]]]->ToExpression["G"<>ToString[getGBCoup2[coups[[i]]]]],{i,1,Length[coups]}]];
+		      ];
+		   ];
+		 WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
+		 MakeCall["Amplitude_Tree_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{},{"AmpTree"<>name},outfile];
+		 WriteString[outfile,"  Else \n"];
+		 MakeCall["Amplitude_Tree_"<>ModelName<>"_"<>name,Flatten[{ToExpression["Z"<>ToString[#]]&/@coups,masses}],{},{"AmpTree"<>name},outfile];
+		 WriteString[outfile,"  End if \n"];
+
+		 WriteString[outfile,"\n\n!Real Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysReal,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysReal,{pD,{p2,p1},a___}];];
+		 If[pos=!={},
+		    coups=getSPhenoCoupling[SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]][[1]];
+		    WriteString[outfile,"If (OSkinematics) Then \n"];
+		    masses=DeleteCases[Intersection[SPhenoMassOS/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
+		    WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
+		    WriteString[outfile," ! OS and no Z-factors \n"];
+		    name=SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],3]];
+		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
+		    WriteString[outfile,"  Else \n"];
+		    coups=ToExpression["Z"<>ToString[#]]&/@coups;
+		    WriteString[outfile," ! OS and Z-factors \n"];
+		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
+		    WriteString[outfile,"  End if \n"];
+
+		    WriteString[outfile,"Else \n"];
+		    coups=getSPhenoCoupling[SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]][[1]];
+		    masses=DeleteCases[Intersection[SPhenoMass/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
+		    WriteString[outfile," ! DR and no Z-factors \n"];
+		    WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
+		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
+		    WriteString[outfile,"  Else \n"];
+		    coups=ToExpression["Z"<>ToString[#]]&/@coups;
+		    WriteString[outfile," ! DR and Z-factors \n"];
+		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
+		    WriteString[outfile,"  End if \n"];
+		    WriteString[outfile,"End if \n"]; 
+		    ,
+		    WriteString[outfile,"! Still missing\n"];
+		   ];
+
+
+
+		 WriteString[outfile,"\n\n!Self-energy Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p2,p1},a___}];];
+		 If[pos=!={},(* Added by mark: if we don't generate the wavefunction factors ... *)
+		    
+		    masses=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,1]];
+		    coups=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,2]];
+		    ctcoups=ToExpression["ct"<>ToString[#]]&/@coups;
+		    Zconst=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,3]];
+		    name=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],3]];
+		    (* MakeCall["Msquared_TREExWAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses,Zconst}],{},{"RMsqWave"<>name},sphenoLD]; *)
+		    MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses,Zconst}],{},{"AmpWave"<>name},outfile];
+		   ];
+		 
+		 WriteString[outfile,"\n\n!Vertex Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];];
+		 masses=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,1]];
+		 coups=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,2]];
+		 name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
+		 (* MakeCall["Msquared_TREExVERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"RMsqVertex"<>name},sphenoLD]; *)
+		 MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertex"<>name},outfile];
+
+		 WriteString[outfile,"If (ShiftIRdiv) Then \n"];
+		 MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertexIRdr"<>name},outfile];
+
+		 WriteString[outfile," If (ExternalZfactors) Then \n"];
+		 WriteString[outfile, "  If (OSkinematics) Then \n"];
+		 WriteString[outfile," ! OS and Z-factors \n"];
+		 MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups/. subZ/. subGZOS}],{},{"AmpVertexIRos"<>name},outfile];
+		 WriteString[outfile,"   Else \n"];
+		 WriteString[outfile," ! DR and Z-factors \n"];
+		 MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups /. subZ/. subGZ}],{},{"AmpVertexIRos"<>name},outfile];
+		 WriteString[outfile," End if \n"];
+		 WriteString[outfile," Else \n"];
+		 WriteString[outfile, "  If (OSkinematics) Then \n"];
+		 WriteString[outfile," ! OS and no Z-factors \n"];
+		 MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups /. subG}],{},{"AmpVertexIRos"<>name},outfile];
+		 WriteString[outfile,"   Else \n"];
+		 WriteString[outfile," ! DR and no Z-factors \n"];
+		 MakeCall["Amplitude_IR_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertexIRos"<>name},outfile];
+		 WriteString[outfile," End if \n"];
+		 WriteString[outfile," End if \n"];
+
+		 WriteString[outfile,"AmpVertex"<>name <>" = AmpVertex"<>name <>" -  AmpVertexIRdr"<>name<>"! +  AmpVertexIRos"<>name <>" ! Shift added later\n"];
+		 WriteString[outfile,"End if \n"];,
+
+
+		 (* Loop induced decays *)
+		 WriteString[outfile,"If (LoopInducedDecaysOS) Then \n"];
+		 WriteString[outfile,"\n\n!Self-energy Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p1,p2},a___}];
+		 If[pos==={},      pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p2,p1},a___}];];
+		 If[pos=!={},
+		    masses=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,1]];
+		    coups=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,2]];
+		    ctcoups=ToExpression["ct"<>ToString[#]]&/@coups;
+		    Zconst=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,3]];
+		    name=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],3]];
+		    WriteString[outfile," If (ExternalZfactors) Then \n"];
+		    If[getType[pD]===F,
+		       MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{ToExpression["Z"<>ToString[#]]&/@coups,ctcoups,masses/.subDRtoOS,Zconst}],{},{"AmpWave"<>name},outfile];,
+		       MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses/.subDRtoOS,Zconst}],{},{"AmpWave"<>name},outfile];
+		      ];
+		    WriteString[outfile," Else \n"];
+		    MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses/.subDRtoOS,Zconst}],{},{"AmpWave"<>name},outfile];
+		    WriteString[outfile," End if \n"];
+		   ];(* end If[pos=!={},*)
+
+		 WriteString[outfile,"\n\n!Vertex Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];];
+		 masses=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,1]];
+		 coups=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,2]];
+		 name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
+		 WriteString[outfile," If (ExternalZfactors) Then \n"];
+		 If[getType[pD]===F,
+		    MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,ToExpression["Z"<>ToString[#]]&/@coups}],{},{"AmpVertex"<>name},outfile];,
+		    MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups}],{},{"AmpVertex"<>name},outfile];
+		   ];
+
+		 WriteString[outfile," Else \n"];
+		 MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses/.subDRtoOS,coups}],{},{"AmpVertex"<>name},outfile];
+		 WriteString[outfile," End if \n"];
+
+
+		 WriteString[outfile,"Else \n"];
+		 WriteString[outfile,"\n\n!Self-energy Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysWave,{pD,{p2,p1},a___}];];
+		 If[pos=!={},(* Added by mark *)
+		    
+		    masses=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,1]];
+		    coups=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,2]];
+		    ctcoups=ToExpression["ct"<>ToString[#]]&/@coups;
+		    Zconst=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],4,3]];
+		    name=SA`SavedInformationOneLoopDecaysWave[[pos[[1,1]],3]];
+		    MakeCall["Amplitude_WAVE_"<>ModelName<>"_"<>name,Flatten[{coups,ctcoups,masses,Zconst}],{},{"AmpWave"<>name},outfile];
+		   ]; (* end If[pos=!={} *)
+		 
+		 WriteString[outfile,"\n\n!Vertex Corrections \n"];
+		 pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p1,p2},a___}];
+		 If[pos==={},pos=Position[SA`SavedInformationOneLoopDecaysVertex,{pD,{p2,p1},a___}];];
+		 masses=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,1]];
+		 coups=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],4,2]];
+		 name=SA`SavedInformationOneLoopDecaysVertex[[pos[[1,1]],3]];
+		 MakeCall["Amplitude_VERTEX_"<>ModelName<>"_"<>name,Flatten[{masses,coups}],{},{"AmpVertex"<>name},outfile];
+
+		 WriteString[outfile,"End if \n"];
+		 
+		];
+
+		 If[decays[[j,3]]=!=LOOP, 
+		    WriteString[outfile,"\n\n ! Add Z-factors to have external fields on-shell \n"];
+		    partinv=getPartInv[{AntiField[pD],p1,p2}];
+		    WriteString[outfile," If (ExternalZfactors) Then \n"];
+		    Switch[getType/@{pD,p1,p2},
+			   {S,S,S}|{S,S,V}|{S,V,V},
+			   If[getGen[pD]>1,
+			      WriteString[outfile,"! Decaying particle \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+			      ind1r="(gt1";
+			      ind2r="(gt2";
+			      Switch[getVertexType[{pD,p1,p2}],
+				     SSS,
+				     ind1="(gt1";
+				     ind2="(gt2";,
+				     _,
+				     ind1="(:,gt1";
+				     ind2="(:,gt2";
+				    ];
+			      If[getGen[p1]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+			      If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+			      ind1=ind1<>")";ind2=ind2<>")";
+			      If[getGen[p1]>1,ind1r=ind1r<>",:";ind2r=ind2r<>",:";];
+			      If[getGen[p2]>1,ind1r=ind1r<>",:";ind2r=ind2r<>",:";];
+			      ind1r=ind1r<>")";ind2r=ind2r<>")";
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[pD]]<>"\n"]; 
+			      WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>" + "<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+			     ];
+
+			   If[getGen[p1]>1,
+			      WriteString[outfile,"! Final State 1 \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+			      ind1r="(";
+			      ind2r="(";
+			      Switch[getVertexType[{pD,p1,p2}],
+				     SSS,
+				     ind1="(";
+				     ind2="(";,
+				     _,
+				     ind1="(:,";
+				     ind2="(:,";
+				    ];
+			      If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+			      ind1=ind1<>"gt1";ind2=ind2<>"gt2";
+			      If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+			      ind1=ind1<>")";ind2=ind2<>")";
+			      If[getGen[pD]>1,ind1r=ind1r<>":,";ind2r=ind2r<>":,";];
+			      ind1r=ind1r<>"gt1";ind2r=ind2r<>"gt2";
+			      If[getGen[p2]>1,ind1r=ind1r<>",:";ind2r=ind2r<>",:";];
+			      ind1r=ind1r<>")";ind2r=ind2r<>")";
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p1]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p1]]<>"\n"]; 
+			      WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,2]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,2]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+			     ];
+
+			   If[getGen[p2]>1,
+			      WriteString[outfile,"! Final State 2 \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+			      ind1r="(";
+			      ind2r="(";
+			      Switch[getVertexType[{pD,p1,p2}],
+				     SSS,
+				     ind1="(";
+				     ind2="(";,
+				     _,
+				     ind1="(:,";
+				     ind2="(:,";
+				    ];
+			      If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+			      If[getGen[p1]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+			      ind1=ind1<>"gt1";ind2=ind2<>"gt2";
+			      ind1=ind1<>")";ind2=ind2<>")";
+			      If[getGen[pD]>1,ind1r=ind1r<>":,";ind2r=ind2r<>":,";];
+			      If[getGen[p1]>1,ind1r=ind1r<>":,";ind2r=ind2r<>":,";];
+			      ind1r=ind1r<>"gt1";ind2r=ind2r<>"gt2";
+			      ind1r=ind1r<>")";ind2r=ind2r<>")";
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p2]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p2]]<>"\n"]; 
+			      WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+			     ];,
+			   {F,F,S} | {F,F,V},
+
+			   If[getType/@{pD,p1,p2}==={F,F,S},
+			      fin=2;,
+			      fin=4;
+			     ];
+
+			   If[getGen[pD]>1 && getMixingMatrix[pD]=!={NoMatrix},
+			      WriteString[outfile,"! Decaying particle \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[pD]]<>"\n"]; 
+
+			      For[jj=1,jj<=fin,
+				  ind1="("<>ToString[jj]<>",gt1";
+				  ind2="("<>ToString[jj]<>",gt2";
+				  If[getGen[p1]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+				  If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+				  ind1=ind1<>")";ind2=ind2<>")";
+
+				  WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],1]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+				  WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>" + "<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],1]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+				  jj++;];
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+
+			     ];
+
+			   If[getGen[p1]>1 && getMixingMatrix[p1]=!={NoMatrix},
+			      WriteString[outfile,"! Final State 1 \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p1]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p1]]<>"\n"]; 
+
+			      For[jj=1,jj<=fin,
+				  ind1="("<>ToString[jj]<>",";
+				  ind2="("<>ToString[jj]<>",";
+
+				  If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+				  ind1=ind1<>"gt1";ind2=ind2<>"gt2";
+				  If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+				  ind1=ind1<>")";ind2=ind2<>")";
+
+				  WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],2]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+				  WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[Mod[jj,2,1],2]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+
+				  jj++;];
+
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+
+
+			     ];
+
+			   If[getGen[p2]>1 && getMixingMatrix[p2]=!={NoMatrix},
+			      WriteString[outfile,"! Final State 2 \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+			      ind1="(:,";
+			      ind2="(:,";
+
+			      If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+			      If[getGen[p1]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+			      ind1=ind1<>"gt1";ind2=ind2<>"gt2";
+			      ind1=ind1<>")";ind2=ind2<>")";
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p2]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p2]]<>"\n"]; 
+			      WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,3]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+			     ];,
+
+
+
+			   {S,F,F},
+			   If[getGen[pD]>1 && getMixingMatrix[pD]=!={NoMatrix},
+			      WriteString[outfile,"! Decaying particle \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+			      ind1="(:,gt1";
+			      ind2="(:,gt2";
+			      If[getGen[p1]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+			      If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+			      ind1=ind1<>")";ind2=ind2<>")";
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[pD]]<>"\n"]; 
+			      WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>" + "<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[1,1]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+
+			     ];
+
+			   If[getGen[p1]>1 && getMixingMatrix[p1]=!={NoMatrix},
+			      WriteString[outfile,"! Final State 1 \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p1]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p1]]<>"\n"]; 
+
+			      For[jj=1,jj<=2,
+				  ind1="("<>ToString[jj]<>",";
+				  ind2="("<>ToString[jj]<>",";
+
+				  If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+				  ind1=ind1<>"gt1";ind2=ind2<>"gt2";
+				  If[getGen[p2]>1,ind1=ind1<>",:";ind2=ind2<>",:";];
+				  ind1=ind1<>")";ind2=ind2<>")";
+
+				  WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[jj,2]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+				  WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFacHead[getMixingMatrixHead[partinv[[jj,2]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+				  jj++;];
+
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+
+			     ];
+
+			   If[getGen[p2]>1 && getMixingMatrix[p2]=!={NoMatrix},
+			      WriteString[outfile,"! Final State 2 \n"];
+			      WriteString[outfile,"AmpWaveZ"<>name<>"=0._dp \n"];
+			      WriteString[outfile,"AmpVertexZ"<>name<>"=0._dp \n"];
+
+			      WriteString[outfile,"Do gt1=1,"<>ToString[getGen[p2]]<>"\n"];
+			      WriteString[outfile,"  Do gt2=1,"<>ToString[getGen[p2]]<>"\n"]; 
+
+			      For[jj=1,jj<=2,
+				  ind1="("<>ToString[jj]<>",";
+				  ind2="("<>ToString[jj]<>",";
+
+				  If[getGen[pD]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+				  If[getGen[p1]>1,ind1=ind1<>":,";ind2=ind2<>":,";];
+				  ind1=ind1<>"gt1";ind2=ind2<>"gt2";
+				  ind1=ind1<>")";ind2=ind2<>")";
+				  WriteString[outfile,"AmpWaveZ"<>name<>ind2<>" = AmpWaveZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFac[getMixingMatrix[partinv[[jj,3]]]]]<>"(gt2,gt1)*AmpWave"<>name<>ind1<>" \n"];
+				  WriteString[outfile,"AmpVertexZ"<>name<>ind2<>"= AmpVertexZ"<>name<>ind2<>"+"<>SPhenoForm[SPhenoZFac[getMixingMatrix[partinv[[jj,3]]]]]<>"(gt2,gt1)*AmpVertex"<>name<>ind1<>" \n"];
+
+
+				  jj++;];
+
+
+			      WriteString[outfile," End Do \n"];
+			      WriteString[outfile,"End Do \n"];
+			      WriteString[outfile,"AmpWave"<>name<>"=AmpWaveZ"<>name<>" \n"];
+			      WriteString[outfile,"AmpVertex"<>name<>"= AmpVertexZ"<>name<>"\n"];
+			     ];,
+
+			   _,
+			   WriteString[outfile,"! not yet done \n"];
+
+			  ];
+		    WriteString[outfile,"End if\n"];
+
+
+		    WriteString[outfile,"If (ShiftIRdiv) Then \n"];
+		    WriteString[outfile,"AmpVertex"<>name <>" = AmpVertex"<>name <>"  +  AmpVertexIRos"<>name <>"\n"];
+		    WriteString[outfile,"End if\n \n"];
+		   ];
+
+		 
+		 (* -------------------------- SUM THE AMPLITUDE --------------------------------------------*)
+		 
+		 WriteString[outfile,"\n\n !Square the amplitude \n"];
+
+		 WriteString[outfile,"If (DebugLoopDecays) Then \n"];
+		 WriteString[outfile,"Write(*,*) \"------------------ "<>ToString[pD]<>"->"<>ToString[p1]<>" "<>ToString[p2]<>" -----------------------\" \n"];
+		 WriteString[outfile,"End if \n"];
+
+		 If[decays[[j,3]]=!=LOOP,
+		    WriteString[outfile,"If (.not.SquareFullAmplitudeDecays) Then \n"];
+		    WriteString[outfile," AmpSum"<>name <>" = AmpTree"<>name <>" \n"];
+		    WriteString[outfile," AmpSum2"<>name <>" = AmpTree"<>name <>" + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"  \n"];
+		    WriteString[outfile,"Else \n"];
+		    WriteString[outfile," AmpSum"<>name <>" = AmpTree"<>name <>" + AmpWave"<>name<>" + AmpVertex"<>name <>"\n"];
+		    WriteString[outfile," AmpSum2"<>name <>" = AmpTree"<>name <>" + AmpWave"<>name<>" + AmpVertex"<>name <>" \n"];
+		    WriteString[outfile,"End If \n"];
+
+		    WriteString[outfile,"If (OnlyTreeLevelContributions) Then \n"];
+		    WriteString[outfile," AmpSum"<>name <>" = AmpTree"<>name <>"\n"];
+		    WriteString[outfile," AmpSum2"<>name <>" = AmpTree"<>name  <>" \n"];
+		    WriteString[outfile,"End if \n"];
+
+		    ,
+
+		    (* Loop induced decays *)
+		    WriteString[outfile,"If (OnlyTreeLevelContributions) Then \n"];
+		    WriteString[outfile," AmpSum"<>name <>" = 0._dp \n"];
+		    WriteString[outfile," AmpSum2"<>name <>" = 0._dp  \n"];
+		    WriteString[outfile,"Else \n"];
+		    
+		    WriteString[outfile," AmpSum"<>name <>" = AmpVertex"<>name <>" + AmpWave"<>name<>"\n"];
+		    WriteString[outfile," AmpSum2"<>name <>" = AmpVertex"<>name <>" + AmpWave"<>name<>" \n"];
+		    (* MARK : removed wavefn. contributions for loop induced, but now reverted
+		    WriteString[outfile," AmpSum"<>name <>" = AmpVertex"<>name"\n"];
+		    WriteString[outfile," AmpSum2"<>name <>" = AmpVertex"<>name"\n"];
+		       *)
+		    WriteString[outfile,"End If \n"];
+		   ];
+
+
+		 (* -------------------------- SQUARE THE AMPLITUDE AND CALCULATE WIDTHS --------------------------------------------*)
+
+		 
+		 dimIn={};
+		 If[getGen[pD]>1,
+		    WriteString[outfile,"Do gt1=1,"<>ToString[getGen[pD]]<>"\n"];dimIn=Join[dimIn,{gt1}];,
+		    WriteString[outfile,"gt1=1 \n"];
+		   ];
+
+		 If[getVertexType[{pD,p1,p2}]===SSS,
+		    st="";,st="(:)"
+		   ];
+
+		 WriteString[outfile,"i4 = isave \n"];
+		 If[getGen[p1]>1 || getGenSPhenoStart[p1]>1,WriteString[outfile,"  Do gt2="<>ToString[getGenSPhenoStart[p1]]<>","<>ToString[getGen[p1]]<>"\n"];];If[getGen[p1]>1 ,dimIn=Join[dimIn,{gt2}];];
+		 If[getGen[p2]>1 || getGenSPhenoStart[p2]>1,WriteString[outfile,"    Do gt3="<>If[p1===p2,"gt2",ToString[getGenSPhenoStart[p2]]]<>","<>ToString[getGen[p2]]<>"\n"];];If[getGen[p2]>1 ,dimIn=Join[dimIn,{gt3}];];
+		 dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
+		 WriteString[outfile,"If (((OSkinematics).and.("<>SPhenoMassOS[pD,gt1]<>".gt.("<>SPhenoMassOS[p1,gt2]<>"+"<>SPhenoMassOS[p2,gt3]<>"))).or.((.not.OSkinematics).and.("<>SPhenoMass[pD,gt1]<>".gt.("<>SPhenoMass[p1,gt2]<>"+"<>SPhenoMass[p2,gt3]<>")))) Then \n"];
+
+		 (*
+		    If[getVertexType[{pD,p1,p2}]===SVV,
+		    WriteString[sphenoLD,"  AmpSq"<>name<>dimIn<>" = 0._dp \n"];,
+		    *)
+		 (* ------------------------- DEBUG CODE: OUTPUT INDIVIDUAL PIECES ----------------------------*)
+		 
+		 If[decays[[j,3]]=!=LOOP,
+		    WriteString[outfile," If (DebugLoopDecays) Then \n"];
+		    WriteString[outfile,"  Write(*,*) "<>StringReplace[dimIn,{"("->"",")"->""}]<>" \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>"\n"];
+		    WriteString[outfile, "If (OSkinematics) Then \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "Else  \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "End if  \n"];
+
+		    WriteString[outfile,"  Write(*,*) \"TREE x TREE: \",AmpSq"<>name<>dimIn<>" \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = 2._dp*AmpWave"<>name<>"\n"];
+		    WriteString[outfile, "If (OSkinematics) Then \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "Else  \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "End if  \n"];
+
+		    WriteString[outfile,"  Write(*,*) \"TREE x WAVE: \",AmpSq"<>name<>dimIn<>" \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = 2._dp*AmpVertex"<>name <>"\n"];
+		    WriteString[outfile, "If (OSkinematics) Then \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "Else  \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "End if  \n"];
+
+		    WriteString[outfile,"  Write(*,*) \"TREE x VERTEX: \",AmpSq"<>name<>dimIn<>" \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>" + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"\n"];
+		    WriteString[outfile, "If (OSkinematics) Then \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "Else  \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "End if  \n"];
+		    WriteString[outfile,"  Write(*,*) \"TREE x (TREE+WAVE+VERTEX): \",AmpSq"<>name<>dimIn<>" \n"];
+		    WriteString[outfile," End if \n"];
+		   ];
+
+
+		 (* ------------------------------- ACTUALLY SQUARE THE AMPLITUDE HERE ------------------------*)
+		 
+
+		 If[decays[[j,3]]=!=LOOP,
+		    WriteString[outfile, "If (OSkinematics) Then \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>"\n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    (*WriteString[outfile, "  AmpSqTree"<>name<>dimIn<>" = ("<>SPhenoForm[CalculateColorFactorDecay[AntiField[pD],p1,p2]]<>")*AmpSq"<>name<>dimIn<>"  \n"];*)
+		    WriteString[outfile, "  AmpSqTree"<>name<>dimIn<>" = AmpSq"<>name<>dimIn<>"  \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"\n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "  AmpSq"<>name<>dimIn<>" = AmpSq"<>name<>dimIn<>" + AmpSqTree"<>name<>dimIn<>"  \n"];
+		    WriteString[outfile, "Else  \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = AmpTree"<>name <>"\n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    (*WriteString[outfile, "  AmpSqTree"<>name<>dimIn<>" = ("<>SPhenoForm[CalculateColorFactorDecay[AntiField[pD],p1,p2]]<>")*AmpSq"<>name<>dimIn<>"  \n"];*)
+		    WriteString[outfile, "  AmpSqTree"<>name<>dimIn<>" = AmpSq"<>name<>dimIn<>"  \n"];
+		    WriteString[outfile,"  AmpSum2"<>name <>" = + 2._dp*AmpWave"<>name<>" + 2._dp*AmpVertex"<>name <>"\n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "  AmpSq"<>name<>dimIn<>" = AmpSq"<>name<>dimIn<>" + AmpSqTree"<>name<>dimIn<>"  \n"];
+		    WriteString[outfile, "End if  \n"];
+
+		    ,
+
+		    WriteString[outfile, "If (OSkinematics) Then \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "Else  \n"];
+		    WriteString[outfile,"  Call SquareAmp_"<>ToString[getType[pD]]<>"to"<>ToString[getType[p1]]<>ToString[getType[p2]]<>StringReplace["("<>SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"AmpSum"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSum2"<>name<>StringReplace[st<>dimIn,")("->","]<>",AmpSq"<>name<>dimIn<>") \n"];
+		    WriteString[outfile, "End if  \n"];
+		   ];
+
+		 (* ]; *)
+		 WriteString[outfile,"Else  \n"];
+		 WriteString[outfile,"  AmpSq"<>name<>dimIn<>" = 0._dp \n"];
+		 WriteString[outfile,"End if  \n"];
+		 WriteString[outfile,"\n! Calculate Partial widths \n"];
+		 (* Helicity factor *)
+
+		 Switch[getVertexType[{pD,p1,p2}],
+			FFS, If[getType[pD]===F,WriteString[outfile,"helfactor = 2._dp \n"];,WriteString[outfile,"helfactor = 4._dp \n"];];,
+			FFV, WriteString[outfile,"helfactor = 2._dp \n"];,
+			_, WriteString[outfile,"helfactor = 1._dp \n"];
+		       ];
+		 If[p1===p2 && getGen[p1]>1,
+		    WriteString[outfile,"If (gt2.ne.gt3) helfactor = 2._dp*helfactor \n"];
+		   ];
+
+
+		 (*
+		    (* Colour factor *)
+		 If[decays[[j,3]]=!=LOOP,
+		    factor=CalculateColorFactorDecay[AntiField[pD],p1,p2]*SymmFactor2BodyDecay[pD,p1,p2];,
+		    (* Check colour factor! *)
+		    factor=SymmFactor2BodyDecay[pD,p1,p2];
+		   ];
+		 *)
+		 (*factor=SymmFactor2BodyDecay[pD,p1,p2];*)
+		 
+		 
+		 (* MARK 170502 : *)
+		 (*
+		 factor=decays[[j,4]]*decays[[j,5]];
+		 *)
+		 (*
+		 Print["Factor for: ",{pD,p1,p2},": ",factor];
+		 *)
+
+
+		 (*
+		 If[decays[[j,3]]=!=LOOP,
+		    factor=decays[[j,5]],
+		    (* Check colour factor! *)
+		    factor=decays[[j,4]]*decays[[j,5]]; (* since the loop amps don't have the colour factor already calculated in a tree amplitude*)
+		   ];
+		 *)
+		 
+		(*Print["Factor for: ",{pD,p1,p2},": ",factor];*)
+
+
+		 
+		 (* symmetry factor *)
+		 symfactor=decays[[j,5]];
+		 
+		 Switch[getType[pD],
+			S | V,
+			If[AntiField[pD]===pD,
+			   If[(AntiField[p1]=!=p1 || AntiField[p2]=!=p2) && AntiField[p1]=!=p2,
+			      symfactor = 2*symfactor;
+			     ];
+			  ];,
+			F,
+			If[AntiField[pD]===pD,symfactor = 2*symfactor;];
+		       ];
+
+		 Switch[getVertexType[{pD,p1,p2}],
+			SVV,symfactor=2 symfactor;,
+			_,symfactor=symfactor;
+		       ];
+		 factor=decays[[j,4]]*symfactor;
+		 If[Head[factor]===Integer,factor=factor*1.0];
+		 If[Head[symfactor]===Integer,symfactor=symfactor*1.0];
+		 
+		 WriteString[outfile,"If (AmpSq"<>name<>dimIn<>".eq.0._dp) Then \n"];
+		 WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = 0._dp \n"];
+		 WriteString[outfile,"Else \n"];
+
+		 WriteString[outfile, "If (OSkinematics) Then \n"];
+		 WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = "<>SPhenoForm[factor]<>"*GammaTPS("<>StringReplace[SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"->"._dp,"}]<>"helfactor*AmpSq"<>name<>dimIn<>")\n"];
+		 WriteString[outfile, "Else \n"];
+		 WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = "<>SPhenoForm[factor]<>"*GammaTPS("<>StringReplace[SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"->"._dp,"}]<>"helfactor*AmpSq"<>name<>dimIn<>")\n"];
+		 WriteString[outfile, "End if \n"];
+
+		 WriteString[outfile, "If ((Abs(MRP"<>name<>dimIn<>").gt.1.0E-20_dp).or.(Abs(MRG"<>name<>dimIn<>").gt.1.0E-20_dp)) Then \n"];
+		 (*
+		    WriteString[sphenoLD, " If (.not.SimplisticLoopDecays) Then \n"];
+		    WriteString[sphenoLD, "  phasespacefactor = GammaTPS("<>StringReplace[SPhenoMassOS[pD,gt1]<>","<>SPhenoMassOS[p1,gt2]<>","<>SPhenoMassOS[p2,gt3]<>",",{".,"\[Rule]"._dp,"}]<>"1._dp)/GammaTPS("<>StringReplace[SPhenoMass[pD,gt1]<>","<>SPhenoMass[p1,gt2]<>","<>SPhenoMass[p2,gt3]<>",",{".,"\[Rule]"._dp,"}]<>"1._dp) \n"];
+		    WriteString[sphenoLD, " Else  \n"];
+		    WriteString[sphenoLD, "  phasespacefactor = 1._dp \n"];
+		    WriteString[sphenoLD, " End if \n"];
+		    *)
+	      WriteString[outfile, "  phasespacefactor = 1._dp \n"];
+	      WriteString[outfile, "End if \n"];
+
+
+
+
+	      WriteString[outfile," If (DebugLoopDecays) Write(*,*) \"virtual\", gP1L"<>SPhenoForm[pD]<>"(gt1,i4) \n"];
+	      If[decays[[j,3]]=!=LOOP,
+		 WriteString[outfile," ! Adding real corrections \n"];
+		 WriteString[outfile, "If ((Abs(MRP"<>name<>dimIn<>").gt.1.0E-20_dp).or.(Abs(MRG"<>name<>dimIn<>").gt.1.0E-20_dp)) Then \n"];
+		 WriteString[outfile," If (.not.OnlyTreeLevelContributions) Then \n"];
+		 Switch[getVertexType[{pD,p1,p2}],
+			SSV | SVV,
+			WriteString[outfile,"   If (DebugLoopDecays) Write(*,*) \"real\", phasespacefactor*"<>SPhenoForm[symfactor]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>") \n"];
+			WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = gP1L"<>SPhenoForm[pD]<>"(gt1,i4) + phasespacefactor*"<>SPhenoForm[symfactor]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>")\n"];,
+			_,
+			WriteString[outfile,"   If (DebugLoopDecays) Write(*,*) \"real\", phasespacefactor*"<>SPhenoForm[symfactor/2]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>") \n"];
+			WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = gP1L"<>SPhenoForm[pD]<>"(gt1,i4) + phasespacefactor*"<>SPhenoForm[symfactor/2]<>"*helfactor*(MRP"<>name<>dimIn<>" + MRG"<>name<>dimIn <>")\n"];
+		       ];
+
+		 WriteString[outfile,"   If (DebugLoopDecays) Write(*,*) \"sum\",  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) \n"];
+		 WriteString[outfile,"  End if \n"];
+		 WriteString[outfile,"End if \n"];
+		];
+	      WriteString[outfile,"End if \n"];
+	      WriteString[outfile,"i4=i4+1"];
+	      WriteString[outfile,"\n\n"];
+
+
+	      If[getGen[p2]>1 || getGenSPhenoStart[p2]>1,WriteString[outfile,"    End do\n"];];
+	      If[getGen[p1]>1 || getGenSPhenoStart[p1]>1,WriteString[outfile,"  End do\n"];];
+	      If[getGen[pD]>1,
+		 WriteString[outfile,"If (gt1.eq."<>ToString[getGen[pD]]<>") isave = i4 \n"];
+		 WriteString[outfile,"End do\n"];,
+		 WriteString[outfile,"isave = i4 \n"];
+		];
+
+	      If[decays[[j,3]]=!=LOOP,WriteString[outfile,"End If \n"];];
+	      j++;
+	     ];
+
+	  WriteString[outfile,"End Subroutine OneLoopDecay_"<>SPhenoForm[pD]<>"\n\n"];
+	  WriteString[outfile,"End Module Wrapper_OneLoopDecay_"<>SPhenoForm[pD]<>"_"<>ModelName<>"\n"];
+	  Close[outfile];
+	  i++;
+	 ];   (* For[i=1,... on line 536 *)
+]; (*generatecalculateoneloopwidths *)
+
+FreeSkipFields[process_,fields_]:=
+    Block[{i,res},
+	  res=True;
+	  For[i=1,i<=Length[fields],
+	      If[FreeQ[process,fields[[i]]]==False,
+		 res=False;
+		];
+	      i++;];
+	  Return[res];
+	 ];
 
 
 (* ::Input::Initialization:: *)
@@ -2348,7 +2420,10 @@ SA`SavedInformationNeededMassesCouplingsParticle=Join[SA`SavedInformationNeededM
 
 For[j=1,j<=Length[twobodydecays],
 DynamicLoopDecayNr=j;
-DynamicLoopDecay={twobodydecays[[j,1]],twobodydecays[[j,2]]};
+    DynamicLoopDecay={twobodydecays[[j,1]],twobodydecays[[j,2]]};
+
+    (* DEBUG *)
+    (* Print[DecayingParticle,{twobodydecays[[j,1]],twobodydecays[[j,2]]}];*)
 (* OneLtbds=DefineManageableProcesses[DecayingParticle,twobodydecays[[j]]]; *)
 type=getVertexType[twobodydecays[[j,3]]];
 (* If[type===FFV || type===FFS, *)
@@ -2363,9 +2438,14 @@ OneLtbds=tbdsave[[j]];
 (*Clear parameter definitions from process before*)
 If[twobodydecays[[j,3]]=!=LOOP,
 MakeTreeLevelDecay[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds,type];
-If[getType[DecayingParticle]===F||getType[DecayingParticle]===S,MakeRealCorrections[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds,type];];
+   If[getType[DecayingParticle]===F||getType[DecayingParticle]===S,
+      MakeRealCorrections[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds,type];
+      (* MARK: moved wave corrections here so not called for loop amps *)
+      (*MakeWaveCorrectionsAndCT[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds,type]; *)
+     ];
 ];
-MakeWaveCorrectionsAndCT[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds,type]; 
+
+MakeWaveCorrectionsAndCT[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds,type];    
 MakeVertexCorrections[NModule,DecayingParticle,twobodydecays[[j]],OneLtbds, type];
 j++;];
 WriteString[outputfortran,"\n"<>"End Module OneLoopDecay_"<>NModule<>"_"<>ToString[ModelName]<>"\n"];
@@ -2513,8 +2593,13 @@ NRoutine=NModule<>"To"<>ToString[If[(ToString[Head[f2/.replaceexternalparticles]
 
 SA`SavedInformationOneLoopDecaysVertex=Join[SA`SavedInformationOneLoopDecaysVertex,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings}}}];
 (* WriteOneLoopCorrectionsDecay[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,type,"VERTEX"]; *)
-WriteOneLoopCorrectionsDecayAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,type,"VERTEX"];
-WriteOneLoopCorrectionsDecayAmpIR[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],Select[allDiagrams,(FreeQ[{Internal[1],Internal[2],Internal[3]}/.#[[2]],VectorP]==False || FreeQ[{Internal[1],Internal[2],Internal[3]}/.#[[2]],VectorG] ==False)&] ,masses,couplings,type,"VERTEX"];
+
+											
+(*WriteOneLoopCorrectionsDecayAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,type,"VERTEX"];
+  WriteOneLoopCorrectionsDecayAmpIR[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],Select[allDiagrams,(FreeQ[{Internal[1],Internal[2],Internal[3]}/.#[[2]],VectorP]==False || FreeQ[{Internal[1],Internal[2],Internal[3]}/.#[[2]],VectorG] ==False)&] ,masses,couplings,type,"VERTEX"];*)
+
+WriteOneLoopCorrectionsDecayAmp[NRoutine,DecayingParticle,OneLtbds,allDiagrams,masses,couplings,type,"VERTEX"];
+WriteOneLoopCorrectionsDecayAmpIR[NRoutine,DecayingParticle,OneLtbds,Select[allDiagrams,(FreeQ[{Internal[1],Internal[2],Internal[3]}/.#[[2]],VectorP]==False || FreeQ[{Internal[1],Internal[2],Internal[3]}/.#[[2]],VectorG] ==False)&] ,masses,couplings,type,"VERTEX"];											
 
 SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],couplings];
 If[FreeQ[twobodydecays,LOOP]==False && getType[DecayingParticle]===F,
@@ -2613,15 +2698,44 @@ i++;];
 
 Zconst=Intersection[Zconst];
 
-(* WriteOneLoopCorrectionsWave[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,Zconst,type]; *)
-WriteOneLoopCorrectionsWaveAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,ToExpression["ct"<>ToString[#]]&/@couplings,Zconst,type];
-SA`SavedInformationOneLoopDecaysWave=Join[SA`SavedInformationOneLoopDecaysWave,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings,Zconst}}}];
 
-SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],couplings];
-SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["ct"<>ToString[#]]&/@couplings];
-SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]],masses];
 
-];
+If[WriteOneLoopCorrectionsWaveAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,ToExpression["ct"<>ToString[#]]&/@couplings,Zconst,type] (*Returns true if there is any contribution *)
+   , 
+   SA`SavedInformationOneLoopDecaysWave=Join[SA`SavedInformationOneLoopDecaysWave,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings,Zconst}}}];
+
+   SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],couplings];
+   SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["ct"<>ToString[#]]&/@couplings];
+   SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]],masses];
+   ,
+
+   SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]],masses];
+
+  ];
+
+
+(* (\*If[typeIn=!=LOOP,*\) *)
+(*    (\* WriteOneLoopCorrectionsWave[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,Zconst,type]; *\) *)
+(*    WriteOneLoopCorrectionsWaveAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,ToExpression["ct"<>ToString[#]]&/@couplings,Zconst,type]; *)
+(*    SA`SavedInformationOneLoopDecaysWave=Join[SA`SavedInformationOneLoopDecaysWave,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings,Zconst}}}]; *)
+
+(*    SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],couplings]; *)
+(*    SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],ToExpression["ct"<>ToString[#]]&/@couplings]; *)
+(*    SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]],masses]; *)
+
+
+(* , *)
+(*    (\* in case of a loop amplitude don't call the waveamp corrections! But we need some of the information to be stored*\) *)
+(*    (\*SA`SavedInformationOneLoopDecaysWave=Join[SA`SavedInformationOneLoopDecaysWave,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings,Zconst}}}];*\) *)
+(*    WriteOneLoopCorrectionsWaveAmp[NRoutine,DecayingParticle,OneLtbds[[1]],OneLtbds[[2]],allDiagrams,masses,couplings,{},Zconst,type]; (\*Don't need counterterms for loop induced *\) *)
+(*    SA`SavedInformationOneLoopDecaysWave=Join[SA`SavedInformationOneLoopDecaysWave,{{DecayingParticle,{OneLtbds[[1]],OneLtbds[[2]]},NRoutine,{masses,couplings,Zconst}}}]; *)
+
+(*    SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],couplings]; *)
+(*    SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,3]],masses]; *)
+(* ]; *)
+(* *\) *)
+   
+];(*end MakeWaveCorrectionsAndCT *)
 
 
 
@@ -2656,7 +2770,7 @@ Return["0"];
 ];
 
 
-
+ 
 
 
 
@@ -2763,345 +2877,355 @@ Return[{Position[in,out[[1]]][[1,1]],Position[in,out[[2]]][[1,1]],Position[in,ou
 
 ];
 
-WriteOneLoopCorrectionsDecayAmp[NameRoutine_,f1_,f2_,f3_,allDiagrams_,masses_,couplings_,type_,kind_]:=
-Block[{i,j,k,dim,dimAmp,inF1,inF2,inF3,c1,ind1,c2,ind2,coupsCallTree,coupsCall,coupsCheck,kend,dimIn={},massesCall,temp1,temp2,temp3,indorder},
-allDiagramsSave=allDiagrams;
-MakeSubroutineTitle["Amplitude_"<>kind<>"_"<>ModelName<>"_"<>NameRoutine,Flatten[{masses,couplings}],{},{"Amp"},outputfortran];
-WriteString[outputfortran,"Implicit None\n\n"];
-MakeVariableList[masses,", Intent(in)",outputfortran];
-MakeVariableList[couplings,", Intent(in)",outputfortran];
-dim="("<>ToString[getGen[f1]]<>","<>ToString[getGen[f2]]<>","<>ToString[getGen[f3]]<>")";
-dim=Nest[StringReplace[#,{"(1,"->"(",",1,"->",",",1)"->")","(1)"->""}]&,dim,3];
-Switch[getVertexType[{f1,f2,f3}],
-FFV,dimAmp=StringReplace["(4)"<>dim,")("->","];,
-FFS,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SSS,dimAmp=StringReplace[""<>dim,")("->","];,
-SFF,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SSV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SVV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-_,Print["Not yet done",{f1,f2,f3}];
-];
-
-WriteString[outputfortran,"Complex(dp), Intent(out) :: Amp"<>dimAmp<>" \n\n"];
-WriteString[outputfortran,"Integer :: i1, i2, i3, gt1, gt2, gt3 \n"];
-Switch[getVertexType[{f1,f2,f3}],
-FFV,WriteString[outputfortran,"Complex(dp) :: AmpC(4) \n"];,
-FFS,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-SSS,WriteString[outputfortran,"Complex(dp) :: AmpC \n"];,
-SSV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-SFF,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-SVV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-_,"Not yet done";
-];
-
-WriteString[outputfortran,"Real(dp) :: Mex1, Mex2, Mex3, ExtRMsq \n"];
-Switch[kind,
-"VERTEX",
-WriteString[outputfortran,"Real(dp) :: ML1, ML2, ML3 \n"];,
-"WAVE",
-WriteString[outputfortran,"Real(dp) :: ML1, ML2, MP \n"];
-];
-WriteString[outputfortran,"Complex(dp) :: coupT1, coupT1L, coupT1R, coup1, coup1L, coup1R \n"];
-WriteString[outputfortran,"Complex(dp) :: coup2, coup2L, coup2R, coup3, coup3L, coup3R, coup2a,coup2b,coup2c \n"];
-
-If[getGen[f1]>1,WriteString[outputfortran,"Do gt1=1,"<>ToString[getGen[f1]]<>"\n"];dimIn=Join[dimIn,{gt1}];];
-If[getGen[f2]>1,WriteString[outputfortran,"  Do gt2=1,"<>ToString[getGen[f2]]<>"\n"];dimIn=Join[dimIn,{gt2}];];
-If[getGen[f3]>1,WriteString[outputfortran,"    Do gt3=1,"<>ToString[getGen[f3]]<>"\n"];dimIn=Join[dimIn,{gt3}];];
-dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
-Switch[getVertexType[{f1,f2,f3}],
-SSS,dimIn=StringReplace[""<>dimIn,{")("->","}];,
-_,dimIn=StringReplace["(:)"<>dimIn,{")("->","}];
-];
-WriteString[outputfortran,"Amp"<>dimIn<>" = 0._dp \n"];
-WriteString[outputfortran,"! External masses \n"];
-WriteString[outputfortran,"Mex1 = "<>SPhenoMass[f1,gt1]<>" \n"];
-WriteString[outputfortran,"Mex2 = "<>SPhenoMass[f2,gt2]<>" \n"];
-WriteString[outputfortran,"Mex3 = "<>SPhenoMass[f3,gt3]<>" \n"];
-
-(*
-WriteString[outputfortran,"\n\n If (Mex1.gt.(Mex2+Mex3)) Then \n\n"];
-*)
-
-For[i=1,i<=Length[allDiagrams],
-coupsCall="";
-WriteString[outputfortran,"\n\n! "<>ToString[DeleteCases[{Internal[1],Internal[2],Internal[3]}/.allDiagrams[[i,2]],Internal[_]]]<>"\n"];
-inF1=Internal[1]/.allDiagrams[[i,2]];
-inF2=Internal[2]/.allDiagrams[[i,2]];
-inF3=Internal[3]/.allDiagrams[[i,2]];
-If[Head[inF3]===Internal,
-ThreeInternal=False;
-If[FlagLoopContributions===True,
-WriteString[outputfortran,"If (("<>SPhenoIncludeLoop[getBlank[inF1]]<>").and.("<>SPhenoIncludeLoop[getBlank[inF2]]<>")) Then \n"];
-];,
-ThreeInternal=True;
-If[FlagLoopContributions===True,
-WriteString[outputfortran,"If (("<>SPhenoIncludeLoop[getBlank[inF1]]<>").and.("<>SPhenoIncludeLoop[getBlank[inF2]]<>").and.("<>SPhenoIncludeLoop[getBlank[inF3]]<>")) Then \n"];
-];
-];
-
-If[getGen[inF1]>1,WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[inF1]]<>"\n"]];
-If[getGen[inF2]>1,WriteString[outputfortran,"  Do i2=1,"<>ToString[getGen[inF2]]<>"\n"]];
-If[ThreeInternal,If[getGen[inF3]>1,WriteString[outputfortran,"    Do i3=1,"<>ToString[getGen[inF3]]<>"\n"]];];
-
-(* Setting the masses *)
-Switch[kind,
-"VERTEX",
-
-WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF1,i1]<>" \n"];
-WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF2,i2]<>" \n"];
-
-(*
-WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF1,i1]<>" \n"];
-WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF2,i2]<>" \n"];
-*)
-
-If[ThreeInternal,
-WriteString[outputfortran,"ML3 = "<>SPhenoMass[inF3,i3]<>" \n"];
-massesCall="ML1,ML2,ML3";,massesCall="ML1,ML2";
-];,
-"WAVE",
-WriteString[outputfortran,"MP = "<>SPhenoMass[inF1,i1]<>" \n"];
-If[ThreeInternal===False, (* Quartic corrections *)
-WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF2,i2]<>" \n"];
-massesCall="ML1,MP";,
-If[SortFieldExternalDecay[getType[inF2],getType[inF3]]==={getType[inF2],getType[inF3]},
-WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF2,i2]<>" \n"];
-WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF3,i3]<>" \n"];,
-WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF2,i2]<>" \n"];
-WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF3,i3]<>" \n"];
-{inF2,inF3}={inF3,inF2};
-];
-massesCall="ML1,ML2,MP";
-];
-];
-
-
-
-If[ThreeInternal,kend=3;,kend=2;];
-
-If[ThreeInternal,
-coupsCheck="";
-For[k=1,k<= kend,
-
-c1=getSPhenoCoupling2[allDiagrams[[i,1,k]],SPhenoCouplingsAllreallyAll];
-ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,k]]/.allDiagrams[[i,2]],c1[[2]]];
-
-Switch[getType/@RE/@{f1,f2,f3},
-{F,F,S}|{F,F,V}|{S,F,F}|{S,S,S}|{S,S,V},
-c1=CheckFermionFlipDecay[FieldOrder[getType[f1]->getType/@{f2,f3},1,getType/@{inF1,inF2,inF3},k]/.allDiagrams[[i,2]],c1, ind1];
-ind1=c1[[2]];c1=c1[[1]];
-If[getVertexType[allDiagramsSave[[i,1,k]]]===SSV||getVertexType[allDiagramsSave[[i,1,k]]]===VVV ,
-c1[[1]] =ExtraSign[getType[f1]->getType/@{f2,f3},1,getType/@{inF1,inF2,inF3},k] (getSignVertexFA[Cp@@(FieldOrder[getType[f1]->getType/@{f2,f3},1,getType/@{inF1,inF2,inF3},k]/.allDiagrams[[i,2]])/.{A_[gt1]->A,A_[gt2]->A,A_[gt3]->A,A_[i1]->A,A_[i2]->A,A_[i3]->A},c1[[2]],getVertexType[allDiagramsSave[[i,1,k]]]]c1[[1]]);
-];,
-_,
-Switch[k,
-1,c1=CheckFermionFlipDecay[{Internal[1][i1],AntiField[Internal[2]][i2],External[1][gt1]}/.allDiagrams[[i,2]],c1, ind1];,
-2,c1=CheckFermionFlipDecay[{Internal[3][i3],AntiField[Internal[1]][i1],External[2][gt2]}/.allDiagrams[[i,2]],c1, ind1];,
-3,c1=CheckFermionFlipDecay[{Internal[2][i2],AntiField[Internal[3]][i3],External[3][gt3]}/.allDiagrams[[i,2]],c1, ind1]; 
-];
-ind1=c1[[2]];c1=c1[[1]];
-If[getVertexType[allDiagramsSave[[i,1,k]]]===SSV||getVertexType[allDiagramsSave[[i,1,k]]]===VVV ,
-c1[[1]] = getSignVertex[Cp@@(allDiagramsSave[[i,3,k]] /.allDiagramsSave[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c1[[2]],getVertexType[allDiagramsSave[[i,1,k]]]]c1[[1]];
-];
-];
-
-
-WriteVertexToFile[k,c1,ind1,getVertexType[allDiagrams[[i,1,k]]],outputfortran];
-If[getVertexType[allDiagrams[[i,1,k]]]===FFS||getVertexType[allDiagrams[[i,1,k]]]===FFV,
-coupsCall=coupsCall<>",coup"<>ToString[k]<>"L,coup"<>ToString[k]<>"R";
-coupsCheck=coupsCheck<>"(Abs(coup"<>ToString[k]<>"L)+Abs(coup"<>ToString[k]<>"R))";,
-coupsCall=coupsCall<>",coup"<>ToString[k];
-coupsCheck=coupsCheck<>"(Abs(coup"<>ToString[k]<>"))";
-];
-If[k<kend,coupsCheck=coupsCheck<>"*";];
-
-k++;];
-(* If[getVertexType[{f1,f2,f3}]===SVV,
-WriteString[outputfortran,"AmpC = 0._dp \n"];, *)
-WriteString[outputfortran,"If ("<>coupsCheck<>".gt.epsCoup) Then \n"];
-If[(kind==="WAVE" && type===FFV && getType[inF1]===S) || (kind==="WAVE" && type===FFV && getType[inF1]===V && getType[inF2]===G),
-WriteString[outputfortran, "AmpC = 0._dp ! Needs to check why this vanishes exactly in FeynArts \n"];,
-WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
-];
-WriteString[outputfortran,"Else\n"];
-WriteString[outputfortran," AmpC = 0._dp\n"];
-WriteString[outputfortran,"End if\n"];
-WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,
-temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
-temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
-temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
-cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
-If[Head[cfactor]===Complex&& SA`DynL[f1,color]==={1,1},cfactor=-cfactor];,
-cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
-];
-(* ]; *)
-
-If[AntiField[f1]===f1 && AntiField[f2]===f2&&AntiField[f3]===f3,
-If[RE[inF1]===RE[inF2]&& RE[inF2]===RE[inF3],
-If[AntiField[inF1]=!=inF1,
-cfactor=2*cfactor;
-];
-];
-];
-
-WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
-
-,
-
-(*
-If[getVertexType[{f1,f2,f3}]===SVV,
-WriteString[outputfortran,"AmpC = 0._dp \n"];,
-*)
-(* two internal *)
-
-coupsCall=",coup1,coup2";
-coupsCheck="Abs(coup1)*Abs(coup2)";
-
-Switch[Length[allDiagrams[[i,1,1]]],
-3,
-
-If[getVertexType[allDiagrams[[i,1,2]]]===VVVV,
-coupsCall=",coup1,coup2a,coup2b,coup2c";
-coupsCheck="Abs(coup1)*(Abs(coup2a)+Abs(coup2b)+Abs(coup2c)) ";
-c1=getSPhenoCoupling2[allDiagrams[[i,1,1]],SPhenoCouplingsAllreallyAll];
-ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,1]]/.allDiagrams[[i,2]],c1[[2]]];
-If[getVertexType[allDiagrams[[i,1,1]]]===SSV||getVertexType[allDiagrams[[i,1,1]]]===VVV ,
-c1[[1]] = getSignVertex[Cp@@(allDiagrams[[i,3,1]] /.allDiagrams[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c1[[2]],getVertexType[allDiagrams[[i,1,1]]]]c1[[1]];
-];
-WriteVertexToFile[1,c1,ind1,getVertexType[allDiagrams[[i,1,1]]],outputfortran];
-c2=getSPhenoCoupling2[allDiagrams[[i,1,2]],SPhenoCouplingsColoredQuartics];
-ind2 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,2]]/.allDiagrams[[i,2]],c2[[2]]];
-
-WriteVertexToFile[2,c2[[1,1]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
-indorder=MatchVVVV[{f2,f3,conj[inF1],inF2},{c2[[2,1]],c2[[2,2]],c2[[2,3]],c2[[2,4]]}/.A_Symbol[{b_Symbol}]->A];
-WriteString[outputfortran,"coup2"<>indorder[[1]]<>" = coup2 \n"];
-WriteVertexToFile[2,c2[[1,2]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
-WriteString[outputfortran,"coup2"<>indorder[[2]]<>" = coup2 \n"];
-WriteVertexToFile[2,c2[[1,3]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
-WriteString[outputfortran,"coup2"<>indorder[[3]]<>" = coup2 \n"];
-
-WriteString[outputfortran,"If ("<>coupsCheck<>".gt.epsCoup) Then \n"];
-WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
-WriteString[outputfortran,"Else\n"];
-WriteString[outputfortran," AmpC = 0._dp\n"];
-WriteString[outputfortran,"End if\n"];
-
-WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-cfactor=1;
-If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
-WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
-
-,
-c1=getSPhenoCoupling2[allDiagrams[[i,1,1]],SPhenoCouplingsAllreallyAll];
-ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,1]]/.allDiagrams[[i,2]],c1[[2]]];
-If[getVertexType[allDiagrams[[i,1,1]]]===SSV||getVertexType[allDiagrams[[i,1,1]]]===VVV ,
-c1[[1]] = getSignVertex[Cp@@(allDiagrams[[i,3,1]] /.allDiagrams[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c1[[2]],getVertexType[allDiagrams[[i,1,1]]]]c1[[1]];
-];
-
-WriteVertexToFile[1,c1,ind1,getVertexType[allDiagrams[[i,1,1]]],outputfortran];
-
-
-c2=getSPhenoCoupling2[allDiagrams[[i,1,2]],SPhenoCouplingsColoredQuartics];
-ind2 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,2]]/.allDiagrams[[i,2]],c2[[2]]];
-
-For[k=1,k<=Length[c2[[1]]],
-WriteVertexToFile[2,c2[[1,k]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
-
-WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
-
-WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,
-temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
-temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
-temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
-cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-If[Head[cfactor]===Complex && SA`DynL[f1,color]==={1,1},cfactor=-cfactor];,
-cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-];
-If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
-WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
-
-k++;];
-
-];,
-
-
-4,
-
-
-
-
-c1=getSPhenoCoupling2[allDiagrams[[i,1,1]],SPhenoCouplingsColoredQuartics];
-ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,1]]/.allDiagrams[[i,2]],c1[[2]]];
-
-c2=getSPhenoCoupling2[allDiagrams[[i,1,2]],SPhenoCouplingsAllreallyAll];
-ind2 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,2]]/.allDiagrams[[i,2]],c2[[2]]];
-If[getVertexType[allDiagrams[[i,1,2]]]===SSV||getVertexType[allDiagrams[[i,1,2]]]===VVV ,
-c2[[1]] = getSignVertex[Cp@@(allDiagrams[[i,3,2]] /.allDiagrams[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c2[[2]],getVertexType[allDiagrams[[i,1,2]]]]c2[[1]];
-];
-
-
-For[k=1,k<=Length[c1[[1]]],
-WriteVertexToFile[1,c1[[1,k]],ind1,getVertexType[allDiagrams[[i,1,1]]],outputfortran];
-WriteVertexToFile[2,c2,ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
-
-WriteString[outputfortran,"If ("<>coupsCheck<>".gt.epsCoup) Then \n"];
-WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
-WriteString[outputfortran,"Else\n"];
-WriteString[outputfortran," AmpC = 0._dp\n"];
-WriteString[outputfortran,"End if\n"];
-
-WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,
-temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
-temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
-temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
-cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-If[Head[cfactor]===Complex&& SA`DynL[f1,color]==={1,1},cfactor=-cfactor];,
-cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-];
-If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
-WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n\n"];
-
-k++;];
-
-
-];
-];
-
-
-
-
-
-
-If[ThreeInternal,If[getGen[inF3]>1,WriteString[outputfortran,"    End Do\n"]];];
-If[getGen[inF2]>1,WriteString[outputfortran,"  End Do\n"]];
-If[getGen[inF1]>1,WriteString[outputfortran,"End Do\n"]];
-
-If[FlagLoopContributions===True,
-WriteString[outputfortran,"End if \n"];
-];
-
-i++;];
-
-
-(*
-WriteString[outputfortran,"\n\n Else \n"];
-WriteString[outputfortran,"  Amp"<>dimIn<>" = 0._dp \n"];
-WriteString[outputfortran,"\n End if \n\n"];
-*)
-If[getGen[f3]>1,WriteString[outputfortran,"    End Do\n"]];
-If[getGen[f2]>1,WriteString[outputfortran,"  End Do\n"]];
-If[getGen[f1]>1,WriteString[outputfortran,"End Do\n"]];
-
-WriteString[outputfortran,"End Subroutine Amplitude_"<>kind<>"_"<>ModelName<>"_"<>NameRoutine<>"\n\n\n"];
-];
-
-
-WriteOneLoopCorrectionsDecayAmpIR[NameRoutine_,f1_,f2_,f3_,allDiagrams_,masses_,couplings_,type_,kind_]:=
-Block[{i,j,k,dim,dimAmp,inF1,inF2,inF3,c1,ind1,c2,ind2,coupsCallTree,coupsCall,dimIn={},massesCall,temp1,temp2,temp3,indorder},
-allDiagramsSave=allDiagrams;
+WriteOneLoopCorrectionsDecayAmp[NameRoutine_,f1_,decays_,allDiagrams_,masses_,couplings_,type_,kind_]:=
+    Block[{i,j,k,dim,dimAmp,inF1,inF2,inF3,c1,ind1,c2,ind2,coupsCallTree,coupsCall,coupsCheck,kend,dimIn={},massesCall,temp1,temp2,temp3,indorder,f2,f3},
+	  allDiagramsSave=allDiagrams;
+	  f2=decays[[1]];
+	  f3=decays[[2]];
+	  MakeSubroutineTitle["Amplitude_"<>kind<>"_"<>ModelName<>"_"<>NameRoutine,Flatten[{masses,couplings}],{},{"Amp"},outputfortran];
+	  WriteString[outputfortran,"Implicit None\n\n"];
+	  MakeVariableList[masses,", Intent(in)",outputfortran];
+	  MakeVariableList[couplings,", Intent(in)",outputfortran];
+	  dim="("<>ToString[getGen[f1]]<>","<>ToString[getGen[f2]]<>","<>ToString[getGen[f3]]<>")";
+	  dim=Nest[StringReplace[#,{"(1,"->"(",",1,"->",",",1)"->")","(1)"->""}]&,dim,3];
+	  Switch[getVertexType[{f1,f2,f3}],
+		 FFV,dimAmp=StringReplace["(4)"<>dim,")("->","];,
+		 FFS,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+		 SSS,dimAmp=StringReplace[""<>dim,")("->","];,
+		 SFF,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+		 SSV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+		 SVV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+		 _,Print["Not yet done",{f1,f2,f3}];
+		];
+
+	  WriteString[outputfortran,"Complex(dp), Intent(out) :: Amp"<>dimAmp<>" \n\n"];
+	  WriteString[outputfortran,"Integer :: i1, i2, i3, gt1, gt2, gt3 \n"];
+	  Switch[getVertexType[{f1,f2,f3}],
+		 FFV,WriteString[outputfortran,"Complex(dp) :: AmpC(4) \n"];,
+		 FFS,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+		 SSS,WriteString[outputfortran,"Complex(dp) :: AmpC \n"];,
+		 SSV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+		 SFF,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+		 SVV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+		 _,"Not yet done";
+		];
+
+	  WriteString[outputfortran,"Real(dp) :: Mex1, Mex2, Mex3, ExtRMsq \n"];
+	  Switch[kind,
+		 "VERTEX",
+		 WriteString[outputfortran,"Real(dp) :: ML1, ML2, ML3 \n"];,
+		 "WAVE",
+		 WriteString[outputfortran,"Real(dp) :: ML1, ML2, MP \n"];
+		];
+	  WriteString[outputfortran,"Complex(dp) :: coupT1, coupT1L, coupT1R, coup1, coup1L, coup1R \n"];
+	  WriteString[outputfortran,"Complex(dp) :: coup2, coup2L, coup2R, coup3, coup3L, coup3R, coup2a,coup2b,coup2c \n"];
+
+	  If[getGen[f1]>1,WriteString[outputfortran,"Do gt1=1,"<>ToString[getGen[f1]]<>"\n"];dimIn=Join[dimIn,{gt1}];];
+	  If[getGen[f2]>1,WriteString[outputfortran,"  Do gt2=1,"<>ToString[getGen[f2]]<>"\n"];dimIn=Join[dimIn,{gt2}];];
+	  If[getGen[f3]>1,WriteString[outputfortran,"    Do gt3=1,"<>ToString[getGen[f3]]<>"\n"];dimIn=Join[dimIn,{gt3}];];
+	  dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
+	  Switch[getVertexType[{f1,f2,f3}],
+		 SSS,dimIn=StringReplace[""<>dimIn,{")("->","}];,
+		 _,dimIn=StringReplace["(:)"<>dimIn,{")("->","}];
+		];
+	  WriteString[outputfortran,"Amp"<>dimIn<>" = 0._dp \n"];
+	  WriteString[outputfortran,"! External masses \n"];
+	  WriteString[outputfortran,"Mex1 = "<>SPhenoMass[f1,gt1]<>" \n"];
+	  WriteString[outputfortran,"Mex2 = "<>SPhenoMass[f2,gt2]<>" \n"];
+	  WriteString[outputfortran,"Mex3 = "<>SPhenoMass[f3,gt3]<>" \n"];
+
+	  (*
+	     WriteString[outputfortran,"\n\n If (Mex1.gt.(Mex2+Mex3)) Then \n\n"];
+	     *)
+
+	  For[i=1,i<=Length[allDiagrams],
+	      coupsCall="";
+	      WriteString[outputfortran,"\n\n! "<>ToString[DeleteCases[{Internal[1],Internal[2],Internal[3]}/.allDiagrams[[i,2]],Internal[_]]]<>"\n"];
+	      inF1=Internal[1]/.allDiagrams[[i,2]];
+	      inF2=Internal[2]/.allDiagrams[[i,2]];
+	      inF3=Internal[3]/.allDiagrams[[i,2]];
+	      If[Head[inF3]===Internal,
+		 ThreeInternal=False;
+		 If[FlagLoopContributions===True,
+		    WriteString[outputfortran,"If (("<>SPhenoIncludeLoop[getBlank[inF1]]<>").and.("<>SPhenoIncludeLoop[getBlank[inF2]]<>")) Then \n"];
+		   ];,
+		 ThreeInternal=True;
+		 If[FlagLoopContributions===True,
+		    WriteString[outputfortran,"If (("<>SPhenoIncludeLoop[getBlank[inF1]]<>").and.("<>SPhenoIncludeLoop[getBlank[inF2]]<>").and.("<>SPhenoIncludeLoop[getBlank[inF3]]<>")) Then \n"];
+		   ];
+		];
+
+	      If[getGen[inF1]>1,WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[inF1]]<>"\n"]];
+	      If[getGen[inF2]>1,WriteString[outputfortran,"  Do i2=1,"<>ToString[getGen[inF2]]<>"\n"]];
+	      If[ThreeInternal,If[getGen[inF3]>1,WriteString[outputfortran,"    Do i3=1,"<>ToString[getGen[inF3]]<>"\n"]];];
+
+	      (* Setting the masses *)
+	      Switch[kind,
+		     "VERTEX",
+
+		     WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF1,i1]<>" \n"];
+		     WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF2,i2]<>" \n"];
+
+		     (*
+			WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF1,i1]<>" \n"];
+			WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF2,i2]<>" \n"];
+			*)
+
+		     If[ThreeInternal,
+			WriteString[outputfortran,"ML3 = "<>SPhenoMass[inF3,i3]<>" \n"];
+			massesCall="ML1,ML2,ML3";,massesCall="ML1,ML2";
+		       ];,
+		     "WAVE",
+		     WriteString[outputfortran,"MP = "<>SPhenoMass[inF1,i1]<>" \n"];
+		     If[ThreeInternal===False, (* Quartic corrections *)
+			WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF2,i2]<>" \n"];
+			massesCall="ML1,MP";,
+			If[SortFieldExternalDecay[getType[inF2],getType[inF3]]==={getType[inF2],getType[inF3]},
+			   WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF2,i2]<>" \n"];
+			   WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF3,i3]<>" \n"];,
+			   WriteString[outputfortran,"ML2 = "<>SPhenoMass[inF2,i2]<>" \n"];
+			   WriteString[outputfortran,"ML1 = "<>SPhenoMass[inF3,i3]<>" \n"];
+			   {inF2,inF3}={inF3,inF2};
+			  ];
+			massesCall="ML1,ML2,MP";
+		       ];
+		    ];
+
+
+
+	      If[ThreeInternal,kend=3;,kend=2;];
+
+	      If[ThreeInternal,
+		 coupsCheck="";
+		 For[k=1,k<= kend,
+
+		     c1=getSPhenoCoupling2[allDiagrams[[i,1,k]],SPhenoCouplingsAllreallyAll];
+		     ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,k]]/.allDiagrams[[i,2]],c1[[2]]];
+
+		     Switch[getType/@RE/@{f1,f2,f3},
+			    {F,F,S}|{F,F,V}|{S,F,F}|{S,S,S}|{S,S,V},
+			    c1=CheckFermionFlipDecay[FieldOrder[getType[f1]->getType/@{f2,f3},1,getType/@{inF1,inF2,inF3},k]/.allDiagrams[[i,2]],c1, ind1];
+			    ind1=c1[[2]];c1=c1[[1]];
+			    If[getVertexType[allDiagramsSave[[i,1,k]]]===SSV||getVertexType[allDiagramsSave[[i,1,k]]]===VVV ,
+			       c1[[1]] =ExtraSign[getType[f1]->getType/@{f2,f3},1,getType/@{inF1,inF2,inF3},k] (getSignVertexFA[Cp@@(FieldOrder[getType[f1]->getType/@{f2,f3},1,getType/@{inF1,inF2,inF3},k]/.allDiagrams[[i,2]])/.{A_[gt1]->A,A_[gt2]->A,A_[gt3]->A,A_[i1]->A,A_[i2]->A,A_[i3]->A},c1[[2]],getVertexType[allDiagramsSave[[i,1,k]]]]c1[[1]]);
+			      ];,
+			    _,
+			    Switch[k,
+				   1,c1=CheckFermionFlipDecay[{Internal[1][i1],AntiField[Internal[2]][i2],External[1][gt1]}/.allDiagrams[[i,2]],c1, ind1];,
+				   2,c1=CheckFermionFlipDecay[{Internal[3][i3],AntiField[Internal[1]][i1],External[2][gt2]}/.allDiagrams[[i,2]],c1, ind1];,
+				   3,c1=CheckFermionFlipDecay[{Internal[2][i2],AntiField[Internal[3]][i3],External[3][gt3]}/.allDiagrams[[i,2]],c1, ind1]; 
+				  ];
+			    ind1=c1[[2]];c1=c1[[1]];
+			    If[getVertexType[allDiagramsSave[[i,1,k]]]===SSV||getVertexType[allDiagramsSave[[i,1,k]]]===VVV ,
+			       c1[[1]] = getSignVertex[Cp@@(allDiagramsSave[[i,3,k]] /.allDiagramsSave[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c1[[2]],getVertexType[allDiagramsSave[[i,1,k]]]]c1[[1]];
+			      ];
+			   ];
+
+
+		     WriteVertexToFile[k,c1,ind1,getVertexType[allDiagrams[[i,1,k]]],outputfortran];
+		     If[getVertexType[allDiagrams[[i,1,k]]]===FFS||getVertexType[allDiagrams[[i,1,k]]]===FFV,
+			coupsCall=coupsCall<>",coup"<>ToString[k]<>"L,coup"<>ToString[k]<>"R";
+			coupsCheck=coupsCheck<>"(Abs(coup"<>ToString[k]<>"L)+Abs(coup"<>ToString[k]<>"R))";,
+			coupsCall=coupsCall<>",coup"<>ToString[k];
+			coupsCheck=coupsCheck<>"(Abs(coup"<>ToString[k]<>"))";
+		       ];
+		     If[k<kend,coupsCheck=coupsCheck<>"*";];
+
+		     k++;];
+		 (* If[getVertexType[{f1,f2,f3}]===SVV,
+		    WriteString[outputfortran,"AmpC = 0._dp \n"];, *)
+		 WriteString[outputfortran,"If ("<>coupsCheck<>".gt.epsCoup) Then \n"];
+		 If[(kind==="WAVE" && type===FFV && getType[inF1]===S) || (kind==="WAVE" && type===FFV && getType[inF1]===V && getType[inF2]===G),
+		    WriteString[outputfortran, "AmpC = 0._dp ! Needs to check why this vanishes exactly in FeynArts \n"];,
+		    WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
+		   ];
+		 WriteString[outputfortran,"Else\n"];
+		 WriteString[outputfortran," AmpC = 0._dp\n"];
+		 WriteString[outputfortran,"End if\n"];
+		 WriteString[outputfortran,"! Colour and symmetry Factor \n"];
+		 (*If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,*)
+		 If[decays[[3]]=!=LOOP,
+		    (*
+		    temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
+		    temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
+		    temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
+		    cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+		       *)
+		    cfactor = getChargeFactorDec[allDiagrams[[i]],decays[[4]]];
+		    ,
+		    cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+		   ];
+		 (* ]; *)
+
+		 If[AntiField[f1]===f1 && AntiField[f2]===f2&&AntiField[f3]===f3,
+		    If[RE[inF1]===RE[inF2]&& RE[inF2]===RE[inF3],
+		       If[AntiField[inF1]=!=inF1,
+			  cfactor=2*cfactor;
+			 ];
+		      ];
+		   ];
+
+		 WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
+
+		 ,
+
+		 (*
+		    If[getVertexType[{f1,f2,f3}]===SVV,
+		    WriteString[outputfortran,"AmpC = 0._dp \n"];,
+		    *)
+		 (* two internal *)
+
+		 coupsCall=",coup1,coup2";
+		 coupsCheck="Abs(coup1)*Abs(coup2)";
+
+		 Switch[Length[allDiagrams[[i,1,1]]],
+			3,
+
+			If[getVertexType[allDiagrams[[i,1,2]]]===VVVV,
+			   coupsCall=",coup1,coup2a,coup2b,coup2c";
+			   coupsCheck="Abs(coup1)*(Abs(coup2a)+Abs(coup2b)+Abs(coup2c)) ";
+			   c1=getSPhenoCoupling2[allDiagrams[[i,1,1]],SPhenoCouplingsAllreallyAll];
+			   ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,1]]/.allDiagrams[[i,2]],c1[[2]]];
+			   If[getVertexType[allDiagrams[[i,1,1]]]===SSV||getVertexType[allDiagrams[[i,1,1]]]===VVV ,
+			      c1[[1]] = getSignVertex[Cp@@(allDiagrams[[i,3,1]] /.allDiagrams[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c1[[2]],getVertexType[allDiagrams[[i,1,1]]]]c1[[1]];
+			     ];
+			   WriteVertexToFile[1,c1,ind1,getVertexType[allDiagrams[[i,1,1]]],outputfortran];
+			   c2=getSPhenoCoupling2[allDiagrams[[i,1,2]],SPhenoCouplingsColoredQuartics];
+			   ind2 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,2]]/.allDiagrams[[i,2]],c2[[2]]];
+
+			   WriteVertexToFile[2,c2[[1,1]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
+			   indorder=MatchVVVV[{f2,f3,conj[inF1],inF2},{c2[[2,1]],c2[[2,2]],c2[[2,3]],c2[[2,4]]}/.A_Symbol[{b_Symbol}]->A];
+			   WriteString[outputfortran,"coup2"<>indorder[[1]]<>" = coup2 \n"];
+			   WriteVertexToFile[2,c2[[1,2]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
+			   WriteString[outputfortran,"coup2"<>indorder[[2]]<>" = coup2 \n"];
+			   WriteVertexToFile[2,c2[[1,3]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
+			   WriteString[outputfortran,"coup2"<>indorder[[3]]<>" = coup2 \n"];
+
+			   WriteString[outputfortran,"If ("<>coupsCheck<>".gt.epsCoup) Then \n"];
+			   WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
+			   WriteString[outputfortran,"Else\n"];
+			   WriteString[outputfortran," AmpC = 0._dp\n"];
+			   WriteString[outputfortran,"End if\n"];
+
+			   WriteString[outputfortran,"! Colour and symmetry Factor \n"];
+			   cfactor=1;
+			   If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
+			   WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
+
+			   ,
+			   c1=getSPhenoCoupling2[allDiagrams[[i,1,1]],SPhenoCouplingsAllreallyAll];
+			   ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,1]]/.allDiagrams[[i,2]],c1[[2]]];
+			   If[getVertexType[allDiagrams[[i,1,1]]]===SSV||getVertexType[allDiagrams[[i,1,1]]]===VVV ,
+			      c1[[1]] = getSignVertex[Cp@@(allDiagrams[[i,3,1]] /.allDiagrams[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c1[[2]],getVertexType[allDiagrams[[i,1,1]]]]c1[[1]];
+			     ];
+
+			   WriteVertexToFile[1,c1,ind1,getVertexType[allDiagrams[[i,1,1]]],outputfortran];
+
+
+			   c2=getSPhenoCoupling2[allDiagrams[[i,1,2]],SPhenoCouplingsColoredQuartics];
+			   ind2 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,2]]/.allDiagrams[[i,2]],c2[[2]]];
+
+			   For[k=1,k<=Length[c2[[1]]],
+			       WriteVertexToFile[2,c2[[1,k]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
+
+			       WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
+
+			       WriteString[outputfortran,"! Colour and symmetry Factor \n"];
+			       If[decays[[3]]=!=LOOP,
+				  cfactor = getChargeFactorDec[allDiagrams[[i]],decays[[4]]];
+				  ,
+				  cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+				 ];
+			       If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
+			       WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
+
+			       k++;];
+
+			  ];,
+
+
+			4,
+
+
+
+
+			c1=getSPhenoCoupling2[allDiagrams[[i,1,1]],SPhenoCouplingsColoredQuartics];
+			ind1 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,1]]/.allDiagrams[[i,2]],c1[[2]]];
+
+			c2=getSPhenoCoupling2[allDiagrams[[i,1,2]],SPhenoCouplingsAllreallyAll];
+			ind2 =MakeIndicesCouplingWrapper[allDiagrams[[i,3,2]]/.allDiagrams[[i,2]],c2[[2]]];
+			If[getVertexType[allDiagrams[[i,1,2]]]===SSV||getVertexType[allDiagrams[[i,1,2]]]===VVV ,
+			   c2[[1]] = getSignVertex[Cp@@(allDiagrams[[i,3,2]] /.allDiagrams[[i,2]] )/. Cp[{A1_,A2_Symbol},{B1_,B2_Symbol},{C1_,C2_Symbol}]->Cp[A1,B1,C1],c2[[2]],getVertexType[allDiagrams[[i,1,2]]]]c2[[1]];
+			  ];
+
+
+			For[k=1,k<=Length[c1[[1]]],
+			    WriteVertexToFile[1,c1[[1,k]],ind1,getVertexType[allDiagrams[[i,1,1]]],outputfortran];
+			    WriteVertexToFile[2,c2,ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
+
+			    WriteString[outputfortran,"If ("<>coupsCheck<>".gt.epsCoup) Then \n"];
+			    WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
+			    WriteString[outputfortran,"Else\n"];
+			    WriteString[outputfortran," AmpC = 0._dp\n"];
+			    WriteString[outputfortran,"End if\n"];
+
+			    WriteString[outputfortran,"! Colour and symmetry Factor \n"];
+
+			    If[decays[[3]]=!=LOOP,
+			       cfactor = getChargeFactorDec[allDiagrams[[i]],decays[[4]]];
+			       ,
+			       cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+			      ];
+
+			    
+			    If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
+			    WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n\n"];
+			    
+			    
+			    k++;];
+
+
+		       ]; (* End Switch *)
+		
+
+		 (*Print[{Internal[1], Internal[2], Internal[3]} /. allDiagrams[[i, 2]],"colour factor: ",cfactor];*)
+		 
+		];
+
+
+
+
+
+
+		 If[ThreeInternal,If[getGen[inF3]>1,WriteString[outputfortran,"    End Do\n"]];];
+		 If[getGen[inF2]>1,WriteString[outputfortran,"  End Do\n"]];
+		 If[getGen[inF1]>1,WriteString[outputfortran,"End Do\n"]];
+
+		 If[FlagLoopContributions===True,
+		    WriteString[outputfortran,"End if \n"];
+		   ];
+
+		 i++;];
+
+
+	      (*
+		 WriteString[outputfortran,"\n\n Else \n"];
+		 WriteString[outputfortran,"  Amp"<>dimIn<>" = 0._dp \n"];
+		 WriteString[outputfortran,"\n End if \n\n"];
+		 *)
+	      If[getGen[f3]>1,WriteString[outputfortran,"    End Do\n"]];
+	      If[getGen[f2]>1,WriteString[outputfortran,"  End Do\n"]];
+	      If[getGen[f1]>1,WriteString[outputfortran,"End Do\n"]];
+
+	      WriteString[outputfortran,"End Subroutine Amplitude_"<>kind<>"_"<>ModelName<>"_"<>NameRoutine<>"\n\n\n"];
+	     ];
+
+
+WriteOneLoopCorrectionsDecayAmpIR[NameRoutine_,f1_,decays_,allDiagrams_,masses_,couplings_,type_,kind_]:=
+Block[{i,j,k,dim,dimAmp,inF1,inF2,inF3,c1,ind1,c2,ind2,coupsCallTree,coupsCall,dimIn={},massesCall,temp1,temp2,temp3,indorder,f2,f3},
+      allDiagramsSave=allDiagrams;
+      f2=decays[[1]];
+      f3=decays[[2]];
 MakeSubroutineTitle["Amplitude_IR_"<>kind<>"_"<>ModelName<>"_"<>NameRoutine,Flatten[{masses,couplings}],{},{"Amp"},outputfortran];
 WriteString[outputfortran,"Implicit None\n\n"];
 MakeVariableList[masses,", Intent(in)",outputfortran];
@@ -3260,14 +3384,14 @@ WriteString[outputfortran, "AmpC = 0._dp ! Needs to check why this vanishes exac
 WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
 ];
 WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,
-temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
-temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
-temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
-cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
-If[Head[cfactor]===Complex&& SA`DynL[f1,color]==={1,1},cfactor=-cfactor];,
-cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
-];
+
+If[decays[[3]]=!=LOOP,
+   cfactor = getChargeFactorDec[allDiagrams[[i]],decays[[4]]];
+   ,
+   cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+  ];
+
+   
 (* ]; *)
 
 If[AntiField[f1]===f1 && AntiField[f2]===f2&&AntiField[f3]===f3,
@@ -3339,14 +3463,18 @@ WriteVertexToFile[2,c2[[1,k]],ind2,getVertexType[allDiagrams[[i,1,2]]],outputfor
 WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
 
 WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,
-temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
-temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
-temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
-cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-If[Head[cfactor]===Complex && SA`DynL[f1,color]==={1,1},cfactor=-cfactor];,
-cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-];
+    If[decays[[3]]=!=LOOP,
+	 cfactor = getChargeFactorDec[allDiagrams[[i]],decays[[4]]];
+	 ,
+	 cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+	 ];
+
+
+
+
+
+
+    
 If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
 WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n"];
 
@@ -3377,14 +3505,15 @@ WriteVertexToFile[2,c2,ind2,getVertexType[allDiagrams[[i,1,2]]],outputfortran];
 WriteString[outputfortran,"Call Amp_"<>kind<>"_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"_Topology"<>ToString[Topology/.allDiagrams[[i,2]]]<>"_"<>ToString[getType[inF1] /. G->U]<>If[kind==="WAVE","_",""]<>ToString[getType[inF2] /. G->U]<>If[ThreeInternal,ToString[getType[inF3] /. G->U],""]<>"(Mex1,Mex2,Mex3,"<>massesCall<>coupsCall<>",AmpC) \n"];
 
 WriteString[outputfortran,"! Colour and symmetry Factor \n"];
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/. allDiagrams[[i,2]]]===False,
-temp1=Join[allDiagrams[[i,1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.allDiagrams[[i,2]]}];
-temp2=Join[DeleteCases[allDiagrams[[i,2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.allDiagrams[[i,2]]])}];
-temp3=Join[allDiagrams[[i,3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.allDiagrams[[i,2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
-cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-If[Head[cfactor]===Complex&& SA`DynL[f1,color]==={1,1},cfactor=-cfactor];,
-cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
-];
+    If[decays[[3]]=!=LOOP,
+       cfactor = getChargeFactorDec[allDiagrams[[i]],decays[[4]]];
+       ,
+       cfactor = getChargeFactor[allDiagrams[[i]],allDiagrams[[i,3]] /. allDiagrams[[i,2]] /. {gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},1];
+      ];
+
+
+
+    
 If[conj[inF1]===inF1 && conj[inF2]===inF2 && inF1===inF2,cfactor=cfactor/2;];
 WriteString[outputfortran,"Amp"<>dimIn<>" = Amp"<>dimIn<>" + oo16pi2*("<>SPhenoForm[cfactor]<>")*AmpC \n\n"];
 
@@ -3521,229 +3650,281 @@ WriteString[outputfortran,"End Subroutine Amplitude_Tree_"<>ModelName<>"_"<>Name
 ];
 
 
-WriteOneLoopCorrectionsWaveAmp[NameRoutine_,f1_,f2_,f3_,allDiagrams_,masses_,couplings_,ctcouplings_,Zconst_,type_]:=Block[{i,j,k,dim,in1,in2,in3,c1,ind1,coupsCallTree,coupsCall,dimIn={},field,dimInd,vectors,sign},
-MakeSubroutineTitle["Amplitude_WAVE_"<>ModelName<>"_"<>NameRoutine,Flatten[{couplings,ctcouplings,masses,Zconst}],{},{(*"RMsqtree",*)"Amp"},outputfortran];
-WriteString[outputfortran,"Implicit None\n\n"];
-MakeVariableList[masses,", Intent(in)",outputfortran];
-MakeVariableList[couplings,", Intent(in)",outputfortran];
-MakeVariableList[ctcouplings,", Intent(in)",outputfortran];
-MakeVariableList[Zconst,", Intent(in)",outputfortran];
-dim="("<>ToString[getGen[f1]]<>","<>ToString[getGen[f2]]<>","<>ToString[getGen[f3]]<>")";
-dim=Nest[StringReplace[#,{"(1,"->"(",",1,"->",",",1)"->")","(1)"->""}]&,dim,3];
-Switch[getVertexType[{AntiField[f1],f2,f3}],
-FFV,dimAmp=StringReplace["(4)"<>dim,")("->","];,
-FFS,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SSS,dimAmp=StringReplace[""<>dim,")("->","];,
-SSV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SVV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
-SSS,dimAmp=StringReplace[""<>dim,")("->","];,
-_,Print["Not yet done",{f1,f2,f3}];
-];
+WriteOneLoopCorrectionsWaveAmp[NameRoutine_,f1_,f2_,f3_,allDiagrams_,masses_,couplings_,ctcouplings_,Zconst_,type_]:=
+Module[{i,j,k,dim,in1,in2,in3,c1,ind1,coupsCallTree,coupsCall,dimIn={},field,dimInd,vectors,sign,colourfac,isloop,allvanishing},
+      If[FreeQ[SPhenoCouplingsAll,C[AntiField[f1],f2,f3]],
+	 isloop=True;
+	 allvanishing=True;,(* if no tree coupling then start from assumption that there is nothing to compute *)
+	 isloop=False;
+	 allvanishing=False;
+	];
 
-partInvolved=getPartInv[{AntiField[f1],f2,f3}];
+      
 
-WriteString[outputfortran,"Complex(dp), Intent(out) :: Amp"<>dimAmp<>" \n\n"];
-WriteString[outputfortran,"Integer :: i1, i2, i3, gt1, gt2, gt3 \n"];
-Switch[getVertexType[{f1,f2,f3}],
-FFV,WriteString[outputfortran,"Complex(dp) :: AmpC(4) \n"];,
-FFS,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-SSS,WriteString[outputfortran,"Complex(dp) :: AmpC \n"];,
-SFF,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-SSV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-SVV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
-_,"Not yet done";
-];
-WriteString[outputfortran,"Real(dp) :: Mex1, Mex2, Mex3, ExtRMsq \n"];
-WriteString[outputfortran,"Complex(dp) :: coupT1, coupT1L, coupT1R \n"];
-WriteString[outputfortran,"Complex(dp) :: TcoupT1, TcoupT1L, TcoupT1R \n"];
-WriteString[outputfortran,"Complex(dp) :: ZcoupT1, ZcoupT1L, ZcoupT1R \n\n"];
+	    
+       MakeSubroutineTitle["Amplitude_WAVE_"<>ModelName<>"_"<>NameRoutine,Flatten[{couplings,ctcouplings,masses,Zconst}],{},{(*"RMsqtree",*)"Amp"},outputfortran];
+       WriteString[outputfortran,"Implicit None\n\n"];
+       MakeVariableList[masses,", Intent(in)",outputfortran];
+       MakeVariableList[couplings,", Intent(in)",outputfortran];
+       MakeVariableList[ctcouplings,", Intent(in)",outputfortran];
+       MakeVariableList[Zconst,", Intent(in)",outputfortran];
+       dim="("<>ToString[getGen[f1]]<>","<>ToString[getGen[f2]]<>","<>ToString[getGen[f3]]<>")";
+       dim=Nest[StringReplace[#,{"(1,"->"(",",1,"->",",",1)"->")","(1)"->""}]&,dim,3];
+       Switch[getVertexType[{AntiField[f1],f2,f3}],
+	      FFV,dimAmp=StringReplace["(4)"<>dim,")("->","];,
+	      FFS,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+	      SSS,dimAmp=StringReplace[""<>dim,")("->","];,
+	      SSV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+	      SVV,dimAmp=StringReplace["(2)"<>dim,")("->","];,
+	      SSS,dimAmp=StringReplace[""<>dim,")("->","];,
+	      _,Print["Not yet done",{f1,f2,f3}];
+	     ];
 
+       partInvolved=getPartInv[{AntiField[f1],f2,f3}];
 
-If[getGen[f1]>1,WriteString[outputfortran,"Do gt1=1,"<>ToString[getGen[f1]]<>"\n"];dimIn=Join[dimIn,{gt1}];];
-If[getGen[f2]>1,WriteString[outputfortran,"  Do gt2=1,"<>ToString[getGen[f2]]<>"\n"];dimIn=Join[dimIn,{gt2}];];
-If[getGen[f3]>1,WriteString[outputfortran,"    Do gt3=1,"<>ToString[getGen[f3]]<>"\n"];dimIn=Join[dimIn,{gt3}];];
-dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
-Switch[getVertexType[{AntiField[f1],f2,f3}],
-SSS,dimIn=StringReplace[""<>dimIn,{")("->","}];,
-_,dimIn=StringReplace["(:)"<>dimIn,{")("->","}];
-];
-WriteString[outputfortran,"! External masses \n"];
-WriteString[outputfortran,"Mex1 = "<>SPhenoMass[f1,gt1]<>" \n"];
-WriteString[outputfortran,"Mex2 = "<>SPhenoMass[f2,gt2]<>" \n"];
-WriteString[outputfortran,"Mex3 = "<>SPhenoMass[f3,gt3]<>" \n"];
-
-(*
-WriteString[outputfortran,"\n\n If (Mex1.gt.(Mex2+Mex3)) Then \n\n"];
-*)
-(*
-If[type===SVV,
-WriteString[outputfortran,"AmpC = 0._dp \n"];,
-*)
-
-If[FreeQ[SPhenoCouplingsAll,C[AntiField[f1],f2,f3]]===False && f3=!=VectorP,
-c1=getSPhenoCoupling2[C[AntiField[f1],f2,f3],SPhenoCouplingsAll];
-ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{f3,gt3},c1[[2]]][[1]];
-
-WriteString[outputfortran,"!----------------------------- \n"];
-WriteString[outputfortran,"! Coupling counter term \n"];
-WriteString[outputfortran,"!----------------------------- \n"];
-Switch[type,
-FFS|SFF,
-WriteString[outputfortran,"ZcoupT1L = ct"<>ToString[c1[[1,1]]]<>ind1<>" \n"];
-WriteString[outputfortran,"ZcoupT1R = ct"<>ToString[c1[[1,2]]]<>ind1<>" \n"];
-coupsCallTree="ZcoupT1L,ZcoupT1R";,
-FFV,
-WriteString[outputfortran,"ZcoupT1L = ct"<>ToString[c1[[1,1]]]<>ind1<>" \n"];
-WriteString[outputfortran,"ZcoupT1R = ct"<>ToString[c1[[1,2]]]<>ind1<>"\n"];
-coupsCallTree="ZcoupT1R,ZcoupT1L";,
-_,
-WriteString[outputfortran,"ZcoupT1 = ct"<>ToString[c1[[1,1]]]<>ind1<>" \n"];
-coupsCallTree="ZcoupT1";
-];,
-
-If[FreeQ[SPhenoCouplingsAll,C[AntiField[f1],f2,f3]]===False,
-c1=getSPhenoCoupling2[C[AntiField[f1],f2,f3],SPhenoCouplingsAll];
-ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{f3,gt3},c1[[2]]][[1]];
-];
-Switch[type,
-FFS|SFF,
-WriteString[outputfortran,"ZcoupT1L = 0._dp \n"];
-WriteString[outputfortran,"ZcoupT1R = 0._dp \n"];
-coupsCallTree="ZcoupT1L,ZcoupT1R";,
-FFV,
-WriteString[outputfortran,"ZcoupT1L = 0._dp \n"];
-WriteString[outputfortran,"ZcoupT1R = 0._dp \n"];
-coupsCallTree="ZcoupT1R,ZcoupT1L";,
-_,
-WriteString[outputfortran,"ZcoupT1 = 0._dp \n"];
-coupsCallTree="ZcoupT1";
-];
-];
+       WriteString[outputfortran,"Complex(dp), Intent(out) :: Amp"<>dimAmp<>" \n\n"];
+       WriteString[outputfortran,"Integer :: i1, i2, i3, gt1, gt2, gt3 \n"];
+       Switch[getVertexType[{f1,f2,f3}],
+	      FFV,WriteString[outputfortran,"Complex(dp) :: AmpC(4) \n"];,
+	      FFS,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+	      SSS,WriteString[outputfortran,"Complex(dp) :: AmpC \n"];,
+	      SFF,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+	      SSV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+	      SVV,WriteString[outputfortran,"Complex(dp) :: AmpC(2) \n"];,
+	      _,"Not yet done";
+	     ];
+       WriteString[outputfortran,"Real(dp) :: Mex1, Mex2, Mex3, ExtRMsq \n"];
+       WriteString[outputfortran,"Complex(dp) :: coupT1, coupT1L, coupT1R \n"];
+       WriteString[outputfortran,"Complex(dp) :: TcoupT1, TcoupT1L, TcoupT1R \n"];
+       WriteString[outputfortran,"Complex(dp) :: ZcoupT1, ZcoupT1L, ZcoupT1R \n\n"];
 
 
-WriteString[outputfortran,"!----------------------------- \n"];
-WriteString[outputfortran,"! Multiply Z-factors \n"];
-WriteString[outputfortran,"!----------------------------- \n"];
+       If[getGen[f1]>1,WriteString[outputfortran,"Do gt1=1,"<>ToString[getGen[f1]]<>"\n"];dimIn=Join[dimIn,{gt1}];];
+       If[getGen[f2]>1,WriteString[outputfortran,"  Do gt2=1,"<>ToString[getGen[f2]]<>"\n"];dimIn=Join[dimIn,{gt2}];];
+       If[getGen[f3]>1,WriteString[outputfortran,"    Do gt3=1,"<>ToString[getGen[f3]]<>"\n"];dimIn=Join[dimIn,{gt3}];];
+       dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
+       Switch[getVertexType[{AntiField[f1],f2,f3}],
+	      SSS,dimIn=StringReplace[""<>dimIn,{")("->","}];,
+	      _,dimIn=StringReplace["(:)"<>dimIn,{")("->","}];
+	     ];
+       WriteString[outputfortran,"! External masses \n"];
+       WriteString[outputfortran,"Mex1 = "<>SPhenoMass[f1,gt1]<>" \n"];
+       WriteString[outputfortran,"Mex2 = "<>SPhenoMass[f2,gt2]<>" \n"];
+       WriteString[outputfortran,"Mex3 = "<>SPhenoMass[f3,gt3]<>" \n"];
+
+       (*
+	  WriteString[outputfortran,"\n\n If (Mex1.gt.(Mex2+Mex3)) Then \n\n"];
+	  *)
+       (*
+	  If[type===SVV,
+	  WriteString[outputfortran,"AmpC = 0._dp \n"];,
+	  *)
+
+       If[isloop===False && f3=!=VectorP,
+	  c1=getSPhenoCoupling2[C[AntiField[f1],f2,f3],SPhenoCouplingsAll];
+	  ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{f3,gt3},c1[[2]]][[1]];
+
+	  WriteString[outputfortran,"!----------------------------- \n"];
+	  WriteString[outputfortran,"! Coupling counter term \n"];
+	  WriteString[outputfortran,"!----------------------------- \n"];
+	  Switch[type,
+		 FFS|SFF,
+		 WriteString[outputfortran,"ZcoupT1L = ct"<>ToString[c1[[1,1]]]<>ind1<>" \n"];
+		 WriteString[outputfortran,"ZcoupT1R = ct"<>ToString[c1[[1,2]]]<>ind1<>" \n"];
+		 coupsCallTree="ZcoupT1L,ZcoupT1R";,
+		 FFV,
+		 WriteString[outputfortran,"ZcoupT1L = ct"<>ToString[c1[[1,1]]]<>ind1<>" \n"];
+		 WriteString[outputfortran,"ZcoupT1R = ct"<>ToString[c1[[1,2]]]<>ind1<>"\n"];
+		 coupsCallTree="ZcoupT1R,ZcoupT1L";,
+		 _,
+		 WriteString[outputfortran,"ZcoupT1 = ct"<>ToString[c1[[1,1]]]<>ind1<>" \n"];
+		 coupsCallTree="ZcoupT1";
+		];,
+
+	  If[isloop===False,
+	     c1=getSPhenoCoupling2[C[AntiField[f1],f2,f3],SPhenoCouplingsAll];
+	     ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{f3,gt3},c1[[2]]][[1]];
+	    ];
+	  Switch[type,
+		 FFS|SFF,
+		 WriteString[outputfortran,"ZcoupT1L = 0._dp \n"];
+		 WriteString[outputfortran,"ZcoupT1R = 0._dp \n"];
+		 coupsCallTree="ZcoupT1L,ZcoupT1R";,
+		 FFV,
+		 WriteString[outputfortran,"ZcoupT1L = 0._dp \n"];
+		 WriteString[outputfortran,"ZcoupT1R = 0._dp \n"];
+		 coupsCallTree="ZcoupT1R,ZcoupT1L";,
+		 _,
+		 WriteString[outputfortran,"ZcoupT1 = 0._dp \n"];
+		 coupsCallTree="ZcoupT1";
+		];
+	 ];
 
 
-WriteString[outputfortran,"! External Field 1 \n"];
-If[FreeQ[SPhenoCouplingsAll,C[AntiField[f1],f2,f3]]===False,
-If[getGen[f1]>1,
-WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[f1]]<>"\n"];
-dimInd="(i1,gt1)";,
-dimInd="";
-];
-ind1 =MakeIndicesCouplingPS[{AntiField[f1],i1},{f2,gt2},{f3,gt3},c1[[2]]][[1]];
-
-Switch[Dimensions[partInvolved],
-{2,3},
-WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactorHead[partInvolved[[1,1]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
-WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactorHead[partInvolved[[2,1]],dimInd]<>"*"<>ToString[c1[[1,2]]]<>ind1<>"\n"];,	
-{1,3},
-WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactorHead[partInvolved[[1,1]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
-];
-If[getGen[f1]>1,WriteString[outputfortran,"End Do\n"]];,
-WriteString[outputfortran,"! Vanishing \n"];
-];
+       WriteString[outputfortran,"!----------------------------- \n"];
+       WriteString[outputfortran,"! Multiply Z-factors \n"];
+       WriteString[outputfortran,"!----------------------------- \n"];
 
 
+       WriteString[outputfortran,"! External Field 1 \n"];
+       If[isloop===False,
+	  If[getGen[f1]>1,
+	     WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[f1]]<>"\n"];
+	     dimInd="(i1,gt1)";,
+	     dimInd="";
+	    ];
+	  ind1 =MakeIndicesCouplingPS[{AntiField[f1],i1},{f2,gt2},{f3,gt3},c1[[2]]][[1]];
 
-WriteString[outputfortran,"\n\n! External Field 2 \n"];
-If[FreeQ[SPhenoCouplingsAll,C[AntiField[f1],f2,f3]]===False,
-If[getGen[f2]>1,
-WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[f2]]<>"\n"];
-dimInd="(i1,gt2)";,
-dimInd="";
-];
-ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,i1},{f3,gt3},c1[[2]]][[1]];
-
-Switch[Dimensions[partInvolved],
-{2,3},
-WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactorHead[partInvolved[[1,2]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
-WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactorHead[partInvolved[[2,2]],dimInd]<>"*"<>ToString[c1[[1,2]]]<>ind1<>"\n"];,
-{1,3},
-WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactorHead[partInvolved[[1,2]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
-];
-
-If[getGen[f2]>1,WriteString[outputfortran,"End Do\n"]];,
-WriteString[outputfortran,"! Vanishing \n"];
-];
-
-
-WriteString[outputfortran,"\n\n! External Field 3 \n"];
-If[getType[f3]===V,
-If[Head[f3]===conj,headV=conj;,headV=Evaluate;];
-vectors=Select[Particles[EWSB],#[[4]]===V&];
-For[i=1,i<=Length[vectors],
-If[(vectors[[i,1]]===RE[f3] || FreeQ[CorrectionListVectorVector[EWSB],{vectors[[i,1]],f3}]===False  || FreeQ[CorrectionListVectorVector[EWSB],{f3,vectors[[i,1]]}]===False ||  FreeQ[CorrectionListVectorVector[EWSB],{OneLtbds[[2]],f3}]===False) &&FreeQ[SPhenoCouplingsAllreallyAll,C[AntiField[f1],f2,headV[vectors[[i,1]]]]]===False,
-cv=getSPhenoCoupling2[C[AntiField[f1],f2,headV[vectors[[i,1]]]],SPhenoCouplingsAll];
-ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{headV[vectors[[i,1]]],i1},cv[[2]]][[1]];
-dimInd="";
-Switch[type,
-FFV |FFS,
-WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactor[vectors[[i,1]],f3,dimInd]<>"*"<>ToString[cv[[1,1]]]<>ind1<>"\n"];
-WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactor[vectors[[i,1]],f3,dimInd]<>"*"<>ToString[cv[[1,2]]]<>ind1<>"\n"];,
-_,
-WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactor[vectors[[i,1]],f3,dimInd]<>"*"<>ToString[cv[[1,1]]]<>ind1<>"\n"];
-];
-];
-i++;];,
-
-If[FreeQ[SPhenoCouplingsAll,C[AntiField[f1],f2,f3]]===False,
-If[getGen[f3]>1,
-WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[f3]]<>"\n"];
-dimInd="(i1,gt3)";,
-dimInd="";
-];
-ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{f3,i1},c1[[2]]][[1]];
-Switch[Dimensions[partInvolved],
-{2,3},
-WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactorHead[partInvolved[[1,3]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
-WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactorHead[partInvolved[[2,3]],dimInd]<>"*"<>ToString[c1[[1,2]]]<>ind1<>"\n"];,	
-{1,3},
-WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactorHead[partInvolved[[1,3]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
-];
-If[getGen[f3]>1,WriteString[outputfortran,"End Do\n"]];,
-WriteString[outputfortran,"! Vanishing \n"];
-];
-];
-
-WriteString[outputfortran,"\n\n! Getting the amplitude \n"];
-
-If[type===SSV && Head[c1]===List,
-sign = getSignVertex[Cp[AntiField[f1],f2,f3],c1[[2]],SSV];
-If[sign===-1,
-coupsCallTree="-"<>coupsCallTree;
-];
-];
-
-WriteString[outputfortran,"Call TreeAmp_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"(Mex1,Mex2,Mex3,"<>coupsCallTree<>",AmpC) \n"];
-
-WriteString[outputfortran,"! Colour and symmetry factor \n"];
-
-
-Switch[type,
-FFV,(* fermion flow opposite to FeynArts *)
-WriteString[outputfortran,"Amp"<>dimIn<>" = -"<>SPhenoForm[CalculateColorFactorDecay[AntiField[f1],f2,f3]]<>"*AmpC \n"];,
-_,
-WriteString[outputfortran,"Amp"<>dimIn<>" = "<>SPhenoForm[CalculateColorFactorDecay[AntiField[f1],f2,f3]]<>"*AmpC \n"];
-];
-
-(*
-WriteString[outputfortran,"\n\n Else \n"];
-WriteString[outputfortran,"  Amp"<>dimIn<>" = 0._dp \n"];
-WriteString[outputfortran,"\n End if \n\n"];
-*)
+	  Switch[Dimensions[partInvolved],
+		 {2,3},
+		 WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactorHead[partInvolved[[1,1]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
+		 WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactorHead[partInvolved[[2,1]],dimInd]<>"*"<>ToString[c1[[1,2]]]<>ind1<>"\n"];,	
+		 {1,3},
+		 WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactorHead[partInvolved[[1,1]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
+		];
+	  If[getGen[f1]>1,WriteString[outputfortran,"End Do\n"]];,
+	  WriteString[outputfortran,"! Vanishing \n"];
+	 ];
 
 
 
-If[getGen[f3]>1,WriteString[outputfortran,"    End Do\n"]];
-If[getGen[f2]>1,WriteString[outputfortran,"  End Do\n"]];
-If[getGen[f1]>1,WriteString[outputfortran,"End Do\n"]];
+       WriteString[outputfortran,"\n\n! External Field 2 \n"];
+       If[isloop===False,
+	  If[getGen[f2]>1,
+	     WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[f2]]<>"\n"];
+	     dimInd="(i1,gt2)";,
+	     dimInd="";
+	    ];
+	  ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,i1},{f3,gt3},c1[[2]]][[1]];
 
-WriteString[outputfortran,"End Subroutine Amplitude_WAVE_"<>ModelName<>"_"<>NameRoutine<>"\n\n\n"];
-];
+	  Switch[Dimensions[partInvolved],
+		 {2,3},
+		 WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactorHead[partInvolved[[1,2]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
+		 WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactorHead[partInvolved[[2,2]],dimInd]<>"*"<>ToString[c1[[1,2]]]<>ind1<>"\n"];,
+		 {1,3},
+		 WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactorHead[partInvolved[[1,2]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
+		];
 
+	  If[getGen[f2]>1,WriteString[outputfortran,"End Do\n"]];,
+	  WriteString[outputfortran,"! Vanishing \n"];
+	 ];
+
+
+       WriteString[outputfortran,"\n\n! External Field 3 \n"];
+       If[getType[f3]===V,(* in this case can have mixing *)
+	  If[Head[f3]===conj,headV=conj;,headV=Evaluate;];
+	  vectors=Select[Particles[EWSB],#[[4]]===V&];
+	  For[i=1,i<=Length[vectors],
+	      If[(vectors[[i,1]]===RE[f3] || FreeQ[CorrectionListVectorVector[EWSB],{vectors[[i,1]],f3}]===False  || FreeQ[CorrectionListVectorVector[EWSB],{f3,vectors[[i,1]]}]===False ||  FreeQ[CorrectionListVectorVector[EWSB],{OneLtbds[[2]],f3}]===False) &&FreeQ[SPhenoCouplingsAllreallyAll,C[AntiField[f1],f2,headV[vectors[[i,1]]]]]===False,
+		 allvanishing=False;
+		 cv=getSPhenoCoupling2[C[AntiField[f1],f2,headV[vectors[[i,1]]]],SPhenoCouplingsAll]; 
+		 ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{headV[vectors[[i,1]]],i1},cv[[2]]][[1]];
+		 dimInd="";
+		 If[FreeQ[masslessSave,vectors[[i,1]]] || FreeQ[masslessSave,f3],
+		 Switch[type,
+			FFV |FFS,
+			WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactor[vectors[[i,1]],f3,dimInd]<>"*"<>ToString[cv[[1,1]]]<>ind1<>"\n"];
+			WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactor[vectors[[i,1]],f3,dimInd]<>"*"<>ToString[cv[[1,2]]]<>ind1<>"\n"];,
+			_,
+			WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactor[vectors[[i,1]],f3,dimInd]<>"*"<>ToString[cv[[1,1]]]<>ind1<>"\n"];
+		       ];
+		      ];
+		];
+	      i++;
+	     ];,(* If[getType[fs]===V is false just do like the cases above *)
+
+	  If[isloop===False,
+	     If[getGen[f3]>1,
+		WriteString[outputfortran,"Do i1=1,"<>ToString[getGen[f3]]<>"\n"];
+		dimInd="(i1,gt3)";,
+		dimInd="";
+	       ];
+	     ind1 =MakeIndicesCouplingPS[{AntiField[f1],gt1},{f2,gt2},{f3,i1},c1[[2]]][[1]];
+	     Switch[Dimensions[partInvolved],
+		    {2,3},
+		    WriteString[outputfortran,"ZcoupT1L = ZcoupT1L + 0.5_dp*"<>getZfactorHead[partInvolved[[1,3]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
+		    WriteString[outputfortran,"ZcoupT1R = ZcoupT1R + 0.5_dp*"<>getZfactorHead[partInvolved[[2,3]],dimInd]<>"*"<>ToString[c1[[1,2]]]<>ind1<>"\n"];,	
+		    {1,3},
+		    WriteString[outputfortran,"ZcoupT1 = ZcoupT1 + 0.5_dp*"<>getZfactorHead[partInvolved[[1,3]],dimInd]<>"*"<>ToString[c1[[1,1]]]<>ind1<>"\n"];
+		   ];
+	     If[getGen[f3]>1,WriteString[outputfortran,"End Do\n"]];,
+	     WriteString[outputfortran,"! Vanishing \n"];
+	    ];
+	 ];
+
+	  If[allvanishing===False,
+	     
+	     WriteString[outputfortran,"\n\n! Getting the amplitude \n"];
+
+	     If[type===SSV && Head[c1]===List,
+		sign = getSignVertex[Cp[AntiField[f1],f2,f3],c1[[2]],SSV];
+		If[sign===-1,
+		   coupsCallTree="-"<>coupsCallTree;
+		  ];
+	       ];
+
+	     WriteString[outputfortran,"Call TreeAmp_"<>ToString[getType[f1]]<>"to"<>ToString[getType[f2] ]<>ToString[getType[f3]]<>"(Mex1,Mex2,Mex3,"<>coupsCallTree<>",AmpC) \n"];
+
+	     (*WriteString[outputfortran,"! Colour and symmetry factor \n"];*)
+
+	    (*
+	     If[isloop,
+		colourfac=CalculateColourFactorLoopInducedDecay[AntiField[f1],f2,f3],
+		colourfac=CalculateColorFactorDecay[AntiField[f1],f2,f3]
+	       ];
+
+	       Switch[type,
+		    FFV,(* fermion flow opposite to FeynArts *)
+		    WriteString[outputfortran,"Amp"<>dimIn<>" = -"<>SPhenoForm[colourfac]<>"*AmpC \n"];,
+		    _,
+		    WriteString[outputfortran,"Amp"<>dimIn<>" = "<>SPhenoForm[colourfac]<>"*AmpC \n"];
+		   ];
+
+	       *)
+	     (* only overall colour factor; we'll assume that the intermediate states aren't coloured ... *) 
+	     
+	     
+	     Switch[type,
+		    FFV,(* fermion flow opposite to FeynArts *)
+		    WriteString[outputfortran,"Amp"<>dimIn<>" = -AmpC \n"];,
+		    _,
+		    WriteString[outputfortran,"Amp"<>dimIn<>" = AmpC \n"];
+		   ];
+
+	     (*
+		WriteString[outputfortran,"\n\n Else \n"];
+		WriteString[outputfortran,"  Amp"<>dimIn<>" = 0._dp \n"];
+		WriteString[outputfortran,"\n End if \n\n"];
+		*)
+	     , (* allvanishing is true -> zero amplitude*)
+	     
+	     WriteString[outputfortran,"Amp"<>dimIn<>" = 0._dp\n"];
+	    ];
+
+
+       If[getGen[f3]>1,WriteString[outputfortran,"    End Do\n"]];
+       If[getGen[f2]>1,WriteString[outputfortran,"  End Do\n"]];
+       If[getGen[f1]>1,WriteString[outputfortran,"End Do\n"]];
+
+	  WriteString[outputfortran,"End Subroutine Amplitude_WAVE_"<>ModelName<>"_"<>NameRoutine<>"\n\n\n"];
+
+	  If[allvanishing,
+	     Return[False],
+	     Return[True]
+	    ];
+	 ];
+
+
+       (* --------------- NO NEED TO MODIFY BELOW THIS LINE ------------------------------------------------- *)
+
+
+
+
+
+
+
+
+       
 GenerateZCouplings:=Block[{i,j,k,pos,zcoup,f1,f2,f3,sel,ind1r,ind2r,partinv},
 
 
@@ -4111,7 +4292,7 @@ WriteString[sphenoLD,"GosZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0.5_dp*("<> 
 WriteString[sphenoLD,"GZ"<>ToString[gListGB[[i,2,2]]]<>ind1r<>" = 0.5_dp*("<>SPhenoForm[  getSignVertex[Cp[f1 /. A_[{b__}]->A, f2  /. A_[{b__}]->A  ,f3 /. A_[{b__}]->A ],gListGB[[i,6]],SSV]]<>")/"<>SPhenoForm[SPhenoMass[vf1]]<>"*Z"<>ToString[vcoup[[1,2,2]]]<>ind2r<>"\n"];
 ];
 If[getGen[f3]>1,WriteString[sphenoLD," End Do\n"];];
-If[getGen[f1]>1,WriteString[sphenoLD,"End Do \n"];];
+If[getGen[f2]>1,WriteString[sphenoLD,"End Do \n"];];
 ];,
 SVV,
 f1=gListGB[[i,-1,1]];

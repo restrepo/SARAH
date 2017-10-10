@@ -374,7 +374,7 @@ ParameterDefinitions = {
      LaTeX -> "{v}_{\\Phi}" , 
      OutputName -> vphi }}, 
 
-{ZA,{ 
+{ZA,{Description->"Pseudo-Scalar-Mixing-Matrix", 
      Real -> False, 
      LesHouches -> ZA , 
      LaTeX -> "ZA" , 

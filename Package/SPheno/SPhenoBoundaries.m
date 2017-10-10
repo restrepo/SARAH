@@ -25,10 +25,10 @@ sphenoSugra=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Boundaries_"<>ModelName
 
 WriteHeadBoundaries;
 
-If[OnlyLowEnergySPheno=!=True, 
+If[OnlyLowEnergySPheno=!=True , 
 GenerateBoundarySUSY;
 GenerateBoundaryHS;
-GenerateBoundaryEW;
+If[SupersymmetricModel===True,GenerateBoundaryEW;];
 ];
 
 GenerateBoundarySM;
@@ -47,7 +47,7 @@ GenerateBoundaryEWnonSUSY;
 *)
 
 If[OnlyLowEnergySPheno=!=True, 
-GenerateSugra;
+If[SupersymmetricModel===True,GenerateSugra;];
 GenerateRunRGE;
 ];
 
@@ -239,11 +239,14 @@ WriteRemoveGUTnormalization[sphenoSugra];
 
 If[AddOHDM=!=True,
 If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
+(*
 WriteString[sphenoSugra,"If(SPA_Convention) Then \n"];
 WriteString[sphenoSugra,"  tanbetaMZ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
 WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  tanbetaMZ = tanbeta \n"];
 WriteString[sphenoSugra,"End If \n"];
+*)
+WriteString[sphenoSugra,"  tanbetaMZ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
 
 WriteString[sphenoSugra,SPhenoForm[VEVSM1]<>" = "<>SPhenoForm[VEVSM1]<>"MZ\n"];
 WriteString[sphenoSugra,SPhenoForm[VEVSM2]<>" = "<>SPhenoForm[VEVSM2]<>"MZ\n"];
@@ -276,11 +279,13 @@ WriteString[sphenoSugra,"\n\n"];
 
 If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 If[AddOHDM=!=True,
+(*
 WriteString[sphenoSugra,"If(SPA_Convention) Then \n"];
 WriteString[sphenoSugra,"  tanbQ = tanbeta \n"];
 WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  tanbQ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
-WriteString[sphenoSugra,"End If \n"];
+WriteString[sphenoSugra,"End If \n"]; *)
+WriteString[sphenoSugra,"  tanbQ = tanbeta \n"];
 ];
 ];
 
@@ -1244,17 +1249,17 @@ WriteString[file,"End Select \n\n"];
 WriteString[sphenoSugra,"else If (HighScaleModel.Eq.\"LOW\") Then \n "];
 WriteString[sphenoSugra,"! Setting values \n "];
 For[i=1,i<=Length[listVEVsIN],
-If[MemberQ[ParametersToSolveTadpoles,listVEVs[[i]]]==False && FreeQ[{VEVSM1,VEVSM2,VEVSM},listVEVs[[i]]],
+If[MemberQ[ParametersToSolveTadpoles,listVEVs[[i]]]==False && FreeQ[{VEVSM1,VEVSM2,VEVSM},listVEVs[[i]]] && FreeQ[DEFINITION[MatchingConditions],listVEVs[[i]]],
 WriteString[sphenoSugra,StringDrop[SPhenoForm[listVEVsIN[[i]]],-2] <>" = " <>SPhenoForm[listVEVsIN[[i]]]<>" \n "];
 ];
 i++;];
 For[i=1,i<=Length[HighScaleList],
-If[MemberQ[ParametersToSolveTadpoles,HighScaleList[[i,2]]]==False,
+If[MemberQ[ParametersToSolveTadpoles,HighScaleList[[i,2]]]==False && FreeQ[DEFINITION[MatchingConditions],HighScaleList[[i,2]]],
 WriteString[sphenoSugra,StringDrop[SPhenoForm[highScaleIn[[i]]],-2] <>" = " <>SPhenoForm[highScaleIn[[i]]]<>" \n "];
 ];
 i++;];
 For[i=1,i<=Length[LowScaleList],
-If[MemberQ[ParametersToSolveTadpoles,LowScaleList[[i,2]]]==False&& FreeQ[{leftCoupling,hyperchargeCoupling,strongCoupling,UpYukawa,DownYukawa,ElectronYukawa},LowScaleList[[i,1]]],
+If[MemberQ[ParametersToSolveTadpoles,LowScaleList[[i,2]]]==False&& FreeQ[{leftCoupling,hyperchargeCoupling,strongCoupling,UpYukawa,DownYukawa,ElectronYukawa},LowScaleList[[i,1]]] && FreeQ[DEFINITION[MatchingConditions],LowScaleList[[i,2]]],
 WriteString[sphenoSugra,StringDrop[SPhenoForm[lowScaleIn[[i]]],-2] <>" = " <>SPhenoForm[lowScaleIn[[i]]]<>" \n "];
 ];
 i++;];
@@ -1413,15 +1418,18 @@ WriteString[sphenoSugra,"Call RunRGE_New(kont,0.1_dp*delta0,gB,gA,mGUT)\n \n"];
 If[FreeQ[BoundarySUSYScale,TADPOLES],
 MakeCall["GToParameters"<>ToString[numberAll],listAllParameters,{"gA"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"gA"},{},sphenoSugra];
-];,
+];
+WriteRemoveGUTnormalization[sphenoSugra];,
 WriteString[sphenoSugra,"mGUT = 1._dp \n"];
-WriteBoundaryConditionsSUSY[sphenoSugra];
 If[FreeQ[BoundarySUSYScale,TADPOLES],
 MakeCall["GToParameters"<>ToString[numberAll],listAllParameters,{"gB"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"gB"},{},sphenoSugra];
 ];
-];
+WriteBoundaryConditionsSUSY[sphenoSugra];
 WriteRemoveGUTnormalization[sphenoSugra];
+WriteTadpoleSolutionOnlyHigh[sphenoSugra];
+];
+
 
 WriteString[sphenoSugra,"If (kont.Ne.0) Then\n"];
 WriteString[sphenoSugra,"Iname=Iname-1\n"];
@@ -1456,11 +1464,13 @@ WriteRemoveGUTnormalization[sphenoSugra];
 
 If[AddOHDM=!=True,
 If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
+(*
 WriteString[sphenoSugra,"If(SPA_Convention) Then \n"];
 WriteString[sphenoSugra,"  tanbetaMZ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
 WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  tanbetaMZ = tanbeta \n"];
-WriteString[sphenoSugra,"End If \n"];
+WriteString[sphenoSugra,"End If \n"]; *)
+WriteString[sphenoSugra,"  tanbetaMZ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
 
 WriteString[sphenoSugra,SPhenoForm[VEVSM1]<>" = "<>SPhenoForm[VEVSM1]<>"MZ\n"];
 WriteString[sphenoSugra,SPhenoForm[VEVSM2]<>" = "<>SPhenoForm[VEVSM2]<>"MZ\n"];
@@ -1493,11 +1503,13 @@ WriteString[sphenoSugra,"\n\n"];
 
 If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
 If[AddOHDM=!=True,
+(*
 WriteString[sphenoSugra,"If(SPA_Convention) Then \n"];
 WriteString[sphenoSugra,"  tanbQ = tanbeta \n"];
 WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  tanbQ = "<>SPhenoForm[VEVSM2]<>"/"<>SPhenoForm[VEVSM1] <>" \n"];
-WriteString[sphenoSugra,"End If \n"];
+WriteString[sphenoSugra,"End If \n"]; *)
+WriteString[sphenoSugra,"  tanbQ = tanbeta \n"];
 ];
 ];
 

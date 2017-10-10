@@ -57,7 +57,7 @@ DEFINITION[GaugeES][Additional]= {
 LagNoHC = -(mu2 conj[H].H  + 1/2 MT trip.trip  - 1/2 LT  Delta[lef1b,lef2] Delta[lef2b,lef3] Delta[lef3b,lef4] Delta[lef4b,lef1] trip.trip.trip.trip \
  + KHT conj[H].trip.H - 1/2 LH conj[H].H.conj[H].H - 1/2 LHT conj[H].H.trip.trip);
 
-LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q);
 			  		  
 ContractionRGE[LT]=Delta[lef1,lef2] Delta[lef3, lef4];
 			  		  

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 Block[{$Path={ToFileName[{$sarahPackageDir,"RGEs"}]}},
 <<nonSUSYrges_aux.m;
 <<nonSUSYrges_beta.m;
@@ -188,9 +189,12 @@ term=Expand[Times@@(list[[i,1]] /. subComplexScalarsSum /. conj[x_]->x)*list[[i,
 (* If[Length[list[[i,1]]]===4, *)
 If[list[[i,3]]===True,
 (* If[(conj[Times@@list[[i,1]]] /. A_[{b__}][{c__}]\[Rule]A /. A_[{b__}]\[Rule]A) =!=(Times@@list[[i,1]] /. A_[{b__}][{c__}]\[Rule]A /. A_[{b__}]\[Rule]A), *)
+If[ForceComplexQuarticsRGEs===True,
+term=term+Expand[Times@@((conj/@list[[i,1]]) /. subComplexScalarsSum /. conj[x_]->x)*conj[list[[i,2]]]];,
 term=term+Expand[Times@@((conj/@list[[i,1]]) /. subComplexScalarsSum /. conj[x_]->x)*list[[i,2]]];
 If[OnlyDummy=!=True,Print["Note, the following parameter is treated as real in RGEs: ",If[Head[Expand[list[[i,2]]]]===Plus,Expand[list[[i,2]]][[1]],list[[i,2]]]/. {Delta[a__]->1,epsTensor[__]->1,x_?NumericQ->1}];];
 (* ]; *)
+];
 ];
 invfields={};
 For[j=1,j<=Length[list[[i,1]]],
@@ -241,6 +245,7 @@ CalcBetaFunctionsNonSUSY[VEVI,SA`ListVEVi  /.subGC[1]/.subindnames,"BetaVEV","Be
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateCouplingVariables[NoMatMul_,Force_]:=Block[{i,j,k,subrule,per,free,added={},res,temp,tempS,indNr,indices,deltaInd,deltaInd2},
 If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
 
@@ -591,6 +596,7 @@ Return[res];
 ];
 
 
+(* ::Input::Initialization:: *)
 InitGaugeGroupInfo[varGens_]:=Block[{sumCS,sumCF,sumDS,sumDF,i,j,k,sumU1,delta,sum,gNr2},
 SA`ListGC={};
 For[i=1,i<=Length[Gauge],
@@ -856,6 +862,7 @@ k++;];
 
 
 
+(* ::Input::Initialization:: *)
 CalcBetaFunctionsNonSUSY[type_,fields_,filename_,filename3I_,twoloop_,Simp_]:=Block[{i,ii,factor,res,subNonZero,coup,SaveArray={},SaveArray3I={},bfcalculated={}},
 Clear[bF1L,bF2L];
 kF=1/2; 
@@ -972,6 +979,7 @@ GSijHat,
 	betaFunction=GammaSijHat1L[fields[[i,1,1]],fields[[i,1,2]]];
 	If[twoloop,betaFunction2L=GammaSijHat2L[fields[[i,1,1]],fields[[i,1,2]]];,betaFunction2L=0];
  ];
+betaFunction2LSaveA=betaFunction2L;
 If[type===GFIJ || type===GSIJ || type===GSijHat,
 factor=1;,
 factor=DeleteCases[DeleteCases[fakeFac coup /. CGCBroken[{a___}]:>CGCBroken[{a}/. Conj->conj]/. subNonZero,_?(MemberQ[{gen1,gen2,gen3,gen4},#]&),10] /. A_[{}]->1 /. A_[]->1 /. Conj[x_]->x,_?(MemberQ[Transpose[parameters][[1]],#]&),10] /. fakeFac ->1;
@@ -985,6 +993,7 @@ betaFunction =Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction /. SA`gCoup[a
 betaFunction2L = Expand[1/factor* CalcRGEValue[CalcDelta[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[__]->0] ,False]];
 ];
 If[type===VEVI,
+betaFunction2LSave=betaFunction2L;
 betaFunction=-betaFunction /. Delta2->Delta /. Delta[a_[{b1_,d1___}][{c1__}],a_[{b2_,d2___}][{c2__}]]->Delta[a[{b1}],a[{b2}]]/. Delta[a__]->0;
 betaFunction2L=-betaFunction2L /. Delta2->Delta /. Delta[a_[{b1_,d1___}][{c1__}],a_[{b2_,d2___}][{c2__}]]->Delta[a[{b1}],a[{b2}]]/. Delta[a__]->0;,
 betaFunction=betaFunction /. Delta2[a__]->1 /. Kronecker[a_,a_]->1;
@@ -1082,7 +1091,7 @@ LIJKL,
 	coup2=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]/.SA`subImagToReal,fields[[4]]/.subGC[4]/.SA`subImagToReal ];,
 YIJK,
 	coup=Yijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];
-		coup2=I Yijk[fields[[1]]/.subGC[1]/.SA`subImagToReal,fields[[2]]/.subGC[2]/.SA`subImagToReal,fields[[3]]/.subGC[3]/.SA`subImagToReal];,
+	coup2=I Yijk[fields[[1]]/.subGC[1]/.SA`subImagToReal,fields[[2]]/.subGC[2]/.SA`subImagToReal,fields[[3]]/.subGC[3]/.SA`subImagToReal];,
 MFIJ,
 	coup=Muij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,
 TIJK,
@@ -1204,7 +1213,7 @@ CheckForNecessarySuperpositions:=Block[{i,temp,quartics,res},
 quartics=Transpose[SA`SSSSlist][[2]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1;
 lA4oneNew={};
 For[i=1,i<=Length[quartics],
-temp=Select[Select[lA4,FreeQ[#,quartics[[i]] /. A_[gen1,___]->A/. A_[gen2,___]->A/. A_[gen3,___]->A]==False&],FreeQcoups[#,DeleteCases[quartics,quartics[[i]]]/. A_[gen1,___]->A/. A_[gen2,___]->A/. A_[gen3,___]->A]=={}&];
+temp=Select[Select[lA4 /.conj[x_]->x,FreeQ[#,quartics[[i]] /. A_[gen1,___]->A/. A_[gen2,___]->A/. A_[gen3,___]->A]==False&],FreeQcoups[#,DeleteCases[quartics,quartics[[i]]]/. A_[gen1,___]->A/. A_[gen2,___]->A/. A_[gen3,___]->A]=={}&];
 If[temp=!={},
 lA4oneNew=Join[lA4oneNew,{temp[[1]]}];,
 res=CheckPairsInsertions[Select[lA4,FreeQ[#,quartics[[i]]]==False&],DeleteCases[quartics,quartics[[i]]],quartics[[i]]];

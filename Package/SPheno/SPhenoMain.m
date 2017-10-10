@@ -531,11 +531,14 @@ WriteString[spheno,"If (SPA_Convention) Call SetRGEScale(1.e3_dp**2) \n \n"];
 
 
 If[OnlyLowEnergySPheno=!=True,
+If[SupersymmetricModel===True,
 WriteString[spheno,"If (.not.DecoupleAtRenScale) Then \n"];
 MakeCall["Sugra",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
 WriteString[spheno,"Else \n"];
 MakeCall["Match_and_Run",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
 WriteString[spheno,"End If \n \n"];,
+MakeCall["Match_and_Run",Join[NewMassParameters,listAllParameters], {"delta"},{"mGut","kont","WriteOut","n_run"},spheno];
+];,
 WriteString[spheno,"If (.Not.UseFixedScale) Then \n"];
 WriteString[spheno," Call SetRGEScale(160._dp**2) \n"];
 WriteString[spheno,"End If\n"];

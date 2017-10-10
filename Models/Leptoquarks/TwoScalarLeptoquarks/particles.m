@@ -129,7 +129,7 @@ ParticleDefinitions[EWSB] = {
      Mass -> {0}, 
      OutputName -> {"Hp","Hm"}, 
      PDG -> {0}, 
-     ElectricCharge -> -1, 
+     ElectricCharge -> 1, 
      Width -> {0}}}, 
 
 {VG,{ 

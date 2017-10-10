@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ----------------------- *)
 (* Young tableaux *)
 (* ----------------------- *)
@@ -161,10 +162,10 @@ tabres=DeleteCases[Intersection[Select[tabres,(Sort[#[[1]],(#2<#1)&]==#[[1]])&]]
 
  (* Print["b  ",tabres];  *)
  For[i=1,i<=Length[tabres],
-(* If[CheckColumnCondition[tabres[[i]]]==True, *)
+(* If[CheckColumnCondition[tabres[[i]]]\[Equal]True, *)
  (* Print[" c  ",tabres[[i]]];   *)
   If[CheckColumnCondition[{T1[[1]],tabres[[i,2]]}]==True,  
-(* If[CheckColumnCondition[{tabtemp[[1]],tabres[[i,2]]}]==True,  *)
+(* If[CheckColumnCondition[{tabtemp[[1]],tabres[[i,2]]}]\[Equal]True,  *)
 res=Join[res,{tabres[[i]]}];
 ];
 i++;]; 
@@ -309,8 +310,8 @@ remaining=Take[fin,{1,i}];
 counts= {{Count[remaining,aa[int]],Count[remaining,aa[int-1]]}};
 (* Print[fin,"  ",i,"  ",counts, "int ",int,"  ",Select[counts,(#[[1]]>#[[2]] )&]=!={}];   *)
 If[Select[counts,(#[[1]]>#[[2]]) &]=!={},allowed=False;];
-(* remaining=Take[fin,{i+1,Length[fin]}] /. aa[j_]:>1/;(j==(int-1)) /. aa[j_Integer]->0;
- previous=Take[fin,{1,i}] /. aa[j_Integer]:>1/;(j==int) /. aa[j_Integer]->0;
+(* remaining=Take[fin,{i+1,Length[fin]}] /. aa[j_]\[RuleDelayed]1/;(j\[Equal](int-1)) /. aa[j_Integer]\[Rule]0;
+ previous=Take[fin,{1,i}] /. aa[j_Integer]\[RuleDelayed]1/;(j\[Equal]int) /. aa[j_Integer]\[Rule]0;
 Print[previous, "  ",remaining, i];
 If[(Plus@@previous)>  (Plus@@remaining) && (Plus@@remaining=!=0),allowed=False; Print[False];];
 i++;]; *)

@@ -37,9 +37,10 @@ betaFuncGauge2LnsNonU1[nr_]:=-gc[nr]*(34/3*SA`Casimir[nr]^2-Sum[(kF*4*SA`Casimir
 GammaSij1L[p1_,p2_]:=2 kF Y2S[p1,p2]-Sum[(3-Xi)SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Delta2[p1,p2];
 GammaSij2L[p1_,p2_]:=1/2 Lam2S[p1,p2]+3/2 Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-3 kF H2ab[p1,p2]-2 kF Hbar2[p1,p2]+10 kF Sum[ Y2FS[p1,p2,nr],{nr,1,Length[Gauge]}]-Delta2[p1,p2] Sum[((35/3-2Xi-1/4Xi^2)SA`Casimir[nr] - 10/3 kF SA`DynkinF[rep,nr] -11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}];
 GammaSijHat1L[p1_,p2_]:=-Delta2[p1,p2]  Sum[ 2 Xi SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}];
-GammaSijHat2L[p1_,p2_]:= 
--2(1+Xi)Xi  Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-
-Delta2[p1,p2] Xi Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]+Delta2[p1,p2]  ExpandTermNS[2Xi Sum[ ThS[nr,p1,pQ,vecB] Y2S[pQ,pR] ThS[nr,pR,p2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]];
+GammaSijHat2L[pp1_,pp2_]:= 
+-2(1+Xi)Xi  Sum[ SA`CasimirRGE[pp1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[pp1,nr],{nr,1,Length[Gauge]}]Delta2[pp1,pp2]-
+Delta2[pp1,pp2] Xi Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[pp1,nr]),{nr,1,Length[Gauge]}]+(* ExpandTermNS[2Xi Sum[Delta2[pp1,pp2] delta2[pp1,pp2]  ThS[nr,pp1,pO,vecB] Y2S[pO,pR] ThS[nr,pR,pp2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]]; *)
+2Xi Sum[Delta2[pp1,pp2] ThS[nr,pp1,pO,vecB] Y2S[pO,pR] ThS[nr,pR,pp2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}];
 
 (* Anomalous dimensions of fermions: eq. (28) + (29) *)
 GammaFij1L[p1_,p2_]:=ExpandTermNS[1/2 Yijk[p1,pQ,pR] Conj[Yijk[pQ,p2,pR]] MakeDeltaNS[p1,gen1] + Sum[Xi SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] MakeDeltaNS[p1,{}]];
@@ -99,21 +100,21 @@ Return[ExpandTermNS[Plus@@line]];
 ];
 
 (* Beta functions for bilinear fermion couplings: eq. (62)+(63) *)
-betaFuncMFij1Lns[p1_,p2_]:=ExpandTermNS[1/2(Y2FC[p1,pP] Muij[pP,p2]+Muij[p1,pP]Y2F[pP,p2]) + 2 Yijk[p1,pP,pB] Conj[Muij[pP,pQ]] Yijk[pQ,p2,pB]+kF Yijk[p1,p2,pB](Conj[Muij[pQ,pR]] Yijk[pR,pQ,pB]+Muij[pQ,pR] Conj[Yijk[pR,pQ,pB]]) - 3 Sum[ (SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Muij[p1,p2],{nr,1,Length[Gauge]}]];
+betaFuncMFij1Lns[p1_,p2_]:=ExpandTermNS[1/2(Y2FC[p1,pP] Muij[pP,p2]+Muij[p1,pP]Y2F[pP,p2]) + 2 Yijk[p1,pP,pB] Conj[Muij[pP,pQ]] Yijk[pQ,p2,pB]+0 kF Yijk[p1,p2,pB](Conj[Muij[pQ,pR]] Yijk[pR,pQ,pB]+Muij[pQ,pR] Conj[Yijk[pR,pQ,pB]]) (* not correct in paper! *)- 3 Sum[ (SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Muij[p1,p2],{nr,1,Length[Gauge]}]];
 betaFuncMFij2Lns[p1_,p2_]:=Block[{line=Table[0,{17}]},
 line[[1]] = +2 Yijk[p1,pO,pC] Conj[Yijk[pO,pQ,pB]] Muij[pQ,pR](Conj[Yijk[pR,pX,pC]] Yijk[pX,p2,pB]-Conj[Yijk[pR,pX,pB]] Yijk[pX,p2,pC]) ;
 line[[2]]=-Yijk[p1,pO,pX] (Y2F[pO,pP] Conj[Muij[pP,pQ]]+Conj[Muij[pO,pP]] Y2FC[pP,pQ]) Yijk[pQ,p2,pX] ;
 line[[3]]= -1/8 (Yijk[p1,pO,pX] Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,p2] + Muij[p1,pO] Conj[Yijk[pO,pP,pX]] Y2FC[pP,pR] Yijk[pR,p2,pX]) ;
 line[[4]] =-2 kF Yijk[p1,pO,pB] Conj[Yijk[pO,pP,pC]] Yijk[pP,p2,pB](Conj[Muij[pX,pY]] Yijk[pY,pX,pC]+Muij[pX,pY] Conj[Yijk[pX,pY,pC]]) ;
 line[[5]]=-3/2 kF Y2S[pX,pY] (Yijk[p1,pO,pX]Conj[Yijk[pO,pP,pY]] Muij[pP,p2]+Muij[p1,pO] Conj[Yijk[pO,pP,pY]] Yijk[pP,p2,pX]) ;
-line[[6]]=-3/2 kF Yijk[p1,p2,pX] (Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,pO] + Conj[Muij[pO,pP]] Y2FC[pP,pQ] Yijk[pQ,pO,pX]) ;
-line[[7]] = - kF Yijk[p1,p2,pB] (Yijk[pO,pP,pC] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pC] Conj[Yijk[pR,pO,pB]] + Conj[Yijk[pO,pP,pC]] Muij[pP,pQ] Conj[Yijk[pQ,pR,pC]] Yijk[pR,pO,pB]) ;
-line[[8]]=-2 Aijk[pB,pC,pD] Yijk[p1,pP,pB] Conj[Yijk[pP,pQ,pC]] Yijk[pQ,p2,pD] + 1/12 Aijk[pC,pD,pE] Lijkl[pB,pC,pD,pE] Yijk[p1,p2,pB];
+line[[6]]=0 (* not correct in paper: -3/2 kF Yijk[p1,p2,pX] (Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,pO] + Conj[Muij[pO,pP]] Y2FC[pP,pQ] Yijk[pQ,pO,pX]) *);
+line[[7]] = 0 (*not correct in paper:  - kF Yijk[p1,p2,pB] (Yijk[pO,pP,pC] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pC] Conj[Yijk[pR,pO,pB]] + Conj[Yijk[pO,pP,pC]] Muij[pP,pQ] Conj[Yijk[pQ,pR,pC]] Yijk[pR,pO,pB])*) ;
+line[[8]]=-2 Aijk[pB,pC,pD] Yijk[p1,pP,pB] Conj[Yijk[pP,pQ,pC]] Yijk[pQ,p2,pD] +0 (* not correct in paper: 1/12 Aijk[pC,pD,pE] Lijkl[pB,pC,pD,pE] Yijk[p1,p2,pB] *);
 line[[9]]=Sum[( 3 (SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr]) Yijk[p1,pO,pB] Conj[Muij[pO,pP]] Yijk[pP,p2,pB] + 5 Yijk[p1,pO,pB](SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr])Conj[Muij[pO,pP]] Yijk[pP,p2,pB] ) ,{nr,1,Length[Gauge]}] ;
 line[[10]]=-7/4 Sum[(SA`CasimirRGE[p1,nr] Y2FC[p1,pO] Muij[pO,p2] + Muij[p1,pO] Y2F[pO,p2] SA`CasimirRGE[p2,nr]),{nr,1,Length[Gauge]}] ;
 line[[11]]=-1/4 Sum[ (Yijk[p1,pO,pB] SA`CasimirRGE[pO,nr] Conj[Yijk[pO,pP,pB]] Muij[pP,p2]+Muij[p1,pO] Conj[Yijk[pO,pP,pB]] SA`CasimirRGE[pP,nr] Yijk[pP,p2,pB]),{nr,1,Length[Gauge]}] ;
 line[[12]]=6 Sum[ (conj[tA[nr,p1,pO,vecB]] Muij[pO,pP] Conj[Yijk[pP,pQ,pB]] conj[tA[nr,pQ,pR,vecB]] Yijk[pR,p2,pB]+Yijk[p1,pO,pB] tA[nr,pO,pP,vecB] Conj[Yijk[pP,pQ,pB]] Muij[pQ,pR] tA[nr,pR,p2,vecB]) sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]], {nr,1,Length[Gauge]}]  ;
-line[[13]]=5 kF Sum[ Yijk[p1,p2,pB] SA`CasimirRGE[pO,nr](Muij[pO,pP] Conj[Yijk[pP,pO,pB]]+Yijk[pO,pP,pB] Conj[Muij[pP,pO]]),{nr,1,Length[Gauge]}]  ;
+line[[13]]=0 (* not correct in paper: 5 kF Sum[ Yijk[p1,p2,pB] SA`CasimirRGE[pO,nr](Muij[pO,pP] Conj[Yijk[pP,pO,pB]]+Yijk[pO,pP,pB] Conj[Muij[pP,pO]]),{nr,1,Length[Gauge]}]  *);
 line[[14]]=(6 Sum[ SA`CasimirRGE[pB,nr] Yijk[p1,pO,pB] Conj[Muij[pO,pP]] Yijk[pP,p2,pB],{nr,1,Length[Gauge]}]-3/2Sum[Sum[ (SA`CasimirRGE[p1,nr] SA`CasimirRGE[p1,nr2]+SA`CasimirRGE[p2,nr] SA`CasimirRGE[p2,nr2]) Muij[p1,p2],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}] ) ;
 line[[15]]=9/2 Sum[SA`CasimirRGE[pB,nr](Yijk[p1,pP,pB] Conj[Yijk[pP,pQ,pB]] Muij[pQ,p2] + Muij[p1,pP] Conj[Yijk[pP,pQ,pB]] Yijk[pQ,p2,pB]),{nr,1,Length[Gauge]}] ;
 line[[16]]= Sum[(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Muij[p1,p2],{nr,1,Length[Gauge]}];

@@ -279,14 +279,7 @@ i++;];
 WriteString[sphenoCoup,"End if \n"];
 
 
-WriteString[sphenoCoup,"If (PoleMassesInLoops) Then \n"];
-WriteString[sphenoCoup,"! --- Use the pole masses --- \n"];
-For[i=1,i<=Length[NewMassParameters],
-If[Length[getDimSPheno[NewMassParameters[[i]]]]==1,
-WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
-];
-i++;];
-WriteString[sphenoCoup,"End if \n"];
+
 
 If[(particle===HiggsBoson || particle == PseudoScalar) && suffix ==="2B",
 SPhenoCouplings= Select[SPhenoCouplingsAll,(FreeQ[couplings,#[[2,2]]]==False)&];
@@ -336,6 +329,24 @@ WriteString[sphenoCoup, "cplHiggsZZvirt = " <>ToString[getSPhenoCoupling[C[Higgs
 ];
 ];
 
+If[( particle===PseudoScalar),
+WriteHiggsBoundsRatiosPseudoScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
+];
+
+If[(particle===HiggsBoson),
+WriteHiggsBoundsRatiosScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
+];
+
+
+WriteString[sphenoCoup,"If (PoleMassesInLoops) Then \n"];
+WriteString[sphenoCoup,"! --- Use the pole masses --- \n"];
+For[i=1,i<=Length[NewMassParameters],
+If[Length[getDimSPheno[NewMassParameters[[i]]]]==1,
+WriteString[sphenoCoup,SPhenoForm[NewMassParameters[[i]]] <>" = "<> SPhenoForm[NewMassParameters[[i]]]<>"input \n"];
+];
+i++;];
+WriteString[sphenoCoup,"End if \n"];
+
 If[particle===HiggsBoson && suffix ==="2B",
 WriteScalarHiggsCouplingsRatio[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
@@ -376,7 +387,6 @@ WriteString[sphenoCoup,"ratioGG"<>addgen<>" = Abs(cplHiggsGG"<>addgen<>"/(coup*A
 
 
 
-WriteHiggsBoundsRatiosScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 
 
 WriteString[sphenoCoup,"If (i1.eq.1) Then \n"];
@@ -450,8 +460,6 @@ WriteString[sphenoCoup, "\n"];
 
 
 
-
-WriteHiggsBoundsRatiosPseudoScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 
 
 WriteString[sphenoCoup, "If (i1.eq."<>ToString[getGenSPhenoStart[PseudoScalar]]<>") Then \n"];

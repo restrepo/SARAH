@@ -9,6 +9,7 @@ Model`Date = "2014-11-06";
 (* 2013-06-24: using new name conventions (without inital "S" and "F" for scalar and matter fields) *)
 (* 2013-09-01: changing to new conventions for FermionFields/MatterFields *)
 (* 2014-11-06: Changed sign in Lagrangian to fit standard conventions *)
+(* 2016-05-03: Changed sign of Yu *)
 
 
 
@@ -50,7 +51,7 @@ DEFINITION[GaugeES][LagrangianInput]= {
 
 
 LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
-LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu u.q.H);
 
 
 

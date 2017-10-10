@@ -102,7 +102,7 @@ LagNoHC = -(-mu2 conj[H].H + MS2 conj[s].s
             + lamHS conj[H].H.conj[s].s 
             );
 
-LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q 
+LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q 
 	  + kapHS conj[H].H.s
           + 1/3 kapS conj[s].s.s 
           + YF1 s.F1L.F1R + m1F F1L.F1R 

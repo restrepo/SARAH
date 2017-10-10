@@ -433,8 +433,21 @@
 !       If (wert.Eq.1) l_RP_Pythia = .True.      
 ! 
 !      Case(97) ! for Pythia input
-!       If (wert.Eq.1) PrintPartialContributions = .True.     
+!       If (wert.Eq.1) PrintPartialContributions = .True. 
 
+      case(150) ! use 1l2lshifts
+       if (wert.ne.1._dp) then
+         include1l2lshift=.false.
+       else
+         include1l2lshift=.true.
+       end if    
+
+      case(151)
+        if (wert.ne.1._dp) Then
+         NewGBC=.false.
+        else
+         NewGBC=.true.
+       end if
 
      Case(510)
       If (wert.Ne.1._dp) Then

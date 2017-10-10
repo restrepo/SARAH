@@ -416,7 +416,6 @@ name=Gauge[[nr,3]];
 complete=cov+con;
 (* dimGauge=Gauge[[gaugeNr,2]]; *)
 temp=Plus@@Table[(Hold[TA[DIMGAUGE,genf[lor],IndexName[GAUGE,NR]/.subGC[p1],IndexName[GAUGE,NR]/.subGC[p2]]]/.NR->i/.GAUGE->name/.DIMGAUGE->Gauge[[nr,2]])Product[If[j==i,1,(Hold[Delta[IndexName[GAUGE,NR]/.subGC[p1],IndexName[GAUGE,NR]/.subGC[p2]]]/.NR->j/.GAUGE->name)],{j,1,complete}],{i,1,cov}]-Plus@@Table[(Hold[TA[DIMGAUGE,genf[lor],IndexName[GAUGE,NR]/.subGC[p2],IndexName[GAUGE,NR]/.subGC[p1]]]/.NR->i/.GAUGE->name/.DIMGAUGE->Gauge[[nr,2]])Product[If[j==i,1,(Hold[Delta[IndexName[GAUGE,NR]/.subGC[p1],IndexName[GAUGE,NR]/.subGC[p2]]]/.NR->j/.GAUGE->name)],{j,1,complete}],{i,cov+1,complete}];
-
 Generator[Gauge[[nr,2]],dyn,Gauge[[nr,3]]][lor_,p1_,p2_]=temp;
 ];
 
@@ -432,7 +431,7 @@ group[[1]]^2-1, MakeGenerator[nr,dyn,1,1];,
 group[[1]],MakeGenerator[nr,dyn,1,0];,
 -group[[1]],MakeGenerator[nr,dyn,0,1];,
 _,
-ytab=TestDim[{DimR[SusynoForm[group],dyn],dyn},group];
+ytab=TestDim[{DimR[SusynoForm[group],dyn],dyn},group[[1]]];
 MakeGenerator[nr,dyn,ytab[[2]],ytab[[3]]];
 ];
 ];

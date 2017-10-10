@@ -265,6 +265,7 @@ ParticleDefinitions[EWSB] = {
                  Width -> {0}, 
                  Mass -> {0},
                  FeynArtsNr -> 7,
+                 ElectricCharge->+1,                 
                  LaTeX -> {"H^+","H^-"},
                  OutputName -> {"Hp","Hm"}
                  }},      

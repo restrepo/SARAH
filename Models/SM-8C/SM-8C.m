@@ -50,7 +50,7 @@ DEFINITION[GaugeES][Additional]= {
 LagNoHC = -(mu2 conj[H].H + 1/2 MS s.s - 1/4 LS s.s.s.s - LHc conj[H].H.conj[oc].oc - 1/2 L conj[H].H.conj[H].H \
     - 1/2 LHs conj[H].H.s.s - 1/2 LCs conj[oc].oc.s.s - eS s.s.s - eC conj[oc].oc.s - eH conj[H].H.s);
 
-LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q);
 			  		  
 
 (* Gauge Sector *)

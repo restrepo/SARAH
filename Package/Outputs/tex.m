@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 
 
@@ -107,6 +108,8 @@ Print["Writing RGEs to TeX-File"];
 
 If[Length[Gij3I]>2,
 GijW=Gij3I;
+GFijW=GFij3I;
+GSijW=GSij3I;
 TraceAbbrW = TraceAbbr3I;
 BetaYijkW = BetaYijk3I;
 BetaMuijW = BetaMuij3I;
@@ -124,8 +127,8 @@ BetaLijklW = BetaLijkl3I;
 BetaRijkW=BetaRijk3I;
 BetaMFijW=BetaMFij3I;,
 GijW=Gij;
-GFijW=GFij3I;
-GSijW=GSij3I;
+GFijW=GFij;
+GSijW=GSij;
 TraceAbbrW = TraceAbbr;
 BetaLijklW = BetaLijkl;
 BetaYijkW = BetaYijk;
@@ -154,7 +157,7 @@ WriteString[RGEsFile,"\\subsection{Anomalous Dimensions for fermions}\n"];
 WriteTeXGammaFunction[GFijW];
 ];
 If[Length[GSij]>0,
-WriteString[RGEsFile,"\\subsection{Anomalous Dimensions for scalars}\n"];
+WriteString[RGEsFile,"\\subsection{Anomalous Dimensions for real components of scalars}\n"];
 WriteTeXGammaFunction[GSijW];
 ];
 ];
@@ -288,6 +291,7 @@ tempList = list;
 
 WriteString[RGEsFile,"{\\allowdisplaybreaks \\begin{align} \n"];
 clines=1;
+If[SupersymmetricModel===True,
 For[i=1,i<=Length[tempList],
 If[getBlankSF[tempList[[i,1,1]]]===getBlankSF[tempList[[i,1,2]]],
 WriteString[RGEsFile,"\\gamma_{"<>TeXOutputRGEs[SF[getSF[getBlankSF[tempList[[i,1,1]]]]]]<>"}^{(1)} & =  \n"];,
@@ -302,9 +306,27 @@ WriteString[RGEsFile,"\\gamma_{"<>TeXOutputRGEs[SF[getSF[getBlankSF[tempList[[i,
 If[i<Length[tempList],
 WriteString[RGEsFile,TeXOutputRGEs[tempList[[i,3]] /. Kronecker[i1,i2]->UnitM /. a_[i1,i2]->a] <>"\\\\ \n"];,
 WriteString[RGEsFile,TeXOutputRGEs[tempList[[i,3]] /. Kronecker[i1,i2]->UnitM /. a_[i1,i2]->a] <>"\n"];
-
+];
+i++;];,
+For[i=1,i<=Length[tempList],
+If[getBlankSF[tempList[[i,1,1]]]===getBlankSF[tempList[[i,1,2]]],
+WriteString[RGEsFile,"\\gamma_{"<>TeXOutputRGEs[getBlankSF[tempList[[i,1,1]]]]<>"}^{(1)} & =  \n"];,
+WriteString[RGEsFile,"\\gamma_{"<>TeXOutputRGEs[getBlankSF[tempList[[i,1,1]]]]<>","<>TeXOutputRGEs[getBlankSF[tempList[[i,1,2]]]]<>"}^{(1)} & =  \n"];
+];
+WriteString[RGEsFile,TeXOutputRGEs[tempList[[i,2]] /. Kronecker[i1,i2]->UnitM /. a_[i1,i2]->a]];
+WriteString[RGEsFile,"\\\\ \n"];
+If[getBlankSF[tempList[[i,1,1]]]===getBlankSF[tempList[[i,1,2]]],
+WriteString[RGEsFile,"\\gamma_{"<>TeXOutputRGEs[getBlankSF[tempList[[i,1,1]]]]<>"}^{(2)} & =  \n"];,
+WriteString[RGEsFile,"\\gamma_{"<>TeXOutputRGEs[getBlankSF[tempList[[i,1,1]]]]<>","<>TeXOutputRGEs[getBlankSF[tempList[[i,1,2]]]]<>"}^{(2)} & =  \n"];
+];
+If[i<Length[tempList],
+WriteString[RGEsFile,TeXOutputRGEs[tempList[[i,3]] /. Kronecker[i1,i2]->UnitM /. a_[i1,i2]->a] <>"\\\\ \n"];,
+WriteString[RGEsFile,TeXOutputRGEs[tempList[[i,3]] /. Kronecker[i1,i2]->UnitM /. a_[i1,i2]->a] <>"\n"];
 ];
 i++;];
+
+
+];
  WriteString[RGEsFile,"\\end{align} } \n"];
 ];
 
@@ -806,6 +828,7 @@ Close[makeFile];
 ];
 
 
+(* ::Input::Initialization:: *)
 WriteParticleList:=Block[{},
 
 Print["Writing Particle Content to TeX-File"];
@@ -1095,6 +1118,7 @@ m++;];
 
 
 
+(* ::Input::Initialization:: *)
 WriteMatrices:=Block[{i,j,k,m,MMatrizes,mixings,mixedNames,rotG,sign,mixES,n1,n2},
 
 Print["Writing Mass Matrices to TeX-File"];

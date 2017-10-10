@@ -53,7 +53,7 @@ LagNoHC = -(mu2 conj[H].H  + 1/2 MT conj[trip].trip  - 1/2 LT  epsTensor[lef1b,l
 - 1/2 LT2  epsTensor[lef1b,lef2] epsTensor[lef2b,lef1] epsTensor[lef3b,lef4] epsTensor[lef4b,lef3] trip.conj[trip].trip.conj[trip] \
   - 1/2 LH conj[H].H.conj[H].H - 1/2 LHT conj[H].H.conj[trip].trip);
 
-LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q + KHT conj[H].trip.H);
+LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q + KHT conj[H].trip.H);
 
 ContractionRGE[LT]=Delta[lef1,lef2] Delta[lef3, lef4];
 ContractionRGE[LT2]=(Delta[lef1, lef2] Delta[lef3, lef4] - Delta[lef1, lef3] Delta[lef2, lef4] +  Delta[lef1, lef4] Delta[lef2, lef3]);

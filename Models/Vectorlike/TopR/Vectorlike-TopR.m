@@ -49,7 +49,7 @@ DEFINITION[GaugeES][LagrangianInput]= {
 
 
 LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
-LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q  + Yt H.t1.q + mT t1.t2 + muT u.t2 );
+LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q  + Yt H.t1.q + mT t1.t2 + muT u.t2 );
 
 
 

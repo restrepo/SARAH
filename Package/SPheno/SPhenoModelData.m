@@ -829,6 +829,8 @@ WriteString[ModelData,"Logical :: WriteGUTvalues \n"];
 WriteString[ModelData,"Logical :: TwoLoopSafeMode \n"];
 WriteString[ModelData,"Integer :: TwoLoopMethod = 3 \n"];
 WriteString[ModelData,"Logical :: PoleMassesInLoops = .True. \n"];
+WriteString[ModelData,"Logical ::  include1l2lshift = .false. \n"];
+WriteString[ModelData,"Logical ::  NewGBC = .true. \n"];
 WriteString[ModelData,"Logical :: WriteTreeLevelTadpoleParameters = .false. \n"];
 WriteString[ModelData,"Logical :: IncludeDeltaVB = .True. \n"];
 WriteString[ModelData,"Logical :: IncludeBSMdeltaVB = .True. \n"];

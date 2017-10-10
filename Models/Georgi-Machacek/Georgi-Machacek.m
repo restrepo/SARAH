@@ -58,7 +58,7 @@ LagNoHC = -(mu2 conj[H].H  + MXi conj[xi].xi  + 1/2 Meta conj[eta].eta  + 4 Lamb
              Expand[ (epsTensor[lef1b, lef2] epsTensor[lef2b, lef1] epsTensor[lef3b,lef4] epsTensor[lef4b, lef3]) (Lambda4a conj[eta].eta.conj[eta].eta + 4 Lambda4b conj[xi].xi.conj[xi].xi + 4 Lambda4c conj[xi].xi.conj[eta].eta)]  \
              -Lambda5a (Delta[lef1, lef3b] Delta[lef2, lef4b] Delta[lef3, lef4] -  Delta[lef1, lef4] Delta[lef2, lef3] Delta[lef3b, lef4b]) conj[H].H.conj[xi].xi + \
              -M1a (- 1/Sqrt[2] epsTensor[lef1, lef2b] epsTensor[lef2, lef3] ) conj[H].eta.H );
-LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q \
+LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q \
          - Lambda5b (-Sqrt[2] epsTensor[lef1, lef3] epsTensor[lef2, lef4] epsTensor[lef3b, lef4b]) H.H.xi.eta \
          - M1b (- 1/2 epsTensor[lef1, lef2] Delta[lef2b, lef3] ) H.xi.H \
          - M2 (3 Sqrt[2] (- Delta[lef1, lef2] Delta[lef2b, lef3] Delta[lef1b,lef3b])) conj[xi].xi.eta);

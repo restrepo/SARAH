@@ -2068,7 +2068,7 @@ WriteCompleteVertex=False;
 ];
 j++;];,
 WriteCompleteVertex=False;
-For[j=1,j<=Length[NoSplit],
+For[j=1,j<=Length[NoSplitWith],
 If[FreeQ[vlist[[i,1]],NoSplitWith[[j]]]==False,
 WriteCompleteVertex=True;
 ];

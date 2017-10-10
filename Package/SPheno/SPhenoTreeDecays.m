@@ -536,6 +536,7 @@ factor = 2*factor;
 (* If[Head[factor]===Integer,factor=SPhenoForm[1* factor];,factor=SPhenoForm[factor];]; *)
 
 factor=SPhenoForm[factor];,
+factor="0._dp";
 WriteString[sphenoDecay,"gam = 0._dp \n"];
 ];
 
@@ -765,9 +766,10 @@ WriteString[sphenoDecay,"End Do \n \n"];
 
 i++;];
 
+(*
 Switch[particle,
 HiggsBoson,
-	If[getGenSPheno[HiggsBoson]==1,
+	If[getGenSPheno[HiggsBoson]\[Equal]1,
 	WriteString[sphenoDecay, "  BRHHH(1,1) = BRHHH(1,1)/gT \n"];,
 	WriteString[sphenoDecay, "  BRHHH(i1,:) = BRHHH(i1,:)/gT(i1) \n"];
 	WriteString[sphenoDecay, "  BRHAA(i1,:) = BRHAA(i1,:)/gT(i1) \n"];
@@ -776,6 +778,7 @@ PseudoScalar,
 	WriteString[sphenoDecay, "  BRAHH(i1,:) = BRAHH(i1,:)/gT(i1) \n"];
 	WriteString[sphenoDecay, "  BRAAA(i1,:) = BRAAA(i1,:)/gT(i1) \n"];
 ];
+*)
 
 If[getGenSPheno[particle]>1,
 WriteString[sphenoDecay, "If ((Present(BR)).And.(gT(i1).Eq.0)) Then \n"];

@@ -50,7 +50,8 @@ ParticleDefinitions[GaugeES] = {
                  Width -> {0}, 
                  Mass -> {0},
                  LaTeX -> {"H^+","H^-"},
-                 OutputName -> {"Hp","Hm"}
+                 OutputName -> {"Hp","Hm"},
+                 ElectricCharge->1
                  }},                                                   
       
       {VP,   { Description -> "Photon"}}, 

@@ -11,12 +11,12 @@ Real(dp) ::  GF
 
 c7NP = (CC7(3,2) - CC7SM(3,2))
 c7p = CC7p(3,2)
-c9NP = 0.5_dp*(OddllVLL(3,2,1,1)+OddllVLR(3,2,1,1) - &
-            & (OddllVLLSM(3,2,1,1)+OddllVLRSM(3,2,1,1)))
-c9p =  0.5_dp*(OddllVRR(3,2,1,1)+OddllVRL(3,2,1,1))
-c10NP = -0.5_dp*(OddllVLL(3,2,1,1)-OddllVLR(3,2,1,1) - &
-            &  (OddllVLLSM(3,2,1,1)-OddllVLRSM(3,2,1,1)))
-c10p = 0.5_dp*(OddllVRR(3,2,1,1)-OddllVRL(3,2,1,1))
+c9NP = 0.5_dp*(OddllVLL(3,2,2,2)+OddllVLR(3,2,2,2) - &
+            & (OddllVLLSM(3,2,2,2)+OddllVLRSM(3,2,2,2)))
+c9p =  0.5_dp*(OddllVRR(3,2,2,2)+OddllVRL(3,2,2,2))
+c10NP = -0.5_dp*(OddllVLL(3,2,2,2)-OddllVLR(3,2,2,2) - &
+            &  (OddllVLLSM(3,2,2,2)-OddllVLRSM(3,2,2,2)))
+c10p = 0.5_dp*(OddllVRR(3,2,2,2)-OddllVRL(3,2,2,2))
 
 
 ! running GF

@@ -493,58 +493,199 @@ Return[fac];
 DeleteInds[x_]:=DeleteCases[DeleteCases[DeleteCases[DeleteCases[x,gt1,2],gt2,2],gt3,2],gt4,2];
 
 getChargeFactor [list_,ind_]:=getChargeFactor [list,ind,1];
+getChargeFactor [list_,ind_,constraint_]:=Catch[Block[{i,j,k,l,temp,ps,adjointvertex,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={}},allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
+constr=constraint/.CF[a_]->1;
+intfields=Select[list[[2]],(FreeQ[#,Internal]==False||FreeQ[#,Propagator]==False)&];
+extfields=Select[list[[2]],(FreeQ[#,External]==False)&];
+ps=Select[{AntiField[External[1]],External[2],External[3],External[4]}/.extfields,(FreeQ[#,External]==True)&];
+For[i=1,i<=Length[list[[1]]],pos=Position[VerticesInv[All],list[[1,i]]/.Cp->C];
+If[pos==={},Vertex::DoesNotExist="The Vertex `` does not exist! Please contact the author. ";
+Message[Vertex::DoesNotExist,list[[1,i]]];
+Interrupt[];,pos=pos[[1,1]];];
+tordered=VerticesOrg[All][[pos]]/.A_[{b__}]->A;
+coups=Join[coups,{VerticesVal[All][[pos]][[1]]}];
+indreptemp={};
+For[j=1,j<=Length[ind[[i]]],pos=DeleteCases[Position[tordered,ind[[i,j,1]]],{a_,b_}][[1,1]];
+tordered[[pos]]=XXX;
+indreptemp=Join[indreptemp,Reverse/@subIndFinal[pos,pos]/.subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];
+If[StringTake[ToString[ind[[i,j,2]]],2]==="ex"||StringTake[ToString[ind[[i,j,2]]],1]==="a",fixvar=Join[fixvar,subGC[pos]/.(a_->b_)->b/.subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];,sumvar=Join[sumvar,subGC[pos]/.(a_->b_)->b/.subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];];
+j++;];
+indrep=Join[indrep,{indreptemp}];
+i++;];
+sumvarSafe=sumvar;
+(*allind is the list of index types, i.e unbroken gauge groups *)
+For[i=1,i<=Length[allind],
+chargepart={};
+(*constr=constraint/.indrep[[j]];*)For[j=1,j<=Length[coups],res=ExtractStructure[coups[[j]]/.Lam[a__]->LamHlf[a]2,allind[[i]]]/.LamHlf[a__]->Lam[a]/2;
+If[Head[constraint]===CF&&Length[res]>1,chargepart=Join[chargepart,{res[[constraint[[1]],1]]/.indrep[[j]]}];,chargepart=Join[chargepart,{res[[1,1]]/.indrep[[j]]}];
+];
+j++;
+];(*end for[j=1*)
+constr=constraint/.CF[a_]->1/.{in1->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in11"],in2->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in21"],in3->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in31"],in4->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in41"],ex1->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex11"],ex2->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex21"],ex3->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex31"],ex4->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex41"]};
+cfac=constr*Times@@chargepart//.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}];
+cfac=cfac/.{CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2};
+norm=1;
+fixvar=Intersection[Select[fixvar,(FreeQ[cfac,#]==False)&]];
+sumvar=Intersection[Select[sumvarSafe,(FreeQ[cfac,#]==False)&]];
+subfixvar={};
+cfac=cfac/norm/.subfixvar;
+cfacsave=cfac;
+sumvarCount=1;
+
+For[k=1,k<=Length[intfields],cind=getIndizesWI[RE[intfields[[k,2]]]];
+pos=Position[cind,allind[[i]]];
+If[pos=!={},cfac=ReleaseHold[Hold[Sum[cfac,{SUMVAR,1,LIMIT}]]/.SUMVAR->sumvar[[sumvarCount]]/.LIMIT->cind[[pos[[1,1]],2]]];
+sumvarCount++;];
+k++;
+];
+rangext={};
+sumvarCount=1;
+For[k=1,k<=Length[extfields],cind=getIndizesWI[RE[extfields[[k,2]]]];
+pos=Position[cind,allind[[i]]];
+If[pos=!={},rangext=Join[rangext,{{fixvar[[sumvarCount]],cind[[pos[[1,1]],2]]}}];
+sumvarCount++;];
+k++;
+];
+
+If[FreeQ[Gauge,allind[[i]]]===False,
+group=Gauge[[Position[Gauge,allind[[i]]][[1,1]],2]];
+gname=Gauge[[Position[Gauge,allind[[i]]][[1,1]],3]];,group=AuxGauge[[Position[AuxGauge,allind[[i]]][[1,1]],2]];
+gname=AuxGauge[[Position[AuxGauge,allind[[i]]][[1,1]],3]];
+];
+
+adjointvertex=False;
+If[Length[rangext]==3&&Length[ps]==3&&group===SU[3],
+(* here we have three externals, and all three are charged: check to see if we have an adjoint vertex *)
+If[Transpose[rangext][[2]]=={8,8,8},
+(*Special measures need to be taken for three-adjoint couplings *)
+adjointvertex=True;
+If[Length[Intersection[ps]]==3,
+If[FreeQ[getType/@{ps[[2]],ps[[3]]},V],
+Print["Triple adjoint colour structure not supported!",ps];
+Throw[0];
+,
+(* There's a gauge boson present \[Rule] assume that only f^abc structure is allowed*)
+Print["Warning: triple adjoint colour structure: ",ps,", assuming antisymmetric."];
+k=1;
+sub={{rangext[[1,1]]->1,rangext[[2,1]]->2,rangext[[3,1]]->3}}; (* Project onto -I f[1,2,3]=I/2 *)
+norm=I/2;
+];
+,
+k=1;
+If[FreeQ[getType/@ps,F],
+(* scalars or gauge bosons *)
+sub={{rangext[[1,1]]->1,rangext[[2,1]]->1,rangext[[3,1]]->8}}; (* yes that's right we project onto d[1,1,8]=1/2*)
+norm=1/2; 
+,
+(* fermions in final state \[Rule] antisymmetric so 1,2,3*)
+sub={{rangext[[1,1]]->1,rangext[[2,1]]->2,rangext[[3,1]]->3}}; (* Project onto -I f[1,2,3]=I/2 *)
+norm=I/2;
+];
+res=(cfac/.sub[[1]]);
+fac=res*fac/norm;
+i++;
+Continue[]; (* hopefully breaks to the next gauge group *)
+
+];
+];
+];
+
+
+rangextSave=rangext;
+If[adjointvertex==False,
+rangext=Table[#[[1]]->l,{l,1,#[[2]]}]&/@rangext;
+Switch[Length[rangext],
+0,
+sub={{}};,
+2,
+sub=Flatten[Outer[List,rangext[[1]],rangext[[2]]],1];,
+3,
+sub=Flatten[Outer[List,rangext[[1]],rangext[[2]],rangext[[3]]],2];,
+4,
+sub=Flatten[Outer[List,rangext[[1]],rangext[[2]],rangext[[3]],rangext[[4]]],3];
+];
+];
+(*sub is a set of all possible values to send the external indices to; we try each one until we get a non-zero result. *)
+res=0;
+k=0;
+
+While[res===0&&k<Length[sub],k++;
+res=cfac/.sub[[k]];
+];
+If[FreeQ[extfields,External[3]],
+norm=1;
+,
+If[getType[External[3]/.extfields]===V&&SA`DynL[External[3]/.extfields,allind[[i]]]=!={0},
+If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/.extfields],norm=1;,norm=Generator[group,SA`DynL[RE[extfields[[2,2]]],gname]]@@fixvar/.Lam[a_,b_,c_]->Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]->A[SU[n],b][c,a,b]/.sub[[k]];
+If[norm===0,norm=1;];];
+,
+
+norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],gname],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]]/.{CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]};
+];
+];
+fac=res*fac/norm;
+If[norm===0,Print[res];Interrupt[];];
+(*If[norm===0,Return[0];];*)
+i++;
+];
+Throw[fac];
+];
+]; (* end catch *)
+
+
+(*
 getChargeFactor [list_,ind_,constraint_]:=Block[{i,j,k,temp,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={}},
 allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
-constr=constraint /. CF[a_]->1;
-For[i=1,i<=Length[list[[1]]],
-pos=Position[VerticesInv[All],list[[1,i]] /. Cp->C];
+constr=constraint /. CF[a_]\[Rule]1;
+For[i=1,i\[LessEqual]Length[list[[1]]],
+pos=Position[VerticesInv[All],list[[1,i]] /. Cp\[Rule]C];
 If[pos==={},
 Vertex::DoesNotExist="The Vertex `` does not exit! Please contact the author. ";
 Message[Vertex::DoesNotExist,list[[1,i]]];
 Interrupt[];,
 pos=pos[[1,1]];
 ];
-tordered=VerticesOrg[All][[pos]] /. A_[{b__}]->A;
+tordered=VerticesOrg[All][[pos]] /. A_[{b__}]\[Rule]A;
 coups=Join[coups,{VerticesVal[All][[pos]][[1]]}];
 indreptemp={};
-For[j=1,j<=Length[ind[[i]]],
+For[j=1,j\[LessEqual]Length[ind[[i]]],
 pos=DeleteCases[Position[tordered,ind[[i,j,1]]],{a_,b_}][[1,1]];
 tordered[[pos]]=XXX;
 indreptemp=Join[indreptemp,Reverse/@subIndFinal[pos,pos] /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];
 If[StringTake[ToString[ind[[i,j,2]]],2]==="ex" || StringTake[ToString[ind[[i,j,2]]],1]==="a",
-fixvar = Join[fixvar,subGC[pos] /. (a_->b_)->b /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];,
-sumvar = Join[sumvar,subGC[pos] /. (a_->b_)->b /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];
+fixvar = Join[fixvar,subGC[pos] /. (a_\[Rule]b_)\[Rule]b /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];,
+sumvar = Join[sumvar,subGC[pos] /. (a_\[Rule]b_)\[Rule]b /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];
 ];
 j++;];
 indrep=Join[indrep,{indreptemp}];
 i++;];
 sumvarSafe=sumvar;
 
-For[i=1,i<=Length[allind],
+For[i=1,i\[LessEqual]Length[allind],
 chargepart= {};
 (* constr=constraint/. indrep[[j]]; *)
-For[j=1,j<=Length[coups],
-res=ExtractStructure[coups[[j]] /. Lam[a__] ->  LamHlf[a]2,allind[[i]]] /. LamHlf[a__]->Lam[a]/2;
+For[j=1,j\[LessEqual]Length[coups],
+res=ExtractStructure[coups[[j]] /. Lam[a__] \[Rule]  LamHlf[a]2,allind[[i]]] /. LamHlf[a__]\[Rule]Lam[a]/2;
 If[Head[constraint]===CF && Length[res]>1,
 chargepart= Join[chargepart,{res[[constraint[[1]],1]] /. indrep[[j]]}];,
 chargepart= Join[chargepart,{res[[1,1]] /. indrep[[j]]}];
 ];
 j++;];
 
-constr=constraint /. CF[a_]->1/. {in1->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in11"],
-in2->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in21"],
-in3->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in31"],in4->ToExpression[StringTake[ToString[allind[[i]]],1]<>"in41"],ex1->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex11"],ex2->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex21"],ex3->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex31"],ex4->ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex41"]};
-cfac=constr*Times@@chargepart //. sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}];
+constr=constraint /. CF[a_]\[Rule]1/. {in1\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in11"],
+in2\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in21"],
+in3\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in31"],in4\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in41"],ex1\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex11"],ex2\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex21"],ex3\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex31"],ex4\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex41"]};
+cfac=constr*Times@@chargepart //. sum[a_,b_,c_,d_]\[RuleDelayed]Sum[d,{a,b,c}];
 
-cfac=cfac/. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,
-CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,
-CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,
-CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2};
+cfac=cfac/. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]\[Rule]Lam[c,b,a]/2,
+CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]\[Rule]Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]\[Rule]Lam[a,c,b]/2,
+CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]\[Rule]Lam[c,a,b]/2,
+CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]\[Rule]Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]\[Rule]Lam[a,b,c]/2};
 
 norm=1;
 
-fixvar = Intersection[Select[fixvar,(FreeQ[cfac,#]==False)&]];
-sumvar = Intersection[Select[sumvarSafe,(FreeQ[cfac,#]==False)&]];
+fixvar = Intersection[Select[fixvar,(FreeQ[cfac,#]\[Equal]False)&]];
+sumvar = Intersection[Select[sumvarSafe,(FreeQ[cfac,#]\[Equal]False)&]];
 
 
 subfixvar={};
@@ -554,20 +695,20 @@ cfacsave=cfac;
 
 
 sumvarCount=1;
-intfields=Select[list[[2]],(FreeQ[#,Internal]==False || FreeQ[#,Propagator]==False) &];
-extfields=Select[list[[2]],(FreeQ[#,External]==False)&];
-For[k=1,k<=Length[intfields],
+intfields=Select[list[[2]],(FreeQ[#,Internal]\[Equal]False || FreeQ[#,Propagator]\[Equal]False) &];
+extfields=Select[list[[2]],(FreeQ[#,External]\[Equal]False)&];
+For[k=1,k\[LessEqual]Length[intfields],
 cind=getIndizesWI[RE[intfields[[k,2]]]];
 pos=Position[cind,allind[[i]]];
 If[pos=!={},
-cfac = ReleaseHold[Hold[Sum[cfac,{SUMVAR,1,LIMIT}]] /. SUMVAR->sumvar[[sumvarCount]] /. LIMIT->cind[[pos[[1,1]],2]]];
+cfac = ReleaseHold[Hold[Sum[cfac,{SUMVAR,1,LIMIT}]] /. SUMVAR->sumvar[[sumvarCount]] /. LIMIT\[Rule]cind[[pos[[1,1]],2]]];
 sumvarCount++;
 ];
 k++;];
 
 rangext={};
 sumvarCount=1;
-For[k=1,k<=Length[extfields],
+For[k=1,k\[LessEqual]Length[extfields],
 cind=getIndizesWI[RE[extfields[[k,2]]]];
 pos=Position[cind,allind[[i]]];
 If[pos=!={},
@@ -576,7 +717,7 @@ sumvarCount++;
 ];
 k++;];
 rangextSave=rangext;
-rangext=Table[#[[1]]->i,{i,1,#[[2]]}]&/@rangext;
+rangext=Table[#[[1]]\[Rule]i,{i,1,#[[2]]}]&/@rangext;
 
 
 Switch[Length[rangext],
@@ -606,17 +747,17 @@ norm=1;,
 If[getType[External[3]/.extfields]===V && SA`DynL[External[3]/.extfields,allind[[i]]]=!={0},
 If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]] /. extfields],
 norm=1;,
-norm=Generator[(* Gauge[[Position[Gauge,allind[[i]]][[1,1]]]][[2]]*) group,SA`DynL[RE[extfields[[2,2]]],gname(* Position[Gauge,allind[[i]]][[1,1]] *)]]@@fixvar/.Lam[a_,b_,c_]->Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]->A[SU[n],b][c,a,b] /. sub[[k]];
+norm=Generator[(* Gauge[[Position[Gauge,allind[[i]]][[1,1]]]][[2]]*) group,SA`DynL[RE[extfields[[2,2]]],gname(* Position[Gauge,allind[[i]]][[1,1]] *)]]@@fixvar/.Lam[a_,b_,c_]\[Rule]Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]\[Rule]A[SU[n],b][c,a,b] /. sub[[k]];
 If[norm===0,norm=1;];
 ];,
-norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],gname],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]] /. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,
-CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,
-CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,
-CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,
-CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,
-CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
-CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
-CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]}; 
+norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],gname],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]] /. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]\[Rule]Lam[c,b,a]/2,
+CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]\[Rule]Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]\[Rule]Lam[a,c,b]/2,
+CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]\[Rule]Lam[c,a,b]/2,
+CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]\[Rule]Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]\[Rule]Lam[a,b,c]/2,
+CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]\[Rule]1,
+CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]\[Rule]CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
+CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]\[Rule]CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
+CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]\[Rule]CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]}; 
 ];
 ];
 fac = res*fac/norm;
@@ -627,7 +768,7 @@ i++;];
 Return[fac];
 
 ];
-
+*)
 
 
 
@@ -827,35 +968,84 @@ If[Tinv===False,Return[False];];
 Return[True];
 (* Return[CheckConservationGlobal[{p1,p2,p3}/.bar\[Rule]conj]]; *)
 ];
-TwoBodyDecayAllAllowed[p_]:=Block[{res={},i,temp,proc,procTree},
+
+TwoBodyDecayAllAllowed[p_]:=Block[{i,temp,proc,procTree},
+rres={};
 Switch[getType[p],
 F,
-  res=Join[res,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]],Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
-  res=Join[res,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]],Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]]}],CheckChargeConservationDecay[#]===True&]];,
+  rres=Join[rres,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]],Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
+  rres=Join[rres,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]],Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]]}],CheckChargeConservationDecay[#]===True&]];,
 S,
- res=Join[res,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]],Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
-res=Join[res,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]],Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
-res=Join[res,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]],Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
-res=Join[res,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]],Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
+ rres=Join[rres,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]],Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
+rres=Join[rres,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[S]][[1]],conj/@Transpose[PART[S]][[1]]],Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
+rres=Join[rres,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]],Join[Transpose[PART[V]][[1]],conj/@Transpose[PART[V]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
+rres=Join[rres,Select[Tuples[{{AntiField[p]},Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]],Join[Transpose[PART[F]][[1]],bar/@Transpose[PART[F]][[1]]]}],CheckChargeConservationDecay[#]===True&]];
 ];
-temp=Intersection[res];
-res={};
+temp=Intersection[rres];
+rres={};
 For[i=1,i<=Length[temp],
-If[FreeQ[res,{temp[[i,1]],temp[[i,3]],temp[[i,2]]}] && FreeQ[res,{temp[[i,1]],AntiField[temp[[i,2]]],AntiField[temp[[i,3]]]}],
-res=Join[res,{temp[[i]]}];
+If[FreeQ[rres,{temp[[i,1]],temp[[i,3]],temp[[i,2]]}] && FreeQ[rres,{temp[[i,1]],AntiField[temp[[i,2]]],AntiField[temp[[i,3]]]}],
+rres=Join[rres,{temp[[i]]}];
 ];
 i++;];
-res=res/.{a_,b_,Cp[c___]}:>Flatten[{SortFieldExternalDecay[a,b],Cp[c]}];
+rres=rres/.{a_,b_,Cp[c___]}:>Flatten[{SortFieldExternalDecay[a,b],Cp[c]}];
 procTree=TwoBodyDecay[p];
-For[i=1,i<=Length[res],
-If[FreeQ[procTree,{res[[i,2]],res[[i,3]],___}] && FreeQ[procTree,{AntiField[res[[i,2]]],AntiField[res[[i,3]]],___}] && FreeQ[procTree,{res[[i,3]],res[[i,2]],___}] && FreeQ[procTree,{AntiField[res[[i,3]]],AntiField[res[[i,2]]],___}],
-If[Length[GenerateDiagramsDecayVertexCorrections[res[[i,1]],res[[i,2]],res[[i,3]]]]>0,
-procTree=Join[procTree,{{res[[i,2]],res[[i,3]],LOOP,CalculateColorFactorDecay[AntiField[p],res[[i,2]],res[[i,3]]],SymmFactor2BodyDecay[p,res[[i,2]],res[[i,3]]]}}];
+For[i=1,i<=Length[rres],
+If[FreeQ[procTree,{rres[[i,2]],rres[[i,3]],___}] && FreeQ[procTree,{AntiField[rres[[i,2]]],AntiField[rres[[i,3]]],___}] && FreeQ[procTree,{rres[[i,3]],rres[[i,2]],___}] && FreeQ[procTree,{AntiField[rres[[i,3]]],AntiField[rres[[i,2]]],___}],
+If[Length[GenerateDiagramsDecayVertexCorrections[rres[[i,1]],rres[[i,2]],rres[[i,3]]]]>0,
+procTree=Join[procTree,{{rres[[i,2]],rres[[i,3]],LOOP,CalculateColourFactorLoopInducedDecay[AntiField[p],rres[[i,2]],rres[[i,3]]],SymmFactor2BodyDecay[p,rres[[i,2]],rres[[i,3]]]}}];
 ];
 ];
 i++;];
 Return[procTree];
 ];
+
+mycgsub={CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]};
+
+CalculateColourFactorLoopInducedDecay[Ext_,Int1_,Int2_]:=Catch[Block[{i,j,k,l,coupps,res,dynks,pos,posV,dim,temp,gname,group,blankin,blankout1,blankout2,allinds,allorderedinds,allorderedindsWI,allindout,allindout2,normf,dims},(*Need to go through each index in term and determine the Clebsch-Gordan.No easy cases at loop level!*)
+{blankin,blankout1,blankout2}=getBlank/@{Ext,Int1,Int2};
+coupps={Ext,Int1,Int2};
+allorderedinds=DeleteCases[DeleteCases[DeleteCases[getIndizes/@getBlank/@{blankin,blankout1,blankout2},generation,2],lorentz,2],n,2];
+allorderedindsWI=DeleteCases[DeleteCases[DeleteCases[getIndizesWI/@getBlank/@{blankin,blankout1,blankout2},{generation,x_},2],{lorentz,x_},2],n,2];
+allinds=Intersection[Flatten[allorderedinds]];
+If[Length[allinds]==0,Return[1]];(*simple check...*)res=1;
+For[i=1,i<=Length[allinds],i++,pos=Position[allorderedindsWI,allinds[[i]]];
+Switch[Length[pos],
+0,(*something strange happenened here...*)Continue[];,
+1,(*Forbidden process!*)Throw[0];,
+2,(*Simplest case to deal with:only a delta function is possible,although we have to sum over final two indices*)
+If[pos[[1,1]]==1,(*Delta function*)
+Continue[];,(*sum over final two indices\[Rule]dimension of rep*)
+res=res*allorderedindsWI[[pos[[1,1]],pos[[1,2]],2]];
+Continue[];
+];,
+3,(*Hard case....*)(*why is gname not equal to allind[[i]]?*)
+If[FreeQ[Gauge,allinds[[i]]]===False,
+group=Gauge[[Position[Gauge,allinds[[i]]][[1,1]],2]];
+gname=Gauge[[Position[Gauge,allinds[[i]]][[1,1]],3]];,
+group=AuxGauge[[Position[AuxGauge,allinds[[i]]][[1,1]],2]];
+gname=AuxGauge[[Position[AuxGauge,allinds[[i]]][[1,1]],3]];
+];
+posV=Position[getType/@{Int1,Int2},V];
+Switch[Length[posV],
+2,(*decay to two gauge bosons\[Rule]already excluded the delta function,so must be\Sum_{b,c} (d^abc)^2\[Rule]*)
+If[group===U[1]||group===SU[2],
+Throw[0]];
+res=res*5/3(*ASSUME SU(3) FOR NOW!*),
+(*SU[N>2]*)1,(*decay to one gauge boson\[Rule]assume either three adjoints or two (anti) fundamentals:get the dimension of the rep to decide*)If[allorderedindsWI[[2,i,2]]==allorderedindsWI[[3,i,2]],(*adjoints...\Sum_{b,c} (d^abc)^2 or (f^abc)^2*)If[getType[getBlank[Ext]]=!=F,res=res*5/3(*ASSUME SU(3) FOR NOW!*),res=res*(SA`Casimir[blankin,gname])(*(f^abc)^2=N for SU(N)*)];,(*Assume (anti) fundamentals\[Rule]C_2(R)*)res=res*SA`Casimir[RE[getBlank[Ext]],gname];];,
+0,(*'Simply' compute the Clebsch-Gordan*)dynks=Table[SA`DynL[coupps[[k]],gname],{k,1,3}];
+If[dynks=={{1,1},{1,1},{1,1}},(*adjoints...\Sum_{b,c} (d^abc)^2 or\Sum_{b,c} (f^abc)^2*)
+If[FreeQ[getType/@coupps,F],If[group===U[1]||group===SU[2],Throw[0]];
+res=res*5/3;(*ASSUME SU(3) FOR NOW!*),res=res*(SA`Casimir[blankin,gname])(*(f^abc)^2=N for SU(N)*)];,dims={allorderedindsWI[[1,i,2]],allorderedindsWI[[2,i,2]],allorderedindsWI[[3,i,2]]};
+normf=Sum[Abs[CG[group,dynks][1,j,k]]^2/.mycgsub,{j,1,dims[[2]]},{k,1,dims[[3]]}];
+res=res*normf;
+Continue[];
+];
+];
+];
+];
+Throw[res];];
+];(*end catch*)
 
 (*TwoBodyDecay[p_]:=Block[{i,res1,res2,addedP},
 process={};
@@ -872,3 +1062,13 @@ addedP=Join[addedP,{C[res1[[i,1]],res1[[i,2]]]}];
 i++;];
 Return[process];
 ];*)
+
+getChargeFactorDec[diags_,treefactor_]:=Module[{temp1,temp2,temp3,cfactor},
+temp1=Join[diags[[1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.diags[[2]]}];
+temp2=Join[DeleteCases[diags[[2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.diags[[2]]])}];
+temp3=Join[diags[[3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.diags[[2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
+cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
+If[Head[cfactor]===Complex&&SA`DynL[External[1]/.diags[[2]],color]==={1,1},
+cfactor=-cfactor];
+Return[cfactor/treefactor];
+];

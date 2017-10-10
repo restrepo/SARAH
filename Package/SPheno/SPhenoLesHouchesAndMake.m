@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateLesHouchesFile := Block[{i,i1, i2,i3,i4,k,l,listIn,fin,iminpar},
 (*
 Print["--------------------------------- "];
@@ -305,6 +306,7 @@ GenerateSSPtemplate;
 ];
 
 
+(* ::Input::Initialization:: *)
 
 GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i},
 Print["  Writing Makefile"];
@@ -406,7 +408,7 @@ WriteString[sphenoMake," ${name}("<>StringDrop[ToString[ListDecayParticles3B[[i,
 i++;];
 WriteString[sphenoMake ," \\\n"];
 ];
-
+WriteString[sphenoMake,"${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \\\n"];
 If[Include2LoopCorrections=!=False,
 If[SkipEffPot=!=True,
 WriteString[sphenoMake," ${name}(EffPotFunctions.o) ${name}(DerivativesEffPotFunctions.o) ${name}(EffectivePotential_"<>ModelName<>".o) \\\n"];
@@ -416,7 +418,6 @@ If[UseHiggs2LoopMSSM===True,
 WriteString[sphenoMake," ${name}(TwoLoopHiggsMass_SARAH.o) \\\n"];
 ];
 ];
-WriteString[sphenoMake,"${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \\\n"];
 WriteString[sphenoMake," ${name}(LoopMasses_"<>ModelName<>".o) \\\n"];
 (* If[OnlyLowEnergySPheno=!=True, 
 WriteString[sphenoMake," ${name}(RGEs_SM_HC.o) ${name}(Couplings_SM_HC.o) ${name}(TreeLevelMasses_SM_HC.o) ${name}(2LPole_SM_HC.o) ${name}(LoopMasses_SM_HC.o)   \\\n"];,
@@ -475,11 +476,11 @@ WriteString[sphenoMake,"# Suffix rules\n"];
 WriteString[sphenoMake,"#\n"];
 WriteString[sphenoMake,".f90.a:\n"];
 WriteString[sphenoMake,"\t ${F90} ${comp} $< \n"]; 
-WriteString[sphenoMake,"\t ar -ruc $@ $*.o\n"];
+WriteString[sphenoMake,"\t ar -ruc -U $@ $*.o\n"];
 WriteString[sphenoMake,"\t rm -f $*.o\n"];
 WriteString[sphenoMake,".F90.a:\n"];
 WriteString[sphenoMake,"\t ${F90} ${comp} ${PreDef} $< \n"];
-WriteString[sphenoMake,"\t ar -ruc $@ $*.o\n"];
+WriteString[sphenoMake,"\t ar -ruc -U $@ $*.o\n"];
 WriteString[sphenoMake,"\t rm -f $*.o\n"];
 WriteString[sphenoMake,".f90.o:\n"];
 WriteString[sphenoMake,"\t ${F90} ${comp} $<\n"];
@@ -495,6 +496,7 @@ Close[sphenoMake];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateSSPtemplate:=Block[{i,j,k,l,pos,iminpar,fin},
 
 Print["  Writing SSP templates"];

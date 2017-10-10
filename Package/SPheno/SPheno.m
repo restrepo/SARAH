@@ -105,10 +105,14 @@ SA`AddOneLoopDecay=False;
 If[EXTPAR==={},
 Clear[EXTPAR];
 ];
+(*
 If[SupersymmetricModel===True,
 Include2LoopCorrections=True;,
 Include2LoopCorrections=False;
 ];
+*)
+
+Include2LoopCorrections=True;
 
 (* If[OnlyLowEnergySPheno=!=True, *)
 GenerateMatchingConditions;
@@ -177,7 +181,7 @@ getUnmixedMassesDummy[Eigenstates]; ,
 
 If[OnlyLowEnergySPheno===True,
 If[SA`AddOneLoopDecay===True && SA`NoRGEsforDecays=!=True,
-Print[" Include 1-loop RGEs to check cancellations of divergencies"];
+Print[" Include 1-loop RGEs to check cancellations of divergences"];
 ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->True,VerticesForLoops->True,TwoLoopRGEs->False];,
 MakeDummyListRGEs;
 ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->False,VerticesForLoops->True];
@@ -370,6 +374,7 @@ If[SkipEffPot=!=True&&SupersymmetricModel===True,
 GenerateSPhenoEffPot;
 ,
 SkipEffPot=True;
+DefineGlobalParticleLists;(* This is performed in SPhenoEffPot, and is needed for the diagrammatic routines*)
 ];
 
 GenerateSPheno2LPole[ReadL];
