@@ -4,13 +4,13 @@ OnlyLowEnergySPheno = True;
 MINPAR={{1,Lambdainput},
         {2,LambdaSinput},
         {3,MSinput},
-        {4,K1input},
         {5,K2input},
-        {6,KappaInput}
+        {6,KappaInput},
+        {7, vSinput}
         };
 
 
-ParametersToSolveTadpoles = {mu2};
+ParametersToSolveTadpoles = {mu2, K1};
 
 
 BoundaryLowScaleInput={
@@ -23,7 +23,7 @@ BoundaryLowScaleInput={
   {g3, g3SM},
   {\[Lambda],Lambdainput},
   {LambdaS,LambdaSinput},
-  {K1,K1input},
+  {vS,vSinput},
   {K2,K2input},
   {MS, MSinput},
   {\[Kappa],KappaInput}
@@ -35,4 +35,4 @@ BoundaryLowScaleInput={
 ListDecayParticles = {Fu,Fe,Fd,hh};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
-DefaultInputValues ={Lambdainput -> 0.25, LambdaSinput -> 0.2, K1input -> 0.1, K2input->0.1, MSinput -> 200,KappaInput->0};
+DefaultInputValues ={Lambdainput -> 0.25, LambdaSinput -> 0.2, vSinput -> 0.1, K2input->0.1, MSinput -> 200,KappaInput->0};

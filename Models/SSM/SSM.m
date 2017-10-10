@@ -73,11 +73,14 @@ DEFINITION[EWSB][GaugeSector] =
 (* ----- VEVs ---- *)
 
 DEFINITION[EWSB][VEVs]= 
-{    {H0, {v, 1/Sqrt[2]}, {Ah, \[ImaginaryI]/Sqrt[2]},{phiH, 1/Sqrt[2]}}     };
+{    {H0, {v, 1/Sqrt[2]}, {Ah, \[ImaginaryI]/Sqrt[2]},{phiH, 1/Sqrt[2]}},
+     {Sing, {vS, 1}, {0, 0},{phiS, 1}}
+      
+      };
  
 
 DEFINITION[EWSB][MatterSector]=   
-    {{{phiH,Sing},{hh,ZH}},
+    {{{phiH,phiS},{hh,ZH}},
      {{{dL}, {conj[dR]}}, {{DL,Vd}, {DR,Ud}}},
      {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},
      {{{eL}, {conj[eR]}}, {{EL,Ve}, {ER,Ue}}}};  

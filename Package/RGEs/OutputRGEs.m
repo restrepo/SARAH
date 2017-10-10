@@ -27,6 +27,7 @@ If[set===ALL,
 If[SupersymmetricModel=!=False,
 all={BetaLSi, BetaBij, BetaTijk,BetaVEV,Betam2ij/.Flatten[Flatten[TraceAbbr,1] /.{a_,b_Times|b_Plus |b_Symbol |b_trace}->(a->b)]/. Kronecker->Delta, BetaMi,BetaGauge,BetaYijk,BetaMuij,BetaLi};
 If[AddDiracGauginos===True,all=Join[all,{BetaDGi}];];
+If[AddRGEsNonHolomorphic===True,all=Join[Join[all,{BetaRijk}],{BetaMFij}];];
 AllRGEs=Flatten[all,1];,
 AllRGEs=Flatten[{ BetaBij, BetaTijk,BetaVEV,BetaGauge,BetaYijk,BetaMFij,BetaLijkl},1];
 ];,

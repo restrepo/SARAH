@@ -46,6 +46,10 @@ If[Length[listGM]!= 0,tempList=Transpose[listGM][[2]] /. Delta[a__]->1 /. epsTen
 If[Length[listW4]!= 0,tempList=Transpose[Transpose[listW4One/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1][[2]]][[2]];AddParametersToList[tempList];];
 If[Length[listA4]!= 0,tempList=Transpose[Transpose[listA4One/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1][[2]]][[2]];AddParametersToList[tempList];];
 
+If[AddRGEsNonHolomorphic===True,
+If[Length[BetaRijk]!= 0,tempList=Transpose[BetaRijk][[1]]/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1/. {i1->gen1,i2->gen2,i3->gen3,i4->gen4};AddParametersToList[tempList];];
+If[Length[BetaMFij]!= 0,tempList=Transpose[BetaMFij][[1]]/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1/. {i1->gen1,i2->gen2,i3->gen3,i4->gen4};AddParametersToList[tempList];];
+];
 
 If[SupersymmetricModel=!=False,
 AddParametersToList[AdditionalParametersLagrange];
@@ -935,6 +939,8 @@ i++;];
 For[i=1,i<=Length[CombindedBlock],
 WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[8+StringLength[SPhenoForm[CombindedBlock[[i,1]]]]]<>").Eq.\""<>ToUpperCase[SPhenoForm[CombindedBlock[[i,1]]]]<>"IN\") Then \n"];
 WriteString[sphenoInOut,"    Call Read_"<>SPhenoForm[CombindedBlock[[i,1]]]<>"IN(99,0,i_model,set_mod_par,kont) \n \n"];
+WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[10+StringLength[SPhenoForm[CombindedBlock[[i,1]]]]]<>").Eq.\"IM"<>ToUpperCase[SPhenoForm[CombindedBlock[[i,1]]]]<>"IN\") Then \n"];
+WriteString[sphenoInOut,"    Call Read_"<>SPhenoForm[CombindedBlock[[i,1]]]<>"IN(99,1,i_model,set_mod_par,kont) \n \n"];
 i++;];
 
 ];

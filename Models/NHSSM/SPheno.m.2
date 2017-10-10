@@ -1,0 +1,64 @@
+(* ::Package:: *)
+
+(* CMSSM input parameters *)
+
+MINPAR={{1,m0},
+             {2,m12},
+             {3,TanBeta},
+             {5,Azero},
+             {6,MuInput},
+             {7,BMuInput},
+             {8,MupInput}};
+             
+
+
+
+RealParameters = {TanBeta, m0};
+ParametersToSolveTadpoles = {mHd2, mHu2};
+
+
+
+
+RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
+RenormalizationScale = Sqrt[(mq2[3, 3] + (vu^2*conj[Yu[3, 3]]*Yu[3, 3])/2)*(mu2[3, 3] + (vu^2*conj[Yu[3, 3]]*Yu[3, 3])/2)-((vd*\[Mu]*conj[Yu[3, 3]] - vu*conj[T[Yu][3, 3]])*(vd*conj[\[Mu]]*Yu[3, 3] - vu*T[Yu][3, 3]))/2];
+
+ConditionGUTscale = g1 == g2;
+
+(* GUT conditions CMSSM *)
+
+BoundaryHighScale={
+{T[Ye], Azero*Ye},
+{T[Yd], Azero*Yd},
+{T[Yu], Azero*Yu},
+{mq2, DIAGONAL m0^2},
+{ml2, DIAGONAL m0^2},
+{md2, DIAGONAL m0^2},
+{mu2, DIAGONAL m0^2},
+{me2, DIAGONAL m0^2},
+{MassB, m12},
+{MassWB,m12},
+{MassG,m12},
+{Tep,LHInput[Tep]},
+{Tdp,LHInput[Tdp]},
+{Tup,LHInput[Tup]},
+{\[Mu],MuInput},
+{B[\[Mu]], BMuInput},
+{Mup, MupInput}
+};
+
+
+
+QuadruplePrecision = {};
+
+ListDecayParticles = Automatic;
+ListDecayParticles3B = Automatic;
+
+IncludeFineTuning = True;
+FineTuningParameters={
+{m0,1/2},{m12,1},{Azero,1},{\[Mu],1},{B[\[Mu]],1},{Mup,1},{mHd2,1/2},{mHu2,1/2}
+};
+
+
+
+DefaultInputValues = {m0 -> 1000, m12 -> 1000, TanBeta->10,  Azero -> -2500,  MuInput -> 200, BMuInput ->10^6  };
+

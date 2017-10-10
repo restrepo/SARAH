@@ -70,6 +70,10 @@ CalcBetaBiSoftBreaking[TwoL,Simp];
 CalcBetaBiSoftBreakingNew[TwoL,Simp];
 CalcBetaOneSoftBreaking[TwoL,Simp]; 
 CalcBetaOneSoftBreakingNew[TwoL,Simp]; 
+If[AddRGEsNonHolomorphic===True,
+CalcBetaNonHolomorphicTri[TwoL,Simp]; 
+CalcBetaNonHolomorphicBi[TwoL,Simp]; 
+];
 CalcRGEtraces[TwoL,Simp];
 CalcBetaScalarMass[TwoL,Simp];
 If[AddDiracGauginos===True,CalcBetaDiracGauginos[TwoL,Simp]];
@@ -121,6 +125,10 @@ BetaQijkl=Get[ToFileName[$sarahCurrentRGEDir,"BetaQijkl.m"]];
 BetaVEV=Get[ToFileName[$sarahCurrentRGEDir,"BetaVEV.m"]];
 TraceAbbr=Get[ToFileName[$sarahCurrentRGEDir,"RGEtraces.m"]];
 Gij=Get[ToFileName[$sarahCurrentRGEDir,"Gij.m"]];
+If[AddRGEsNonHolomorphic===True,
+BetaRijk=Get[ToFileName[$sarahCurrentRGEDir,"BetaRijk.m"]];
+BetaMFij=Get[ToFileName[$sarahCurrentRGEDir,"BetaMFij.m"]];
+];
 
 If[ThreeIndexParametersInvolved===True,
 BetaYijk3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaYijk3I.m"]];
@@ -139,6 +147,10 @@ BetaQijkl3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaQijkl3I.m"]];
 BetaVEV3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaVEV3I.m"]];
 Gij3I=Get[ToFileName[$sarahCurrentRGEDir,"Gij3I.m"]];
 TraceAbbr3I=Get[ToFileName[$sarahCurrentRGEDir,"RGEtraces3I.m"]];
+If[AddRGEsNonHolomorphic===True,
+BetaRijk3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaRijk3I.m"]];
+BetaMFij3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaMFij3I.m"]];
+];
 ];
 
 ];
@@ -227,6 +239,23 @@ For[i=1,i<=Length[listA4],
 Qijkl[listA4[[i,1,1]]/.subGCRule[1],listA4[[i,1,2]]/.subGCRule[2],listA4[[i,1,3]]/.subGCRule[3],listA4[[i,1,4]]/.subGCRule[4]]=listA4[[i,2,1]]*listA4[[i,2,2]]/.Select[subAlways,FreeQ[#1,sum]&]/. conj[x_]->Conj[x];
 i++;];
 
+If[AddRGEsNonHolomorphic===True,
+listA3p=SA`SSSlist;
+listWbip=SA`FFlist;
+For[i=1,i<=Length[listA3p],
+Rijk[listA3p[[i,1,1]]/.subGCRule[1],listA3p[[i,1,2]]/.subGCRule[2],listA3p[[i,1,3]]/.subGCRule[3]]=listA3p[[i,2,1]]*listA3p[[i,2,2]]/. Select[subAlways,FreeQ[#1,sum]&] /. conj[x_]->Conj[x] /. subForce;
+Rijk[listA3p[[i,1,1]]/.subGCRule[1],listA3p[[i,1,3]]/.subGCRule[3],listA3p[[i,1,2]]/.subGCRule[2]]=listA3p[[i,2,1]]*listA3p[[i,2,2]]/. Select[subAlways,FreeQ[#1,sum]&] /. conj[x_]->Conj[x] /. subForce;
+i++;];
+For[i=1,i<=Length[listWbip],
+MFij[listWbip[[i,1,1]]/.subGCRule[1],listWbip[[i,1,2]]/.subGCRule[2]]=listWbip[[i,2,1]]*listWbip[[i,2,2]] /.Select[subAlways,FreeQ[#1,sum]&] /. conj[x_]->Conj[x];
+MFij[listWbip[[i,1,2]]/.subGCRule[2],listWbip[[i,1,1]]/.subGCRule[1]]=listWbip[[i,2,1]]*listWbip[[i,2,2]] /.Select[subAlways,FreeQ[#1,sum]&] /. conj[x_]->Conj[x];
+i++;];,
+listA3p={};
+listWbip={};
+Rijk[a__]->0;
+MFij[a__]->0;
+];
+
 
 listSMOne = listSM;
 
@@ -300,6 +329,21 @@ If[FreeQ[listTri2,C[getBlankSF[listWtri[[i,1,j]]],getBlankSF[listWtri[[i,1,Mod[j
 listTri2 = Join[listTri2,{{C[getBlankSF[listWtri[[i,1,j]]],getBlankSF[listWtri[[i,1,Mod[j+1,3,1]]]]],{getBlankSF[listWtri[[i,1,Mod[j+2,3,1]]]]}}}];,
 pos=Position[listTri2,C[getBlankSF[listWtri[[i,1,j]]],getBlankSF[listWtri[[i,1,Mod[j+1,3,1]]]]]][[1,1]];
 listTri2[[pos,2]]=Intersection[Join[listTri2[[pos,2]],{getBlankSF[listWtri[[i,1,Mod[j+2,3,1]]]]}]];
+];
+j++;];
+
+i++;];
+
+For[i=1,i<=Length[listA3p],
+pos=Position[LP,listA3p[[i,1,1]]];listTri[[pos[[1,1]]]]=Join[listTri[[pos[[1,1]]]],{listA3p[[i,1,2]],listA3p[[i,1,3]]}];
+pos=Position[LP,listA3p[[i,1,2]]];listTri[[pos[[1,1]]]]=Join[listTri[[pos[[1,1]]]],{listA3p[[i,1,1]],listA3p[[i,1,3]]}];
+pos=Position[LP,listA3p[[i,1,3]]];listTri[[pos[[1,1]]]]=Join[listTri[[pos[[1,1]]]],{listA3p[[i,1,2]],listA3p[[i,1,1]]}];
+
+For[j=1,j<=3,
+If[FreeQ[listTri2,C[getBlankSF[listA3p[[i,1,j]]],getBlankSF[listA3p[[i,1,Mod[j+1,3,1]]]]]],
+listTri2 = Join[listTri2,{{C[getBlankSF[listA3p[[i,1,j]]],getBlankSF[listA3p[[i,1,Mod[j+1,3,1]]]]],{getBlankSF[listA3p[[i,1,Mod[j+2,3,1]]]]}}}];,
+pos=Position[listTri2,C[getBlankSF[listA3p[[i,1,j]]],getBlankSF[listA3p[[i,1,Mod[j+1,3,1]]]]]][[1,1]];
+listTri2[[pos,2]]=Intersection[Join[listTri2[[pos,2]],{getBlankSF[listA3p[[i,1,Mod[j+2,3,1]]]]}]];
 ];
 j++;];
 
@@ -675,6 +719,9 @@ betaFuncYijk2L[p1_,p2_,p3_] := ExpandTerm[Yijk[p1,p2,pP] gammaij2L[pP,p3]];
 betaFuncMuij[p1_,p2_] :=  ExpandTerm[ Muij[p1,pN] gammaij[pN,p2]];
 betaFuncMuij2L[p1_,p2_] :=  ExpandTerm[ Muij[p1,pN] gammaij2L[pN,p2]];
 
+betaFuncMFij[p1_,p2_] :=  ExpandTerm[ MFij[p1,pN] gammaij[pN,p2]];
+betaFuncMFij2L[p1_,p2_] :=  ExpandTerm[ MFij[p1,pN] gammaij2L[pN,p2]];
+
 betaFuncLi[p1_] :=  ExpandTerm[Li[pN] gammaij[pN,p1]];
 betaFuncLi2L[p1_] :=  ExpandTerm[Li[pN] gammaij2L[pN,p1]];
 
@@ -690,6 +737,9 @@ betaFuncAijk2L[p1_,p2_,p3_]:=-1/2 Aijk[p1,p2,pL] Conj[Yijk[pL,pM,pN]] Yijk[pN,pP
 (Aijk[p1,p2,pL] Conj[Yijk[pL,pP,pQ]] Yijk[pP,pQ,p3]+2 Yijk[p1,p2,pL] Conj[Yijk[pL,pP,pQ]] Aijk[pP,pQ,p3])(2 SA`CasimirBar[pP]-SA`CasimirBar[p3])+(-2  Yijk[p1,p2,pL] Conj[Yijk[pL,pP,pQ]] Yijk[pP,pQ,p3]) (2 SA`CasimirMBar[getBlankSF[pP]]-SA`CasimirMBar[getBlankSF[p3]])+ Sum[(1-SA`CheckU1[gnr])(2 Aijk[p1,p2,p3]-8 Mi[gnr] Yijk[p1,p2,p3]) gc[gnr]^4 ( SA`Casimir[getBlankSF[p3],gnr] SA`Dynkin[rep,gnr]-3 SA`Casimir[gnr] SA`Casimir[getBlankSF[p3],gnr]),{gnr,1,AnzahlGauge}]+
 (2 Aijk[p1,p2,p3]SA`DynkinCasimirU1[p3]-8SA`DynkinMCasimirU1[p3] Yijk[p1,p2,p3]) +(* Sum[Sum[2 gc[gnr]^2 gc[gnr2]^2 (2 Aijk[p1,p2,p3]-8 Mi[gnr] Yijk[p1,p2,p3]) SA`Casimir[getBlankSF[p3],gnr] SA`Casimir[getBlankSF[p3],gnr2],{gnr2,1,AnzahlGauge}],{gnr,1,AnzahlGauge}] *)
 2  (2 Aijk[p1,p2,p3] SA`CasimirBar[p3] SA`CasimirBar[p3]-8  SA`CasimirMBar[p3] SA`CasimirBar[p3] Yijk[p1,p2,p3]);
+
+betaFuncRijk[p1_,p2_,p3_]:=1/4 Yijk[pO,pP,pM]Conj[Yijk[p1,pP,pM]] Rijk[pO,p2,p3]- SA`CasimirBar[p1] Rijk[p1,p2,p3]+1/2Yijk[p3,pP,pM]Conj[Yijk[pO,pP,pM]] Rijk[p1,p2,pO]-2 SA`CasimirBar[p3] Rijk[p1,p2,p3]+ 1/2 Rijk[p1,pM,pN] Conj[Yijk[pP,pM,pN]] Yijk[pP,p2,p3] - 2 Rijk[pP,pM,p2] Conj[Yijk[p1,pM,pN]] Yijk[p3,pP,pN] + 2 Rijk[p1,p2,p3] SA`CasimirBar[p1]+2Sum[2 Rijk[pP,pM,p2]TA[n1,p3,p1] TA[n1,pP,pM],{n1,1,AnzahlGauge}]+2 MFij[pL,pM] Yijk[pM,pN,p2] Yijk[pP,pL,p3] Conj[Yijk[pN,pP,p1]] - 4 MFij[p1,pP] SA`CasimirBar[pP] Yijk[pP,p2,p3];
+betaFuncRijk2L[p1_,p2_,p3_]:=0;
 
 betaFuncBij[p1_,p2_]:=1/2Bij[p1,pL] Conj[Yijk[pL,pM,pN]] Yijk[pM,pN,p2]+1/2  Yijk[p1,p2,pL] Conj[Yijk[pL,pM,pN]] Bij[pM,pN]+Muij[p1,pL] Conj[Yijk[pL,pM,pN]] Aijk[pM,pN,p2]-2 (Bij[p1,p2]SA`CasimirBar[p2]-2 SA`CasimirMBar[p2] Muij[p1,p2]);
 betaFuncBij2L[p1_,p2_]:=-1/2 Bij[p1,pL] Conj[Yijk[pL,pM,pN]] Yijk[pP,pQ,pN] Conj[Yijk[pP,pQ,pR]] Yijk[pM,pR,p2]-1/2 Yijk[p1,p2,pL] Conj[Yijk[pL,pM,pN]] Bij[pM,pR] Conj[Yijk[pP,pQ,pR]] Yijk[pP,pQ,pN]-1/2 Yijk[p1,p2,pL] Conj[Yijk[pL,pM,pN]] Muij[pM,pR] Conj[Yijk[pP,pQ,pR]] Aijk[pP,pQ,pN]-Muij[p1,pL] Conj[Yijk[pL,pM,pN]] Aijk[pN,pP,pQ] Conj[Yijk[pP,pQ,pR]] Yijk[pM,pR,p2]-Muij[p1,pL] Conj[Yijk[pL,pM,pN]] Yijk[pN,pP,pQ] Conj[Yijk[pP,pQ,pR]] Aijk[pM,pR,p2]+(* 2 Sum[Sum[Yijk[p1,p2,pL] Conj[Yijk[pL,pP,pQ]] (Bij[pP,pQ]-Muij[pP,pQ] Mi[gnr]) gc[gnr]^2 SA`Casimir[getBlankSF[pP],gnr],{gn,1,AnzahlGauge}],{gnr,1,AnzahlGauge}] *)
@@ -710,7 +760,7 @@ betaFuncLSi2LNew[p1_]:=2 Sum[gc[gnr]^2 SA`Casimir[pL,gnr]Yijk[p1,pO,pL]Conj[Yijk
 betaFuncm2ij[p1_,p2_]:=
 1/2 Conj[Yijk[p1,pP,pQ]] Yijk[pP,pQ,pN] m2ij[p2,pN] +1/2 m2ij[pN,p1] Conj[Yijk[pP,pQ,pN]] Yijk[p2,pP,pQ] +
 2Conj[Yijk[p1,pP,pQ]] Yijk[p2,pP,pR]m2ij[pQ,pR]+  Conj[Aijk[p1,pP,pQ]] Aijk[p2,pP,pQ]-
-8listSMadd[[i,1]] EMatrix[listSMadd[[i,2]]] (makeDelta[i,1,2,{}] /.Delta[a_,b_]->Delta[a,b,rge])  SA`CasimirMMBar[getBlankSF[p1]] +listSMadd[[i,1]] EMatrix[listSMadd[[i,2]]] Sum[2 TA[n1,p1,p2] Tr1[n1],{n1,1,AnzahlGauge}];
+8listSMadd[[i,1]] EMatrix[listSMadd[[i,2]]] (makeDelta[i,1,2,{}] /.Delta[a_,b_]->Delta[a,b,rge])  SA`CasimirMMBar[getBlankSF[p1]] +listSMadd[[i,1]] EMatrix[listSMadd[[i,2]]] Sum[2 TA[n1,p1,p2] Tr1[n1],{n1,1,AnzahlGauge}]+Rijk[p2,pP,pQ]Conj[Rijk[p1,pP,pQ]]+2Conj[Rijk[pP,p2,pQ]]Rijk[pP,p1,pQ]-8MFij[pP,p1]MFij[p2,pP]SA`CasimirBar[getBlankSF[p1]]-4 MFij[pP,pQ]Conj[MFij[pQ,pM]]Yijk[p1,pM,pN]Conj[Yijk[p2,pP,pN]];
 betaFuncm2ij2L[p1_,p2_]:=
 -1/2 m2ij[pL,p1] Conj[Yijk[pL,pM,pN]] Yijk[pM,pR,p2] Conj[Yijk[pP,pQ,pR]] Yijk[pP,pQ,pN]  - 
 1/2  m2ij[p2,pL] Yijk[pL,pM,pN] Conj[Yijk[pM,pR,p1]] Yijk[pP,pQ,pR] Conj[Yijk[pP,pQ,pN]]- 
@@ -833,6 +883,18 @@ beta +=betaFuncMuij2L[term[[2]]/.subGC[2],term[[1]]/.subGC[1]];
 Return[beta];
 ];
 
+BetaFunctionMFij1L[term_]:=Block[{beta},
+beta =betaFuncMFij[term[[1]]/.subGC[1],term[[2]]/.subGC[2]];
+beta +=betaFuncMFij[term[[2]]/.subGC[2],term[[1]]/.subGC[1]];
+Return[beta];
+];
+
+BetaFunctionMFij2L[term_]:=Block[{beta},
+beta =betaFuncMFij2L[term[[1]]/.subGC[1],term[[2]]/.subGC[2]];
+beta +=betaFuncMFij2L[term[[2]]/.subGC[2],term[[1]]/.subGC[1]];
+Return[beta];
+];
+
 BetaFunctionLi1L[term_]:=Block[{beta},
 Return[betaFuncLi[term[[1]]/.subGC[1]]];
 ];
@@ -856,6 +918,8 @@ beta += betaFuncAijk[term[[1]]/.subGC[1],term[[3]]/.subGC[3],term[[2]]/.subGC[2]
 Return[beta];
 ];
 
+
+
 (*
 BetaFunctionTijk1LNew[term_]:=Block[{beta},
 beta = betaFuncAijkNew[term[[1]]/.subGC[1],term[[2]]/.subGC[2],term[[3]]/.subGC[3] ];
@@ -876,6 +940,17 @@ BetaFunctionTijk2LNew[term_]:=Block[{beta},
 beta = betaFuncAijk2LNew[term[[1]]/.subGC[1],term[[2]]/.subGC[2],term[[3]]/.subGC[3] ];
 beta +=betaFuncAijk2LNew[term[[3]]/.subGC[3],term[[2]]/.subGC[2],term[[1]]/.subGC[1]];
 beta += betaFuncAijk2LNew[term[[1]]/.subGC[1],term[[3]]/.subGC[3],term[[2]]/.subGC[2]];
+Return[beta];
+];
+
+BetaFunctionRijk1L[term_]:=Block[{beta},
+beta = betaFuncRijk[term[[1]]/.subGC[1],term[[2]]/.subGC[2],term[[3]]/.subGC[3] ];
+beta += betaFuncRijk[term[[1]]/.subGC[1],term[[3]]/.subGC[3],term[[2]]/.subGC[2]];
+Return[beta];
+];
+BetaFunctionRijk2L[term_]:=Block[{beta},
+beta = betaFuncRijk2L[term[[1]]/.subGC[1],term[[2]]/.subGC[2],term[[3]]/.subGC[3] ];
+beta += betaFuncRijk2L[term[[1]]/.subGC[1],term[[3]]/.subGC[3],term[[2]]/.subGC[2]];
 Return[beta];
 ];
 
@@ -935,6 +1010,8 @@ YIJK, Print[StyleForm["Calculate Beta Functions for trilinear Superpotential par
 MUIJ,Print[StyleForm["Calculate Beta Functions for bilinear Superpotential parameters","Section",FontSize->12]];,
 LI,Print[StyleForm["Calculate Beta Functions for linear Superpotential parameters","Section",FontSize->12]];,
 TIJK,Print[StyleForm["Calculate Beta Functions for trilinear soft breaking parameters","Section",FontSize->12]];,
+RIJK,Print[StyleForm["Calculate Beta Functions for trilinear non-holomorphic soft breaking parameters","Section",FontSize->12]];,
+MFIJ,Print[StyleForm["Calculate Beta Functions for bilinear non-holomorphic soft breaking parameters","Section",FontSize->12]];,
 BIJ,Print[StyleForm["Calculate Beta Functions for bilinear soft breaking parameters","Section",FontSize->12]];,
 LSI,Print[StyleForm["Calculate Beta Functions for linear soft breaking parameters","Section",FontSize->12]];,
 M2IJ,Print[StyleForm["Calculate Beta Functions for scalar soft breaking masses","Section",FontSize->12]];,
@@ -983,6 +1060,14 @@ BIJ,
 	coup=Bij[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2]];
 	betaFunction=BetaFunctionBij1L[fields[[i,1]]];
 	If[twoloop,betaFunction2L=BetaFunctionBij2L[fields[[i,1]]];,betaFunction2L=0];,
+RIJK,
+	coup=Rijk[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2],fields[[i,1,3]]/.subGC[3]];
+	betaFunction=BetaFunctionRijk1L[fields[[i,1]]];
+	If[twoloop,betaFunction2L=BetaFunctionRijk2L[fields[[i,1]]];,betaFunction2L=0];,
+MFIJ,
+	coup=MFij[fields[[i,1,1]]/.subGC[1],fields[[i,1,2]]/.subGC[2]];
+	betaFunction=BetaFunctionMFij1L[fields[[i,1]]];
+	If[twoloop,betaFunction2L=BetaFunctionMFij2L[fields[[i,1]]];,betaFunction2L=0];,
 LSI,
 	coup=LSi[fields[[i,1,1]]/.subGC[1]];
 	betaFunction=BetaFunctionSi1LNew[fields[[i,1]]];
@@ -1068,6 +1153,8 @@ YIJK, BetaYijk=SaveArray; BetaYijk3I=SaveArray3I;,
 MUIJ,BetaMuij=SaveArray; BetaMuij3I=SaveArray3I;,
 LI,BetaLi=SaveArray; BetaLi3I=SaveArray3I;,
 TIJK,BetaTijk=SaveArray; BetaTijk3I=SaveArray3I;,
+RIJK,BetaRijk=SaveArray; BetaRijk3I=SaveArray3I;,
+MFIJ,BetaMFij=SaveArray; BetaMFij3I=SaveArray3I;,
 BIJ,BetaBij=SaveArray; BetaBij3I=SaveArray3I;,
 LSI,BetaLSi=SaveArray; BetaLSi3I=SaveArray3I;,
 M2IJ,Betam2ij=SaveArray; Betam2ij3I=SaveArray3I;,
@@ -1167,6 +1254,8 @@ CalcBetaQuadSoftBreaking[TwoL_,Simp_]:=CalcBetaFunctions[QIJKL,listA4One,"BetaQi
 CalcBetaTriSuperpotential[TwoL_,Simp_]:=CalcBetaFunctions[YIJK,listWtriOne,"BetaYijk","BetaYijk3I",TwoL,Simp];
 CalcBetaBiSuperpotential[TwoL_,Simp_]:=CalcBetaFunctions[MUIJ,listWbiOne,"BetaMuij","BetaMuij3I",TwoL,Simp];
 CalcBetaOneSuperpotential[TwoL_,Simp_]:=CalcBetaFunctions[LI,listWone,"BetaLi","BetaLi3I",TwoL,Simp];
+CalcBetaNonHolomorphicTri[TwoL_,Simp_]:=CalcBetaFunctions[RIJK,listA3p,"BetaRijk","BetaRijk3I",TwoL,Simp];
+CalcBetaNonHolomorphicBi[TwoL_,Simp_]:=CalcBetaFunctions[MFIJ,listWbip,"BetaMFij","BetaMFij3I",TwoL,Simp];
 CalcBetaTriSoftBreaking[TwoL_,Simp_]:=CalcBetaFunctions[TIJK,listAtriOne,"BetaTijk","BetaTijk3I",TwoL,Simp];
 CalcBetaBiSoftBreaking[TwoL_,Simp_]:=CalcBetaFunctions[BIJ,listAbiOne,"BetaBij","BetaBij3I",TwoL,Simp];
 CalcBetaOneSoftBreaking[TwoL_,Simp_]:=CalcBetaFunctions[LSI,listAone,"BetaLSi","BetaLSi3I",TwoL,Simp];

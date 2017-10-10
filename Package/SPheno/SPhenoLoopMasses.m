@@ -911,9 +911,11 @@ WriteString[sphenoLoop,SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"1L = 
 ];
 If[(FreeQ[parameters,T[SA`ListParametersFromTadpoles1L[[i]]]] ==False) &&(FreeQ[SA`ListParametersFromTadpoles1L,T[SA`ListParametersFromTadpoles1L[[i]]]]),
 subTadpolesHiggs2Loop = Join[subTadpolesHiggs2Loop,{T[SA`ListParametersFromTadpoles1L[[i]]]->T[SA`ListParametersFromTadpoles1L[[i]]],SA`ListParametersFromTadpoles1L[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"1L"]}];
-subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{T[SA`ListParametersFromTadpoles1L[[i]]]->T[SA`ListParametersFromTadpoles1L[[i]]],SA`ListParametersFromTadpoles1L[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"2L"]}];,
+(* subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{T[SA`ListParametersFromTadpoles1L[[i]]]\[Rule]T[SA`ListParametersFromTadpoles1L[[i]]],SA`ListParametersFromTadpoles1L[[i]]\[Rule]ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"2L"]}]; *)
+subTadpolesHiggs2Loop2L = subTadpolesHiggs2Loop;,
 subTadpolesHiggs2Loop = Join[subTadpolesHiggs2Loop,{SA`ListParametersFromTadpoles1L[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"1L"]}];
-subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{SA`ListParametersFromTadpoles1L[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"2L"]}];
+(* subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{SA`ListParametersFromTadpoles1L[[i]]\[Rule]ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1L[[i]]] <>"2L"]}]; *)
+subTadpolesHiggs2Loop2L = subTadpolesHiggs2Loop;
 ];
 i++;];
 
@@ -925,9 +927,11 @@ WriteString[sphenoLoop,SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"1L
 ];
 If[(FreeQ[parameters,T[SA`ListParametersFromTadpoles1L[[i]]]] ==False) &&(FreeQ[SA`ListParametersFromTadpoles1L,T[SA`ListParametersFromTadpoles1L[[i]]]]),
 subTadpolesHiggs2Loop = Join[subTadpolesHiggs2Loop,{T[SA`ListParametersFromTadpoles1Llow[[i]]]->T[SA`ListParametersFromTadpoles1Llow[[i]]],SA`ListParametersFromTadpoles1Llow[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"1L"]}];
-subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{T[SA`ListParametersFromTadpoles1Llow[[i]]]->T[SA`ListParametersFromTadpoles1Llow[[i]]],SA`ListParametersFromTadpoles1Llow[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"2L"]}];,
+(* subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{T[SA`ListParametersFromTadpoles1Llow[[i]]]\[Rule]T[SA`ListParametersFromTadpoles1Llow[[i]]],SA`ListParametersFromTadpoles1Llow[[i]]\[Rule]ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"2L"]}]; *)
+subTadpolesHiggs2Loop2L = subTadpolesHiggs2Loop;,
 subTadpolesHiggs2Loop = Join[subTadpolesHiggs2Loop,{SA`ListParametersFromTadpoles1Llow[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"1L"]}];
-subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{SA`ListParametersFromTadpoles1Llow[[i]]->ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"2L"]}];
+(* subTadpolesHiggs2Loop2L = Join[subTadpolesHiggs2Loop2L,{SA`ListParametersFromTadpoles1Llow[[i]]\[Rule]ToExpression[SPhenoForm[SA`ListParametersFromTadpoles1Llow[[i]]] <>"2L"]}]; *)
+subTadpolesHiggs2Loop2L = subTadpolesHiggs2Loop;
 ];
 ];
 i++;];

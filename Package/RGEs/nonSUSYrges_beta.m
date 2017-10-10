@@ -40,6 +40,14 @@ GammaSijHat2L[p1_,p2_]:=
 -(1+Xi)Xi  Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-
 Delta2[p1,p2] Xi Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]+Delta2[p1,p2]  ExpandTermNS[Xi Sum[ ThS[nr,p1,pQ,vecB] Y2S[pQ,pR] ThS[nr,pR,p2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]];
 
+(* Anomalous dimensions of fermions: eq. (28) + (29) *)
+GammaFij1L[p1_,p2_]:=ExpandTermNS[1/2 Yijk[p1,pQ,pR] Conj[Yijk[pQ,p2,pR]] MakeDeltaNS[p1,gen1] + Sum[Xi SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] MakeDeltaNS[p1,{}]];
+GammaFij2L[p1_,p2_]:=ExpandTermNS[-1/8 Yijk[p1,pQ,pA] Conj[Yijk[pQ,pR,pB]]Yijk[pR,pS,pB] Conj[Yijk[pS,p2,pA]]MakeDeltaNS[p1,gen1] -3/2kF Yijk[p1,pQ,pA] Conj[Yijk[pQ,p2,pB]]Y2S[pA,pB]MakeDeltaNS[p1,gen1]+
+9/2 Sum[ Delta[pA,pB] SA`CasimirRGE[pB,nr] Yijk[p1,pO,pB] Conj[Yijk[pO,p2,pA]]MakeDeltaNS[p1,gen1],{nr,1,Length[Gauge]}] -7/4  Sum[ Delta[p1,p2] SA`CasimirRGE[p1,nr] Yijk[p1,pO,pA] Conj[Yijk[pO,p2,pA]]MakeDeltaNS[p1,gen1],{nr,1,Length[Gauge]}] -
+1/4  Sum[ SA`CasimirRGE[pO,nr] Yijk[p1,pO,pA] Conj[Yijk[pO,p2,pA]]MakeDeltaNS[p1,gen1],{nr,1,Length[Gauge]}] +
+ MakeDeltaNS[p1,{}] Sum[((25/4+2Xi+1/4Xi^2)SA`Casimir[nr] - 2 kF SA`DynkinF[rep,nr] -1/4 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]-3/2 Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] MakeDeltaNS[p1,{}]];
+MakeDeltaNS[x_,y_]:=makeDeltaNS[x,y]/. Reverse/@subIndFinalX[2,1,"t"] /.Delta->Kronecker;
+
 betaFuncVEV1Lns[p1_]:=ExpandTermNS[VEVi[pS] GammaSij1L[pS,p1]+VEVi[pS] GammaSijHat1L[pS,p1]];
 betaFuncVEV2Lns[p1_]:=ExpandTermNS[VEVi[pS] GammaSij2L[pS,p1]+VEVi[pS] GammaSijHat2L[pS,p1]];
 

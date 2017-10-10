@@ -324,6 +324,11 @@ WriteString[sphenoTree,"Integer, Intent(inout) :: kont \n"];
 
 WriteString[sphenoTree,"Integer :: i1,i2,i3,i4,j1,j2,j3,kontSave \n"];
 
+nmixF=Select[listNotMixedMasses,getType[#[[1]]]===F&&#[[2]]=!=0&];
+For[i=1,i<=Length[nmixF],
+WriteString[sphenoTree,"Complex(dp) :: "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>"C \n"];
+i++];
+
 
 WriteString[sphenoTree, "Iname = Iname + 1 \n"];
 WriteString[sphenoTree, "NameOfUnit(Iname) = 'TreeMasses" <>Modelname,"'\n \n"];
@@ -360,25 +365,26 @@ If[listNotMixedMasses[[i,4]]=!=0,
 WriteString[sphenoTree,"! ------------------------------- \n"];
 WriteString[sphenoTree,"! Mass of "<>SPhenoForm[listNotMixedMasses[[i,1]]]<>" \n"];
 If[FreeQ[listNotMixedMasses[[i,4]],sum],
-WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = "<>SPhenoForm[listNotMixedMasses[[i,4]]  /. subCouplingsSPheno]  <>" \n"];,
+WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>"C = "<>SPhenoForm[listNotMixedMasses[[i,4]]  /. subCouplingsSPheno]  <>" \n"];,
 MakeSPhenoCoupling[listNotMixedMasses[[i,4]]   /. subCouplingsSPheno ,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]],sphenoTree];
 ];
 
 WriteString[sphenoTree,"If (RotateNegativeFermionMasses) Then \n"];
 If[FreeQ[ParticlePhases,listNotMixedMasses[[i,1]]]==False,
 pos = Position[ParticlePhases,listNotMixedMasses[[i,1]]][[1,1]];
-WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>")/"<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"\n"];
+WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"C)/"<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"C\n"];
 If[FreeQ[MajoranaPart,listNotMixedMasses[[i,1]]]==False,
 WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Sqrt("<>SPhenoForm[ParticlePhases[[pos,2]]]<>")\n"];
 ];
 ];
-WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>") \n"];
+WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"C) \n"];
 WriteString[sphenoTree,ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" = "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"**2 \n"];
 WriteString[sphenoTree,"Else \n"];
 If[FreeQ[ParticlePhases,listNotMixedMasses[[i,1]]]==False,
 pos = Position[ParticlePhases,listNotMixedMasses[[i,1]]][[1,1]];
 WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = 1._dp\n"];
 ];
+WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = Real("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"C,dp) \n"];
 WriteString[sphenoTree,ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" = "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"**2 \n"];
 WriteString[sphenoTree,"End if\n"];
 WriteString[sphenoTree,"! ------------------------------- \n"];

@@ -458,7 +458,8 @@ list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
 list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
 list4b=Table[{list4in[[i]],ToExpression[ToString[list4in[[i]]]<>"func"]},{i,1,Length[list4in]}];
-per=Intersection[Sort/@Permutations[Join[PART[S],PART[S]],{2}]];
+(* per=Intersection[Sort/@Permutations[Join[PART[S],PART[S]],{2}]]; *)
+per=Map[getFullNS[#]&,Intersection[Sort/@getBlank/@Permutations[Join[PART[S],PART[S]],{2}]],{2}];
 For[i1=1,i1<=Length[per],
 For[i2=i1,i2<=Length[per],
 For[il=1,il<=Length[list1b],
@@ -942,14 +943,14 @@ Init2ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,{},{}];
 listInit={Y2S,Lam2S,LamY};
 Init2ScalarFunctionsSymm[{H2ab,Hbar2,Hab},{},{},{},{}];
 
-Y2S[a_,b_]:=Y2S@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-Lam2S[a_,b_]:=Lam2S@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-H2ab[a_,b_]:=H2ab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-Hbar2[a_,b_]:=Hbar2@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-Hab[a_,b_]:=Hab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-LamY[a_,b_]:=LamY@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-LamS[a_,b_]:=LamS@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-Y2FS[a_,b_,f_]:=Y2FS@@Join[Sort[{a,b}],{f}]/;OrderedQ[{a,b}]==False;
+Y2S[a_,b_]:=Y2S@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+Lam2S[a_,b_]:=Lam2S@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+H2ab[a_,b_]:=H2ab@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+Hbar2[a_,b_]:=Hbar2@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+Hab[a_,b_]:=Hab@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+LamY[a_,b_]:=LamY@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+LamS[a_,b_]:=LamS@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+Y2FS[a_,b_,f_]:=Y2FS@@Join[SortBy[{a,b},getBlank[#]&],{f}]/;OrderedQ[getBlank/@{a,b}]==False;
 (* Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"]; *)
 
 If[TwoLoop==True,
@@ -961,35 +962,36 @@ Init2ScalarFunctionsSymm[listInit,listInitNotExpaned,{},{},{}];
 listInit={HbarLam,HYab,HY, HYbar,H3ab};
 Init2ScalarFunctionsFinal[listInit,{},{},{},{}];
 
-LamBar3[a_,b_]:=LamBar3@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-LamBar2Y[a_,b_]:=LamBar2Y@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-HbarLam[a_,b_]:=HbarLam@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-HYab[a_,b_]:=HYab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-HY[a_,b_]:=HY@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-HYbar[a_,b_]:=HYbar@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-H3ab[a_,b_]:=H3ab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-Alam[a_,b_]:=Alam@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-AlamBar[a_,b_]:=AlamBar@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-LamSC2G[a_,b_]:=LamSC2G@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-LamSS[a_,b_]:=LamSS@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+LamBar3[a_,b_]:=LamBar3@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+LamBar2Y[a_,b_]:=LamBar2Y@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+HbarLam[a_,b_]:=HbarLam@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+HYab[a_,b_]:=HYab@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+HY[a_,b_]:=HY@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+HYbar[a_,b_]:=HYbar@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+H3ab[a_,b_]:=H3ab@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+Alam[a_,b_]:=Alam@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+AlamBar[a_,b_]:=AlamBar@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+LamSC2G[a_,b_]:=LamSC2G@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+LamSS[a_,b_]:=LamSS@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
 
 
 Init2ScalarFunctionsSymm[{},{},{},{ThTh,TaTaYY1,TaTaYY2,TaTaYY3},{}];
-ThTh[a_,b_,f_,g_]:=ThTh@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
-TaTaYY1[a_,b_,f_,g_]:=TaTaYY1@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
-TaTaYY2[a_,b_,f_,g_]:=TaTaYY2@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
-TaTaYY3[a_,b_,f_,g_]:=TaTaYY3@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]==False;
+(* ThTh[a_,b_,f_,g_]:=ThTh@@Join[Sort[{a,b}],{f,g}]/;OrderedQ[{a,b}]\[Equal]False; *)
+ThTh[a_,b_,f_,g_]:=ThTh@@Join[SortBy[{a,b},getBlank[#]&],{f,g}]/;OrderedQ[getBlank/@{a,b}]==False;
+TaTaYY1[a_,b_,f_,g_]:=TaTaYY1@@Join[SortBy[{a,b},getBlank[#]&],{f,g}]/;OrderedQ[getBlank/@{a,b}]==False;
+TaTaYY2[a_,b_,f_,g_]:=TaTaYY2@@Join[SortBy[{a,b},getBlank[#]&],{f,g}]/;OrderedQ[getBlank/@{a,b}]==False;
+TaTaYY3[a_,b_,f_,g_]:=TaTaYY3@@Join[SortBy[{a,b},getBlank[#]&],{f,g}]/;OrderedQ[getBlank/@{a,b}]==False;
 
 
 listInit={BY,BYbar,LamBar2S,Lam2g,HFab};
 listInitNotExpaned={HSab};
 Init2ScalarFunctions[listInit,listInitNotExpaned,{},{},{}];
-BY[a_,b_]:=BY@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-BYbar[a_,b_]:=BYbar@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-LamBar2S[a_,b_]:=LamBar2S@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-Lam2g[a_,b_]:=Lam2g@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-HFab[a_,b_]:=HFab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
-HSab[a_,b_]:=HSab@@Sort[{a,b}]/;OrderedQ[{a,b}]==False;
+BY[a_,b_]:=BY@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+BYbar[a_,b_]:=BYbar@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+LamBar2S[a_,b_]:=LamBar2S@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+Lam2g[a_,b_]:=Lam2g@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+HFab[a_,b_]:=HFab@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
+HSab[a_,b_]:=HSab@@SortBy[{a,b},getBlank[#]&]/;OrderedQ[getBlank/@{a,b}]==False;
 Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 ];
 
@@ -1079,8 +1081,8 @@ Init4ScalarFunctionsPermutated[{Y24abcd,Y6abcd,(*YC6abcd,*)Y6abcd2},{},{},{},{}]
 YC6abcd[a__]:=Conj[Y6abcd[a]];
 
 Init4ScalarFunctionsSymm[{LamTT},{},{},{},{}];
-LamTT[a_,b_,c_,d_]:=LamTT[b,a,c,d] /;OrderedQ[{a,b}]==False;
-LamTT[a_,b_,c_,d_]:=LamTT[a,b,d,c] /;OrderedQ[{c,d}]==False;
+LamTT[a_,b_,c_,d_]:=LamTT[b,a,c,d] /;OrderedQ[getBlank/@{a,b}]==False;
+LamTT[a_,b_,c_,d_]:=LamTT[a,b,d,c] /;OrderedQ[getBlank/@{c,d}]==False;
 LamTT[a_,b_,c_,d_]:=LamTT[c,d,a,b] /;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
 
 
@@ -1096,11 +1098,11 @@ Init4ScalarFunctionsFinal[listInit,listInitNotExpaned,{},{},{}];
 
 Init4ScalarFunctionsSymm[{LamBar2SAux},{},{},{},{}];
 
-LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[b,a,c,d] /;OrderedQ[{a,b}]==False;
-LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[a,b,d,c] /;OrderedQ[{c,d}]==False;
+LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[b,a,c,d] /;OrderedQ[getBlank/@{a,b}]==False;
+LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[a,b,d,c] /;OrderedQ[getBlank/@{c,d}]==False;
 LamBar2SAux[a_,b_,c_,d_]:=LamBar2SAux[c,d,a,b] /;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
-LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[b,a,c,d] /;OrderedQ[{a,b}]==False;
-LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[a,b,d,c] /;OrderedQ[{c,d}]==False;
+LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[b,a,c,d] /;OrderedQ[getBlank/@{a,b}]==False;
+LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[a,b,d,c] /;OrderedQ[getBlank/@{c,d}]==False;
 LamBar2Y[a_,b_,c_,d_]:=LamBar2Y[c,d,a,b] /;OrderedQ[{getBlank/@{a,b},getBlank/@{c,d}}]==False;
 
 

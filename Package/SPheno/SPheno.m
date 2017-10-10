@@ -926,6 +926,31 @@ i++;];
 
 ];
 
+If[AddRGEsNonHolomorphic===True,
+If[Length[BetaRijk]!= 0,
+If[SupersymmetricModel===True,
+tempList=Transpose[Transpose[listA3p/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1][[2]]][[2]];,
+tempList=Transpose[BetaRijk][[1]]/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1 /. {i1->gen1,i2->gen2,i3->gen3,i4->gen4};
+];
+HighScaleParameter = Join[HighScaleParameter,tempList];
+
+For[i=1,i<=Length[BetaRijk],
+NeededParametersForRGEs= Join[NeededParametersForRGEs,{{BetaRijk[[i,1]],getInvolvedParameters[BetaTijk[[i]]]}}];
+i++;];
+];
+
+If[Length[BetaMFij]!= 0,
+If[SupersymmetricModel===True,
+tempList=Transpose[Transpose[listWbip/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1][[2]]][[2]];,
+tempList=Transpose[BetaMFij][[1]]/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1 /. {i1->gen1,i2->gen2,i3->gen3,i4->gen4};
+];
+HighScaleParameter = Join[HighScaleParameter,tempList];
+
+For[i=1,i<=Length[BetaMFij],
+NeededParametersForRGEs= Join[NeededParametersForRGEs,{{BetaMFij[[i,1]],getInvolvedParameters[BetaTijk[[i]]]}}];
+i++;];
+];
+];
 
 If[Length[BetaTijk]!= 0,
 If[SupersymmetricModel===True,
@@ -1055,7 +1080,7 @@ i++;];
 
 
 If[SolveTadpoleEquationFirst==True,
-LowScaleParameter=Join[LowScaleParameter,DeleteCases[ParametersToSolveTadpoles /. {re[x_]->x,im[x_]->x},x_?((FreeQ[Transpose[Particles[ALL]][[1]],#]==False)&)]];
+LowScaleParameter=Join[LowScaleParameter,DeleteCases[DeleteCases[ParametersToSolveTadpoles /. {re[x_]->x,im[x_]->x},x_?((FreeQ[Transpose[Particles[ALL]][[1]],#]==False)&)],x_?((FreeQ[Transpose[parameters][[1]],#]==True)&)]];
 ];
 
 LowScaleParameterOld=nix;

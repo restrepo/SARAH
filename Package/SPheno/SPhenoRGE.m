@@ -99,6 +99,16 @@ listAllParameters =Join[listAllParameters ,Transpose[BetaMuij][[1]]];
 listBeta1Loop  = Join[listBeta1Loop ,Transpose[BetaMuij][[2]]];
 listBeta2Loop  = Join[listBeta2Loop ,Transpose[BetaMuij][[3]]];
 ];
+If[Length[BetaMFij]!= 0,
+listAllParameters =Join[listAllParameters ,Transpose[BetaMFij][[1]]];
+listBeta1Loop  = Join[listBeta1Loop ,Transpose[BetaMFij][[2]]];
+listBeta2Loop  = Join[listBeta2Loop ,Transpose[BetaMFij][[3]]];
+];
+If[Length[BetaRijk]!= 0,
+listAllParameters =Join[listAllParameters ,Transpose[BetaRijk][[1]]];
+listBeta1Loop  = Join[listBeta1Loop ,Transpose[BetaRijk][[2]]];
+listBeta2Loop  = Join[listBeta2Loop ,Transpose[BetaRijk][[3]]];
+];
 If[Length[BetaBij]!= 0,
 listAllParameters =Join[listAllParameters ,Transpose[BetaBij][[1]]];
 listBeta1Loop  = Join[listBeta1Loop ,Transpose[BetaBij][[2]]];

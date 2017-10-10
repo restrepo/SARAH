@@ -188,6 +188,17 @@ SA`SSlist=Join[SA`SSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure 
 SA`SSSlist=Join[SA`SSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure (entry[[1]]/. {Delta[a__]->1,epsTensor[__]->1}),LagInputIncludeHC}}];,
 400,
 SA`SSSSlist=Join[SA`SSSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure (entry[[1]]/. {Delta[a__]->1,epsTensor[__]->1}),LagInputIncludeHC}}];
+];,
+If[AddRGEsNonHolomorphic===True,
+IndStructure=MakeIndexStructure[withHead] /. subFieldsOne;
+Switch[Plus@@(getPartCode[getBlank[#]&/@fields]),
+2000,
+SA`FFlist=Join[SA`FFlist,{{getFullSF/@getBlank/@(fields /. Table[getBlank[FFields[[i]]]->getBlank[SFields[[i]]],{i,1,Length[FFields]}]) /. conj[x_]->x,{1,coup  IndStructure entry[[1]]}}}];
+AdditionalParametersLagrange = DeleteCases[AdditionalParametersLagrange,entry[[2]]];,
+300,
+SA`SSSlist=Join[SA`SSSlist,{{getFullSF/@getBlank/@fields /. conj[x_]->x,{1,coup  IndStructure (entry[[1]]/. {Delta[a__]->1,epsTensor[__]->1})}}}];
+AdditionalParametersLagrange = DeleteCases[AdditionalParametersLagrange,entry[[2]]];
+];
 ];
 ];
 

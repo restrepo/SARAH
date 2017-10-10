@@ -49,7 +49,9 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd;
 DEFINITION[GaugeES][Additional]= {
 	{LagHC, {Overwrite->False, AddHC->True}}
 };
-LagHC = Mup FHu.FHd +  Tup conj[SuR].Sq.conj[SHd] + Tdp conj[SdR].Sq.conj[SHu] + Tep conj[SeR].Sl.conj[SHu];
+LagHC = Mup FHd.FHu +  Tup conj[SHd].conj[SuR].Sq + Tdp conj[SHu].conj[SdR].Sq + Tep conj[SHu].conj[SeR].Sl;
+
+AddRGEsNonHolomorphic = True;
 
 
 (*----------------------------------------------*)

@@ -111,7 +111,7 @@ Tp[MatMul[x__]]:=Apply[MatMul,Map[Tp,Reverse[{x}]]];
 Conj[B_[b__]]:=Conj[B][b] /;(B=!=A &&B=!=DGi && B=!=Yijk && B=!=Aijk && B=!=Bij && B=!=m2ij && B=!=Muij && B=!=Li && B=!=LSi && B=!=Times && B=!=Delta && B=!=Pattern && B=!=Plus && B=!=Power && B=!=Rational && B=!=Conj&& B=!=Tp && B=!=Adj && B=!=YcY && B=!=YcYY && B=!= YcYYcY && B=!=Y6abcd ); 
 *)
 
-Conj[B_[b__]]:=Conj[B][b] /;FreeQ[{A,DGi,Yijk,Aijk,Bij,m2ij,Muij,Li,LSi,Times,Delta,Pattern,Plus,Power,Rational,Conj,Tp,Adj,YcY,YcYY,YcYYcY,Y6abcd,Y4abcd,YcYYcY4,YcY2S},B];
+Conj[B_[b__]]:=Conj[B][b] /;FreeQ[{A,DGi,Yijk,Aijk,Rijk, MFij,Bij,m2ij,Muij,Li,LSi,Times,Delta,Pattern,Plus,Power,Rational,Conj,Tp,Adj,YcY,YcYY,YcYYcY,Y6abcd,Y4abcd,YcYYcY4,YcY2S},B];
 
 (*
 Conj[B_[b__]]:=Conj[B][b] /;(B=!=A &&B=!=DGi && B=!=Yijk && B=!=Aijk && B=!=Bij && B=!=m2ij && B=!=Muij && B=!=Times && B=!=Delta && B=!=Pattern && B=!=Plus && B=!=Power && B=!=Rational && B=!=Conj&& B=!=Tp && B=!=Adj &&  B=!=Y2F && B=!= Y2S);
@@ -152,7 +152,7 @@ Return[temp];
 CalcRGEValue[x_]:=CalcRGEValue[x,False];
 
 CalcRGEValue[x_,Finish_]:=Block[{temp,i,j},
-temp  = Expand[x] /. {VEVi[a__]->0,Yijk[a__]->0, Aijk[a__]->0,Bij[a__]->0,Muij[a__]->0,m2ij[a__]->0, TA[a__]->0, DGi[a__]->0, Li[a__]->0, LSi[a__]->0,Mi[a__]->0} ;
+temp  = Expand[x] /. {VEVi[a__]->0,Yijk[a__]->0, Aijk[a__]->0,MFij[a__]->0,Rijk[a__]->0,Bij[a__]->0,Muij[a__]->0,m2ij[a__]->0, TA[a__]->0, DGi[a__]->0, Li[a__]->0, LSi[a__]->0,Mi[a__]->0} ;
 
 If[Head[temp]===Plus,Return[CalcRGEValue /@temp];];
 
@@ -499,7 +499,7 @@ If[Head[Expand[x]]===Plus,
 Return[ExpandTerm/@Expand[x]];
 ];
 partAbbr={pL,pN,pM,pO,pP,pQ,pR,pW,pX,pY,pZ};
-UsedHeaders={Yijk,Aijk,Bij,Muij,Li,LSi,m2ij, Conj};
+UsedHeaders={Yijk,Aijk,Bij,Muij,Li,LSi,MFij, Rijk,m2ij, Conj};
 temp=x;
 inv=Intersection[Cases[temp,y_/;MemberQ[partAbbr,y],99]];
 

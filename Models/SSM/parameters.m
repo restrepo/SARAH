@@ -45,6 +45,16 @@ ParameterDefinitions = {
 {ZW, {Description -> "W Mixing Matrix",
        Dependence ->   1/Sqrt[2] {{1, 1},
                   {\[ImaginaryI],-\[ImaginaryI]}} }},
+                  
+{vS,{ 
+     Dependence -> None, 
+     DependenceNum -> None, 
+     DependenceOptional -> None, 
+     DependenceSPheno -> None, 
+     Real -> True, 
+     LesHouches -> {HMIX, 51}, 
+     LaTeX -> "vS", 
+     OutputName -> vS}},                   
 
 
 {K1,    { LaTeX -> "\\kappa_1",

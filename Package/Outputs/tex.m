@@ -120,8 +120,12 @@ BetaFIiW = BetaFIi3I;
 BetaDGiW = BetaDGi3I;
 BetaGaugeW=BetaGauge3I;
 BetaVEVW = BetaVEV3I;
-BetaLijklW = BetaLijkl3I;,
+BetaLijklW = BetaLijkl3I;
+BetaRijkW=BetaRijk3I;
+BetaMFijW=BetaMFij3I;,
 GijW=Gij;
+GFijW=GFij3I;
+GSijW=GSij3I;
 TraceAbbrW = TraceAbbr;
 BetaLijklW = BetaLijkl;
 BetaYijkW = BetaYijk;
@@ -136,14 +140,23 @@ BetaFIiW = BetaFIi;
 BetaDGiW = BetaDGi;
 BetaGaugeW=BetaGauge;
 BetaVEVW = BetaVEV;
+BetaRijkW=BetaRijk;
+BetaMFijW=BetaMFij;
 ];
 
-If[Length[Gij]>0,
 If[SupersymmetricModel===True,
-WriteString[RGEsFile,"\\subsection{Anomalous Dimensions}\n"];,
-WriteString[RGEsFile,"\\subsection{Anomalous Dimensions of scalars}\n"];
-];
+If[Length[Gij]>0,
+WriteString[RGEsFile,"\\subsection{Anomalous Dimensions}\n"];
 WriteTeXGammaFunction[GijW];
+];,
+If[Length[GFij]>0,
+WriteString[RGEsFile,"\\subsection{Anomalous Dimensions for fermions}\n"];
+WriteTeXGammaFunction[GFijW];
+];
+If[Length[GSij]>0,
+WriteString[RGEsFile,"\\subsection{Anomalous Dimensions for scalars}\n"];
+WriteTeXGammaFunction[GSijW];
+];
 ];
 
 If[Length[BetaGauge]>0,
@@ -215,6 +228,16 @@ If[Length[BetaFIiW]>0,
 WriteString[RGEsFile,"\\subsection{Fayet-Iliopoulos $D$-terms}\n"];
 WriteTeXBetaFunction[BetaFIiW];
 ];
+
+If[Length[BetaRijkW]>0,
+WriteString[RGEsFile,"\\subsection{Non-holomorphic trilinear soft-terms}\n"];
+WriteTeXBetaFunction[BetaRijkW];
+];
+If[Length[BetaMFijW]>0,
+WriteString[RGEsFile,"\\subsection{Non-holomorphic bilinear soft-terms}\n"];
+WriteTeXBetaFunction[BetaMFijW];
+];
+
 
 If[Length[Betam2ij]>0,
 WriteString[RGEsFile,"\\subsection{Soft-Breaking Scalar Masses}\n"];

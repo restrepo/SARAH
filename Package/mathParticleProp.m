@@ -560,7 +560,7 @@ structure=structure*CGc;
 If[FreeQ[SA`KnonwCG,Head[CGc]] && Length[partList]<5 && FreeQ[CGc,CG]==False &&Head[CGc]=!=Times,
 If[Length[Head[CGc][[2]]]===4,
 If[(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i1,i2}]]==False ) &&(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i3,i4}]]==False ) ,
-structure=structure /.  CG[a_,{i1_List,i2_List,i3_List,i4_List}][j1_,j2_,j3_,j4_]:>CG[a,{i1,i2}][j1,j2]CG[a,{i3,i4}][j3,j4],
+structure=structure /.  CG[a_,{i1_List,i2_List,i3_List,i4_List}][j1_,j2_,j3_,j4_]:>CG[a,{i1,i2}][j1,j2]CG[a,{i3,i4}][j3,j4];,
 structure=structure /. CG[a_,b_]:>InvariantMatrixSusyno[Gauge[[pos,2]],getDynkinLabels[#,Gauge[[pos,2,1]]]&/@Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
 ];,
 structure=structure /. CG[a_,b_]:>InvariantMatrixSusyno[Gauge[[pos,2]],getDynkinLabels[#,Gauge[[pos,2,1]]]&/@Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
@@ -2337,7 +2337,10 @@ subInv=Join[subInv,{invFields[[j]][{b__}][{genf[j],d___}]->1,invFields[[j]][{gen
 ];
 j++;];
 subInv=Flatten[subInv];
-temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}]/.conj[x_]->x  /. subInv,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A (*/.conj[x_]\[Rule]x *)/.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c];
+(* Print[subInv];
+Print["sub2", subs];
+Print[contraction*particles /. sum[a__]\[Rule]1 /.A_[{b__}][c_Integer]\[Rule]A[{b}] /.A_[{b__}][{d__}][c_Integer]\[Rule]A[{b}][{d}]]; *)
+temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}] /.conj[x_]->x   /. subInv,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A (*/.conj[x_]\[Rule]x*) /.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c];
 temp = temp /. conj[x_[y_]]:>ToExpression[ToString[x]<>"c"][y] //. Flatten[subs] /. Delta[a__]->1 /. epsTensor[a__]->1 /. CG[a__][b__]->1 (*/. conj[x_]\[Rule]x*);
 temp=temp/.sub2;
 
