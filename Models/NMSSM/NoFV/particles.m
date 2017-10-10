@@ -13,7 +13,7 @@ ParticleDefinitions[GaugeES] = {
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -34,8 +34,8 @@ ParticleDefinitions[GaugeES] = {
       
       {SbL, {LaTeX ->"\\tilde{b}_L"}},
       {SbR, {LaTeX ->"\\tilde{b}_R"}},
-      {SsL, {LaTeX ->"\\tilde{s}_L"}},
-      {SsR, {LaTeX ->"\\tilde{s}_R"}},
+      {SstL, {LaTeX ->"\\tilde{s}_L"}},
+      {SstR, {LaTeX ->"\\tilde{s}_R"}},
       {SdL, {LaTeX ->"\\tilde{d}_L"}},
       {SdR, {LaTeX ->"\\tilde{d}_R"}},
       {StL, {LaTeX ->"\\tilde{t}_L"}},
@@ -52,7 +52,7 @@ ParticleDefinitions[GaugeES] = {
       {StauR, {LaTeX ->"\\tilde{\\tau}_R"}},
 
       {SsR,  { Description -> "Singlet"}},                     
-      {S,    { Description -> "Singlino" }}
+      {FS,   { Description -> "Singlino" }}
       };
       
       
@@ -61,96 +61,85 @@ ParticleDefinitions[GaugeES] = {
   ParticleDefinitions[EWSB] = {
 
         {Sd ,  {  Description->"Down Squark",
-                RParity -> -1,
                 PDG ->  {1000001,20000015},
                 Mass -> LesHouches,
                 FeynArtsNr -> 141,   
                 LaTeX -> "\\tilde{d}",
-                OutputName -> "dm" }},
+                OutputName -> "sd" }},
                 
        {Ss ,  {  Description->"Strange Squark",
-                RParity -> -1,
                 PDG ->  {1000003,2000003},
                 Mass -> LesHouches,
                 FeynArtsNr -> 142,   
                 LaTeX -> "\\tilde{s}",
-                OutputName -> "sm" }},        
+                OutputName -> "ss" }},        
                
        {Sb ,  {  Description->"Bottom Squark",
-                RParity -> -1,
                 PDG ->  {1000005,2000005},
                 Mass -> LesHouches,
                 FeynArtsNr -> 143,   
                 LaTeX -> "\\tilde{b}",
-                OutputName -> "bm" }},            
+                OutputName -> "sb" }},            
               
            
       {Su ,  {  Description->"Up Squark",
-                RParity -> -1,
                 PDG ->  {1000002,2000002},
                 Mass -> LesHouches,
                 FeynArtsNr -> 131,   
                 LaTeX -> "\\tilde{u}",
-                OutputName -> "um" }}, 
+                OutputName -> "su" }}, 
                 
      {Sc ,  {  Description->"Charmed Squark",
-                RParity -> -1,
                 PDG ->  {1000004,2000004},
                 Mass -> LesHouches,
                 FeynArtsNr -> 132,   
                 LaTeX -> "\\tilde{c}",
-                OutputName -> "cm" }},    
+                OutputName -> "sc" }},    
       
       {St ,  {  Description->"Top Squark",
-                RParity -> -1,
                 PDG ->  {1000006,2000006},
                 Mass -> LesHouches,
                 FeynArtsNr -> 133,   
                 LaTeX -> "\\tilde{t}",
-                OutputName -> "tm" }},                        
+                OutputName -> "st" }},                        
       
       
      {Se ,  {  Description->"Selectron",
-                RParity -> -1,
                 PDG ->  {1000011,2000011},
                 Mass -> LesHouches,
                 FeynArtsNr -> 121,   
                 LaTeX -> "\\tilde{e}",
-                OutputName -> "em" }}, 
+                OutputName -> "se" }}, 
                 
      {Sm ,  {  Description->"Smuon",
-                RParity -> -1,
                 PDG ->  {1000013,2000013},
                 Mass -> LesHouches,
                 FeynArtsNr -> 122,   
                 LaTeX -> "\\tilde{\\mu}",
-                OutputName -> "mm" }}, 
+                OutputName -> "sm" }}, 
                 
       {Stau ,  {Description->"Stau",
-                  RParity -> -1,
-                PDG ->  {1000015,2000015},
+                  PDG ->  {1000015,2000015},
                 Mass -> LesHouches,
                 FeynArtsNr -> 123,   
                 LaTeX -> "\\tilde{\\tau}",
-                OutputName -> "lm" }},                        
+                OutputName -> "sl" }},                        
     
      {SveL ,  {  Description->"Electron Sneutrino",
-                RParity -> -1,
                 PDG ->  {1000012},
                 Mass ->LesHouches,
                 FeynArtsNr -> 111,   
                 LaTeX -> "\\tilde{\\nu}_e",
                 OutputName -> "sne" }},      
+                
      {SvmL ,  { Description->"Muon Sneutrino",
-                 RParity -> -1,
-                PDG ->  {1000014},
+                 PDG ->  {1000014},
                 Mass ->LesHouches,
                 FeynArtsNr -> 112,   
                 LaTeX -> "\\tilde{\\nu}_{\\mu}",
                 OutputName -> "snm" }},                                   
 
      {SvtL ,  {  Description->"Tau Sneutrino",
-                RParity -> -1,
                 PDG ->  {1000016},
                 Mass ->LesHouches,
                 FeynArtsNr -> 113,   
@@ -174,7 +163,6 @@ ParticleDefinitions[GaugeES] = {
       {gG,   { Description -> "Gluon Ghost" }},           
                      
       {Fd,    { Description->"Down Quark",
-                RParity -> 1,  
                  PDG -> {1},
                  Mass -> 0.0035,
                  FeynArtsNr -> 41,
@@ -182,7 +170,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "d" }},   
                  
      {Fs,    { Description->"Strange Quark",
-                RParity -> 1,  
                  PDG -> {3},
                  Mass -> 0.104,
                  FeynArtsNr -> 42,
@@ -190,7 +177,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "s" }},   
                  
       {Fb,    { Description->"Bottom Quark",
-                RParity -> 1,  
                  PDG -> {5},
                  Mass -> 4.20,
                  FeynArtsNr -> 43,
@@ -198,7 +184,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "b" }},                               
                  
       {Fu,    { Description->"Up Quark",
-                RParity -> 1,  
                  PDG -> {2},
                  Width -> 0, 
                  Mass -> 0.0015,
@@ -207,8 +192,7 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "u" }},   
                  
        {Fc,    { Description->"Charmed Quark",
-                 RParity -> 1,  
-                 PDG -> {4},
+                  PDG -> {4},
                  Width ->  0, 
                  Mass -> 1.27,
                  FeynArtsNr -> 32,
@@ -216,7 +200,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "c" }}, 
                  
       {Ft,    { Description->"Top Quark",
-                RParity -> 1,  
                  PDG -> {6},
                  Width -> 1.59, 
                  Mass -> 171.2,
@@ -225,7 +208,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "t" }},                            
                  
       {Fe,    { Description->"Electron",
-                RParity -> 1,  
                  PDG -> {11},
                  Mass -> 0.000511,
                  FeynArtsNr -> 21,
@@ -233,7 +215,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "e" }},
 
  {Fm,    { Description->"Muon",
-                RParity -> 1,  
                  PDG -> {13},
                  Mass -> 0.105,
                  FeynArtsNr -> 22,
@@ -241,7 +222,6 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "m" }},
                  
  {Ftau,    { Description->"Tau",
-                RParity -> 1,  
                  PDG -> {15},
                  Mass -> 1.776,
                  FeynArtsNr -> 23,
@@ -249,31 +229,28 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "ta" }},                                  
                  
       {Fve,    { Description->"Electron Neutrino",
-                RParity -> 1,  
                  PDG -> {12},
                  Width -> 0, 
                  Mass -> 0.,
-                 FeynArtsNr -> 1,
+                 FeynArtsNr -> 51,
                  LaTeX -> "\\nu_e",
-                 OutputName -> "ne" }},
+                 OutputName -> "ve" }},
                  
          {Fvm,    { Description->"Muon Neutrino",
-                 RParity -> 1,  
-                 PDG -> {14},
+                  PDG -> {14},
                  Width -> 0, 
                  Mass -> 0.,
-                 FeynArtsNr -> 1,
+                 FeynArtsNr -> 52,
                  LaTeX -> "\\nu_{\\mu}",
-                 OutputName -> "nm" }},
+                 OutputName -> "vm" }},
                  
        {Fvt,    { Description->"Tau Neutrino",
-                 RParity -> 1,  
-                 PDG -> {16},
+                  PDG -> {16},
                  Width -> 0, 
                  Mass -> 0.,
-                 FeynArtsNr -> 1,
+                 FeynArtsNr -> 53,
                  LaTeX -> "\\nu_{\\tau}",
-                 OutputName -> "nt" }}       ,                
+                 OutputName -> "vt" }}       ,                
                                                   
       {Glu,  { Description -> "Gluino" }},
                  

@@ -1,0 +1,929 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     42804,        920]
+NotebookOptionsPosition[     42409,        903]
+NotebookOutlinePosition[     42863,        921]
+CellTagsIndexPosition[     42820,        918]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"BeginPackage", "[", "\"\<Susyno`LieGroups`\>\"", "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "name", ",", "result", ",", "i", ",", "E6", ",", "g2", ",", "f4", ",", 
+      "n", ",", "j", ",", "k", ",", "weight", ",", "index", ",", "w", ",", 
+      "x", ",", "Adjoint", ",", "input", ",", "w", ",", "x", ",", "x$", ",", 
+      "ex", ",", "el", ",", "DimR", ",", "delta", ",", "dim", ",", "m", ",", 
+      "matrix", ",", "up", ",", "down", ",", "dim1", ",", "dim2", ",", "col", 
+      ",", "begin", ",", "b1", ",", "b2", ",", "b3", ",", "Casimir", ",", "b",
+       ",", "e", ",", "b$", ",", "res", ",", "n2", ",", "v", ",", 
+      "RepMatrices", ",", "rep", ",", "Invariants", ",", "a", ",", "x1", ",", 
+      "x2", ",", "c", ",", "x3", ",", "y1", ",", "x1$", ",", "x2$", ",", 
+      "y1$", ",", "conj", ",", "expr", ",", "j1", ",", "j2", ",", "j3", ",", 
+      "res1", ",", "res2", ",", "var1", ",", "var2", ",", "var3", ",", 
+      "weights", ",", "\[NoBreak]", "l1", ",", "end", ",", "groups", ",", 
+      "group", ",", "max", ",", "adjoint", ",", "cas", ",", "ConjugateIrrep", 
+      ",", "DynkinIndex", ",", "repsWithSizeN", ",", "CongruencyClass", ",", 
+      " ", "sR", ",", "TriangularAnomalyValue", ",", "InvariantsBaseMethod", 
+      ",", "reps", ",", "vector", ",", "i1", ",", "pos", ",", "dims", ",", 
+      "r", ",", " ", "v1", ",", " ", "v2", ",", "Conjugations", ",", "r1", 
+      ",", "r2", ",", "SU3", ",", " ", "dt"}], "}"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"EndPackage", "[", "]"}], "\[IndentingNewLine]", 
+   RowBox[{"BeginPackage", "[", "\"\<Susyno`SusyRGEs`\>\"", "]"}], "\n", 
+   RowBox[{"EndPackage", "[", "]"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"BeginPackage", "[", 
+    RowBox[{"\"\<SARAH`\>\"", ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<Global`\>\"", ",", "\"\<Susyno`LieGroups`\>\"", ",", 
+       "\"\<Susyno`SusyRGEs`\>\""}], "}"}]}], "]"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"SA`Parallelize", "==", "True"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"LaunchKernels", "[", "4", "]"}], ";"}]}], 
+     "\[IndentingNewLine]", "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"StartingDirectory", "=", " ", 
+    RowBox[{"Directory", "[", "]"}]}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"$sarahDir", "=", 
+    RowBox[{"SetDirectory", "[", 
+     RowBox[{"DirectoryName", "[", 
+      RowBox[{"System`Private`FindFile", "[", "$Input", "]"}], "]"}], "]"}]}],
+    "\[IndentingNewLine]", "\[IndentingNewLine]", " ", 
+   RowBox[{"ResetDirectory", "[", "]"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"$sarahPackageDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<Package\>\""}], "}"}], "]"}]}], "\n", 
+   RowBox[{"$sarahSPhenoPackageDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahPackageDir", ",", "\"\<SPheno\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"$sarahModelDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<Models\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"$sarahFeynDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<FeynArts\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"$sarahRGEsDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<RGEs\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"$sarahOutputDir", "=", 
+     RowBox[{"ToFileName", "[", 
+      RowBox[{"{", 
+       RowBox[{"$sarahDir", ",", "\"\<Output\>\""}], "}"}], "]"}]}], " ", 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"$sarahInputDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<Input\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"$sarahSusynoDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<Susyno\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"SA`Version", " ", "=", " ", "\"\<SARAHVERSION\>\""}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"$sarahNonPublicDir", "=", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"{", 
+      RowBox[{"$sarahDir", ",", "\"\<NonPublic\>\""}], "}"}], "]"}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Off", "[", 
+     RowBox[{"CreateDirectory", "::", "ioerr"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"NumericQ", "[", 
+      RowBox[{"ToExpression", "[", "SA`Version", "]"}], "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Print", "[", 
+      RowBox[{
+       RowBox[{"StyleForm", "[", 
+        RowBox[{"\"\<SARAH \>\"", ",", "\"\<Section\>\"", ",", 
+         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}], ",", 
+       RowBox[{"StyleForm", "[", 
+        RowBox[{"SA`Version", " ", ",", "\"\<Section\>\"", ",", 
+         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}]}], " ", "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Print", "[", 
+      RowBox[{
+       RowBox[{"StyleForm", "[", 
+        RowBox[{"\"\<SARAH \>\"", ",", "\"\<Section\>\"", ",", 
+         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}], ",", 
+       RowBox[{"StyleForm", "[", 
+        RowBox[{"\"\<(Private Version)\>\"", ",", "\"\<Section\>\"", ",", 
+         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}]}], " ", "]"}]}], 
+    "\[IndentingNewLine]", "]"}], "\n", 
+   RowBox[{"Print", "[", "\"\<by Florian Staub, 2015\>\"", "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"StyleForm", "[", 
+      RowBox[{"\"\<contributions by M. D. Goodsell, K. Nickel\>\"", ",", 
+       RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], " ", "]"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", 
+    RowBox[{"StyleForm", "[", 
+     RowBox[{"\"\<References:\>\"", ",", "\"\<Section\>\"", ",", 
+      RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<  Comput.Phys.Commun.181 (2010) 1077-1086. (arXiv:0909.2863[hep-ph])\
+\>\"", "]"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<  Comput.Phys.Commun.182 (2011) 808-833. (arXiv:1002.0840[hep-ph])\>\
+\"", "]"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<  Comput.Phys.Commun.184 (2013) 1792-1809. (arXiv:1207.0906[hep-ph])\
+\>\"", "]"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<  Comput.Phys.Commun.185 (2014) 1773-1790. (arXiv:1309.7223[hep-ph])\
+\>\"", "]"}], "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", 
+    RowBox[{"StyleForm", "[", 
+     RowBox[{
+     "\"\<Download and Documentation:\>\"", ",", "\"\<Section\>\"", ",", 
+      RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", "\"\<  http://sarah.hepforge.org\>\"", "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", "\"\<\>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", "\"\<Start evaluation of a model with:\>\"", "]"}], 
+    ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"StyleForm", "[", 
+      RowBox[{
+      "\"\<   Start[\\\"Name of Model\\\"]\>\"", ",", "\"\<Section\>\"", ",", 
+       
+       RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", 
+     "\"\<e.g. Start[\\\"MSSM\\\"] or Start[\\\"NMSSM\\\",\\\"CKM\\\"]\>\"", 
+     "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<To get a list with all installed models, use \>\"", ",", 
+      RowBox[{"StyleForm", "[", 
+       RowBox[{"\"\<ShowModels\>\"", ",", "\"\<Section\>\"", ",", 
+        RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}]}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"$Path", "=", 
+        RowBox[{"{", "$sarahPackageDir", "}"}]}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"<<", "variables`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "dependences`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "mathFunctions`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "mathSumMatrizes`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "mathParticleProp`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "init`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "error`"}], ";", " ", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"<<", "vertex`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "numerik`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "more`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "deriveModel`"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"<<", "loopCorrections`"}], ";", " ", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"<<", "TwoLoopEffPot`"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"<<", "wilson`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Get", "[", 
+        RowBox[{"ToFileName", "[", 
+         RowBox[{"$sarahSPhenoPackageDir", ",", "\"\<SPheno.m\>\""}], "]"}], 
+        "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "processes`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "checkModel`"}], ";", " ", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"<<", " ", "TwoLoopPole`"}], ";"}]}], "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"$Path", "=", 
+        RowBox[{"ToFileName", "[", 
+         RowBox[{"{", 
+          RowBox[{"$sarahPackageDir", ",", "\"\<Outputs\>\""}], "}"}], 
+         "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"<<", "madgraph`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "lhpc`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "whizard`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "feynarts`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "calchep`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "calchepSPheno`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "output`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "tex`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "Vevacious`"}], ";"}]}], "\[IndentingNewLine]", "]"}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"$Path", "=", 
+        RowBox[{"ToFileName", "[", 
+         RowBox[{"{", 
+          RowBox[{"$sarahPackageDir", ",", "\"\<Lagrangian\>\""}], "}"}], 
+         "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"<<", "lagrange`"}], ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"<<", "inputLag`"}], ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"<<", "mixings`"}], ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"<<", "ghosts`"}], ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"<<", "tadpoles`"}], ";"}]}], "\[IndentingNewLine]", "]"}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"$Path", "=", 
+        RowBox[{"ToFileName", "[", 
+         RowBox[{"{", 
+          RowBox[{"$sarahPackageDir", ",", "\"\<RGEs\>\""}], "}"}], "]"}]}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"<<", "mathRGEs`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "nonSUSYrges`"}], ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"<<", "genericRGEs`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "OutputRGEs`"}], ";"}]}], "\[IndentingNewLine]", "]"}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"$Path", "=", 
+        RowBox[{"ToFileName", "[", 
+         RowBox[{"{", 
+          RowBox[{"$sarahPackageDir", ",", "\"\<GroupTheory\>\""}], "}"}], 
+         "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"<<", "linkSusyno`"}], ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"<<", "grouptheory`"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<<", "young`"}], ";"}]}], "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", " ", "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"$Path", "=", 
+       RowBox[{"{", "$sarahDir", "}"}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"<<", "SARAH.config"}], ";"}]}], "\[IndentingNewLine]", "]"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Start", "[", 
+      RowBox[{"model_", ",", "sub___"}], "]"}], ":=", 
+     RowBox[{"Block", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"i", ",", "startedtime"}], "}"}], ",", "\[IndentingNewLine]", 
+       
+       RowBox[{
+        RowBox[{"startedtime", "=", 
+         RowBox[{"TimeUsed", "[", "]"}]}], ";", "\[IndentingNewLine]", 
+        "InitArrays", ";", "\[IndentingNewLine]", 
+        RowBox[{"ModelLoaded", "=", "False"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"i", "=", "1"}], ";", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Head", "[", "model", "]"}], "=!=", "String"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+           "Print", "[", "\"\<Name of Model must be a String!\>\"", "]"}], 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", "\"\<Evaluation aborted\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"AbortStart", "=", "False"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"ModelLoaded", "=", "True"}], ";"}]}], 
+         "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", 
+        RowBox[{"$sarahOutputDir", "=", 
+         RowBox[{"SARAH", "[", "OutputDirectory", "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"While", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"ModelLoaded", " ", "===", "False"}], " ", "&&", " ", 
+           RowBox[{"i", "\[LessEqual]", 
+            RowBox[{"Length", "[", 
+             RowBox[{"SARAH", "[", "InputDirectories", "]"}], "]"}]}]}], ",", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"SARAH`Private", "===", "True"}], ",", 
+             "\[IndentingNewLine]", " ", 
+             RowBox[{
+              RowBox[{"$sarahModelDirInput", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{"{", 
+                 RowBox[{"$sarahDir", ",", "\"\<Private-Models\>\""}], "}"}], 
+                "]"}]}], ";"}], ",", "\[IndentingNewLine]", 
+             RowBox[{"(*", " ", 
+              RowBox[{"$sarahModelDirInput", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{"{", 
+                 RowBox[{"$sarahDir", ",", "\"\<Models\>\""}], "}"}], "]"}]}],
+               " ", "*)"}], "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"$sarahModelDirInput", "=", 
+               RowBox[{
+                RowBox[{"SARAH", "[", "InputDirectories", "]"}], "[", 
+                RowBox[{"[", "i", "]"}], "]"}]}], ";"}]}], 
+            "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{
+            "\"\< ... checking Directory: \>\"", ",", "$sarahModelDirInput"}],
+             "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"Modelname", " ", "=", " ", "model"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"StringFreeQ", "[", 
+               RowBox[{"model", ",", "\"\</\>\""}], "]"}], "\[Equal]", 
+              "False"}], ",", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"splitted", "=", 
+               RowBox[{"StringSplit", "[", 
+                RowBox[{"model", ",", "\"\</\>\""}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"modelDir", "=", 
+               RowBox[{"splitted", "[", 
+                RowBox[{"[", "1", "]"}], "]"}]}], ";", " ", 
+              RowBox[{"submodeldir", "=", 
+               RowBox[{"splitted", "[", 
+                RowBox[{"[", "2", "]"}], "]"}]}], ";"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"modelDir", " ", "=", " ", "model"}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"ValueQ", "[", "sub", "]"}], "=!=", 
+                 RowBox[{"ValueQ", "[", "]"}]}], ",", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"submodeldir", "=", "sub"}], ";"}], ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"submodeldir", "=", "False"}], ";"}]}], 
+               "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+            "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"$sarahModelNameMain", "=", "modelDir"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"submodeldir", "=!=", "False"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"$sarahCurrentModelDir", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{
+                 RowBox[{"ToFileName", "[", 
+                  RowBox[{"{", 
+                   RowBox[{"$sarahModelDirInput", ",", "modelDir"}], "}"}], 
+                  "]"}], ",", "submodeldir"}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"$sarahCurrentOutputMainDir", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{"{", 
+                 RowBox[{"$sarahOutputDir", ",", 
+                  RowBox[{
+                  "modelDir", "<>", "\"\<-\>\"", "<>", "submodeldir"}]}], 
+                 "}"}], "]"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"ModelFile", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{
+                 RowBox[{"{", "$sarahCurrentModelDir", "}"}], ",", 
+                 RowBox[{
+                 "modelDir", "<>", "\"\<-\>\"", "<>", "submodeldir", "<>", 
+                  "\"\<.m\>\""}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"modDir", " ", "=", " ", 
+               RowBox[{
+               "modelDir", " ", "<>", "\"\</\>\"", " ", "<>", " ", 
+                "submodeldir"}]}], ";"}], ",", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"$sarahCurrentModelDir", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{"{", 
+                 RowBox[{"$sarahModelDirInput", ",", "modelDir"}], "}"}], 
+                "]"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"$sarahCurrentOutputMainDir", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{"{", 
+                 RowBox[{"$sarahOutputDir", ",", "modelDir"}], "}"}], "]"}]}],
+               ";", "\[IndentingNewLine]", 
+              RowBox[{"ModelFile", "=", 
+               RowBox[{"ToFileName", "[", 
+                RowBox[{
+                 RowBox[{"{", "$sarahCurrentModelDir", "}"}], ",", 
+                 RowBox[{"modelDir", "<>", "\"\<.m\>\""}]}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"modDir", " ", "=", " ", "modelDir"}], ";"}]}], 
+            "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"$sarahCurrentModelMainDir", "=", 
+            RowBox[{"ToFileName", "[", 
+             RowBox[{"{", 
+              RowBox[{"$sarahModelDirInput", ",", "modelDir"}], "}"}], 
+             "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"ParameterFile", "=", 
+            RowBox[{"ToFileName", "[", 
+             RowBox[{
+              RowBox[{"{", "$sarahCurrentModelDir", "}"}], ",", 
+              "\"\<parameters.m\>\""}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"ParticleFile", "=", 
+            RowBox[{"ToFileName", "[", 
+             RowBox[{
+              RowBox[{"{", "$sarahCurrentModelDir", "}"}], ",", 
+              "\"\<particles.m\>\""}], "]"}]}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"AbortStart", "=", "False"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{
+             RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";"}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"Off", "[", 
+            RowBox[{"FileByteCount", "::", "nffil"}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"FileByteCount", "[", "ModelFile", "]"}], "===", 
+              "$Failed"}], ",", "\[IndentingNewLine]", 
+             RowBox[{"(*", " ", 
+              RowBox[{
+               RowBox[{"Message", "[", 
+                RowBox[{"ModelFile", "::", "MissingModel"}], "]"}], ";"}], 
+              " ", "*)"}], "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"AbortStart", "=", "True"}], ";"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"Get", "[", "ModelFile", "]"}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"ModelLoaded", "=", "True"}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"AbortStart", "=", "False"}], ";"}]}], 
+            "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"ModelLoaded", "\[Equal]", "True"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"FileByteCount", "[", "ParameterFile", "]"}], "===", 
+                 "$Failed"}], ",", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"Message", "[", 
+                  RowBox[{"ModelFile", "::", "MissingParticle"}], "]"}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"AbortStart", "=", "True"}], ";"}], ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"Get", "[", "ParameterFile", "]"}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"AbortStart", "=", "False"}], ";"}]}], 
+               "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+              "\[IndentingNewLine]", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"FileByteCount", "[", "ParticleFile", "]"}], "===", 
+                 "$Failed"}], ",", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"Message", "[", 
+                  RowBox[{"ModelFile", "::", "MissingParameter"}], "]"}], ";",
+                  "\[IndentingNewLine]", 
+                 RowBox[{"AbortStart", "=", "True"}], ";"}], ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"Get", "[", "ParticleFile", "]"}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"AbortStart", "=", "False"}], ";"}]}], 
+               "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+            "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"Get", "[", 
+            RowBox[{"ToFileName", "[", 
+             RowBox[{
+              RowBox[{"{", "$sarahModelDir", "}"}], ",", 
+              "\"\<parameters.m\>\""}], "]"}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Get", "[", 
+            RowBox[{"ToFileName", "[", 
+             RowBox[{
+              RowBox[{"{", "$sarahModelDir", "}"}], ",", 
+              "\"\<particles.m\>\""}], "]"}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"i", "++"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"AbortStart", "===", "True"}], ",", "\[IndentingNewLine]", 
+          " ", 
+          RowBox[{
+           RowBox[{"Message", "[", 
+            RowBox[{"ModelFile", "::", "MissingModel"}], "]"}], ";"}]}], 
+         "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"AbortStart", "\[Equal]", "False"}], ",", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"Head", "[", "Model`Name", "]"}], "=!=", "String"}], 
+              " ", "&&", " ", 
+              RowBox[{
+               RowBox[{"Head", "[", "ModelName", "]"}], "===", "String"}]}], 
+             ",", 
+             RowBox[{
+              RowBox[{"Model`Name", "=", "ModelName"}], ";"}]}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"Head", "[", "Model`NameLaTeX", "]"}], "=!=", 
+               "String"}], " ", "&&", " ", 
+              RowBox[{
+               RowBox[{"Head", "[", "ModelNameLaTeX", "]"}], "===", 
+               "String"}]}], ",", 
+             RowBox[{
+              RowBox[{"Model`NameLaTeX", "=", "ModelNameLaTeX"}], ";"}]}], 
+            "]"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Head", "[", "Model`Authors", "]"}], "=!=", "String"}], 
+             ",", 
+             RowBox[{
+              RowBox[{"Model`Authors", "=", "\"\<undefined\>\""}], ";"}]}], 
+            "]"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Head", "[", "Model`Date", "]"}], "=!=", "String"}], 
+             ",", 
+             RowBox[{
+              RowBox[{"Model`Date", "=", "\"\<undefined\>\""}], ";"}]}], 
+            "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{
+            "because", " ", "of", " ", "historic", " ", "reasons", " ", 
+             RowBox[{"(", 
+              RowBox[{
+              "I", " ", "have", " ", "to", " ", "change", " ", "the", " ", 
+               "variable", " ", "names", " ", "sometimes", " ", "inside", " ",
+                "the", " ", "code"}], ")"}]}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"ModelName", " ", "=", " ", "Model`Name"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"ModelNameLaTeX", " ", "=", " ", "Model`NameLaTeX"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"SetOptions", "[", 
+            RowBox[{"MakeVevacious", ",", 
+             RowBox[{"OutputFile", "\[Rule]", 
+              RowBox[{"ModelName", "<>", "\"\<.vin\>\""}]}]}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "Print", "[", "\"\<*****************************\>\"", "]"}], 
+             ";"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{"StyleForm", "[", 
+             RowBox[{
+             "\"\<Model files loaded   \>\"", ",", "\"\<Section\>\"", ",", 
+              RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<  Model    : \>\"", ",", 
+             RowBox[{"StyleForm", "[", 
+              RowBox[{"Model`Name", ",", "\"\<Section\>\"", ",", 
+               RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], " ", "]"}], 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<  Author(s): \>\"", ",", 
+             RowBox[{"StyleForm", "[", 
+              RowBox[{"Model`Authors", ",", "\"\<Section\>\"", ",", 
+               RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<  Date     : \>\"", ",", 
+             RowBox[{"StyleForm", "[", 
+              RowBox[{"Model`Date", ",", "\"\<Section\>\"", ",", 
+               RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{
+             RowBox[{"Print", "[", 
+              RowBox[{"\"\<  Superpotential     : \>\"", ",", 
+               RowBox[{"StyleForm", "[", 
+                RowBox[{"SuperPotential", ",", "\"\<Section\>\"", ",", 
+                 RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], "]"}], 
+             ";"}], " ", "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "Print", "[", "\"\<*****************************\>\"", "]"}], 
+             ";"}], "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"FileExistsQ", "[", "$sarahOutputDir", "]"}], "=!=", 
+              "True"}], ",", 
+             RowBox[{
+              RowBox[{"CreateDirectory", "[", "$sarahOutputDir", "]"}], 
+              ";"}]}], "]"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"FileExistsQ", "[", "$sarahCurrentOutputMainDir", "]"}],
+               "=!=", "True"}], ",", 
+             RowBox[{
+              RowBox[{
+              "CreateDirectory", "[", "$sarahCurrentOutputMainDir", "]"}], 
+              ";"}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"SetOptions", "[", 
+            RowBox[{"MakeSPheno", ",", 
+             RowBox[{"Eigenstates", "\[Rule]", 
+              RowBox[{"Last", "[", "NameOfStates", "]"}]}]}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", "InitSusyno", ";", 
+           " ", "\[IndentingNewLine]", "\[IndentingNewLine]", "InitFields", 
+           ";", "\[IndentingNewLine]", "InitParameters", ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Length", "[", "NonSUNindices", "]"}], "\[Equal]", 
+              "0"}], ",", "\[IndentingNewLine]", 
+             RowBox[{"CheckAnomalies", ";"}]}], "\[IndentingNewLine]", "]"}], 
+           ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"PrintAll", "[", 
+            RowBox[{"StyleForm", "[", 
+             RowBox[{"\"\<Derive Lagrangian\>\"", ",", "\"\<Section\>\"", ",", 
+              RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"SupersymmetricModel", "=!=", "False"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+             "GetSuperpotential", ";", "\[IndentingNewLine]", 
+              "CalcSuperpotential", ";", "\[IndentingNewLine]", "CalcFTerms", 
+              ";", "\[IndentingNewLine]", "CalcMatter", ";", 
+              "\[IndentingNewLine]", "CalcSoftBreaking", ";"}]}], 
+            "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", "CalcKinetic", ";", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"SupersymmetricModel", "=!=", "False"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+             "CalcDTerms", ";", "\[IndentingNewLine]", "CalcGaugino", ";"}]}],
+             "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"AddGravitino", "===", "True"}], " ", "&&", " ", 
+              RowBox[{"SupersymmetricModel", "=!=", "False"}]}], ",", 
+             RowBox[{"CalcGravitino", ";"}]}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", "CalcVectorBoson", 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{"GenerateSusyNoInvariants", ";"}], " ", "*)"}], 
+           "\[IndentingNewLine]", "CalcGaugeTransformations", ";", 
+           "\[IndentingNewLine]", "CalcLagrangian", ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"AddDiracGauginos", "===", "True"}], ",", 
+             RowBox[{"CheckAdjoints", ";"}]}], "]"}], ";", 
+           "\[IndentingNewLine]", "CalcMixedLagrangian", ";", " ", 
+           "\[IndentingNewLine]", 
+           RowBox[{"parameters", " ", "=", " ", 
+            RowBox[{"DeleteCases", "[", 
+             RowBox[{"parameters", ",", 
+              RowBox[{"x_", "?", " ", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"FreeQ", "[", 
+                    RowBox[{"RemoveParameters", ",", 
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "\[Equal]", 
+                   "False"}], ")"}], "&"}], ")"}]}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", "CheckHiggsStates", ";", 
+           "\[IndentingNewLine]", "CleanUpGaugeConstants", ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"SetOptions", "[", 
+            RowBox[{"MakeSPheno", ",", 
+             RowBox[{"Eigenstates", " ", "\[Rule]", 
+              RowBox[{"Last", "[", "NameOfStates", "]"}]}]}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{
+            "\"\<All Done. \>\"", ",", "model", ",", "\"\< is ready!\>\""}], 
+            "]"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<(Model initialized in \>\"", ",", 
+             RowBox[{
+              RowBox[{"TimeUsed", "[", "]"}], "-", "startedtime"}], ",", 
+             "\"\<s)\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<Are you unfamiliar with SARAH? Use \>\"", ",", 
+             RowBox[{"StyleForm", "[", 
+              RowBox[{"\"\<SARAH`FirstSteps\>\"", ",", "\"\<Section\>\"", ",", 
+               RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}]}], "]"}], ";"}],
+           ",", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Message", "[", 
+            RowBox[{"ModelFile", "::", "Aborted"}], "]"}], ";"}]}], 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}], ";"}]}], 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"ShowModels", "=", 
+     RowBox[{"Return", "[", 
+      RowBox[{
+       RowBox[{"DeleteCases", "[", 
+        RowBox[{
+         RowBox[{"StringReplace", "[", 
+          RowBox[{
+           RowBox[{"FileNames", "[", 
+            RowBox[{"\"\<particles.m\>\"", ",", "$sarahModelDir", ",", "4"}], 
+            "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"$sarahModelDir", "->", "\"\<\>\""}], ",", 
+             RowBox[{"\"\</particles.m\>\"", "->", "\"\<\>\""}]}], "}"}]}], 
+          "]"}], ",", "\"\<particles.m\>\""}], "]"}], " ", "//", 
+       "TableForm"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"EndPackage", "[", "]"}]}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.473613810062209*^9, 3.473613839335979*^9}, {
+   3.567336654593835*^9, 3.567336655320387*^9}, {3.5677615277097607`*^9, 
+   3.56776154874658*^9}, {3.567762384437695*^9, 3.567762387315075*^9}, {
+   3.5677624476697817`*^9, 3.567762450918347*^9}, {3.5677624955602093`*^9, 
+   3.567762610580673*^9}, {3.5677626482936287`*^9, 3.567762665865717*^9}, {
+   3.567763575416451*^9, 3.567763583878882*^9}, {3.567769354427547*^9, 
+   3.567769355919179*^9}, {3.567769441265567*^9, 3.567769443418317*^9}, {
+   3.567774892770647*^9, 3.567774898880332*^9}, {3.567775017031363*^9, 
+   3.567775075372761*^9}, {3.567775111411459*^9, 3.567775161424715*^9}, {
+   3.567775313694487*^9, 3.56777545998596*^9}, {3.56782342422436*^9, 
+   3.567823504106223*^9}, {3.567823575686273*^9, 3.5678235872554502`*^9}, {
+   3.5678379970573*^9, 3.5678380107486267`*^9}, {3.567943876669085*^9, 
+   3.567943891980508*^9}, {3.568003406617166*^9, 3.568003447474921*^9}, {
+   3.568006093107059*^9, 3.5680060946519403`*^9}, {3.5690375066659927`*^9, 
+   3.5690375150060472`*^9}, {3.569037550199216*^9, 3.569037561864189*^9}, {
+   3.569037594844208*^9, 3.5690375989601107`*^9}, {3.569037737111438*^9, 
+   3.56903777855155*^9}, {3.5692970995505047`*^9, 3.569297124809278*^9}, {
+   3.569307712397409*^9, 3.569307713813156*^9}, {3.569853238184778*^9, 
+   3.569853271931266*^9}, {3.569853364938489*^9, 3.569853365850041*^9}, {
+   3.57328623611268*^9, 3.573286250208251*^9}, {3.578369459819542*^9, 
+   3.578369460216009*^9}, {3.5831676870626907`*^9, 3.583167687468795*^9}, {
+   3.583721226919098*^9, 3.583721227217765*^9}, {3.5857072567186127`*^9, 
+   3.585707265134383*^9}, {3.586602023890222*^9, 3.586602032639019*^9}, {
+   3.586602102203761*^9, 3.586602102381939*^9}, {3.587135986041543*^9, 
+   3.587135987018611*^9}, {3.5889304889662857`*^9, 3.588930503428196*^9}, {
+   3.5890147351578093`*^9, 3.589014741397723*^9}, {3.58927489650196*^9, 
+   3.589274896630731*^9}, {3.589537607802596*^9, 3.589537644990253*^9}, {
+   3.594435127486508*^9, 3.594435129419486*^9}, {3.59480265232788*^9, 
+   3.594802662720096*^9}, {3.594802715840934*^9, 3.594802811831765*^9}, {
+   3.594802869139723*^9, 3.594802977704089*^9}, {3.59480303938564*^9, 
+   3.594803050843286*^9}, {3.594803107078826*^9, 3.594803116193162*^9}, {
+   3.5948031800002003`*^9, 3.594803188987713*^9}, 3.5948032736714077`*^9, {
+   3.594803331791483*^9, 3.594803333669854*^9}, {3.594803366360262*^9, 
+   3.594803423310308*^9}, {3.59480347007826*^9, 3.5948035632432413`*^9}, {
+   3.594803606084825*^9, 3.594803656869471*^9}, {3.5948036996360617`*^9, 
+   3.5948037397742147`*^9}, {3.594803781630267*^9, 3.594803784108917*^9}, {
+   3.5948038407793617`*^9, 3.5948038426080847`*^9}, {3.5948038909304*^9, 
+   3.594803900296899*^9}, {3.594804105803331*^9, 3.5948041500916758`*^9}, {
+   3.594804826413392*^9, 3.594804864214222*^9}, {3.594804894934898*^9, 
+   3.594804899334614*^9}, {3.59480493757705*^9, 3.594804944271261*^9}, {
+   3.5948050540943117`*^9, 3.594805060552188*^9}, {3.601551851587603*^9, 
+   3.601551873258519*^9}, {3.601551909516756*^9, 3.601551912796619*^9}, {
+   3.607238525088863*^9, 3.607238554313607*^9}, {3.608352847659767*^9, 
+   3.608352855196548*^9}, {3.610774675720595*^9, 3.61077468268685*^9}, {
+   3.610775400023481*^9, 3.6107754103937683`*^9}, {3.612860204502775*^9, 
+   3.612860204725696*^9}, {3.613098341576069*^9, 3.613098357203137*^9}, 
+   3.613098441731694*^9, {3.613099762515997*^9, 3.613099773675712*^9}, {
+   3.6131444624194727`*^9, 3.613144560719492*^9}, {3.61388111195157*^9, 
+   3.613881187503767*^9}, {3.6138812441433496`*^9, 3.613881367492812*^9}, {
+   3.613882394633972*^9, 3.6138824277198668`*^9}, {3.613882466268421*^9, 
+   3.613882498747143*^9}, {3.614999155687886*^9, 3.614999156470152*^9}, {
+   3.616480495881998*^9, 3.616480499224128*^9}, {3.6172569651384563`*^9, 
+   3.617257029418943*^9}, {3.629787232321973*^9, 3.629787336532693*^9}, {
+   3.63082342402868*^9, 3.630823425202339*^9}, {3.630826431367914*^9, 
+   3.630826431491475*^9}, {3.6308277416411753`*^9, 3.6308277421548433`*^9}, {
+   3.635672583699441*^9, 3.635672657598296*^9}, {3.639197765381242*^9, 
+   3.639197765918161*^9}}]
+},
+AutoGeneratedPackage->Automatic,
+WindowSize->{1364, 688},
+WindowMargins->{{-9, Automatic}, {14, Automatic}},
+DockedCells->FEPrivate`FrontEndResource[
+ "FEExpressions", "CompatibilityToolbar"],
+FrontEndVersion->"9.0 for Linux x86 (64-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[545, 20, 41860, 881, 6809, "Input",
+ InitializationCell->True]
+}
+]
+*)
+
+(* End of internal cache information *)

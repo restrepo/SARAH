@@ -1,50 +1,51 @@
 Off[General::spell]
-Print["Model file for the near-to-minimal MSSM loaded"];
 
-ModelName = "nMSSM";
-ModelNameLaTeX ="near-to-minimal MSSM";
+Model`Name = "nMSSM";
+Model`NameLaTeX ="near-to-minimal MSSM";
+Model`Authors = "F.Staub";
+Model`Date = "2012-09-01";
 
+
+(* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)
 (*-------------------------------------------*)
 
-(* Gauge Superfields *)
+(* Global symmetries *)
 
-Gauge[[1]]={B,   U[1], hypercharge, g1,False};
-Gauge[[2]]={WB, SU[2], left,        g2,True};
-Gauge[[3]]={G,  SU[3], color,       g3,False};
+
+Global[[1]]={Z[2],RParity}; 
+Global[[2]]={Z[5],Z5}; 
+RpM = {-1,-1,1}; RpP = {1,1,-1};
+
+(* Vector Superfields *)
+
+Gauge[[1]]={B,   U[1], hypercharge, g1,False, RpM, 0};
+Gauge[[2]]={WB, SU[2], left,        g2,True,  RpM, 0};
+Gauge[[3]]={G,  SU[3], color,       g3,False, RpM, 0};
 
 
 (* Chiral Superfields *)
 
-Fields[[1]] = {{uL,  dL},  3, q,   1/6, 2, 3};  
-Fields[[2]] = {{vL,  eL},  3, l,  -1/2, 2, 1};
-Fields[[3]] = {{Hd0, Hdm}, 1, Hd, -1/2, 2, 1};
-Fields[[4]] = {{Hup, Hu0}, 1, Hu,  1/2, 2, 1};
+SuperFields[[1]] = {q, 3, {uL,  dL},    1/6, 2, 3, RpM,  Exp[I*2*Pi*2/5]};  
+SuperFields[[2]] = {l, 3, {vL,  eL},   -1/2, 2, 1, RpM,  Exp[I*2*Pi*2/5]};
+SuperFields[[3]] = {Hd,1, {Hd0, Hdm},  -1/2, 2, 1, RpP,  Exp[I*2*Pi*1/5]};
+SuperFields[[4]] = {Hu,1, {Hup, Hu0},   1/2, 2, 1, RpP,  Exp[I*2*Pi*1/5]};
 
-Fields[[5]] = {conj[dR], 3, d,  1/3, 1, -3};
-Fields[[6]] = {conj[uR], 3, u, -2/3, 1, -3};
-Fields[[7]] = {conj[eR], 3, e,    1, 1,  1};
-Fields[[8]] = {sR, 1, s,    0, 1,  1};
+SuperFields[[5]] = {d, 3, conj[dR],   1/3, 1, -3, RpM,   Exp[I*2*Pi*2/5]};
+SuperFields[[6]] = {u, 3, conj[uR],  -2/3, 1, -3, RpM,   Exp[I*2*Pi*2/5]};
+SuperFields[[7]] = {e, 3, conj[eR],     1, 1,  1, RpM,   Exp[I*2*Pi*2/5]};
+
+SuperFields[[8]] = {s, 1, sR,     0, 1,  1,       RpP,   Exp[I*2*Pi*3/5]};
 
 
 (*------------------------------------------------------*)
 (* Superpotential *)
 (*------------------------------------------------------*)
 
-SuperPotential = { {{1, Yu},{q,Hu,u}}, {{-1,Yd},{q,Hd,d}},
-                   {{-1,Ye},{l,Hd,e}}, 
-                   {{1,\[Lambda]},{Hu,Hd,s}},
-                   {{1,Tad},{s}}};
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s + Tad s;
 
-
-(*-------------------------------------------*)
-(* Integrate Out or Delete Particles         *)
-(*-------------------------------------------*)
-
-IntegrateOut={};
-DeleteParticles={};
 
 
 (*----------------------------------------------*)
@@ -56,33 +57,39 @@ NameOfStates={GaugeES, EWSB};
 (* ----- Before EWSB ----- *)
 
 
-DEFINITION[GaugeES][GaugeFixing]=
-		{ {Der[VWB],  -1/(2 RXi[W])},
-  		  {Der[VG],   -1/(2 RXi[G]) }};
+DEFINITION[GaugeES][DiracSpinors]={
+  Bino ->{fB, conj[fB]},
+  Wino -> {fWB, conj[fWB]},
+  Glu -> {fG, conj[fG]},
+  H0 -> {FHd0, conj[FHu0]},
+  HC -> {FHdm, conj[FHup]},
+  Fd1 -> {FdL, 0},
+  Fd2 -> {0, FdR},
+  Fu1 -> {FuL, 0},
+  Fu2 -> {0, FuR},
+  Fe1 -> {FeL, 0},
+  Fe2 -> {0, FeR},
+  Fv -> {FvL, 0},
+  FS -> {FsR, conj[FsR]}
+};
+
+
 
 (* ----- After EWSB ----- *)
 
-DEFINITION[EWSB][GaugeSector]= 
-{{VWB,{1,{VWm,1/Sqrt[2]},{conj[VWm],1/Sqrt[2]}},
-      {2,{VWm,-\[ImaginaryI]/Sqrt[2]},{conj[VWm],\[ImaginaryI]/Sqrt[2]}},
-      {3,{VP,Sin[ThetaW]},{VZ,Cos[ThetaW]}}},
- {VB, {1,{VP,Cos[ThetaW]},{VZ,-Sin[ThetaW]}}},
- {fWB,{1,{fWm,1/Sqrt[2]},{fWp,1/Sqrt[2]}},
-      {2,{fWm,-\[ImaginaryI]/Sqrt[2]},{fWp,\[ImaginaryI]/Sqrt[2]}},
-      {3,{fW0,1}}}};
+DEFINITION[EWSB][GaugeSector] =
+{ 
+  {{VB,VWB[3]},{VP,VZ},ZZ},
+  {{VWB[1],VWB[2]},{VWm,conj[VWm]},ZW},
+  {{fWB[1],fWB[2],fWB[3]},{fWm,fWp,fW0},ZfW}
+};   
         
         
  
 DEFINITION[EWSB][VEVs]= 
-{    {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid, \
-\
-1/Sqrt[2]}},
-     {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, \
-\
-1/Sqrt[2]}},
-     {SsR, {vS, 1/Sqrt[2]}, {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS, \
-\
-1/Sqrt[2]}}     };
+{    {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
+     {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}},
+     {SsR, {vS, 1/Sqrt[2]}, {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS,1/Sqrt[2]}}     };
 
 
  
@@ -106,52 +113,13 @@ DEFINITION[EWSB][Phases]=
 {    {fG, PhaseGlu}
     }; 
 
-DEFINITION[EWSB][GaugeFixing]=
-  {	{Der[VP],                                            - 1/(2 RXi[P])},	
-	{Der[VWm]+\[ImaginaryI] Mass[VWm] RXi[W] Hpm[{1}],   - 1/(RXi[W])},
-	{Der[VZ] - Mass[VZ] RXi[Z] Ah[{1}],                  - 1/(2 RXi[Z])},
-	{Der[VG],                                            - 1/(2 RXi[G])}};
 
-(*------------------------------------------------------*)
-(* Dirac-Spinors *)
-(*------------------------------------------------------*)
-
-dirac[[1]] = {Fd,  FDL, conj[FDR]};
-dirac[[2]] = {Fe,  FEL, conj[FER]};
-dirac[[3]] = {Fu,  FUL, conj[FUR]};
-dirac[[4]] = {Fv,  FvL, 0};
-dirac[[5]] = {Chi, L0, conj[L0]};
-dirac[[6]] = {Cha, Lm, conj[Lp]};
-dirac[[7]] = {Glu, fG, conj[fG]};
-dirac[[8]] = {Bino, fB, conj[fB]};
-dirac[[9]] = {Wino, fWB, conj[fWB]};
-dirac[[10]] = {H0, FHu0, conj[FHd0]};
-dirac[[11]] = {HC, FHup, conj[FHdm]};
-dirac[[12]] = {S, FsR, conj[FsR]};
-
-(* Unbroken EW *)
-
-dirac[[13]] = {Fd1, FdL, 0};
-dirac[[14]] = {Fd2, 0, FdR};
-dirac[[15]] = {Fu1, FuL, 0};
-dirac[[16]] = {Fu2, 0, FuR};
-dirac[[17]] = {Fe1, FeL, 0};
-dirac[[18]] = {Fe2, 0, FeR};
-
-(*------------------------------------------------------*)
-(* Automatized Output        *)
-(*------------------------------------------------------*)
-
-(* 
-makeOutput = {
-                   {EWSB, {TeX, FeynArts}}
-             };   
-            
-            *)
-            
-SpectrumFile= None;		
-
-	
-
-
-
+DEFINITION[EWSB][DiracSpinors]={
+ Fd ->{  FDL, conj[FDR]},
+ Fe ->{  FEL, conj[FER]},
+ Fu ->{  FUL, conj[FUR]},
+ Fv ->{  FvL, 0},
+ Chi ->{ L0, conj[L0]},
+ Cha ->{ Lm, conj[Lp]},
+ Glu ->{ fG, conj[fG]}
+};

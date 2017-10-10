@@ -1,0 +1,676 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     20631,        666]
+NotebookOptionsPosition[     17173,        555]
+NotebookOutlinePosition[     18730,        600]
+CellTagsIndexPosition[     18645,        595]
+WindowTitle->BetaFunctions2L - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/BetaFunctions2L\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/BetaFunctions2L"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/\
+BetaFunctions2L.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", 
+             "Susyno/ref/BetaFunctions2L", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["BetaFunctions2L", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"BetaFunctions2L", "[", "model", "]"}]], "InlineFormula"],
+     " \[LineSeparator]Calculates the 2-loop \[Beta] functions of a given \
+model"
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {{None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->89084515],
+
+Cell[TextData[{
+ "The output is a list {{parameter 1, ",
+ Cell[BoxData[
+  SubscriptBox[
+   SuperscriptBox["\[Beta]", 
+    RowBox[{"(", "1", ")"}]], 
+   RowBox[{"parameter", " ", "1"}]]], "InlineFormula"],
+ ",  ",
+ Cell[BoxData[
+  SubscriptBox[
+   SuperscriptBox["\[Beta]", 
+    RowBox[{"(", "2", ")"}]], 
+   RowBox[{"parameter", " ", "1"}]]], "InlineFormula"],
+ "},{parameter 2, ",
+ Cell[BoxData[
+  SubscriptBox[
+   SuperscriptBox["\[Beta]", 
+    RowBox[{"(", "1", ")"}]], 
+   RowBox[{"parameter", " ", "2"}]]], "InlineFormula"],
+ ", ",
+ " ",
+ Cell[BoxData[
+  SubscriptBox[
+   SuperscriptBox["\[Beta]", 
+    RowBox[{"(", "2", ")"}]], 
+   RowBox[{"parameter", " ", "2"}]]], "InlineFormula"],
+ "}, ...} where the parameter names are chosen by the program automatically \
+(see the ",
+ ButtonBox["Susyno Tutorial",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"],
+ " for the convention used);"
+}], "Notes",
+ CellID->237353733],
+
+Cell[TextData[{
+ "The input is a list of fields: ",
+ Cell[BoxData[
+  RowBox[{"model", "=", 
+   RowBox[{"{", 
+    RowBox[{"field1", ",", "field2", ",", "..."}], "}"}]}]], "InlineFormula"],
+ ". Each field should be in the format ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"g1", "\[Rule]", "g1_rep"}], ",", 
+    RowBox[{"g2", "\[Rule]", "g2_rep"}], ",", "...", ",", 
+    RowBox[{"NFlavours", "\[Rule]", "nf"}], ",", 
+    RowBox[{"DiscreteSym", "\[Rule]", "q"}]}], "}"}]], "InlineFormula"],
+ ";"
+}], "Notes",
+ CellID->113314501],
+
+Cell[TextData[{
+ Cell[BoxData["g1"], "InlineFormula"],
+ ", ",
+ Cell[BoxData["g2"], "InlineFormula"],
+ ", ... are the gauge factor groups of the model (each specified by a ",
+ ButtonBox["Cartan matrix",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Susyno/ref/CartanMatrix"],
+ ");"
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ Cell[BoxData["g1_rep"], "InlineFormula"],
+ ", ",
+ Cell[BoxData["g2_rep"], "InlineFormula"],
+ ", ... are the representations of the field under each of the gauge factor \
+groups. For U(1)'s these are just numbers (the hypercharges). For simple \
+factor groups like SU(n), SO(n), ..., the user must use Dynkin coefficients \
+(see the ",
+ ButtonBox["Susyno Tutorial",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"],
+ " for details);"
+}], "Notes",
+ CellID->523050374],
+
+Cell[TextData[{
+ Cell[BoxData["nf"], "InlineFormula"],
+ " is the number of flavours (the ",
+ Cell[BoxData[
+  RowBox[{"NFlavours", "\[Rule]", "nf"}]], "InlineFormula"],
+ " command can be omitted in which case the number of flavours is taken to be \
+the symbolic value ",
+ Cell[BoxData[
+  RowBox[{"nf", "[", "i", "]"}]], "InlineFormula"],
+ " where ",
+ Cell[BoxData["i"], "InlineFormula"],
+ " is the order of the field). ",
+ Cell[BoxData["nf"], "InlineFormula"],
+ " can be a number or a symbol;"
+}], "Notes",
+ CellID->260481255],
+
+Cell[TextData[{
+ Cell[BoxData["q"], "InlineFormula"],
+ " is the charge of the field under some abelian discrete symmetry  (the ",
+ Cell[BoxData[
+  RowBox[{"DiscreteSym", "\[Rule]", "q"}]], "InlineFormula"],
+ " command can be omitted in which case the field is taken to have trivial \
+charge [=1]). ",
+ Cell[BoxData["q"], "InlineFormula"],
+ " can be a number (only one abelian discrete symmetry) or a list of numbers \
+(if there is more than one abelian discrete symmetry). In any case, all the \
+numbers must have modulus 1 since they are ",
+ Cell[BoxData[
+  SubscriptBox["Z", "n"]], "InlineFormula"],
+ " charges;"
+}], "Notes",
+ CellID->8615200],
+
+Cell[TextData[{
+ "There is an option ",
+ Cell[BoxData["Verbose"], "InlineFormula"],
+ " which is ",
+ Cell[BoxData["True"], "InlineFormula"],
+ " by default, meaning that the results are printed on the front-end. No \
+printing occurs if ",
+ Cell[BoxData[
+  RowBox[{"Verbose", "\[Rule]", "False"}]], "InlineFormula"],
+ ";"
+}], "Notes",
+ CellID->145507827],
+
+Cell[TextData[{
+ "The difference with ",
+ Cell[BoxData[
+  ButtonBox["BetaFunctions1L",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Susyno/ref/BetaFunctions1L"]], "InlineFormula"],
+ " is that ",
+ Cell[BoxData[
+  ButtonBox["BetaFunctions2L",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Susyno/ref/BetaFunctions2L"]], "InlineFormula"],
+ " only calculates the 1-loop \[Beta] functions. "
+}], "Notes",
+ CellID->372436916]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->451861636],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->172753414],
+
+Cell["MSSM:", "ExampleText",
+ CellID->788],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Set", " ", "the", " ", "gauge", " ", "factor", " ", "groups", " ", "and", 
+    " ", "the", " ", 
+    RowBox[{"fields", "/", "representations"}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "Also", " ", "set", " ", "the", " ", "number", " ", "of", " ", "flavours",
+      " ", "and", " ", "R"}], "-", 
+    RowBox[{"parity", " ", "of", " ", "each", " ", "field"}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"norm", "=", 
+     RowBox[{"Sqrt", "[", 
+      RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Q", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "->", 
+        RowBox[{
+         RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "1", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", 
+        RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"u", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "->", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "0", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", 
+        RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"d", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", 
+        RowBox[{
+         RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "0", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", 
+        RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"L", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "1", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", 
+        RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"e", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "0", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", 
+        RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Hu", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", " ", 
+        RowBox[{
+         RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "1", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Hd", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "1", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"model", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+      "}"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"BetaFunctions2L", "[", "model", "]"}], ";"}]}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->790578945],
+
+Cell["To suppress the printed text, change the last line to", "ExampleText",
+ CellID->603937764],
+
+Cell[BoxData[
+ RowBox[{"result", "=", 
+  RowBox[{"BetaFunctions2L", "[", 
+   RowBox[{"model", ",", 
+    RowBox[{"Verbose", "\[Rule]", "False"}]}], "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->15286843],
+
+Cell["\<\
+An SO(10) model with an arbitrary number of representations 10 and 16:\
+\>", "ExampleText",
+ CellID->105522396],
+
+Cell[BoxData[
+ RowBox[{"BetaFunctions2L", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"SO10", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]}], "}"}], 
+    ",", 
+    RowBox[{"{", 
+     RowBox[{"SO10", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "1"}], "}"}]}], 
+     "}"}]}], "}"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->731001459],
+
+Cell["\<\
+Note that there is nothing special with the variable name 'model'. However, \
+to improve the readability of the code it is probably best to define things \
+step by step. For example:\
+\>", "ExampleText",
+ CellID->15469877],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"field10", "=", 
+   RowBox[{"{", 
+    RowBox[{"SO10", "->", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]}], "}"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"field16", "=", 
+    RowBox[{"{", 
+     RowBox[{"SO10", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "1"}], "}"}]}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"mySO10Model", "=", 
+    RowBox[{"{", 
+     RowBox[{"field10", ",", "field16"}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BetaFunctions2L", "[", "mySO10Model", "]"}], ";"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->274066888]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["RELATED LINKS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "RelatedLinksSection",
+ CellID->1584193535],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["BetaFunctions1L",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Susyno/ref/BetaFunctions1L"]], "InlineFormula"],
+ " "
+}], "RelatedLinks",
+ CellID->1038487239]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"BetaFunctions2L - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 13, 42.9687500}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "BetaFunctions2L[model] Calculates the 2-loop \\[Beta] functions of a \
+given model", "synonyms" -> {}, "title" -> "BetaFunctions2L", "type" -> 
+    "Symbol", "uri" -> "Susyno/ref/BetaFunctions2L"}, "SearchTextTranslated" -> 
+  ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8596, 272, 461, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->451861636]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 18502, 588}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[596, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[675, 24, 178, 5, 70, "LinkTrail"],
+Cell[856, 31, 2326, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3207, 88, 58, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3268, 91, 403, 12, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3708, 108, 579, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->89084515],
+Cell[4290, 127, 950, 33, 70, "Notes",
+ CellID->237353733],
+Cell[5243, 162, 539, 16, 70, "Notes",
+ CellID->113314501],
+Cell[5785, 180, 311, 10, 70, "Notes",
+ CellID->1067943069],
+Cell[6099, 192, 509, 13, 70, "Notes",
+ CellID->523050374],
+Cell[6611, 207, 525, 15, 70, "Notes",
+ CellID->260481255],
+Cell[7139, 224, 645, 15, 70, "Notes",
+ CellID->8615200],
+Cell[7787, 241, 351, 11, 70, "Notes",
+ CellID->145507827],
+Cell[8141, 254, 418, 13, 70, "Notes",
+ CellID->372436916]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[8596, 272, 461, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->451861636],
+Cell[CellGroupData[{
+Cell[9082, 289, 148, 5, 70, "ExampleSection",
+ CellID->172753414],
+Cell[9233, 296, 42, 1, 70, "ExampleText",
+ CellID->788],
+Cell[9278, 299, 4648, 135, 70, "Input",
+ CellID->790578945],
+Cell[13929, 436, 96, 1, 70, "ExampleText",
+ CellID->603937764],
+Cell[14028, 439, 207, 6, 70, "Input",
+ CellID->15286843],
+Cell[14238, 447, 121, 3, 70, "ExampleText",
+ CellID->105522396],
+Cell[14362, 452, 449, 15, 70, "Input",
+ CellID->731001459],
+Cell[14814, 469, 232, 5, 70, "ExampleText",
+ CellID->15469877],
+Cell[15049, 476, 792, 25, 70, "Input",
+ CellID->274066888]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15890, 507, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[16312, 521, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16500, 529, 427, 12, 70, "RelatedLinksSection",
+ CellID->1584193535],
+Cell[16930, 543, 201, 7, 70, "RelatedLinks",
+ CellID->1038487239]
+}, Open  ]],
+Cell[17146, 553, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

@@ -4,7 +4,11 @@ ParameterDefinitions = {
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
 
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -41,7 +45,14 @@ ParameterDefinitions = {
 {ZD,        { Description -> "Down-Squark-Mixing-Matrix" }},             
 {ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
 {ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
-{ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
+
+{ZVR,        { LaTeX -> "Z^R",
+              OutputName -> ZVR,
+              LesHouches -> SNUMIXR }},
+{ZVI,        { LaTeX -> "Z^I",
+              OutputName -> ZVI,
+              LesHouches -> SNUMIXI }},
+  
 {ZH,        { Description->"Scalar-Mixing-Matrix"}},
 {ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix"}},
 {ZP,        { Description->"Charged-Mixing-Matrix"}},                      
@@ -56,10 +67,15 @@ ParameterDefinitions = {
 {ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
 {ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
 {ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
-{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
+{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}}, 
+{UV,       { Description ->"Neutrino-Mixing-Matrix"}},            
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
 {PhaseGlu,  { Description -> "Gluino-Phase" }},
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
 
 
 {Yv,{ Description -> "Neutrino-Yukawa-Coupling" }},     
@@ -67,16 +83,15 @@ ParameterDefinitions = {
 {mv2,{ Description -> "Softbreaking right Sneutrino Mass"}},
 
 {Mv,     { LaTeX -> "M_v",
-             Real -> False,
+             OutputName -> Mv,
 			 LesHouches -> Mv}},
 
 {B[Mv],     { LaTeX -> "B_v",
-             Real -> False,
+             OutputName -> BMv,
 			  LesHouches -> BMv}},
 
-{MNuL,       { LaTeX -> "m_{\\nu_L}",
-	     LesHouches -> MNUL }}
-
+{WOp,       {Description -> "Weinberg Operator"}},
+{Q[WOp],       {Description -> "Soft Breaking Weinberg Operator"}}
 
                                   
  }; 

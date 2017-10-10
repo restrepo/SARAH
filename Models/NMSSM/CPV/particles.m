@@ -12,7 +12,7 @@ ParticleDefinitions[GaugeES] = {
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -23,7 +23,7 @@ ParticleDefinitions[GaugeES] = {
       {HC,   { Description -> "Charged Higgsinos"}},  
 
       {SsR,  { Description -> "Singlet"}},                     
-      {S,    { Description -> "Singlino" }},
+      {FS,   { Description -> "Singlino" }},
       {Fd1,  { Description -> "Dirac Left Down-Quark"}},
       {Fd2,  { Description -> "Dirac Right Down-Quark"}},
       {Fu1,  { Description -> "Dirac Left Up-Quark"}},
@@ -42,10 +42,12 @@ ParticleDefinitions[GaugeES] = {
      {Se ,  { Description -> "Sleptons"}}, 
      {Sv ,  { Description -> "Sneutrinos"}},                                 
      {hh   ,  {  Description -> "Higgs", 
-                 PDG -> {0,25, 35,36,45,46} }},                    
+                 PDG -> {0,25, 35,36,45,46},
+                 PDG.IX ->{0,100000001,100000002,100000003,100000004,100000005 } }},                    
       {Hpm,  { Description -> "Charged Higgs"}},                                                   
       {VP,   { Description -> "Photon"}}, 
-      {VZ,   { Description -> "Z-Boson" }}, 
+      {VZ,   { Description -> "Z-Boson",
+		Goldstone -> hh[{1}] }}, 
       {VG,   { Description -> "Gluon" }},          
       {VWm,  { Description -> "W-Boson" }},         
       {gP,   { Description -> "Photon Ghost"}},                                                   
@@ -60,7 +62,8 @@ ParticleDefinitions[GaugeES] = {
       {Glu,  { Description -> "Gluino" }},
                  
       {Chi,    {   Description -> "Neutralinos",
-                 PDG -> {1000022,1000023,1000025,1000035,1000045} }},
+                 PDG -> {1000022,1000023,1000025,1000035,1000045},
+                 PDG.IX -> {211000001,211000002,211000003,211000004,211000005} }},
                  
       {Cha,  { Description -> "Charginos"}}                                                                                          
      

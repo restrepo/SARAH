@@ -3,6 +3,9 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
 
 {e,         { Description -> "electric charge"}}, 
 
@@ -88,43 +91,56 @@ ParameterDefinitions = {
 (* Expression for ThetaWp has to be added!     *)
 (* ------------------------------------------- *)
 
+{ZZ, {Description ->   "Photon-Z-Z' Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
+
 {ThetaWp,  { Description -> "Theta'",
-              DependenceNum -> 0  }},
+              DependenceNum -> None  }},
               
               
 {gp,       {Description -> "U(1)' Gauge Coupling"}},
 
 
-{Qp,        { LaTeX -> "Q_p",
+{Qq,        { LaTeX -> "Q_q",
               Real -> True,
+		OutputName -> Qq,
 			  LesHouches -> {XCharge,1}}},             
 {Ql,        { LaTeX -> "Q_l",
               Real -> True,
+		OutputName -> Ql,
 			  LesHouches -> {XCharge,2}}},
 {QHu,        { LaTeX -> "Q_{H_u}",
               Real -> True,
+		OutputName -> QHu,
 			  LesHouches -> {XCharge,3}}},
 {QHd,        { LaTeX -> "Q_{H_d}",
               Real -> True,
+		OutputName -> QHd,
 			  LesHouches -> {XCharge,4}}},
 {Qd,        { LaTeX -> "Q_d",
               Real -> True,
+		OutputName -> Qd,
 			  LesHouches -> {XCharge,5}}},
 {Qu,        { LaTeX -> "Q_u",
               Real -> True,
+		OutputName -> Qu,
 			  LesHouches -> {XCharge,6}}},             
 {Qe,        { LaTeX -> "Q_e",
               Real -> True,
+		OutputName -> Qe,
 			  LesHouches -> {XCharge,7}}},
 {Qs,        { LaTeX -> "Q_s",
               Real -> True,
+		OutputName -> Qs,
 			  LesHouches -> {XCharge,8}}},
 
 {ThetaZ,    { LaTeX -> "\\Theta_Z",
 			  OutputName -> ThZ}},
 
-{MassU,    { LaTeX -> "M_Z",
+{MassU,    { LaTeX -> "M_U",
              Form -> Scalar,
+             OutputName -> M4,
              LesHouches -> {MSOFT,4} }}
 
  }; 

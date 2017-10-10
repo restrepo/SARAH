@@ -1,14 +1,3 @@
-RenameParameters ={
-{f,fOm},
-{a,aOm},
-{b,bOm},
-{\[Alpha], alphaOm},
-{T[\[Alpha]], TalphaOm},
-{\[Alpha]c, alphaOmC},
-{T[\[Alpha]c], TalphaOmC}
-};
-
-
 RegimeNr = 1;
 IntermediateScale = True;
 

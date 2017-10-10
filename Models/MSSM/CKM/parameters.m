@@ -1,13 +1,55 @@
 ParameterDefinitions = { 
 
 
-{Yu0,      { Description->"Offdiagonal Up-Yukawa Coupling"}},    
-{Yd0,      { Description->"Offdiagonal Down-Yukawa Coupling"}},    
-{T[Yd0],   { Description->"Offdiagonal Trilinear Down-Coupling"}},   
-{T[Yu0],      { Description->"Offdiagonal Trilinear Up-Coupling"}},
-{mq02,      {Description->"Offdiagonal Softbreaking left Squark Mass"}},	
-{mu02,      {Description->"Offdiagonal Softbreaking right Up-Squark Mass"}},             
-{md02,      {Description->"Offdiagonal Softbreaking right Up-Squark Mass"}},    
+{Yu0,      { Description->"Up-Yukawa-Coupling",
+                Dependence -> sum[i001,1,3]*sum[i002,1,3]*Yu[i001,i002]*Delta[i001, i002]* \
+                             Uu[i001,index1]*Vu[i002,index2],
+                LesHouches -> Yu0               }},    
+{Yd0,      { Description->"Down-Yukawa-Coupling",
+                Dependence -> sum[i003,1,3]*sum[i004,1,3]*Yd[i003,i004]*Delta[i003, i004]* \
+                             Ud[i003,index1]*Vd[i004,index2],
+                LesHouches -> Yd0 }},    
+
+{T[Yd0],   { Description->"Trilinear-Down-Coupling",
+			 Dependence -> sum[i005,1,3]*sum[i006,1,3]*T[Yd][i005,i006]* \
+                             Ud[i005,index1]*Vd[i006,index2],
+                LesHouches -> Td0}},   
+{T[Yu0],      { Description->"Trilinear-Up-Coupling",
+			   Dependence -> sum[i007,1,3]*sum[i008,1,3]*T[Yu][i007,i008]* \
+                             Uu[i007,index1]*Vu[i008,index2],
+                LesHouches -> Tu0}},
+{mq02,      {Description->"Softbreaking left Squark Mass",
+               Dependence -> sum[i001,1,3]*sum[i002,1,3]*mq2[i001,i002]*Delta[i001, i002]* \
+                             Vd[i001,index1]*conj[Vd[i002,index2]],
+                LesHouches -> mq02 }},	
+{mu02,      {Description->"Softbreaking right Up-Squark Mass",
+	  Dependence -> sum[i001,1,3]*sum[i002,1,3]*mu2[i001,i002]*Delta[i001, i002]* \
+                             Uu[i001,index1]*conj[Uu[i002,index2]],
+                LesHouches -> mu02 }},             
+{md02,      {Description->"Softbreaking right Down-Squark Mass",
+		 Dependence -> sum[i001,1,3]*sum[i002,1,3]*md2[i001,i002]*Delta[i001, i002]* \
+                             Ud[i001,index1]*conj[Ud[i002,index2]],
+                LesHouches -> md02 }},   
+                             
+{Ye0,      { Description->"Lepton-Yukawa-Coupling",
+                Dependence -> sum[i003,1,3]*sum[i004,1,3]*Ye[i003,i004]*Delta[i003, i004]* \
+                             Ue[i003,index1]*Ve[i004,index2],
+                LesHouches -> Ye0 }},   
+
+{T[Ye0],      { Description->"Trilinear-Lepton-Coupling",
+			   Dependence -> sum[i007,1,3]*sum[i008,1,3]*T[Ye][i007,i008]*Delta[i007, i008]* \
+                             Ue[i007,index1]*Ve[i008,index2],
+                LesHouches -> Te0}},    
+                             
+{me02,      {Description->"Softbreaking right Slepton Mass",
+               Dependence -> sum[i001,1,3]*sum[i002,1,3]*me2[i001,i002]*Delta[i001, i002]* \
+                             Ue[i001,index1]*conj[Ue[i002,index2]],
+                LesHouches -> me02 }},	
+{ml02,      {Description->"Softbreaking left Slepton Mass",
+	  Dependence -> sum[i001,1,3]*sum[i002,1,3]*ml2[i001,i002]*Delta[i001, i002]* \
+                             conj[Ve[i001,index1]]*Ve[i002,index2],
+                LesHouches -> ml02 }}, 
+                             
 
 {CKM,        { Description ->"CKM Matrix"}},
 {nWolf, {Description->"Wolfenstein Parameter eta" }},
@@ -15,35 +57,37 @@ ParameterDefinitions = {
 {lWolf, {Description->"Wolfenstein Parameter lambda"  }},
 {rWolf, {Description->"Wolfenstein Parameter rho"  }},              
              
-{Vu,        {LaTeX -> "V_u"}},
-{Vd,        {LaTeX -> "V_d"}},
-{Uu,        {LaTeX -> "U_u"}},
-{Ud,        {LaTeX -> "U_d"}},
-
+{Vu,        {Description ->"Left-Up-Mixing-Matrix"}},
+{Vd,        {Description ->"Left-Down-Mixing-Matrix"}},
+{Uu,        {Description ->"Right-Up-Mixing-Matrix"}},
+{Ud,        {Description ->"Right-Down-Mixing-Matrix"}},
 
 
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
 
-{Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
-{Yd,        { Description -> "Down-Yukawa-Coupling"}},
-{Ye,        { Description -> "Lepton-Yukawa-Coupling"}}, 
+{Yu,        { Description -> "SCKM Up-Yukawa-Coupling"   }}, 
+{Yd,        { Description -> "SCKM Down-Yukawa-Coupling"}},
+{Ye,        { Description -> "PMNS Electron-Yukawa-Coupling"}}, 
 
-{T[Ye],     { Description -> "Trilinear-Lepton-Coupling"}},
-{T[Yd],     { Description -> "Trilinear-Down-Coupling"}}, 
-{T[Yu],     { Description -> "Trilinear-Up-Coupling"}}, 
+{T[Ye],     { Description -> "PMNS Trilinear-Lepton-Coupling"}},
+{T[Yd],     { Description -> "SCKM Trilinear-Down-Coupling"}}, 
+{T[Yu],     { Description -> "SCKM Trilinear-Up-Coupling"}}, 
 
 {\[Mu],     { Description -> "Mu-parameter"}}, 
 {B[\[Mu]],  { Description -> "Bmu-parameter"}},        
 
-{mq2,       { Description -> "Softbreaking left Squark Mass"}},
-{me2,       { Description -> "Softbreaking right Slepton Mass"}},
-{ml2,       { Description -> "Softbreaking left Slepton Mass"}},
-{mu2,       { Description -> "Softbreaking right Up-Squark Mass"}},
-{md2,       { Description -> "Softbreaking right Down-Squark Mass"}},
+{mq2,       { Description -> "SCKM Softbreaking left Squark Mass"}},
+{me2,       { Description -> "PMNS Softbreaking right Slepton Mass"}},
+{ml2,       { Description -> "PMNS Softbreaking left Slepton Mass"}},
+{mu2,       { Description -> "SCKM Softbreaking right Up-Squark Mass"}},
+{md2,       { Description -> "SCKM Softbreaking right Down-Squark Mass"}},
 {mHd2,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
 {mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
 
@@ -73,15 +117,15 @@ ParameterDefinitions = {
 {UP,        { Description->"Chargino-plus Mixing-Matrix"}}, 
 {UM,        { Description->"Chargino-minus Mixing-Matrix"}}, 
 
-{ZEL,       { Description ->"Left-Lepton-Mixing-Matrix"}},
-{ZER,       { Description ->"Right-Lepton-Mixing-Matrix" }},                          
-{ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
-{ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
-{ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
-{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
+{Ve,       { Description ->"Left-Lepton-Mixing-Matrix"}},
+{Ue,       { Description ->"Right-Lepton-Mixing-Matrix" }},                          
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }}                           
+{PhaseGlu,  { Description -> "Gluino-Phase" }},
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}}                           
 
  }; 
  

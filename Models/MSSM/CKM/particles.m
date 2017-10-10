@@ -6,17 +6,20 @@ ParticleDefinitions[GaugeES] = {
       {SuL0,  { Description -> "Left Up-Squarks",
                  LaTeX -> "\\tilde{u}_L^0"}}, 
       {SuR0,  { Description -> "Right Up-Squarks",
-                 LaTeX -> "\\tilde{u}_R^0" }},                
-      {SeL,  { Description -> "Left Selectron"}}, 
-      {SeR,  { Description -> "Right Selectron"}},                         
-      {SvL,  { Description -> "Left Sneutrino"}},                         
+                 LaTeX -> "\\tilde{u}_R^0" }},   
+      {SeL0,  { Description -> "Left Selectron",
+                 LaTeX -> "\\tilde{e}_L^0"}}, 
+      {SeR0,  { Description -> "Right Selectron",
+                 LaTeX -> "\\tilde{e}_R^0" }},               
+      {SvL0,  { Description -> "Left Sneutrino",
+                 LaTeX -> "\\tilde{\nu}_L^0" }},                         
       {SHd0, { Description -> "Neutral Down-Higgs"}},                         
       {SHdm, { Description -> "Charged Down-Higgs"}}, 
       {SHu0, { Description -> "Neutral Up-Higgs"}},                         
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -25,23 +28,16 @@ ParticleDefinitions[GaugeES] = {
       {Bino, { Description -> "Bino"}},                                                                                           
       {H0,   { Description -> "Neutral Higgsinos"}},
       {HC,   { Description -> "Charged Higgsinos"}},
-      {Fd1,  { Description -> "Dirac Left Down-Quark"}},
-      {Fd2,  { Description -> "Dirac Right Down-Quark"}},
-      {Fu1,  { Description -> "Dirac Left Up-Quark"}},
-      {Fu2,  { Description -> "Dirac Right Up-Quark"}},
+      {Fd10,  { Description -> "Dirac Left Down-Quark"}},
+      {Fd20,  { Description -> "Dirac Right Down-Quark"}},
+      {Fu10,  { Description -> "Dirac Left Up-Quark"}},
+      {Fu20,  { Description -> "Dirac Right Up-Quark"}},
       {Fe1,  { Description -> "Dirac Left Electron"}},
       {Fe2,  { Description -> "Dirac Right Electron"}},
       {Fv,   { Description -> "Neutrinos" }}
       };
       
 
-ParticleDefinitions[SCKM] = {
-      {SdL,  {  Description -> "Left Down-Squarks"}},
-      {SdR,  { Description -> "Right Down-Squarks"}},
-      {SuL,  { Description -> "Left Up-Squarks"}}, 
-      {SuR,  { Description -> "Right Up-Squarks" }}};        
-      
-      
       
   ParticleDefinitions[EWSB] = {
       {Sd ,  { Description -> "Down-Squarks"}},
@@ -68,7 +64,36 @@ ParticleDefinitions[SCKM] = {
       {Chi,  { Description -> "Neutralinos"}},
       {Cha,  { Description -> "Charginos"}}                                                                                               
         };    
-        
+
+ ParticleDefinitions[SCKM]=     
+    { {SeL,  { Description -> "Left Selectron"}}, 
+      {SeR,  { Description -> "Right Selectron" }},  
+      {SdL,  {  Description -> "Left Down-Squarks"}},
+      {SdR,  { Description -> "Right Down-Squarks"}},
+      {SuL,  { Description -> "Left Up-Squarks"}}, 
+      {SuR,  { Description -> "Right Up-Squarks" }},
+      {SvL,  { Description -> "Left Sneutrino"}}, 
+      {Sv ,  { Description -> "Sneutrinos"}},                                
+      {hh ,  { Description -> "Higgs"}}, 
+      {Ah ,  { Description -> "Pseudo-Scalar Higgs"}},                       
+      {Hpm,  { Description -> "Charged Higgs"}},                                                   
+      {VP,   { Description -> "Photon"}}, 
+      {VZ,   { Description -> "Z-Boson" }}, 
+      {VG,   { Description -> "Gluon" }},          
+      {VWm,  { Description -> "W-Boson" }},         
+      {gP,   { Description -> "Photon Ghost"}},                                                   
+      {gWm,  { Description -> "Negative W-Boson Ghost"}}, 
+      {gWmC, { Description -> "Positive W-Boson Ghost" }}, 
+      {gZ,   { Description -> "Z-Boson Ghost" }},   
+      {gG,   { Description -> "Gluon Ghost" }},          
+      {Fd,   { Description -> "Down-Quarks"}},   
+      {Fu,   { Description -> "Up-Quarks"}},   
+      {Fe,   { Description -> "Leptons" }},
+      {Fv,   { Description -> "Neutrinos" }},                                                                     
+      {Glu,  { Description -> "Gluino" }},
+      {Chi,  { Description -> "Neutralinos"}},
+      {Cha,  { Description -> "Charginos"}}           
+  };              
         
         
  WeylFermionAndIndermediate = {

@@ -4,6 +4,10 @@ ParameterDefinitions = {
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
 
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 {e,         { Description -> "electric charge"}}, 
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
@@ -74,6 +78,10 @@ ParameterDefinitions = {
 {ThetaWp,  { Description -> "Theta'",
 			 Dependence -> None,
  			 DependenceNum -> None  }},
+
+{ZZ, {Description ->   "Photon-Z-Z' Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
                         
 {PhaseGlu,  { Description -> "Gluino-Phase" }},   
                                                                       
@@ -83,53 +91,87 @@ ParameterDefinitions = {
 {T[\[Lambda]],  {Description -> "Softbreaking Singlet-Higgs-Interaction"}},        
              
 {ms2,       { Description -> "Softbreaking Singlet Mass" }},
+
+
+{ms12,       { LaTeX -> "m^2_{s_1}",
+              OutputName -> ms12,
+              LesHouches -> {MSOFT,200} }},
+
+{ms22,       { LaTeX -> "m^2_{s_2}",
+              OutputName -> ms22,
+              LesHouches -> {MSOFT,201} }},
+
+
+{ms32,       { LaTeX -> "m^2_{s_3}",
+              OutputName -> ms32,
+              LesHouches -> {MSOFT,202} }},
+
+
 {vS,        { Description -> "Singlet-VEV"}},
 
 
 {gp,       {Description -> "U(1)' Gauge Coupling"}},
 
 
-{Qp,        { LaTeX -> "Q_p",
+{Qq,        { LaTeX -> "Q_q",
+              OutputName -> Qq,
               Real -> True,
 			  LesHouches -> {XCharge,1}}},             
 {Ql,        { LaTeX -> "Q_l",
+              OutputName -> Ql,
               Real -> True,
 			  LesHouches -> {XCharge,2}}},
 {QHu,        { LaTeX -> "Q_{H_u}",
+              OutputName -> QHu,
               Real -> True,
 			  LesHouches -> {XCharge,3}}},
 {QHd,        { LaTeX -> "Q_{H_d}",
+              OutputName -> QHd,
               Real -> True,
 			  LesHouches -> {XCharge,4}}},
 {Qd,        { LaTeX -> "Q_d",
+              OutputName -> Qd,
               Real -> True,
 			  LesHouches -> {XCharge,5}}},
 {Qu,        { LaTeX -> "Q_u",
+              OutputName -> Qu,
               Real -> True,
 			  LesHouches -> {XCharge,6}}},             
 {Qe,        { LaTeX -> "Q_e",
+              OutputName -> Qe,
               Real -> True,
 			  LesHouches -> {XCharge,7}}},
 {Qs,        { LaTeX -> "Q_s",
+              OutputName -> Qs,
               Real -> True,
 			  LesHouches -> {XCharge,8}}},
 {Qs1,     {LaTeX -> "Q_1",
+              OutputName -> Qs1,
                  Real ->True,
 			  LesHouches -> {XCharge,9} }},
 {Qs2,     {LaTeX -> "Q_2",
+              OutputName -> Qs2,
                  Real ->True,
 			  LesHouches -> {XCharge,10} }},
 {Qs3,     {LaTeX -> "Q_3",
+              OutputName -> Qs3,
                  Real ->True,
 			  LesHouches -> {XCharge,11} }},
                  
 {MassU,        { LaTeX -> "M_U",
+                 OutputName -> M4,
                  LesHouches -> {MSOFT,4} }},
 {ThetaZ,    { LaTeX -> "\\Theta_Z"}},
 
-{vev1,      { LaTeX -> "v_1"}},
-{vev2,      { LaTeX -> "v_2"}},
-{vev3,      { LaTeX -> "v_3"}}
+{vS1,      { LaTeX -> "v_1",
+              OutputName -> vS1,
+              LesHouches -> {HMIX,200}}},
+{vS2,      { LaTeX -> "v_2",
+              OutputName -> vS2,
+              LesHouches -> {HMIX,201}}},
+{vS3,      { LaTeX -> "v_3",
+              OutputName -> vS3,
+              LesHouches -> {HMIX,202}}}
 
  }; 
  

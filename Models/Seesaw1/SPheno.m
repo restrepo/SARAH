@@ -1,13 +1,22 @@
+(* ::Package:: *)
 
-MINPAR={m0,m12,TanBeta,SignumMu,Azero};
-RealParameters = {TanBeta};
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {4,SignumMu},
+        {5,Azero}};
+
+RealParameters = {TanBeta,m0};
 ParametersToSolveTadpoles = {\[Mu],B[\[Mu]]};
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
+ConditionGUTscale = g1 == g2;
 
 BoundaryHighScale={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
@@ -25,7 +34,8 @@ BoundaryHighScale={
 {Mv, LHInput[Mv]},
 {B[Mv], 0},
 {Yv,LHInput[Yv]},
-{T[Yv],Azero*Yv}
+{T[Yv],Azero*Yv},
+{Q[WOp],0}
 };
 
 
@@ -36,6 +46,8 @@ Thresholds={
 };
 
 
+UseHiggs2LoopMSSM = True;
+
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
@@ -44,19 +56,16 @@ BoundaryConditionsDown=Table[{},{Length[Thresholds]}];
 
 
 BoundaryConditionsDown[[1]]={
-{MNuL[index1,index2], - Yv[3,index1] Yv[index2,3]/MassOfv[3]}
+{WOp[index1,index2],WOp[index1,index2] - Yv[1,index1] Yv[1,index2]/MassOfv[1]}
 };
 
 BoundaryConditionsDown[[2]]={
-{MNuL[index1,index2], - Yv[2,index1] Yv[index2,2]/MassOfv[2]}
+{WOp[index1,index2],WOp[index1,index2] - Yv[2,index1] Yv[2,index2]/MassOfv[2]}
 };
 
 BoundaryConditionsDown[[3]]={
-{MNuL[index1,index2], - Yv[1,index1] Yv[index2,1]/MassOfv[1]}
+{WOp[index1,index2], - Yv[3,index1] Yv[3,index2]/MassOfv[3]}
 };
 
-
-(* not yet included in public version *)
-
-UseStandardLowEnergy = False;
-
+(* Example for input values *)
+DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta->20, SignumMu ->1, Azero -> -1500, Yv[1,1]->0.001, Yv[2,2]->0.001, Yv[3,3]->0.001, Mv[1,1]->10^15, Mv[2,2]->10^15, Mv[3,3]->10^15};

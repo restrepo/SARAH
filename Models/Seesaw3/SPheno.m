@@ -1,14 +1,23 @@
+(* ::Package:: *)
 
-
-MINPAR={m0,m12,TanBeta,SignumMu,Azero};
-RealParameters = {TanBeta};
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {4,SignumMu},
+        {5,Azero},
+        {6,Bzero}};
+        
+RealParameters = {TanBeta,m0};
 ParametersToSolveTadpoles = {\[Mu],B[\[Mu]]};
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
+ConditionGUTscale = g1 == g2;
 
 BoundaryHighScale={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
@@ -31,16 +40,17 @@ BoundaryHighScale={
 {MXM3,MWM3},
 {MBM3,MWM3},
 {MGM3,MWM3},
-{B[MWM3],0},
-{B[MXM3],0},
-{B[MBM3],0},
-{B[MGM3],0},
+{B[MWM3],Bzero*MWM3},
+{B[MXM3],Bzero*MWM3},
+{B[MBM3],Bzero*MWM3},
+{B[MGM3],Bzero*MWM3},
 {Yb3,LHInput[Yb3]},
 {Yx3,Yb3},
 {Yw3,Yb3},
 {T[Yb3],Azero*Yb3},
 {T[Yx3],Azero*Yb3},
-{T[Yw3],Azero*Yb3}
+{T[Yw3],Azero*Yb3},
+{Q[WOp],0}
 };
 
 
@@ -51,6 +61,8 @@ Thresholds={
 };
 
 
+UseHiggs2LoopMSSM = True;
+
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
@@ -59,21 +71,19 @@ BoundaryConditionsUp=Table[{},{Length[Thresholds]}];
 BoundaryConditionsDown=Table[{},{Length[Thresholds]}];
 
 BoundaryConditionsDown[[1]]={
-{MNuL[index1,index2],1/2 Yw3[3,index1] Yw3[index2,3]/MassOfHw3[3] +3/10 Yb3[3,index1] Yb3[index2,3]/MassOfHb3[3]}
+{WOp[index1,index2],WOp[index1,index2] +1/2 Yw3[1,index1] Yw3[1,index2]/MassOfHw3[1] +3/10 Yb3[1,index1] Yb3[1,index2]/MassOfHb3[1]}
 };
 
 BoundaryConditionsDown[[2]]={
-{MNuL[index1,index2],MNuL[index1,index2] + 1/2 Yw3[2,index1] Yw3[index2,2]/MassOfHw3[2] +3/10 Yb3[2,index1] Yb3[index2,2]/MassOfHb3[2]}
+{WOp[index1,index2],WOp[index1,index2] + 1/2 Yw3[2,index1] Yw3[2,index2]/MassOfHw3[2] +3/10 Yb3[2,index1] Yb3[2,index2]/MassOfHb3[2]}
 };
 
 BoundaryConditionsDown[[3]]={
-{MNuL[index1,index2],MNuL[index1,index2] + 1/2 Yw3[1,index1] Yw3[index2,1]/MassOfHw3[1] +3/10 Yb3[1,index1] Yb3[index2,1]/MassOfHb3[1]}
+{WOp[index1,index2], 1/2 Yw3[3,index1] Yw3[3,index2]/MassOfHw3[1] +3/10 Yb3[3,index1] Yb3[3,index2]/MassOfHb3[3]}
 };
 
 
-(* Not yet included in public version *)
-
-AddLowEnergyConstraint=False;
-
+(* Example for mSugra input values *)
+DefaultInputValues = {m0 -> 100, m12->250, TanBeta ->10, SignumMu ->1, Azero ->300, Bzero -> 10^10, MWM3[1,1]-> 3*10^13, MWM3[2,2]-> 4*10^14, MWM3[3,3]-> 5*10^14, MWM3[1,2]-> 1,  MWM3[1,3]-> 1,  MWM3[2,1]-> 1,  MWM3[3,1]-> 1,  MWM3[3,2]-> 1,  MWM3[2,3]-> 1, Yb3[1,2] -> -0.7, Yb3[1,3]->0.7, Yb3[2,1]->0.22, Yb3[2,2]-> 0.22, Yb3[2,3]->0.22  };
 
 

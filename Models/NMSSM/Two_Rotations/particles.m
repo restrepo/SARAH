@@ -13,7 +13,7 @@ ParticleDefinitions[GaugeES] = {
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -24,7 +24,7 @@ ParticleDefinitions[GaugeES] = {
       {HC,   { Description -> "Charged Higgsinos"}},  
 
       {SsR,  { Description -> "Singlet"}},                     
-      {S,    { Description -> "Singlino" }},
+      {FS,    { Description -> "Singlino" }},
       {Fd1,  { Description -> "Dirac Left Down-Quark"}},
       {Fd2,  { Description -> "Dirac Right Down-Quark"}},
       {Fu1,  { Description -> "Dirac Left Up-Quark"}},
@@ -35,8 +35,7 @@ ParticleDefinitions[GaugeES] = {
       };
       
       
-   ParticleDefinitions[TEMP] = {{{},{}}};
-      
+    
       
   ParticleDefinitions[EWSB] = {
 
@@ -45,13 +44,11 @@ ParticleDefinitions[GaugeES] = {
      {Se ,  { Description -> "Sleptons"}}, 
      {Sv ,  { Description -> "Sneutrinos"}},                                 
      {hh   ,  {  Description -> "Higgs", 
-                 PDG -> {25, 35,45} }}, 
+                 PDG -> {25, 35,45},
+                 PDG.IX ->{101000001,101000002,101000003} }}, 
      {Ah   ,  {    Description -> "Pseudo-Scalar Higgs",
-                 PDG -> {36, 46} }},  
-
-     {AhT ,  {  Description -> "Temporary Pseudo-Scalar Higgs",
-     			 PDG -> {0, 36, 46},
-                 LaTeX -> "A^0_T" }},                        
+                 PDG -> {0,36, 46},
+                 PDG.IX ->{0,102000001,102000002} }},  
 
       {Hpm,  { Description -> "Charged Higgs"}},                                                   
       {VP,   { Description -> "Photon"}}, 
@@ -70,18 +67,29 @@ ParticleDefinitions[GaugeES] = {
       {Glu,  { Description -> "Gluino" }},
                  
       {Chi,    {   Description -> "Neutralinos",
-                 PDG -> {1000022,1000023,1000025,1000035,1000045} }},
+                 PDG -> {1000022,1000023,1000025,1000035,1000045},
+                 PDG.IX -> {211000001,211000002,211000003,211000004,211000005} }},
                  
       {Cha,  { Description -> "Charginos"}}                                                                                          
      
-        };    
+        };   
+
+  ParticleDefinitions[TEMP] = Join[ParticleDefinitions[EWSB],{ 
+     {AhT,  {  Description -> "Temporary Pseudo-Scalar Higgs",
+     		 PDG -> {0,0},
+                 LaTeX -> "A^0_T",
+                 OutputName -> "AhT",
+                    FeynArtsNr -> 106 }},
+     {sigmaS,      {Description -> "Scalar Singlet",
+                    OutputName -> "sS",
+                    FeynArtsNr -> 105 }}   }]; 
         
         
         
 WeylFermionAndIndermediate = {
        {FHd0, { Description -> "Neutral Down-Higgsino"}},      
        {FHu0, { Description -> "Neutral Up-Higgsino" }}, 
-       {FHdm, { Description -> "Charged Down-Higgsino"}},                                                                                                             
+       {FHdm, { Description -> "Charged Down-Higgsino"}},               
        {FHup, { Description -> "Charged Up-Higgsino"}},
        {L0,   { Description -> "Neutralino Weyl-Spinor"}},
        {Lm,   { Description -> "Negative Chargino Weyl-Spinor"}},
@@ -119,9 +127,9 @@ WeylFermionAndIndermediate = {
        {FsR,   { Description -> "Weyl Spinor of Singlino"}},
        {FvL,  { Description -> "Left Neutrino"}},
                  
- {sigmaS,      {Description -> "Scalar Singlet" }}  ,
-                 
- {phiS,      { Description -> "Pseudo Scalar Singlet"}} ,                                                                                                                                            
+       {sigmaS,      {Description -> "Scalar Singlet" }},
+          
+      {phiS,      { Description -> "Pseudo Scalar Singlet"}} ,                                                                                                                                            
                                                                                                                                                                
        {e,    { Description -> "Right Electron Superfield" }},
        {d,    { Description -> "Right Down-Quark Superfield" }},                 

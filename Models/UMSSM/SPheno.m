@@ -1,14 +1,14 @@
-RenameParameters ={
-{\[Kappa],KappaNMSSM},
-{T[\[Kappa]],AKappaNMSSM},
-{\[Lambda],LambdaNMSSM},
-{T[\[Lambda]],ALambdaNMSSM}
-};
 
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {5,Azero}};
 
-MINPAR={m0,m12,Azero,TanBeta,LambdaInput,ALambdaInput,vSInput};
 
 EXTPAR = {
+   {61,LambdaInput},
+   {63,ALambdaInput},
+   {65, vSInput},
    {200, Qq},
    {201, Ql},
    {202, QHd},
@@ -18,7 +18,7 @@ EXTPAR = {
    {206, Qe},
    {207, Qs}       };
        
-RealParameters = {TanBeta};
+RealParameters = {TanBeta,m0};
 
 ParametersToSolveTadpoles = {mHd2,mHu2,ms2};
 
@@ -27,13 +27,14 @@ RenormalizationScale = MSu[1]*MSu[6];
 
 BoundarySUSYScale = {
 {vS, vSInput},  
-{\[Lambda], LambdaInput},
-{mHd2, TADPOLES},
-{mHu2, TADPOLES},
-{ms2, TADPOLES}
+{\[Lambda], LambdaInput}
 };
 
+ConditionGUTscale = g1 == g2;
+
 BoundaryHighScale={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {gp, g1},
 {gpg1,0},
 {g1gp,0},
@@ -52,26 +53,17 @@ BoundaryHighScale={
 {MassU,m12}
 };
 
+BoundaryLowScaleInput={
+ {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+};
+
 
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
-AddLowEnergyConstraint=False;
-UseStandardLowEnergy = False;
 
-
-ConditionForMassOrdering={
-{Ah,
-"If ((Abs(ZA(1,3)).gt.Abs(ZA(2,3))).And.(MAh2(1).lt.1._dp).And.(MAh2(2).lt.1._dp)) Then \n
-   MAh2temp = MAh2 \n
-   ZAtemp = ZA \n
-   ZA(1,:) = ZAtemp(2,:) \n
-   ZA(2,:) = ZAtemp(1,:) \n
-   MAh2(1) = MAh2temp(2) \n
-   MAh2(2) = MAh2temp(1) \n
-End If \n \n"}
-};
 
 
   

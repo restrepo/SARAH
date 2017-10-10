@@ -1,0 +1,468 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     13054,        458]
+NotebookOptionsPosition[      9694,        347]
+NotebookOutlinePosition[     11261,        392]
+CellTagsIndexPosition[     11176,        387]
+WindowTitle->CanonicalForm - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/CanonicalForm\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/CanonicalForm"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/\
+CanonicalForm.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", 
+             "Susyno/ref/CanonicalForm", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["CanonicalForm", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"CanonicalForm", "[", 
+       RowBox[{"expression", ",", 
+        RowBox[{"<", "indices", ">"}]}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]",
+     "Simplifies an expression written in the Einstein convention"
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {{None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->425158211],
+
+Cell[TextData[{
+ Cell[BoxData["expression"], "InlineFormula"],
+ " is the formula written in the Einstein convention that we wish to simplify;"
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{"<", "indices", ">"}]], "InlineFormula"],
+ " are the relevant indices in ",
+ Cell[BoxData["expression"], "InlineFormula"],
+ ". This argument is optional and the default value is ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"\[Alpha]", "[", "1", "]"}], ",", 
+    RowBox[{"\[Alpha]", "[", "2", "]"}], ",", "...", ",", 
+    RowBox[{"\[Alpha]", "[", "20", "]"}]}], "}"}]], "InlineFormula"],
+ ". Maximum size of this list is 20;"
+}], "Notes",
+ CellID->30964082],
+
+Cell[TextData[{
+ "It is possible that in some cases ",
+ Cell[BoxData["CanonicalForm"], "InlineFormula"],
+ " will fail to completely simplify ",
+ Cell[BoxData["expression"], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->527236478]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->14016754],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->22656569],
+
+Cell[TextData[{
+ "To ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " h[i] h[i] is different form ",
+ "h[j] h[j]:"
+}], "ExampleText",
+ CellID->340423719],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"h", "[", "i", "]"}], 
+   RowBox[{"h", "[", "i", "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"h", "[", "j", "]"}], 
+   RowBox[{"h", "[", "j", "]"}]}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->335129954],
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox[
+   RowBox[{"h", "[", "i", "]"}], "2"], "+", 
+  SuperscriptBox[
+   RowBox[{"h", "[", "j", "]"}], "2"]}]], "Output",
+ ImageSize->{85, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[1]=",
+ CellID->13713522]
+}, Open  ]],
+
+Cell["CanonicalForm solves this problem:", "ExampleText",
+ CellID->349902954],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CanonicalForm", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"h", "[", "i", "]"}], 
+     RowBox[{"h", "[", "i", "]"}]}], "+", 
+    RowBox[{
+     RowBox[{"h", "[", "j", "]"}], 
+     RowBox[{"h", "[", "j", "]"}]}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i", ",", "j"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->110289986],
+
+Cell[BoxData[
+ RowBox[{"2", " ", 
+  SuperscriptBox[
+   RowBox[{"h", "[", "i", "]"}], "2"]}]], "Output",
+ ImageSize->{48, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->104984988]
+}, Open  ]],
+
+Cell["\<\
+If we forget to specify the indices {i,j}, the program will assume they are {\
+\[Alpha][1],\[Alpha][2],...} and nothing happens:\
+\>", "ExampleText",
+ CellID->88602366],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CanonicalForm", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"h", "[", "i", "]"}], 
+    RowBox[{"h", "[", "i", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"h", "[", "j", "]"}], 
+    RowBox[{"h", "[", "j", "]"}]}]}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->34272094],
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox[
+   RowBox[{"h", "[", "i", "]"}], "2"], "+", 
+  SuperscriptBox[
+   RowBox[{"h", "[", "j", "]"}], "2"]}]], "Output",
+ ImageSize->{85, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->738083568]
+}, Open  ]],
+
+Cell["\<\
+There is no problem in putting more indices than necessary in the list:\
+\>", "ExampleText",
+ CellID->253472969],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CanonicalForm", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"h", "[", "i", "]"}], 
+     RowBox[{"h", "[", "i", "]"}]}], "+", 
+    RowBox[{
+     RowBox[{"h", "[", "j", "]"}], 
+     RowBox[{"h", "[", "j", "]"}]}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "i", ",", "j", ",", "k", ",", "l", ",", "m", ",", "n", ",", "o", ",", 
+     "p"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->531476255],
+
+Cell[BoxData[
+ RowBox[{"2", " ", 
+  SuperscriptBox[
+   RowBox[{"h", "[", "i", "]"}], "2"]}]], "Output",
+ ImageSize->{48, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[4]=",
+ CellID->72504541]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"CanonicalForm - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 14, 2.7812500}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "CanonicalForm[expression, < indices >] Simplifies an expression written \
+in the Einstein convention", "synonyms" -> {}, "title" -> "CanonicalForm", 
+    "type" -> "Symbol", "uri" -> "Susyno/ref/CanonicalForm"}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5312, 163, 460, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->14016754]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 11034, 380}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[594, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[673, 24, 178, 5, 70, "LinkTrail"],
+Cell[854, 31, 2318, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3197, 88, 56, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3256, 91, 479, 14, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3772, 110, 580, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->425158211],
+Cell[4355, 129, 176, 4, 70, "Notes",
+ CellID->1067943069],
+Cell[4534, 135, 510, 14, 70, "Notes",
+ CellID->30964082],
+Cell[5047, 151, 228, 7, 70, "Notes",
+ CellID->527236478]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[5312, 163, 460, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->14016754],
+Cell[CellGroupData[{
+Cell[5797, 180, 147, 5, 70, "ExampleSection",
+ CellID->22656569],
+Cell[5947, 187, 159, 7, 70, "ExampleText",
+ CellID->340423719],
+Cell[CellGroupData[{
+Cell[6131, 198, 244, 9, 70, "Input",
+ CellID->335129954],
+Cell[6378, 209, 285, 10, 36, "Output",
+ CellID->13713522]
+}, Open  ]],
+Cell[6678, 222, 77, 1, 70, "ExampleText",
+ CellID->349902954],
+Cell[CellGroupData[{
+Cell[6780, 227, 369, 13, 70, "Input",
+ CellID->110289986],
+Cell[7152, 242, 233, 8, 36, "Output",
+ CellID->104984988]
+}, Open  ]],
+Cell[7400, 253, 178, 4, 70, "ExampleText",
+ CellID->88602366],
+Cell[CellGroupData[{
+Cell[7603, 261, 289, 10, 70, "Input",
+ CellID->34272094],
+Cell[7895, 273, 286, 10, 36, "Output",
+ CellID->738083568]
+}, Open  ]],
+Cell[8196, 286, 122, 3, 70, "ExampleText",
+ CellID->253472969],
+Cell[CellGroupData[{
+Cell[8343, 293, 440, 15, 70, "Input",
+ CellID->531476255],
+Cell[8786, 310, 232, 8, 36, "Output",
+ CellID->72504541]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9079, 325, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[9501, 339, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[9667, 345, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

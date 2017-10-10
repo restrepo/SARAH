@@ -1,22 +1,26 @@
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {4,SignumMu},
+        {5,Azero}};
 
+RealParameters = {TanBeta,m0};
 
-MINPAR={m0,m12,TanBeta,SignumMu,Azero};
 ParametersToSolveTadpoles = {\[Mu],B[\[Mu]]};
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
-RenameParameters ={
-{\[Epsilon],epsRpV},
-{B[\[Epsilon]],BepsRpV}
-};
-
-
+ConditionGUTscale = g1 == g2;
 
 BoundaryHighScale={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
+{L3, LHInput[L3]},
+{T[L3], Azero*L3},
 {mq2, DIAGONAL m0^2},
 {ml2, DIAGONAL m0^2},
 {md2, DIAGONAL m0^2},
@@ -26,24 +30,46 @@ BoundaryHighScale={
 {mHu2, m0^2},
 {MassB, m12},
 {MassWB,m12},
-{MassG,m12}
+{MassG,m12},
+{mlHd2,0}
 };
 
+InitializationValues = {
+ {\[Mu],0},
+ {B[\[Mu]],0}
+};
 
+(*----------------------------------*)
+(* Information for SUSY scale input *)
+(*----------------------------------*)
+
+
+EXTPAR={{1,M1input},
+        {2,M2input},
+        {3,M3input},
+        {23,Muinput},
+        {25,TanBeta},
+        {26,MAinput}};
+
+
+ParametersToSolveTadpolesLowScaleInput = {mHd2,mHu2};
+
+BoundaryLowScaleInput={
+ {MassB, M1input},
+ {MassWB, M2input},
+ {MassG, M3input},
+ {\[Mu], Muinput},
+ {B[\[Mu]], MAinput^2/(TanBeta + 1/TanBeta)},
+ {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+};
 
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
-UseStandardLowEnergy = True;
-mueEff = mue;
-LoopTadpolesForTreeMasses=True;
+IncludeFineTuning=True;
+FineTuningParameters={
+{m0,1/2},{m12,1/2},{Azero,1/2},{\[Mu],1/2},{B[\[Mu]],1/2},{Yu,1/2},{L3,1/2}
+};
 
-HiggsCouplingsRatio[Cha]="cplcChaChahhL(i2,i2,i1)*mW/(g2*MCha(i2))";
-HiggsCouplingsRatio[Hpm]="cplhhcHpmHpm(i1,i2,i2)*mW/(g2*MHpm2(i2))";
-HiggsCouplingsRatio[Sd]="-0.5_dp*cplSdcSdhh(i2,i2,i1)*vd/(MSd2(i2))";
-HiggsCouplingsRatio[Su]="-0.5_dp*cplSucSuhh(i2,i2,i1)*vd/(MSu2(i2))";
-HiggsCouplingsRatio[Fu]="ZH(i1,2)*sqrt(vd**2+vu**2)/vu";
-HiggsCouplingsRatio[Fd]="ZH(i1,1)*sqrt(vd**2+vu**2)/vd";
-HiggsCouplingsRatio[Fe]="ZH(i1,1)*sqrt(vd**2+vu**2)/vd";
-HiggsCouplingsRatio[VWm]="(vd*ZH(i1,2)+vu*ZH(i1,2))/(vd**2+vu**2)";

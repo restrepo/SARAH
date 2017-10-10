@@ -1,118 +1,64 @@
 ParameterDefinitions = { 
 
-{g1,       { LaTeX -> "g_1",
-             DependenceNum ->  Sqrt[5/3]gP,
-             DependenceOptional -> e/Cos[ThetaW], 
-             Value -> None, 
-             LesHouches -> None,
-	     GUTnormalization -> Sqrt[3/5] }},
+{g1,        { Description -> "Hypercharge-Coupling"}},
+{g2,        { Description -> "Left-Coupling"}},
+{g3,        { Description -> "Strong-Coupling"}},  
+				
+{AlphaS,    {Description -> "Alpha Strong"}},
 
-{gP,       { LaTeX -> "g'",
-             Dependence ->  None, 
-             Value -> None, 
-             LesHouches -> {gauge, 2}  }},                                
-                           
-{g2,       { LaTeX -> "g_2",
-             Dependence -> None,
-             DependenceOptional -> e/Sin[ThetaW],  
-             Value -> None, 
-             LesHouches -> {gauge, 1} }},
-             
-{e,        { LaTeX -> "e",
-             Dependence -> None,
-             DependenceNum -> Sin[ThetaW]*g2}},                 
-             
-{g3,       { LaTeX -> "g_3",
-             Dependence ->  None, 
-             Value -> None, 
-             LesHouches -> {gauge, 3}  }},    
-             
- 
-             
-{Yu0,      { Dependence -> sum[i001,1,3]*sum[i002,1,3]*Yu[i001,i002]*Delta[i001, i002]* \
-                             Vu[i001,index1]*conj[Uu[i002,index2]] }},                  
-             
- 
-{Yu,       { LaTeX -> "Y^u",
-			 Real -> True,
-			 Dependence ->  None, 
-             Value -> None            }},  
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+{e,         { Description -> "electric charge"}}, 
 
-{Yd0,      { Dependence -> sum[i001,1,3]*sum[i002,1,3]*Yd[i001,i002]*Delta[i001, i002]* \
-                             Vd[i001,index1]*conj[Ud[i002,index2]] }},             
-                  
-{Yd,       { LaTeX -> "Y^d",
-			 Real -> True,
-			 Dependence ->  None, 
-             Value -> None 
-             }},
-             
-            
-{Ye,       { LaTeX -> "Y^e",
-             Real -> True,
-			 Form -> Diagonal,
-             Dependence ->  None, 
-             Value -> None 
-             }},
-                                                                            
-                                                                           
-{\[Kappa],  { LaTeX -> "\\kappa",
-             Real -> True,
-			 Dependence -> None, 
-             Value -> None, 
-             LesHouches -> {Hmix,1}         }},                                        
-                           
-{vd,        { LaTeX -> "v_d",
-             Dependence -> v, 
-             Value -> None, 
-             LesHouches -> None         }}, 
-             
-{vu,        { LaTeX -> "v_u",
-             Dependence -> v, 
-             Value -> None, 
-             LesHouches -> None         }},
-             
-{v,        { LaTeX -> "v",
-             Dependence ->  None, 
-             Value -> None, 
-             LesHouches -> {Hmix,3}      }},
-             
-         
-    
-            
-{UH,        { LaTeX -> "Z^H",
-             Real -> True, 
-             Value -> None, 
-             LesHouches -> None      }},
-             
-{UA,        { LaTeX -> "Z^A",
-             Real -> True,
-             Value -> None, 
-             LesHouches -> None      }},
-             
-{UP,        { LaTeX -> "Z^\\pm",
-             Real ->True,
-             Value -> None, 
-             LesHouches -> None      }},                                                                            
+{Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
+{Yd,        { Description -> "Down-Yukawa-Coupling"}},
+{Ye,        { Description -> "Lepton-Yukawa-Coupling"}}, 
+
+
+{MHD,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
+{MHU,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
+
+
+{v,         { Description -> "EW-VEV",
+               DependenceNum -> Sqrt[4*Mass[VWp]^2/(g2^2)],
+               DependenceSPheno -> None }},           
+{\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }},             
+{TanBeta,   { Description -> "Tan Beta" }},              
+
+{ZP,        { Description->"Charged-Mixing-Matrix",
+              Dependence -> None}},                      
+                                          
  
-          
-{CKM,        { LaTeX -> "V^{CKM}",
-             MatrixProduct -> {Vd,Vu},
-             Value -> {{{1,1}, 0.97383}, 
-                       {{1,2}, 0.2272}, 
-                       {{1,3}, 0.00396},
-                       {{2,1}, 0.2271},
-                       {{2,2}, 0.97296},
-                       {{2,3}, 0.04221},
-                       {{3,1}, 0.00814},
-                       {{3,2}, 0.04161},
-                       {{3,3}, 0.999100}},
-             LesHouches -> None      }},
+
+
+{ZEL,       { Description ->"Left-Lepton-Mixing-Matrix"}},
+{ZER,       { Description ->"Right-Lepton-Mixing-Matrix" }},                          
+{ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
+{ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
+{ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
+{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
- {ThetaW,   { LaTeX -> "\\Theta_W",
-             DependenceNum -> ArcCos[g2/Sqrt[g1^2+g2^2]], 
-             Value -> None,
-             LesHouches -> None      }}                    
+{ThetaW,    { Description -> "Weinberg-Angle",
+              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWp]^2/Mass[VZ]^2]] }},                           
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix",
+       Dependence ->   1/Sqrt[2] {{1, 1},
+                  {\[ImaginaryI],-\[ImaginaryI]}} }},
+
+{Lambda1,   { OutputName ->"Lam1",
+              LesHouches -> {HDM,1}}},
+
+{Lambda2,   { OutputName ->"Lam2",
+              LesHouches -> {HDM,2}}},
+
+{Lambda3,   { OutputName ->"Lam3",
+              LesHouches -> {HDM,3}}},
+
+{Lambda4,   { OutputName ->"Lam4",
+              LesHouches -> {HDM,4}}},
+
+{Lambda5,   { OutputName ->"Lam5",
+              LesHouches -> {HDM,5}}}
 
  }; 
  

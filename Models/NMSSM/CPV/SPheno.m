@@ -1,23 +1,27 @@
 
 
-RenameParameters ={
-{\[Kappa],KappaNMSSM},
-{T[\[Kappa]],AKappaNMSSM},
-{\[Lambda],LambdaNMSSM},
-{T[\[Lambda]],ALambdaNMSSM}
-};
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {5,Azero},
+        {6,etaInput},
+        {7,etaSInput}};
 
+EXTPAR = {
+	   {61,LambdaInput},
+	   {62,KappaInput},
+       {65,vSInput}
+	 };
 
-MINPAR={m0,m12,Azero,TanBeta,KappaInput,LambdaInput,AKappaInput,ALambdaInput,vSInput};
-RealParameters = {TanBeta};
+RealParameters = {TanBeta, etaInput, etaSInput,m0};
 
-EXTPAR={{99,testpar}};
+ParametersToSolveTadpoles = {mHd2,im[T[\[Kappa]]],re[T[\[Kappa]]],im[T[\[Lambda]]],re[T[\[Lambda]]]};
+Tad1Loop[5]=Tad1Loop[4]*vd/vu;
 
-ParametersToSolveTadpoles = {mHd2,mHu2,ms2};
-
-PhaseMuForYb = 0;
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
+
+ConditionGUTscale = g1 == g2;
 
 BoundaryEWSBScale = Table[{},{3}];
 BoundarySUSYScale = Table[{},{3}];
@@ -26,33 +30,30 @@ BoundaryHighScale = Table[{},{3}];
 
 BoundarySUSYScale[[1]] = {
 {vS, vSInput},  
+{eta,etaInput},
+{etaS,etaSInput},
 {\[Kappa], KappaInput},
-{\[Lambda], LambdaInput},
-{mHd2, TADPOLES},
-{mHu2, TADPOLES},
-{ms2, TADPOLES}
+{\[Lambda], LambdaInput}
 };
 
 
 BoundarySUSYScale[[2]] = {
-{vS, vSInput},  
-{mHd2, TADPOLES},
-{mHu2, TADPOLES},
-{ms2, TADPOLES}
+{vS, vSInput},
+{eta,etaInput},
+{etaS,etaSInput}
 };
 
 BoundarySUSYScale[[3]] = {
 {vS, vSInput},  
+{eta,etaInput},
+{etaS,etaSInput},
 {\[Kappa], KappaInput},
-{\[Lambda], LambdaInput},
-{T[\[Kappa]], AKappaInput*KappaInput},
-{T[\[Lambda]], ALambdaInput*LambdaInput},
-{mHd2, TADPOLES},
-{mHu2, TADPOLES},
-{ms2, TADPOLES}
+{\[Lambda], LambdaInput}
 };
 
 BoundaryHighScale[[1]]={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
@@ -61,14 +62,16 @@ BoundaryHighScale[[1]]={
 {md2, DIAGONAL m0^2},
 {mu2, DIAGONAL m0^2},
 {me2, DIAGONAL m0^2},
-{T[\[Kappa]], AKappaInput*\[Kappa]},
-{T[\[Lambda]], ALambdaInput*\[Lambda]},
+{mHu2, mHd2},
+{ms2, mHd2},
 {MassB, m12},
 {MassWB,m12},
 {MassG,m12}
 };
 
 BoundaryHighScale[[2]]={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
@@ -77,10 +80,10 @@ BoundaryHighScale[[2]]={
 {md2, DIAGONAL m0^2},
 {mu2, DIAGONAL m0^2},
 {me2, DIAGONAL m0^2},
+{mHu2, mHd2},
+{ms2, mHd2},
 {\[Kappa], KappaInput},
 {\[Lambda], LambdaInput},
-{T[\[Kappa]], AKappaInput*KappaInput},
-{T[\[Lambda]], ALambdaInput*LambdaInput},
 {MassB, m12},
 {MassWB,m12},
 {MassG,m12}
@@ -88,6 +91,8 @@ BoundaryHighScale[[2]]={
 
 
 BoundaryHighScale[[3]]={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
@@ -96,31 +101,27 @@ BoundaryHighScale[[3]]={
 {md2, DIAGONAL m0^2},
 {mu2, DIAGONAL m0^2},
 {me2, DIAGONAL m0^2},
+{mHu2, mHd2},
+{ms2, mHd2},
 {MassB, m12},
 {MassWB,m12},
 {MassG,m12}
 };
 
+BoundaryLowScaleInput={
+ {vS, vSInput},
+ {\[Kappa], KappaInput},
+ {\[Lambda], LambdaInput},
+ {eta,etaInput},
+ {etaS,etaSInput},
+ {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+};
 
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
-UseStandardLowEnergy = True;
-AddLowEnergyConstraint=False;
-
-
-ConditionForMassOrdering={
-{Ah,
-"If ((Abs(ZA(1,3)).gt.Abs(ZA(2,3))).And.(MAh2(1).lt.1._dp).And.(MAh2(2).lt.1._dp)) Then \n
-   MAh2temp = MAh2 \n
-   ZAtemp = ZA \n
-   ZA(1,:) = ZAtemp(2,:) \n
-   ZA(2,:) = ZAtemp(1,:) \n
-   MAh2(1) = MAh2temp(2) \n
-   MAh2(2) = MAh2temp(1) \n
-End If \n \n"}
-};
 
 
   

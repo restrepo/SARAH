@@ -1,12 +1,27 @@
-MINPAR={m0,m12,TanBeta,SignumMu,Azero};
-RealParameters = {TanBeta};
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {4,SignumMu},
+        {5,Azero},
+        {6,etaInput}};
 
-ParametersToSolveTadpoles = {\[Mu],B[\[Mu]]};
+RealParameters = {TanBeta, etaInput,m0};
+
+ParametersToSolveTadpoles = {\[Mu],re[B[\[Mu]]],im[B[\[Mu]]]};
+Tad1Loop[4]=Tad1Loop[3]*vd/vu;
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
+ConditionGUTscale = g1 == g2;
+
+BoundarySUSYScale={
+{eta,etaInput}
+};
+
 BoundaryHighScale={
+{g1, Sqrt[(g1^2 + g2^2)/2]},
+{g2, g1},
 {T[Ye], Azero*Ye},
 {T[Yd], Azero*Yd},
 {T[Yu], Azero*Yu},
@@ -22,11 +37,15 @@ BoundaryHighScale={
 {MassG,m12}
 };
 
+BoundaryLowScaleInput={
+ {eta,etaInput},
+ {vd,Sqrt[2 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
+ {vu,Sqrt[2 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+};
 
-UseHiggs2LoopMSSM = False;
+
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
-AddLowEnergyConstraint=False;
-UseStandardLowEnergy = False;
+

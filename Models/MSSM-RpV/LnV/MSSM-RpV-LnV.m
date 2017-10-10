@@ -1,50 +1,47 @@
 Off[General::spell]
-Print["Model file for the MSSM with lepton number violation loaded"];
 
-ModelName = "MSSMLV";
-ModelNameLaTeX ="MSSM with lepton number violation";
+Model`Name = "MSSMLV";
+Model`NameLaTeX ="MSSM with lepton number violation";
+Model`Authors = "F.Staub";
+Model`Date = "2012-09-01";
+
+(* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
+
 
 
 (*-------------------------------------------*)
 (*   Particle Content*)
 (*-------------------------------------------*)
 
-(* Gauge Superfields *)
+(* Global symmetries *)
 
-Gauge[[1]]={B,   U[1], hypercharge, g1,False};
-Gauge[[2]]={WB, SU[2], left,        g2,True};
-Gauge[[3]]={G,  SU[3], color,       g3,False};
+Global[[1]] = {Z[3],BTriality};
+
+(* Vector Superfields *)
+
+Gauge[[1]]={B,   U[1], hypercharge, g1,False, 1};
+Gauge[[2]]={WB, SU[2], left,        g2,True,  1};
+Gauge[[3]]={G,  SU[3], color,       g3,False, 1};
 
 
 (* Chiral Superfields *)
 
-Fields[[1]] = {{uL,  dL},  3, q,   1/6, 2, 3};  
-Fields[[2]] = {{vL,  eL},  3, l,  -1/2, 2, 1};
-Fields[[3]] = {{Hd0, Hdm}, 1, Hd, -1/2, 2, 1};
-Fields[[4]] = {{Hup, Hu0}, 1, Hu,  1/2, 2, 1};
+SuperFields[[1]] = {q,  3, {uL,  dL},    1/6, 2, 3,                          1};  
+SuperFields[[2]] = {l,  3, {vL,  eL},   -1/2, 2, 1, Exp[-2*Pi*\[ImaginaryI]/3]};
+SuperFields[[3]] = {Hd, 1, {Hd0, Hdm},  -1/2, 2, 1, Exp[-2*Pi*\[ImaginaryI]/3]};
+SuperFields[[4]] = {Hu, 1, {Hup, Hu0},   1/2, 2, 1, Exp[ 2*Pi*\[ImaginaryI]/3]};
 
-Fields[[5]] = {conj[dR], 3, d,  1/3, 1, -3};
-Fields[[6]] = {conj[uR], 3, u, -2/3, 1, -3};
-Fields[[7]] = {conj[eR], 3, e,    1, 1,  1};
+SuperFields[[5]] = {d, 3, conj[dR],      1/3, 1, -3, Exp[ 2*Pi*\[ImaginaryI]/3]};
+SuperFields[[6]] = {u, 3, conj[uR],     -2/3, 1, -3, Exp[-2*Pi*\[ImaginaryI]/3]};
+SuperFields[[7]] = {e, 3, conj[eR],        1, 1,  1, Exp[ 4*Pi*\[ImaginaryI]/3]};
 
 
 (*------------------------------------------------------*)
 (* Superpotential *)
 (*------------------------------------------------------*)
 
-SuperPotential = { {{1, Yu},{q,Hu,u}}, {{-1,Yd},{q,Hd,d}},
-                   {{-1,Ye},{l,Hd,e}}, {{1,\[Mu]},{Hu,Hd}},
-                   {{1,\[Epsilon]},{l,Hu}}, {{1/2,L1},{l,l,e}},
-                   {{1,L2},{l,q,d}}};
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd + \[Epsilon] l.Hu + L1/2 l.l.e + L2 l.q.d;
 
-
-(*-------------------------------------------*)
-(* Integrate Out or Delete Particles         *)
-(*-------------------------------------------*)
-
-RParityConservation = False;
-IntegrateOut={};
-DeleteParticles={};
 
 
 (*----------------------------------------------*)
@@ -53,21 +50,31 @@ DeleteParticles={};
 
 NameOfStates={GaugeES,EWSB};
 
-DEFINITION[GaugeES][GaugeFixing]=
-		{ {Der[VWB],  -1/(2 RXi[W])},
-  		  {Der[VG],   -1/(2 RXi[G]) }};
+
+DEFINITION[GaugeES][DiracSpinors]={
+  Bino ->{fB, conj[fB]},
+  Wino -> {fWB, conj[fWB]},
+  Glu -> {fG, conj[fG]},
+  H0 -> {FHd0, conj[FHu0]},
+  HC -> {FHdm, conj[FHup]},
+  Fd1 -> {FdL, 0},
+  Fd2 -> {0, FdR},
+  Fu1 -> {FuL, 0},
+  Fu2 -> {0, FuR},
+  Fe1 -> {FeL, 0},
+  Fe2 -> {0, FeR},
+  Fv -> {FvL, 0}
+};
 
 
 (* Gauge Sector *)
 
-DEFINITION[EWSB][GaugeSector]= 
-{{VWB,{1,{VWm,1/Sqrt[2]},{conj[VWm],1/Sqrt[2]}},
-      {2,{VWm,-\[ImaginaryI]/Sqrt[2]},{conj[VWm],\[ImaginaryI]/Sqrt[2]}},
-      {3,{VP,Sin[ThetaW]},{VZ,Cos[ThetaW]}}},
- {VB, {1,{VP,Cos[ThetaW]},{VZ,-Sin[ThetaW]}}},
- {fWB,{1,{fWm,1/Sqrt[2]},{fWp,1/Sqrt[2]}},
-      {2,{fWm,-\[ImaginaryI]/Sqrt[2]},{fWp,\[ImaginaryI]/Sqrt[2]}},
-      {3,{fW0,1}}}};
+DEFINITION[EWSB][GaugeSector] =
+{ 
+  {{VB,VWB[3]},{VP,VZ},ZZ},
+  {{VWB[1],VWB[2]},{VWm,conj[VWm]},ZW},
+  {{fWB[1],fWB[2],fWB[3]},{fWm,fWp,fW0},ZfW}
+};   
         
         
           	
@@ -75,12 +82,9 @@ DEFINITION[EWSB][GaugeSector]=
 (* ----- VEVs ---- *)
 
 DEFINITION[EWSB][VEVs]= 
-{    {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid, \
-1/Sqrt[2]}},
-     {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, \
-1/Sqrt[2]}},
-     {SvL, {vL, 1/Sqrt[2]}, {sigmaL, \[ImaginaryI]/Sqrt[2]},{phiL, \
-1/Sqrt[2]}}     };
+{    {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid, 1/Sqrt[2]}},
+     {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, 1/Sqrt[2]}},
+     {SvL, {vL, 1/Sqrt[2]}, {sigmaL, \[ImaginaryI]/Sqrt[2]},{phiL, 1/Sqrt[2]}}     };
 
 
 DEFINITION[EWSB][Phases]= 
@@ -101,14 +105,15 @@ DEFINITION[EWSB][MatterSector]=
        }; 
 
 
-(*--- Gauge Fixing ---- *)
+DEFINITION[EWSB][DiracSpinors]={
+ Fd ->{  FDL, conj[FDR]},
+ Fu ->{  FUL, conj[FUR]},
+ Chi ->{ L0, conj[L0]},
+ Cha ->{ Lm, conj[Lp]},
+ Glu ->{ fG, conj[fG]}
+};	
 
-DEFINITION[EWSB][GaugeFixing]=
-  {	{Der[VP],                                            - 1/(2 RXi[P])},	
-	{Der[VWm]+\[ImaginaryI] Mass[VWm] RXi[W] Hpm[{1}],   - 1/(RXi[W])},
-	{Der[VZ] - Mass[VZ] RXi[Z] Ah[{1}],                  - 1/(2 RXi[Z])},
-	{Der[VG],                                            - 1/(2 RXi[G])}};
-
+(*
 (*------------------------------------------------------*)
 (* Dirac-Spinors *)
 (*------------------------------------------------------*)
@@ -132,7 +137,7 @@ dirac[[13]] = {Fu2, 0, FuR};
 dirac[[14]] = {Fe1, FeL, 0};
 dirac[[15]] = {Fe2, 0, FeR};
 dirac[[16]] = {Fv, FvL, 0};
-
+*)
 
 (*------------------------------------------------------*)
 (* Automatized Output        *)
@@ -147,5 +152,6 @@ makeOutput = {
 SpectrumFile= None;		
 
 	
-
+(* Model not supported by CalcHep [model file becomes too long] *)
+SetOptions[MakeAll, IncludeCalcHep->False];
 

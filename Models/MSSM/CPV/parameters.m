@@ -4,7 +4,11 @@ ParameterDefinitions = {
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
 
-{e,         { Description -> "electric charge"}}, 
+{AlphaS,    {Description -> "Alpha Strong"}},				  
+{e,         { Description -> "electric charge"}},
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+ 
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -29,13 +33,18 @@ ParameterDefinitions = {
 {MassWB,    { Description -> "Wino Mass parameter"}},
 {MassG,     { Description -> "Gluino Mass parameter"}},
                            
-{vd,        { Description -> "Down-VEV"}}, 
-{vu,        { Description -> "Up-VEV"}},       
+{vd,        { Description -> "Down-VEV",
+              DependenceNum -> v Cos[ArcTan[TanBeta]]}}, 
+{vu,        { Description -> "Up-VEV",
+              DependenceNum -> v Sin[ArcTan[TanBeta]]}},       
 {v,         { Description -> "EW-VEV"}},
              
-{\[Beta],   { Description -> "Pseudo Scalar mixing angle",
-			  DependenceSPheno -> ArcSin[ZP[1,2]]  }},             
-{TanBeta,   { Description -> "Tan Beta" }},              
+{eta,       { Real -> True, 
+              OutputName ->"eta",
+              LaTeX -> "\\eta",
+              LesHouches->{HMIX,500} }},			            
+{TanBeta,   { Description -> "Tan Beta", 
+              OutputName->TanBeta }},              
                     
              
     
@@ -47,9 +56,13 @@ ParameterDefinitions = {
               Dependence -> None,
               DependenceNum -> None,
               DependenceOptional -> None,
-              Real -> False }},
+              Real -> True }},
 
-{ZP,        { Description->"Charged-Mixing-Matrix"}},                      
+{ZP,        { Description->"Charged-Mixing-Matrix",
+              Real -> False,
+              Dependence -> None,
+              DependenceOptional -> None,
+              DependenceNum -> None}},                      
                                           
  
 {ZN,        { Description->"Neutralino Mixing-Matrix" }}, 
@@ -64,7 +77,11 @@ ParameterDefinitions = {
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }}                                  
+{PhaseGlu,  { Description -> "Gluino-Phase" }},
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}}                                  
  }; 
     
              

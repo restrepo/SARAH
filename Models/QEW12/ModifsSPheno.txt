@@ -1,0 +1,670 @@
+
+When generating a new SPheno file with SARAH, FOR THE quiver models don't forget to make the following changes to the SusyMasses, InputOutput and SugraRuns files for the model:
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+
+IN SUSYMASSES:
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+
+- Remove four Delta references
+
+- In regime 1 we have assigned Goldstones. It seems that SPheno does by default a sorting of the goldstones itself.
+The adding of Goldstones in SARAH has the sole result that after SPheno has calculated the gauge boson masses AND
+the goldstone masses separately, and sorted the goldstone masses, these masses are overwritten with our (false assignments).
+To remedy that, just comment out the overwriting. This is around line 2140 of the SusyMasses file. Just comment out
+(or delete) the 8 assignments.
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+
+IN INPUTOUTPUT:
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+
+- Switch on the outputing of EXTPAR (just set the relevant flag to .true. around line 1282)
+
+- Change GUT scale : Modify the lines (just ctrl-F Case(31))
+
+  Case(31) ! setting a fixed GUT scale if wert > 0
+      If (wert.Gt.0._dp) Call SetGUTScale(MessengerScale)
+
+- To print Yukawas at GUT scale, at line ~1310, append the Yukawas to block gaugeGUT :
+
+Write(io_L,106) "Block gaugeGUT Q=",m_GUT,"# (GUT scale)" 
+Write(io_L,104) 1,gB1GUT, "# gB1(Q)^DRbar" 
+Write(io_L,104) 2,gB2GUT, "# gB2(Q)^DRbar" 
+Write(io_L,104) 3,gA1GUT, "# gA1(Q)^DRbar" 
+Write(io_L,104) 4,gA2GUT, "# gA2(Q)^DRbar" 
+Write(io_L,104) 5,g3GUT, "# g3(Q)^DRbar" 
+Write(io_L,104) 6,YeGUT, "# Ye" 
+Write(io_L,104) 7,YuGUT, "# Yu" 
+Write(io_L,104) 8,YdGUT, "# Yd" 
+Write(io_L,104) 9,YKGUT, "# YK" 
+Write(io_L,104) 10,YAGUT, "# YA" 
+
+- Add outputing of extra masses by pasting the following:
+
+Write(io_L,106) "Block Quiver states fermions"
+Write(io_L,100) "#   Block      mass          particle" 
+Write(io_L,104) 1,Real(MPofsave(1),dp), "# MPof(1)  is Bino"
+Write(io_L,104) 2,Real(MGofsave(1),dp), "# MGof(1) is  Wino"
+Write(io_L,104) 3,Real(MPofsave(2),dp), "# MPof(2) is  Wino"
+Write(io_L,104) 4,Real(MGofsave(2),dp), "# MGof(2) is Wino"
+Write(io_L,104) 5,Real(MPofsave(3),dp), "# MPof(3) Singlet Dirac Fermion"
+Write(io_L,104) 6,Real(MGofsave(3),dp), "# MGof(3) is massive Dirac Wino"
+Write(io_L,104) 7,Real(MPofsave(4),dp), "# MPof(4) is singlet Dirac Fermion"
+Write(io_L,104) 8,Real(MGofsave(4),dp), "# MGof(4) is massive Dirac Wino "
+Write(io_L,104) 9,Real(MPofsave(5),dp), "# MPof(5) is massive Dirac Wino"
+Write(io_L,104) 10,Real(MGofsave(5),dp), "# MGof(5) is massive Dirac Wino"
+Write(io_L,104) 11,Real(MPofsave(6),dp), "# MPof(6) is massive Dirac Wino"
+Write(io_L,104) 12,Real(MGofsave(6),dp), "# MGof(6) is massive Dirac Wino"
+Write(io_L,104) 13,Real(MPofsave(7),dp), "# MPof(7) is a massive Dirac Bino"
+Write(io_L,104) 14,Real(MPofsave(8),dp), "# MPof(8) is a massive Dirac Bino"
+Write(io_L,104) 15,Real(MGofsave(7),dp), "# MGof(7) is 2nd Dirac Wino"
+Write(io_L,104) 16,Real(MGofsave(8),dp), "# MGof(8) is 2nd Dirac Wino"
+Write(io_L,104) 17,Real(MPofsave(9),dp), "# MPof(9) is 2nd Dirac Wino"
+Write(io_L,104) 18,Real(MGofsave(9),dp), "# MGof(9) is 3rd Dirac Wino"
+Write(io_L,104) 19,Real(MGofsave(10),dp), "# MGof(10) is 3rd Dirac Wino"
+Write(io_L,104) 20,Real(MPofsave(10),dp), "# MPof(10) is 3rd Dirac Wino"
+Write(io_L,106) "Block Quiver states Scalars"
+Write(io_L,100) "#   Block      mass          particle" 
+Write(io_L,104) 1,Real(MBaFsave(1),dp), "# MBaF(1) is a complex singlet"
+Write(io_L,104) 2,Real(MBaFsave(2),dp), "# MBaF(2) is a complex triplet"
+Write(io_L,104) 3,Real(MSaFsave(1),dp), "# MSaF(1) is a complex triplet"
+Write(io_L,104) 4,Real(MSaFsave(2),dp), "# MSaF(2) is a complet triplet"
+Write(io_L,104) 5,Real(Msigmafsave(1),dp), "# MSigma(1)  is massive vector B"
+Write(io_L,104) 6,Real(Msigmafsave(2),dp), "# MSigma(2)  is massive vector W"
+Write(io_L,104) 7,Real(Msigmafsave(3),dp), "# MSigma(3)  is massive vector W"
+Write(io_L,104) 8,Real(Msigmafsave(4),dp), "# MSigma(4)  is massive vector W"
+Write(io_L,104) 9,Real(Momegafsave(1),dp), "# Momega(1) is 1st doublet complex scalar"
+Write(io_L,104) 10,Real(Momegafsave(2),dp), "# Momega(2) is 1st doublet complex scalar"
+Write(io_L,104) 11,Real(Momegafsave(3),dp), "# Momega(3) is 2nd doublet complex scalar"
+Write(io_L,104) 12,Real(Momegafsave(4),dp), "# Momega(4) is 2nd doublet complex scalar"
+Write(io_L,104) 13,Real(Mphifsave(1),dp), "# Mphif(1) is a singlet real scalar"
+Write(io_L,104) 14,Real(Mphifsave(2),dp), "# Mphif(2) is a singlet real scalar"
+Write(io_L,104) 15,Real(Mphifsave(3),dp), "# Mphif(3) is a singlet real scalar"
+Write(io_L,104) 16,Real(Mphifsave(4),dp), "# Mphif(4) is a singlet real scalar"
+
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+
+IN SUGRARUNS:
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+
+- Sort out Pof/Gof(1,2) (i.e. M1, M2) : In assignment of M1 and M2 around line 1680 or so, modify the assignment of M1, M2 as 
+
+If (Abs(MGofSAVE(1)-MPofSAVE(1)).ge.(Abs(MGofSAVE(1)-MPofSAVE(2)))) Then
+ M1 = MPofSAVE(1)
+ M2 = MGofSAVE(1)
+Else
+ M1 = MPofSAVE(2)
+ M2 = MGofSAVE(1)
+Endif
+
+(one can just ctrl-F "M1 =" to find the exact spot)
+
+- Modify the quantum numbers : 
+
+1) Comments and calculations
+
+For SU(2)
+T(Adj)=2
+
+apparently it is The T index  which is  T( R) =1/2 I( R) 
+
+Each of these must be multiplied by another 2 due to power in Log
+
+
+
+Each of these has been divided out by the Dimension of the representation
+
+For SU(2) doublet D(2)=2 for adjoint D(3)=3  .  
+
+
+******** Each of these must be multiplied by another 2 due to power in Log ******
+*******************  This is encapsulated by the A-> 2*A 		********* 
+Fermions
+Pof(1,2), Gof(1,2)        Do not integrate out
+Pof(3,4),Pof(7,8)         Singlet, do not contribute shift
+Pof(5,6,9,10), Gof(3-10)  Triplet, contribute -2/3 T(Adj)/D(3) =-4/9   ->-8/9
+
+Complex Scalars
+SaF(1), Omegaf(1)           Complex, do not contribute shift
+BaF(1,2),SaF(2),Omega(2-4) Complex, contribute -1/3 T(Adj)/D(3)=-2/9  ->  -4/9
+        
+Real (uneaten) Scalars
+phif(1)                   Real singlet, do not contribute shift
+phif(2-4)                 Real Triplet, contribute -1/6 T(Adj)/D(3)=-1/9  -> -2/9
+
+Real (eaten) Scalars
+Sigmaf(1)                 Real singlet, do not contribute shift
+Sigmaf(2-4)               Real Triplet,  -1/6 T(Adj)/D(3)= -1/9 -> -2/9 if vectors  not integrated out.
+Sigmaf(2-4)               Real Triplet, if vectors ARE integrated out: contribute (11/3-1/6) T(Adj)*2=14  -> +28/2
+
+Vectors
+VHyM                      Singlet, does not contribute
+VWM1-3                    Triplet, contribute 11/3 T(Adj)/D(3)=22/9  -> +44/9
+
+
+******** Each of these must be multiplied by another 2 due to power in Log ******
+				********* See above ********
+
+2) Replace subroutines BoundaryConditionsUp1 and BoundaryConditionsDown1 as follows:
+Subroutine BoundaryConditionsUp1(g1,g2,g3,gA1,gA2,gB1,gB2,M1,M3,M2,md2,               & 
+& me2,mHd2,mHu2,ml2,mq2,mu2,Tod,YA,Yd,Ye,YK,Yu,Mu,Bmu,Td,Te,Tu)
+
+Implicit None 
+Real(dp),Intent(inout) :: g1,g2,g3,gA1,gA2,gB1,gB2,mHd2,mHu2,Tod
+
+Complex(dp),Intent(inout) :: M1,M3,M2,md2(3,3),me2(3,3),ml2(3,3),mq2(3,3),mu2(3,3),YA,Yd(3,3),Ye(3,3),             & 
+& YK,Yu(3,3),Mu,Bmu,Td(3,3),Te(3,3),Tu(3,3)
+
+Integer :: i1,i2,i3,i4 
+Integer :: iWino, WinoTrip(3)
+Integer :: iPof,iGof,Pofcounter,PofTrip(10), GofTrip(10)
+Integer :: BaFTrip(2), SaFTrip(2), phifTrip(4), sigmafTrip(4), omegafTrip(4)
+
+! Boundary from 1 to 0 
+If (TwoLoopRGE.And.ThresholdMassesCalculated) Then 
+
+!...Winos are triplets
+do iWino = 1, 3
+WinoTrip(iWino) = 1
+enddo
+
+!...Gof's 3-10 belong to triplets
+do iGof = 3,10
+GofTrip(iGof) = 1
+enddo
+
+!...Check which Pof components belong to triplets with Gof's
+do iPof = 3,10
+Pofcounter = 1
+do iGof = 3,10
+if (MPofSAVE(iPof).eq.MGofSAVE(iGof)) then
+Pofcounter = Pofcounter + 1
+else
+continue
+endif
+enddo !End scanning Gof
+
+if (Pofcounter.ge.3) then
+PofTrip(iPof) = 1
+else
+PofTrip(iPof) = 0
+endif
+enddo !End scanning Pof
+
+!...BaF's belong to triplets
+BaFTrip(1) = 1
+BaFTrip(2) = 1
+
+!...Check which SaF component belongs to a triplet with BaFs
+if ((Abs(MSaFSAVE(1)-MBaFSAVE(1))).lt.(Abs(MSaFSAVE(2)-MBaFSAVE(1)))) then
+SaFTrip(1) = 1
+SaFtrip(2) = 0
+else
+SaFTrip(1) = 0
+SaFtrip(2) = 1
+endif
+
+!...Check which phif components belong to triplet
+!...The idea: either the 1st or the 4th component will be the singlet
+!...because the other are degenerate and everything is mass-ordered
+!...so phif(2,3) surely belong to the triplet
+if ((Abs(MphifSAVE(1)-MphifSAVE(2))).lt.(Abs(MphifSAVE(4)-MphifSAVE(2)))) then
+phifTrip(1) = 1
+phifTrip(2) = 1
+phifTrip(3) = 1
+phifTrip(4) = 0
+else
+phifTrip(1) = 0
+phifTrip(2) = 1
+phifTrip(3) = 1
+phifTrip(4) = 1
+endif
+
+!...Same idea for sigmaf
+if ((Abs(MsigmafSAVE(1)-MsigmafSAVE(2))).lt.(Abs(MsigmafSAVE(4)-MsigmafSAVE(2)))) then
+sigmafTrip(1) = 1
+sigmafTrip(2) = 1
+sigmafTrip(3) = 1
+sigmafTrip(4) = 0
+else
+sigmafTrip(1) = 0
+sigmafTrip(2) = 1
+sigmafTrip(3) = 1
+sigmafTrip(4) = 1
+endif
+
+!...Same idea for omegaf
+if ((Abs(MomegafSAVE(1)-MomegafSAVE(2))).lt.(Abs(MomegafSAVE(4)-MomegafSAVE(2)))) then
+omegafTrip(1) = 1
+omegafTrip(2) = 1
+omegafTrip(3) = 1
+omegafTrip(4) = 0
+else
+omegafTrip(1) = 0
+omegafTrip(2) = 1
+omegafTrip(3) = 1
+omegafTrip(4) = 1
+endif
+
+!...Wino contributions
+g2 = g2*(1._dp + oo16pi2*g2**2*WinoTrip(1)* &
+& 44._dp/9._dp*Log(Abs(MVW1Msave/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*WinoTrip(2)* &
+& 44._dp/9._dp*Log(Abs(MVW2Msave/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*WinoTrip(3)* &
+& 44._dp/9._dp*Log(Abs(MVW3Msave/TScale)))
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp - oo16pi2*g2**2*phifTrip(1)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(1 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*phifTrip(2)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(2 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*phifTrip(3)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(3 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*phifTrip(4)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(4 )/TScale)))
+
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp - oo16pi2*g2**2*omegafTrip(1)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(1 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*omegafTrip(2)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(2 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*omegafTrip(3)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(3 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*omegafTrip(4)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(4 )/TScale)))
+
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp - oo16pi2*g2**2*sigmafTrip(1)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(1 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*sigmafTrip(2)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(2 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*sigmafTrip(3)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(3 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*sigmafTrip(4)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(4 )/TScale)))
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(3)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(3)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(4)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(4)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(5)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(5)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(6)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(6)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(7)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(7)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(8)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(8)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(9)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(9)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*PofTrip(10)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(10)/TScale)))
+
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(3)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(3)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(4)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(4)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(5)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(5)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(6)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(6)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(7)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(7)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(8)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(8)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(9)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(9)/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*GofTrip(10)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(10)/TScale)))
+
+!...Default triplet contributions for SaF multiplied by zero in case of singlet
+g2 = g2*(1._dp - oo16pi2*g2**2*SaFTrip(1)* &
+& 4._dp/9._dp*Log(Abs(MSaFsave(1 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*SaFTrip(2)* &
+& 4._dp/9._dp*Log(Abs(MSaFsave(2 )/TScale)))
+
+g2 = g2*(1._dp - oo16pi2*g2**2*BaFTrip(1)* &
+& 4._dp/9._dp*Log(Abs(MBaFsave(1 )/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*BaFTrip(2)* &
+& 4._dp/9._dp*Log(Abs(MBaFsave(2 )/TScale)))
+
+End If  
+ gA1 = g1*1/Cos(The1)
+ gA2 = g2*1/Cos(The2)
+ gB1 = g1*1/Sin(The1)
+ gB2 = g2*1/Sin(The2)
+ vlv = vlvInput
+ K1 = (MassBB**2*Sin(The1)**2*(1 - 3*Sin(The1)**2) + (gA1**2 + gB1**2)*vlv**2*Log(1 + mLd2/((gA1**2 + gB1**2)*vlv**2))*Tan(The1)**2)/(8._dp*(gA1**(-2) + gB1**(-2))*Pi**2)
+ K2 = (MassBW**2*Sin(The2)**2*(1 - 3*Sin(The2)**2) + (gA2**2 + gB2**2)*vlv**2*Log(1 + mLd2/((gA2**2 + gB2**2)*vlv**2))*Tan(The2)**2)/(8._dp*(gA2**(-2) + gB2**(-2))*Pi**2)
+ me2(1,1) = -1._dp*(K1) + me2(1,1)
+ me2(2,2) = -1._dp*(K1) + me2(2,2)
+ me2(3,3) = -1._dp*(K1) + me2(3,3)
+ mu2(1,1) = -4._dp*(K1)/9._dp + mu2(1,1)
+ mu2(2,2) = -4._dp*(K1)/9._dp + mu2(2,2)
+ mu2(3,3) = -4._dp*(K1)/9._dp + mu2(3,3)
+ ml2(1,1) = -1._dp*(K1)/4._dp - 3._dp*(K2)/4._dp + ml2(1,1)
+ ml2(2,2) = -1._dp*(K1)/4._dp - 3._dp*(K2)/4._dp + ml2(2,2)
+ ml2(3,3) = -1._dp*(K1)/4._dp - 3._dp*(K2)/4._dp + ml2(3,3)
+ mq2(1,1) = -1._dp*(K1)/36._dp - 3._dp*(K2)/4._dp + mq2(1,1)
+ mq2(2,2) = -1._dp*(K1)/36._dp - 3._dp*(K2)/4._dp + mq2(2,2)
+ mq2(3,3) = -1._dp*(K1)/36._dp - 3._dp*(K2)/4._dp + mq2(3,3)
+ md2(1,1) = -1._dp*(K1)/9._dp + md2(1,1)
+ md2(2,2) = -1._dp*(K1)/9._dp + md2(2,2)
+ md2(3,3) = -1._dp*(K1)/9._dp + md2(3,3)
+ mHu2 = -1._dp*(K1)/4._dp - 3._dp*(K2)/4._dp + mHu2
+ mHd2 = -1._dp*(K1)/4._dp - 3._dp*(K2)/4._dp + mHd2
+ End Subroutine BoundaryConditionsUp1
+
+Subroutine BoundaryConditionsDown1(g1,g2,g3,gA1,gA2,gB1,gB2,mAd2,MassAB,              & 
+& MassAW,M1,MassBB,MassBW,M3,M2,md2,me2,mHd2,mHu2,mKd2,ml2,mLd2,mLdt2,mq2,               & 
+& mu2,Tod,YA,Yd,Ye,YK,Yu,Mu,Bmu,LTod,TYA,Td,Te,TYK,Tu,pz1,pz2,vlv)
+
+Implicit None 
+Real(dp),Intent(inout) :: g1,g2,g3,gA1,gA2,gB1,gB2,mAd2,mHd2,mHu2,mKd2,mLd2,mLdt2,Tod,pz1,pz2,vlv
+
+Complex(dp),Intent(inout) :: MassAB,MassAW,M1,MassBB,MassBW,M3,M2,md2(3,3),me2(3,3),ml2(3,3),mq2(3,3),             & 
+& mu2(3,3),YA,Yd(3,3),Ye(3,3),YK,Yu(3,3),Mu,Bmu,LTod,TYA,Td(3,3),Te(3,3),TYK,Tu(3,3)
+
+Integer :: i1,i2,i3,i4
+Integer :: iWino, WinoTrip(3)
+Integer :: iPof,iGof,Pofcounter,PofTrip(10), GofTrip(10)
+Integer :: BaFTrip(2), SaFTrip(2), phifTrip(4), sigmafTrip(4), omegafTrip(4)
+
+! Boundary from 1 to 0
+g1 = (gA1*gB1)/Sqrt(gA1**2 + gB1**2)
+g2 = (gA2*gB2)/Sqrt(gA2**2 + gB2**2)
+
+If (Abs(MGofSAVE(1)-MPofSAVE(1)).ge.(Abs(MGofSAVE(1)-MPofSAVE(2)))) Then
+M1 = MPofSAVE(1)
+M2 = MGofSAVE(1)
+Else
+M1 = MPofSAVE(2)
+M2 = MGofSAVE(1)
+Endif
+
+ pz1 = (gA1**4*mLd2)/((gA1**2 + gB1**2)*(mLd2 + (gA1**2 + gB1**2)*vlv**2))
+ pz2 = (gA2**4*mLd2)/((gA2**2 + gB2**2)*(mLd2 + (gA2**2 + gB2**2)*vlv**2))
+ K1 = (MassBB**2*Sin(The1)**2*(1 - 3*Sin(The1)**2) + (gA1**2 + gB1**2)*vlv**2*Log(1 + mLd2/((gA1**2 + gB1**2)*vlv**2))*Tan(The1)**2)/(8._dp*(gA1**(-2) + gB1**(-2))*Pi**2)
+ K2 = (MassBW**2*Sin(The2)**2*(1 - 3*Sin(The2)**2) + (gA2**2 + gB2**2)*vlv**2*Log(1 + mLd2/((gA2**2 + gB2**2)*vlv**2))*Tan(The2)**2)/(8._dp*(gA2**(-2) + gB2**(-2))*Pi**2)
+ me2(1,1) = K1 + me2(1,1)
+ me2(2,2) = K1 + me2(2,2)
+ me2(3,3) = K1 + me2(3,3)
+ mu2(1,1) = 4._dp*(K1)/9._dp + mu2(1,1)
+ mu2(2,2) = 4._dp*(K1)/9._dp + mu2(2,2)
+ mu2(3,3) = 4._dp*(K1)/9._dp + mu2(3,3)
+ ml2(1,1) = K1/4._dp + 3._dp*(K2)/4._dp + ml2(1,1)
+ ml2(2,2) = K1/4._dp + 3._dp*(K2)/4._dp + ml2(2,2)
+ ml2(3,3) = K1/4._dp + 3._dp*(K2)/4._dp + ml2(3,3)
+ mq2(1,1) = K1/36._dp + 3._dp*(K2)/4._dp + mq2(1,1)
+ mq2(2,2) = K1/36._dp + 3._dp*(K2)/4._dp + mq2(2,2)
+ mq2(3,3) = K1/36._dp + 3._dp*(K2)/4._dp + mq2(3,3)
+ md2(1,1) = K1/9._dp + md2(1,1)
+ md2(2,2) = K1/9._dp + md2(2,2)
+ md2(3,3) = K1/9._dp + md2(3,3)
+ mHu2 = K1/4._dp + 3._dp*(K2)/4._dp + mHu2
+ mHd2 = K1/4._dp + 3._dp*(K2)/4._dp + mHd2
+ If (TwoLoopRGE) Then 
+
+!...Winos are triplets
+do iWino = 1, 3
+WinoTrip(iWino) = 1
+enddo
+
+!...Gof's 3-10 belong to triplets
+do iGof = 3,10
+GofTrip(iGof) = 1
+enddo
+
+!...Check which Pof components belong to triplets with Gof's
+do iPof = 3,10
+Pofcounter = 1
+do iGof = 3,10
+if (MPofSAVE(iPof).eq.MGofSAVE(iGof)) then
+Pofcounter = Pofcounter + 1
+else
+continue
+endif
+enddo !End scanning Gof
+
+if (Pofcounter.ge.3) then
+PofTrip(iPof) = 1
+else
+PofTrip(iPof) = 0
+endif
+enddo !End scanning Pof
+
+!...BaF's belong to triplets
+BaFTrip(1) = 1
+BaFTrip(2) = 1
+
+!...Check which SaF component belongs to a triplet with BaFs
+if ((Abs(MSaFSAVE(1)-MBaFSAVE(1))).lt.(Abs(MSaFSAVE(2)-MBaFSAVE(1)))) then
+SaFTrip(1) = 1
+SaFtrip(2) = 0
+else
+SaFTrip(1) = 0
+SaFtrip(2) = 1
+endif
+
+!...Check which phif components belong to triplet
+!...The idea: either the 1st or the 4th component will be the singlet
+!...because the other are degenerate and everything is mass-ordered
+!...so phif(2,3) surely belong to the triplet
+if ((Abs(MphifSAVE(1)-MphifSAVE(2))).lt.(Abs(MphifSAVE(4)-MphifSAVE(2)))) then
+phifTrip(1) = 1
+phifTrip(2) = 1
+phifTrip(3) = 1
+phifTrip(4) = 0
+else
+phifTrip(1) = 0
+phifTrip(2) = 1
+phifTrip(3) = 1
+phifTrip(4) = 1
+endif
+
+!...Same idea for sigmaf
+if ((Abs(MsigmafSAVE(1)-MsigmafSAVE(2))).lt.(Abs(MsigmafSAVE(4)-MsigmafSAVE(2)))) then
+sigmafTrip(1) = 1
+sigmafTrip(2) = 1
+sigmafTrip(3) = 1
+sigmafTrip(4) = 0
+else
+sigmafTrip(1) = 0
+sigmafTrip(2) = 1
+sigmafTrip(3) = 1
+sigmafTrip(4) = 1
+endif
+
+!...Same idea for omegaf
+if ((Abs(MomegafSAVE(1)-MomegafSAVE(2))).lt.(Abs(MomegafSAVE(4)-MomegafSAVE(2)))) then
+omegafTrip(1) = 1
+omegafTrip(2) = 1
+omegafTrip(3) = 1
+omegafTrip(4) = 0
+else
+omegafTrip(1) = 0
+omegafTrip(2) = 1
+omegafTrip(3) = 1
+omegafTrip(4) = 1
+endif
+
+
+!...Wino contributions
+g2 = g2*(1._dp - oo16pi2*g2**2*WinoTrip(1)* &
+& 44._dp/9._dp*Log(Abs(MVW1Msave/TScale)))
+M3 = M3*(1._dp - oo16pi2*g2**2*WinoTrip(1)* &
+& 44._dp/9._dp*Log(Abs(MVW1Msave/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*WinoTrip(2)* &
+& 44._dp/9._dp*Log(Abs(MVW2Msave/TScale)))
+M3 = M3*(1._dp - oo16pi2*g2**2*WinoTrip(2)* &
+& 44._dp/9._dp*Log(Abs(MVW2Msave/TScale)))
+g2 = g2*(1._dp - oo16pi2*g2**2*WinoTrip(3)* &
+& 44._dp/9._dp*Log(Abs(MVW3Msave/TScale)))
+M3 = M3*(1._dp - oo16pi2*g2**2*WinoTrip(3)* &
+& 44._dp/9._dp*Log(Abs(MVW3Msave/TScale)))
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp + oo16pi2*g2**2*phifTrip(1)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(1 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*phifTrip(1)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(1 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*phifTrip(2)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(2 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*phifTrip(2)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(2 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*phifTrip(3)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(3 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*phifTrip(3)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(3 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*phifTrip(4)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(4 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*phifTrip(4)* &
+& 2._dp/9._dp*Log(Abs(Mphifsave(4 )/TScale)))
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp + oo16pi2*g2**2*omegafTrip(1)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(1 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*omegafTrip(1)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(1 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*omegafTrip(2)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(2 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*omegafTrip(2)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(2 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*omegafTrip(3)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(3 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*omegafTrip(3)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(3 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*omegafTrip(4)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(4 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*omegafTrip(4)* &
+& 4._dp/9._dp*Log(Abs(Momegafsave(4 )/TScale)))
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp + oo16pi2*g2**2*sigmafTrip(1)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(1 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*sigmafTrip(1)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(1 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*sigmafTrip(2)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(2 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*sigmafTrip(2)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(2 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*sigmafTrip(3)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(3 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*sigmafTrip(3)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(3 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*sigmafTrip(4)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(4 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*sigmafTrip(4)* &
+& 2._dp/9._dp*Log(Abs(Msigmafsave(4 )/TScale)))
+
+
+!...Default triplet contributions multiplied by zero in case of singlet
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(3)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(3)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(3)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(3)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(4)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(4)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(4)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(4)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(5)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(5)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(5)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(5)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(6)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(6)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(6)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(6)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(7)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(7)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(7)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(7)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(8)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(8)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(8)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(8)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(9)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(9)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(9)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(9)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*PofTrip(10)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(10)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*PofTrip(10)* &
+& 8._dp/9._dp*Log(Abs(MPofsave(10)/TScale)))
+
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(3)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(3)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(3)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(3)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(4)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(4)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(4)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(4)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(5)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(5)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(5)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(5)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(6)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(6)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(6)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(6)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(7)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(7)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(7)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(7)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(8)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(8)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(8)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(8)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(9)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(9)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(9)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(9)/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*GofTrip(10)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(10)/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*GofTrip(10)* &
+& 8._dp/9._dp*Log(Abs(MGofsave(10)/TScale)))
+
+
+!...Default triplet contributions for SaF multiplied by zero in case of singlet
+g2 = g2*(1._dp + oo16pi2*g2**2*SaFTrip(1)* &
+& 4._dp/9._dp*Log(Abs(MSaFsave(1 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*SaFTrip(1)* &
+& 4._dp/9._dp*Log(Abs(MSaFsave(1 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*SaFTrip(2)* &
+& 4._dp/9._dp*Log(Abs(MSaFsave(2 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*SaFTrip(2)* &
+& 4._dp/9._dp*Log(Abs(MSaFsave(2 )/TScale)))
+
+g2 = g2*(1._dp + oo16pi2*g2**2*BaFTrip(1)* &
+& 4._dp/9._dp*Log(Abs(MBaFsave(1 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*BaFTrip(1)* &
+& 4._dp/9._dp*Log(Abs(MBaFsave(1 )/TScale)))
+g2 = g2*(1._dp + oo16pi2*g2**2*BaFTrip(2)* &
+& 4._dp/9._dp*Log(Abs(MBaFsave(2 )/TScale)))
+M3 = M3*(1._dp + oo16pi2*g2**2*BaFTrip(2)* &
+& 4._dp/9._dp*Log(Abs(MBaFsave(2 )/TScale)))
+
+End If 
+End Subroutine BoundaryConditionsDown1

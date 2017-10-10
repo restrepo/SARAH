@@ -1,0 +1,1223 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     35870,       1213]
+NotebookOptionsPosition[     30952,       1046]
+NotebookOutlinePosition[     32542,       1091]
+CellTagsIndexPosition[     32456,       1086]
+WindowTitle->ListContract - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/ListContract\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/ListContract"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/\
+ListContract.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", 
+             "Susyno/ref/ListContract", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["ListContract", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"ListContract", "[", 
+       RowBox[{"tensor", ",", "indexPairs"}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]Efficiently calculates the trace of the sparse ",
+     Cell[BoxData["tensor"], "InlineFormula"],
+     " on the pairs of indices ",
+     Cell[BoxData["indexPairs"], "InlineFormula"]
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {{None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->9052147],
+
+Cell[TextData[{
+ Cell[BoxData["tensor"], "InlineFormula"],
+ " is a multidimensional tensor;"
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ Cell[BoxData["indexPairs"], "InlineFormula"],
+ " should be a list ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"index1", ",", 
+      RowBox[{"index1", "'"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"index1", ",", 
+      RowBox[{"index1", "'"}]}], "}"}], ",", "..."}], "}"}]], "InlineFormula"],
+ " with the pairs of indices to be contracted. ",
+ Cell[BoxData["indexI"], "InlineFormula"],
+ " will be contracted with ",
+ Cell[BoxData[
+  RowBox[{"indexI", "'"}]], "InlineFormula"],
+ ";"
+}], "Notes",
+ CellID->49030563],
+
+Cell[TextData[{
+ "This method is usually more efficient than a simple sum of the relevant \
+entries when ",
+ Cell[BoxData["tensor"], "InlineFormula"],
+ " is sparse ,i.e. it has many null entries. For ",
+ Cell[BoxData["ListContract"], "InlineFormula"],
+ " to take advantage of this, make sure to first convert  ",
+ Cell[BoxData["tensor"], "InlineFormula"],
+ " with the ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " built-in function ",
+ ButtonBox["SparseArray",
+  BaseStyle->"Link",
+  ButtonData->"paclet:ref/SparseArray"],
+ ": use ",
+ Cell[BoxData[
+  RowBox[{"SparseArray", "[", "tensor", "]"}]], "InlineFormula"],
+ " instead of just  ",
+ Cell[BoxData["tensor"], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->438546582]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->163180981],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->33416],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tensorA", "=", 
+  RowBox[{"Array", "[", 
+   RowBox[{"a", ",", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "3", ",", "2"}], "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->230903725],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"a", "[", 
+        RowBox[{"1", ",", "1", ",", "1"}], "]"}], ",", 
+       RowBox[{"a", "[", 
+        RowBox[{"1", ",", "1", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"a", "[", 
+        RowBox[{"1", ",", "2", ",", "1"}], "]"}], ",", 
+       RowBox[{"a", "[", 
+        RowBox[{"1", ",", "2", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"a", "[", 
+        RowBox[{"1", ",", "3", ",", "1"}], "]"}], ",", 
+       RowBox[{"a", "[", 
+        RowBox[{"1", ",", "3", ",", "2"}], "]"}]}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"a", "[", 
+        RowBox[{"2", ",", "1", ",", "1"}], "]"}], ",", 
+       RowBox[{"a", "[", 
+        RowBox[{"2", ",", "1", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"a", "[", 
+        RowBox[{"2", ",", "2", ",", "1"}], "]"}], ",", 
+       RowBox[{"a", "[", 
+        RowBox[{"2", ",", "2", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"a", "[", 
+        RowBox[{"2", ",", "3", ",", "1"}], "]"}], ",", 
+       RowBox[{"a", "[", 
+        RowBox[{"2", ",", "3", ",", "2"}], "]"}]}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",
+ ImageSize->{514, 33},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[1]=",
+ CellID->389902171]
+}, Open  ]],
+
+Cell["Contract the 1st and 3rd indices:", "ExampleText",
+ CellID->4545164],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ListContract", "[", 
+  RowBox[{"tensorA", ",", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "3"}], "}"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->620694638],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"1", ",", "1", ",", "1"}], "]"}], "+", 
+    RowBox[{"a", "[", 
+     RowBox[{"2", ",", "1", ",", "2"}], "]"}]}], ",", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"1", ",", "2", ",", "1"}], "]"}], "+", 
+    RowBox[{"a", "[", 
+     RowBox[{"2", ",", "2", ",", "2"}], "]"}]}], ",", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"1", ",", "3", ",", "1"}], "]"}], "+", 
+    RowBox[{"a", "[", 
+     RowBox[{"2", ",", "3", ",", "2"}], "]"}]}]}], "}"}]], "Output",
+ ImageSize->{463, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->756906080]
+}, Open  ]],
+
+Cell["With ...", "ExampleText",
+ CellID->4408224],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tensorB", "=", 
+  RowBox[{"Array", "[", 
+   RowBox[{"b", ",", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "3", ",", "2"}], "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->41515635],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"b", "[", 
+        RowBox[{"1", ",", "1", ",", "1"}], "]"}], ",", 
+       RowBox[{"b", "[", 
+        RowBox[{"1", ",", "1", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"b", "[", 
+        RowBox[{"1", ",", "2", ",", "1"}], "]"}], ",", 
+       RowBox[{"b", "[", 
+        RowBox[{"1", ",", "2", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"b", "[", 
+        RowBox[{"1", ",", "3", ",", "1"}], "]"}], ",", 
+       RowBox[{"b", "[", 
+        RowBox[{"1", ",", "3", ",", "2"}], "]"}]}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"b", "[", 
+        RowBox[{"2", ",", "1", ",", "1"}], "]"}], ",", 
+       RowBox[{"b", "[", 
+        RowBox[{"2", ",", "1", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"b", "[", 
+        RowBox[{"2", ",", "2", ",", "1"}], "]"}], ",", 
+       RowBox[{"b", "[", 
+        RowBox[{"2", ",", "2", ",", "2"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"b", "[", 
+        RowBox[{"2", ",", "3", ",", "1"}], "]"}], ",", 
+       RowBox[{"b", "[", 
+        RowBox[{"2", ",", "3", ",", "2"}], "]"}]}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",
+ ImageSize->{514, 33},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->6262125]
+}, Open  ]],
+
+Cell["... tensorA.tensorB is a 4-dimensional tensor:", "ExampleText",
+ CellID->237789779],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Dimensions", "[", 
+  RowBox[{"tensorA", ".", "tensorB"}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->639315489],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"2", ",", "3", ",", "3", ",", "2"}], "}"}]], "Output",
+ ImageSize->{79, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[4]=",
+ CellID->601296462]
+}, Open  ]],
+
+Cell["\<\
+To contract the 1st index with the 4th and the 2nd with the 3rd, do\
+\>", "ExampleText",
+ CellID->2759478],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ListContract", "[", 
+  RowBox[{
+   RowBox[{"tensorA", ".", "tensorB"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "4"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3"}], "}"}]}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->7136881],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "1", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "1", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "1", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "1", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "2", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "2", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "2", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "2", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "3", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "3", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "3", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "3", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "1", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "1", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "1", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "1", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "2", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "2", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "2", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "2", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "3", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "3", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "3", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "3", ",", "2"}], "]"}]}]}]], "Output",
+ ImageSize->{585, 50},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[5]=",
+ CellID->251715189]
+}, Open  ]],
+
+Cell["This is the same as", "ExampleText",
+ CellID->453474875],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Sum", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"tensorA", ".", "tensorB"}], ")"}], "[", 
+    RowBox[{"[", 
+     RowBox[{"i", ",", "j", ",", "j", ",", "i"}], "]"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"j", ",", "3"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->3530872],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "1", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "1", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "1", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "1", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "2", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "2", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "2", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "2", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "3", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "3", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "3", ",", "1"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"1", ",", "3", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "1", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "1", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "1", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "1", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "2", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "2", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "2", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "2", ",", "2"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"1", ",", "3", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "3", ",", "1"}], "]"}]}], "+", 
+  RowBox[{
+   RowBox[{"a", "[", 
+    RowBox[{"2", ",", "3", ",", "2"}], "]"}], " ", 
+   RowBox[{"b", "[", 
+    RowBox[{"2", ",", "3", ",", "2"}], "]"}]}]}]], "Output",
+ ImageSize->{585, 50},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[6]=",
+ CellID->141992863]
+}, Open  ]],
+
+Cell["\<\
+While in this case ListContract is slower than the direct method using Sum, \
+if the tensor to be contracted is sparse (i.e., there are many null entries) \
+ListContract might be more efficient. To take advantage of this the tensor to \
+be passed on to ListContract should be SparseArray[tensor] and not just \
+tensor. Take the MSSM example:\
+\>", "ExampleText",
+ CellID->8396752],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"norm", "=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Q", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"u", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"L", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"e", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Hd", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"U1", "\[Rule]", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+      RowBox[{"SU2", "->", 
+       RowBox[{"{", "1", "}"}]}], ",", 
+      RowBox[{"SU3", "->", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+      RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+      RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"model", "=", 
+    RowBox[{"{", 
+     RowBox[{
+     "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"result", "=", 
+   RowBox[{"ShowLagrangian", "[", 
+    RowBox[{"model", ",", 
+     RowBox[{"Verbose", "\[Rule]", "False"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"tensorY", "=", 
+  RowBox[{"result", "[", 
+   RowBox[{"[", "1", "]"}], "]"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->9972690],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"SparseArray", "[", 
+   RowBox[{
+    InterpretationBox[
+     RowBox[{"\<\"<\"\>", "\[InvisibleSpace]", "84", 
+      "\[InvisibleSpace]", "\<\">\"\>"}],
+     SequenceForm["<", 84, ">"],
+     Editable->False], ",", 
+    RowBox[{"{", 
+     RowBox[{"19", ",", "19", ",", "19"}], "}"}]}], "]"}],
+  False,
+  Editable->False]], "Output",
+ ImageSize->{212, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[7]=",
+ CellID->45875993]
+}, Open  ]],
+
+Cell["tensorY is a 3-dimensional tensor with the Yukawas:", "ExampleText",
+ CellID->609778014],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Dimensions", "[", "tensorY", "]"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->177162335],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"19", ",", "19", ",", "19"}], "}"}]], "Output",
+ ImageSize->{82, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[8]=",
+ CellID->412283488]
+}, Open  ]],
+
+Cell["\<\
+Lets try the sum of tensorY[[i1,j1,k1]] tensorY[[k1,j1,i1]] (can't use as \
+loop variables i,j,k,....they are flavours!):\
+\>", "ExampleText",
+ CellID->205901764],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Sum", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"tensorY", "[", 
+     RowBox[{"[", 
+      RowBox[{"i1", ",", "j1", ",", "k1"}], "]"}], "]"}], " ", 
+    RowBox[{"tensorY", "[", 
+     RowBox[{"[", 
+      RowBox[{"k1", ",", "j1", ",", "i1"}], "]"}], "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"j1", ",", "19"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k1", ",", "19"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i1", ",", "19"}], "}"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ListContract", "[", 
+  RowBox[{
+   RowBox[{"tensorY", ".", "tensorY"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "4"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3"}], "}"}]}], "}"}]}], "]"}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->93658760],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "j", ",", "i"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "j", ",", "k"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "i", ",", "k"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "k", ",", "i"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "i", ",", "j"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "k", ",", "j"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "j", ",", "i"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "j", ",", "k"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "i", ",", "k"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "k", ",", "i"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "i", ",", "j"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "k", ",", "j"}], "]"}]}], 
+  "+", 
+  RowBox[{"4", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "j", ",", "i"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "j", ",", "k"}], "]"}]}], 
+  "+", 
+  RowBox[{"4", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "i", ",", "k"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "k", ",", "i"}], "]"}]}], 
+  "+", 
+  RowBox[{"4", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "i", ",", "j"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "k", ",", "j"}], 
+    "]"}]}]}]], "Output",
+ ImageSize->{547, 84},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[9]=",
+ CellID->34407127],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "j", ",", "i"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "j", ",", "k"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "i", ",", "k"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "k", ",", "i"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "i", ",", "j"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "2", ",", "6", ",", "1", ",", "k", ",", "j"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "j", ",", "i"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "j", ",", "k"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "i", ",", "k"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "k", ",", "i"}], "]"}]}], 
+  "+", 
+  RowBox[{"12", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "i", ",", "j"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"1", ",", "3", ",", "7", ",", "1", ",", "k", ",", "j"}], "]"}]}], 
+  "+", 
+  RowBox[{"4", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "j", ",", "i"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "j", ",", "k"}], "]"}]}], 
+  "+", 
+  RowBox[{"4", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "i", ",", "k"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "k", ",", "i"}], "]"}]}], 
+  "+", 
+  RowBox[{"4", " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "i", ",", "j"}], "]"}], 
+   " ", 
+   RowBox[{"y", "[", 
+    RowBox[{"4", ",", "5", ",", "7", ",", "1", ",", "k", ",", "j"}], 
+    "]"}]}]}]], "Output",
+ ImageSize->{547, 84},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[9]=",
+ CellID->84784605]
+}, Open  ]],
+
+Cell["ListContract is faster:", "ExampleText",
+ CellID->65108135],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Timing", "[", 
+  RowBox[{"Do", "[", 
+   RowBox[{
+    RowBox[{"Sum", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"tensorY", "[", 
+        RowBox[{"[", 
+         RowBox[{"i1", ",", "j1", ",", "k1"}], "]"}], "]"}], " ", 
+       RowBox[{"tensorY", "[", 
+        RowBox[{"[", 
+         RowBox[{"k1", ",", "j1", ",", "i1"}], "]"}], "]"}]}], ",", 
+      RowBox[{"{", 
+       RowBox[{"j1", ",", "19"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"k1", ",", "19"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i1", ",", "19"}], "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"loops", ",", "10"}], "}"}]}], "]"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Timing", "[", 
+  RowBox[{"Do", "[", 
+   RowBox[{
+    RowBox[{"ListContract", "[", 
+     RowBox[{
+      RowBox[{"tensorY", ".", "tensorY"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "4"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "3"}], "}"}]}], "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"loops", ",", "10"}], "}"}]}], "]"}], "]"}]}], "Input",
+ CellLabel->"In[10]:=",
+ CellID->427641734],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"2.405999999999999`", ",", "Null"}], "}"}]], "Output",
+ ImageSize->{92, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[10]=",
+ CellID->29029613],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.07799999999999853`", ",", "Null"}], "}"}]], "Output",
+ ImageSize->{92, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[10]=",
+ CellID->24556876]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["RELATED LINKS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "RelatedLinksSection",
+ CellID->1584193535],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["SparseArray",
+  BaseStyle->"Link",
+  ButtonData->"paclet:ref/SparseArray"]], "InlineFormula"]], "RelatedLinks",
+ CellID->1038487239]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"ListContract - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 15, 40.3125000}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "ListContract[tensor, indexPairs] Efficiently calculates the trace of the \
+sparse tensor on the pairs of indices indexPairs", "synonyms" -> {}, "title" -> 
+    "ListContract", "type" -> "Symbol", "uri" -> "Susyno/ref/ListContract"}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5892, 184, 461, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->163180981]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 32313, 1079}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[593, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[672, 24, 178, 5, 70, "LinkTrail"],
+Cell[853, 31, 2314, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3192, 88, 55, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3250, 91, 559, 15, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3846, 111, 578, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->9052147],
+Cell[4427, 130, 126, 4, 70, "Notes",
+ CellID->1067943069],
+Cell[4556, 136, 569, 19, 70, "Notes",
+ CellID->49030563],
+Cell[5128, 157, 727, 22, 70, "Notes",
+ CellID->438546582]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[5892, 184, 461, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->163180981],
+Cell[CellGroupData[{
+Cell[6378, 201, 144, 5, 70, "ExampleSection",
+ CellID->33416],
+Cell[CellGroupData[{
+Cell[6547, 210, 215, 7, 70, "Input",
+ CellID->230903725],
+Cell[6765, 219, 1507, 48, 54, "Output",
+ CellID->389902171]
+}, Open  ]],
+Cell[8287, 270, 74, 1, 70, "ExampleText",
+ CellID->4545164],
+Cell[CellGroupData[{
+Cell[8386, 275, 212, 7, 70, "Input",
+ CellID->620694638],
+Cell[8601, 284, 682, 22, 36, "Output",
+ CellID->756906080]
+}, Open  ]],
+Cell[9298, 309, 49, 1, 70, "ExampleText",
+ CellID->4408224],
+Cell[CellGroupData[{
+Cell[9372, 314, 214, 7, 70, "Input",
+ CellID->41515635],
+Cell[9589, 323, 1505, 48, 54, "Output",
+ CellID->6262125]
+}, Open  ]],
+Cell[11109, 374, 89, 1, 70, "ExampleText",
+ CellID->237789779],
+Cell[CellGroupData[{
+Cell[11223, 379, 141, 4, 70, "Input",
+ CellID->639315489],
+Cell[11367, 385, 223, 7, 36, "Output",
+ CellID->601296462]
+}, Open  ]],
+Cell[11605, 395, 116, 3, 70, "ExampleText",
+ CellID->2759478],
+Cell[CellGroupData[{
+Cell[11746, 402, 320, 11, 70, "Input",
+ CellID->7136881],
+Cell[12069, 415, 2093, 66, 71, "Output",
+ CellID->251715189]
+}, Open  ]],
+Cell[14177, 484, 62, 1, 70, "ExampleText",
+ CellID->453474875],
+Cell[CellGroupData[{
+Cell[14264, 489, 391, 13, 70, "Input",
+ CellID->3530872],
+Cell[14658, 504, 2093, 66, 71, "Output",
+ CellID->141992863]
+}, Open  ]],
+Cell[16766, 573, 390, 7, 70, "ExampleText",
+ CellID->8396752],
+Cell[CellGroupData[{
+Cell[17181, 584, 4131, 129, 70, "Input",
+ CellID->9972690],
+Cell[21315, 715, 493, 17, 36, "Output",
+ CellID->45875993]
+}, Open  ]],
+Cell[21823, 735, 94, 1, 70, "ExampleText",
+ CellID->609778014],
+Cell[CellGroupData[{
+Cell[21942, 740, 112, 3, 70, "Input",
+ CellID->177162335],
+Cell[22057, 745, 216, 7, 36, "Output",
+ CellID->412283488]
+}, Open  ]],
+Cell[22288, 755, 172, 4, 70, "ExampleText",
+ CellID->205901764],
+Cell[CellGroupData[{
+Cell[22485, 763, 804, 26, 70, "Input",
+ CellID->93658760],
+Cell[23292, 791, 2310, 69, 105, "Output",
+ CellID->34407127],
+Cell[25605, 862, 2310, 69, 105, "Output",
+ CellID->84784605]
+}, Open  ]],
+Cell[27930, 934, 65, 1, 70, "ExampleText",
+ CellID->65108135],
+Cell[CellGroupData[{
+Cell[28020, 939, 1163, 37, 70, "Input",
+ CellID->427641734],
+Cell[29186, 978, 223, 7, 36, "Output",
+ CellID->29029613],
+Cell[29412, 987, 225, 7, 36, "Output",
+ CellID->24556876]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29698, 1001, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[30120, 1015, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30308, 1023, 427, 12, 70, "RelatedLinksSection",
+ CellID->1584193535],
+Cell[30738, 1037, 172, 4, 70, "RelatedLinks",
+ CellID->1038487239]
+}, Open  ]],
+Cell[30925, 1044, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

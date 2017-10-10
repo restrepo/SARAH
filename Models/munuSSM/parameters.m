@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
-{e,         { Description -> "electric charge"}}, 
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{e,         { Description -> "electric charge"}},
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+ 
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -58,7 +61,7 @@ ParameterDefinitions = {
   				  DependenceNum->None}},                      
                                           
  
-{ZN,        { Description->"Neutralino Mixing-Matrix" }}, 
+{ZN,        { Description->"Neutrino-Mixing-Matrix" }}, 
 {UP,        { Description->"Left-Lepton-Mixing-Matrix"}}, 
 {UM,        { Description->"Right-Lepton-Mixing-Matrix"}}, 
 
@@ -69,7 +72,11 @@ ParameterDefinitions = {
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},  
+{PhaseGlu,  { Description -> "Gluino-Phase" }},
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},  
 
              
 {Yv,       { Description -> "Neutrino-Yukawa-Coupling" }},               

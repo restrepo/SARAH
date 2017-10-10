@@ -1,0 +1,652 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     19404,        642]
+NotebookOptionsPosition[     16224,        537]
+NotebookOutlinePosition[     17785,        582]
+CellTagsIndexPosition[     17700,        577]
+WindowTitle->Error 03 - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/Error03\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/Error03"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/Error03.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", "Susyno/ref/Error03",
+              ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Error 03", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Error", " ", "03"}]], "InlineFormula"],
+     " \[LineSeparator]This error message is generated when the program \
+cannot recognize some of the gauge factor groups"
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {{None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->573179624],
+
+Cell[TextData[{
+ "Note that the expressions  ",
+ Cell[BoxData["NFlavours"], "InlineFormula"],
+ " and ",
+ Cell[BoxData["DiscreteSym"], "InlineFormula"],
+ " are not case sensitive. If they are written incorrectly the program may \
+think they are a factor group."
+}], "Notes",
+ CellID->1067943069]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->467243599],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->37890645],
+
+Cell["\<\
+The following code is wrong because SO(4) is not a simple gauge group. In \
+fact, SO(4) is isomorphic to SU(2)xSU(2).\
+\>", "ExampleText",
+ CellID->340568843],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"norm", "=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Q", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SO4", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"u", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SO4", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SO4", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"L", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SO4", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"e", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+     RowBox[{"SO4", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+     RowBox[{"SO4", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Hd", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"U1", "\[Rule]", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+      RowBox[{"SO4", "->", 
+       RowBox[{"{", "1", "}"}]}], ",", 
+      RowBox[{"SU3", "->", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}]}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"model", "=", 
+    RowBox[{"{", 
+     RowBox[{
+     "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BetaFunctions2L", "[", "model", "]"}], ";"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->402155060],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox[
+    ButtonBox[
+     PaneSelectorBox[{False->"\<\"[ERROR CODE 03]\"\>", True->
+      StyleBox["\<\"[ERROR CODE 03]\"\>", "HyperlinkActive"]}, Dynamic[
+       CurrentValue["MouseOver"]],
+      BaseStyle->{"Hyperlink"},
+      BaselinePosition->Baseline,
+      FrameMargins->0,
+      ImageSize->Automatic],
+     BaseStyle->"Link",
+     ButtonData->"paclet:Susyno/ref/Error03",
+     ButtonNote->"paclet:Susyno/ref/Error03"],
+    Annotation[#, "paclet:Susyno/ref/Error03", "Hyperlink"]& ], 
+   "\[InvisibleSpace]", "\<\" The gauge factor group \"\>", 
+   "\[InvisibleSpace]", 
+   StyleBox["SO4",
+    StripOnInput->False,
+    FontWeight->Bold], 
+   "\[InvisibleSpace]", "\<\" is not valid. Try something like U1, SU2, SU3, \
+SO10, E6 ...\"\>"}],
+  SequenceForm[
+   Hyperlink["[ERROR CODE 03]", "paclet:Susyno/ref/Error03"], 
+   " The gauge factor group ", 
+   Style[$CellContext`SO4, Bold], 
+   " is not valid. Try something like U1, SU2, SU3, SO10, E6 ..."],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[23]:=",
+ CellID->491149580],
+
+Cell[BoxData["\<\"*** There might be more problems with this input. Susyno \
+will check it once the above problems are solved. ***\"\>"], "Print",
+ CellLabel->"During evaluation of In[23]:=",
+ CellID->47879531]
+}, Open  ]]
+}, Open  ]],
+
+Cell["\<\
+The following code is wrong. nflavours should be NFlavours and because of \
+this the program thinks nflavours is a gauge group:\
+\>", "ExampleText",
+ CellID->500829881],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"norm", "=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Q", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"nflavours", "\[Rule]", "3"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"u", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"nflavours", "\[Rule]", "3"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"nflavours", "\[Rule]", "3"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"L", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"nflavours", "\[Rule]", "3"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"e", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"nflavours", "\[Rule]", "3"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"nflavours", "\[Rule]", "1"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Hd", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"U1", "\[Rule]", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+      RowBox[{"SU2", "->", 
+       RowBox[{"{", "1", "}"}]}], ",", 
+      RowBox[{"SU3", "->", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+      RowBox[{"nflavours", "\[Rule]", "1"}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"model", "=", 
+    RowBox[{"{", 
+     RowBox[{
+     "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BetaFunctions2L", "[", "model", "]"}], ";"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->105682610],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox[
+    ButtonBox[
+     PaneSelectorBox[{False->"\<\"[ERROR CODE 03]\"\>", True->
+      StyleBox["\<\"[ERROR CODE 03]\"\>", "HyperlinkActive"]}, Dynamic[
+       CurrentValue["MouseOver"]],
+      BaseStyle->{"Hyperlink"},
+      BaselinePosition->Baseline,
+      FrameMargins->0,
+      ImageSize->Automatic],
+     BaseStyle->"Link",
+     ButtonData->"paclet:Susyno/ref/Error03",
+     ButtonNote->"paclet:Susyno/ref/Error03"],
+    Annotation[#, "paclet:Susyno/ref/Error03", "Hyperlink"]& ], 
+   "\[InvisibleSpace]", "\<\" The gauge factor group \"\>", 
+   "\[InvisibleSpace]", 
+   StyleBox["nflavours",
+    StripOnInput->False,
+    FontWeight->Bold], 
+   "\[InvisibleSpace]", "\<\" is not valid. Try something like U1, SU2, SU3, \
+SO10, E6 ...\"\>"}],
+  SequenceForm[
+   Hyperlink["[ERROR CODE 03]", "paclet:Susyno/ref/Error03"], 
+   " The gauge factor group ", 
+   Style[$CellContext`nflavours, Bold], 
+   " is not valid. Try something like U1, SU2, SU3, SO10, E6 ..."],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[31]:=",
+ CellID->227149213],
+
+Cell[BoxData["\<\"*** There might be more problems with this input. Susyno \
+will check it once the above problems are solved. ***\"\>"], "Print",
+ CellLabel->"During evaluation of In[31]:=",
+ CellID->36144666]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["RELATED LINKS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "RelatedLinksSection",
+ CellID->1584193535],
+
+Cell[TextData[ButtonBox["CartanMatrix",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/ref/CartanMatrix"]], "RelatedLinks",
+ CellID->1038487239]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Error 03 - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 14, 50.1093750}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "Error 03 This error message is generated when the program cannot \
+recognize some of the gauge factor groups", "synonyms" -> {}, "title" -> 
+    "Error 03", "type" -> "Symbol", "uri" -> "Susyno/ref/Error03"}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[4598, 140, 461, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->467243599]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 17557, 570}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[589, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[668, 24, 178, 5, 70, "LinkTrail"],
+Cell[849, 31, 2293, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3167, 88, 51, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3221, 91, 426, 12, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3684, 108, 580, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->573179624],
+Cell[4267, 127, 294, 8, 70, "Notes",
+ CellID->1067943069]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[4598, 140, 461, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->467243599],
+Cell[CellGroupData[{
+Cell[5084, 157, 147, 5, 70, "ExampleSection",
+ CellID->37890645],
+Cell[5234, 164, 168, 4, 70, "ExampleText",
+ CellID->340568843],
+Cell[CellGroupData[{
+Cell[5427, 172, 3111, 108, 70, "Input",
+ CellID->402155060],
+Cell[CellGroupData[{
+Cell[8563, 284, 1103, 30, 70, "Print",
+ CellID->491149580],
+Cell[9669, 316, 210, 3, 70, "Print",
+ CellID->47879531]
+}, Open  ]]
+}, Open  ]],
+Cell[9906, 323, 178, 4, 70, "ExampleText",
+ CellID->500829881],
+Cell[CellGroupData[{
+Cell[10109, 331, 3462, 115, 70, "Input",
+ CellID->105682610],
+Cell[CellGroupData[{
+Cell[13596, 450, 1115, 30, 70, "Print",
+ CellID->227149213],
+Cell[14714, 482, 210, 3, 70, "Print",
+ CellID->36144666]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14997, 493, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[15419, 507, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15607, 515, 427, 12, 70, "RelatedLinksSection",
+ CellID->1584193535],
+Cell[16037, 529, 145, 3, 70, "RelatedLinks",
+ CellID->1038487239]
+}, Open  ]],
+Cell[16197, 535, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

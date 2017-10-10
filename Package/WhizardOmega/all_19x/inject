@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: inject 87 2010-03-22 13:10:08Z ChristianSpeckner $
+# $Id: inject 3435 2011-07-24 22:20:34Z cnspeckn $
 
 # TODO
 # - Make sure this is free of bashisms and runs on other implemetations of sh

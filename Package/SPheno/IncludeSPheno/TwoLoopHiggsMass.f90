@@ -357,6 +357,249 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
 
  End Subroutine SfermionMass3mssm
 
+ Subroutine CalculateStrongCorrections2L(Q2, gSU3, mglu, ZG, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
+                    &, A_t, A_tau, Y_b, Y_t, Y_tau, mu, MDO,mo2,BO,MO,lam,LT,i_os, PiPS2, PiS2, tadpoles,kont)
+ !-----------------------------------------------------------------------------
+ ! in this routine the 2-loop contributions to the neutral scalar mass matrix
+ !   Q2 .................. renormalization scale squared
+ !   gSU3 ................ g_strong
+ !   mglu ................ m_gluino
+ !   mA2 ................. m_A0 squared
+ !   vevs(i) ............. vacuum expactation values
+ !   mD2 ................. M^2_(\tilde D)
+ !   mU2 ................. M^2_(\tilde U)
+ !   mQ2 ................. M^2_(\tilde Q)
+ !   mE2 ................. M^2_(\tilde E)
+ !   mL2 ................. M^2_(\tilde L)
+ !   A_t ................. trilinear coupling A_top
+ !   A_b ................. trilinear coupling A_bottom
+ !   A_tau ............... trilinear coupling A_tau
+ !   Y_t ................. top Yukawwa coupling
+ !   Y_b ................. bottom Yukawwa coupling
+ !   Y_tau ............... tau Yukawwa coupling
+ !   mu .................. mu-parameter
+ ! output:
+ !  PiS2 ........ two-loop contribution to the scalar mass matrix
+ !  kont ........ is 0 if everything is o.k., otherwise it gets a negative 
+ !                value
+ ! written by Werner Porod, 04.03.03
+ !-----------------------------------------------------------------------------
+ Implicit None
+  Integer, intent(in) :: i_os
+  Integer, Intent(inout) :: kont 
+  Real(dp), Intent(in) :: Q2, gSU3, mglu(2), vevs(4), mQ2, mU2, mD2, ML2, ME2
+  Complex(dp), Intent(in) :: A_b, A_t, Y_t, Y_b, mu, A_tau, Y_tau
+  complex(dp), Intent(in) :: MDO,MO,BO,lam,LT,ZG(2,2)
+  real(dp), intent(in) :: mo2
+  Real(dp), Intent(out) :: PiPS2(4,4),PiS2(4,4),tadpoles(4)
+  Real(dp) :: s2t, c2t, s2b, c2b, mt, tanb, mb, sb, cb, ht2, mSt(2)    &
+    & , mSt2(2), mt2, mb2, mtau, mtau2, muR, mSb(2), mSb2(2), At, Ab   &
+    & , hb2, vv, Atau, mStau(2), mStau2(2), s2tau, c2tau, htau2, mSneu2
+  Real(dp) :: F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6,Ft,Fb,Gt,Gb,FAp, hthb       &
+    & , F1, F2, F3, sF2, sF3 , F2_s, sF2_A, sF3_A, X, DF1, DF2, DF3, DsF2, DsF3 &
+    & , Pi2Sa(2,2), htauhb, DdmuF2, DdmuF3, DM12, DM22, DdAtF2, DdAtF3, dmuF2   &
+    & , dmuF3, dAtF2, dAtF3
+  Complex(dp) :: RSt(2,2), RSb(2,2), Rstau(2,2)
+  Real(dp), Parameter :: YL = 1._dp / 3._dp, YRu = -4._dp / 3._dp  &
+       , YRd = 2._dp / 3._dp
+
+  real(dp) :: astrong,st,ct,T1,T2,O1,O2,sO,cO,DMS(4,4),DMP(4,4),temptads(4)
+  real(dp) :: sbsquark,cbsquark,PiS2a(2,2),fa_a,pia02
+  complex(dp) :: octetBmass
+  real(dp) :: octetmmass
+  integer :: mi1,mi2,mi1hat,mi2hat
+  real(dp) :: mA2
+
+  real(dp) :: twovevs(2)
+  complex(dp) :: mutilde
+
+  Iname = Iname + 1
+  NameOfUnit(Iname) = "CalculateStrongCorrections2L"
+  PiS2 = 0._dp
+  kont = 0
+
+  twovevs(1) = vevs(1)
+  twovevs(2) = vevs(2)
+
+  mutilde=mu-vevs(3)*lam/sqrt(2._dp)+vevs(4)*LT/sqrt(2._dp)
+
+ !------------------------------------------------------------------------
+ ! first the (s)fermion, please note, that the papers by P.Slavich et al. 
+ ! the ordering of the sfermions is reversed to compared to my odering
+ !------------------------------------------------------------------------
+
+  Call SfermionMass(MQ2, MU2, A_t, mutilde, twovevs, Y_t, 0.5_dp, YL, YRu,   &
+  0._dp, 0._dp, kont, mSt, mSt2, RSt)
+  If (kont.Ne.0) Then
+   Write(ErrCan,*) "Problem in "//NameOfUnit(Iname)
+   Write(ErrCan,*)&
+     "Stop masses squared for 2-loop calculation of pseudoscalar mass are negativ."
+   kont = -604
+   Call AddError(604)
+   Iname = Iname - 1
+   Return
+  End If 
+  mt2 = 0.5_dp * Abs(Y_t*vevs(2))**2
+  Call SfermionMass(MQ2, MD2, A_b, mutilde, twovevs, Y_b, -0.5_dp, YL, YRd,   &
+  0._dp, 0._dp, kont, mSb, mSb2, RSb)
+  If (kont.Ne.0) Then
+   Write(ErrCan,*) "Problem in "//NameOfUnit(Iname)
+   Write(ErrCan,*) &
+     "Sbottommasses for 2-loop calculation of  Tadpoles are negativ."
+   kont = -605
+   Call AddError(605)
+   Iname = Iname - 1
+   Return
+  End If 
+  mb2 = 0.5_dp * Abs(Y_b*vevs(1))**2
+
+
+ !------------------------------------------------------------
+ ! different mass ordering leads to the following formulas
+ !------------------------------------------------------------
+  s2t = - 2._dp * Real( RSt(1,1) * RSt(1,2), dp)
+  c2t = Abs(RSt(1,2))**2 -  Abs(RSt(1,1))**2
+  s2b = - 2._dp * Real( RSb(1,1) * RSb(1,2), dp)
+  c2b = Abs(RSb(1,2))**2 -  Abs(RSb(1,1))**2
+  mt = Sqrt(mt2)
+  mb = Sqrt(mb2)
+  ht2 = Abs(Y_t)**2
+  hb2 = Abs(Y_b)**2
+  tanb = vevs(2) / vevs(1)
+
+!  write(*,*) "Tan beta: ",tanb
+
+  vv = vevs(1)**2 + vevs(2)**2
+
+  cb = 1._dp / Sqrt(1._dp + tanb**2)
+  sb = tanb * cb
+ 
+  At = Real(A_t/Y_t, dp)
+  Ab = Real(A_b/Y_b, dp)
+  Atau = Real(A_tau/Y_tau, dp)
+  muR = - Real(mu, dp) ! different sign convention
+  X = At + muR * vevs(1) / vevs(2)
+
+  astrong=gSU3**2/(4._dp*PI)
+
+
+!---------------------------------
+! alpha_s alpha_t
+!---------------------------------
+
+  T1=mst2(1)
+  T2=mst2(2)
+!  write(*,*) "Rst: ",Rst
+  st= 1._dp*real(RSt(2,2))
+!  st=-real(RSt(1,2))
+! ct = -real(RSt(1,1))
+  ct=real(RSt(1,2))
+  sbsquark = real(RSb(1,2))
+  cbsquark = real(RSb(2,2))
+
+  
+
+  octetBmass=BO+2._dp*MDO**2
+  octetMmass=mO2+MO*conjg(MO)+2._dp*MDO*conjg(MDO)
+!  write(*,*) "octetBmass, octetMmass: ",octetBmass, octetMmass
+
+  if(abs(octetBmass) .gt. 1E-8) then
+     cO=real(octetBmass/abs(octetBmass))
+     sO=-aimag(octetBmass/abs(octetBmass))
+  else
+     cO=1._dp
+     sO=0._dp
+  end if
+
+!  write(*,*) "cO, sO: ",cO,sO
+  O1=octetmmass+abs(octetbmass)
+  O2=octetmmass-abs(octetbmass)
+
+!  write(*,*) "mO1, mO2: ",sqrt(O1),sqrt(O2)
+
+  DMS=0._dp
+  DMP=0._dp
+  ! write(*,*) "ZG: "
+  ! write(*,*) ZG(1,1),ZG(1,2)
+  ! write(*,*) ZG(2,1),ZG(2,2)
+
+  ! In this basis, ZG*MGlu*ZG^T is diagonal, so we have gauge eigenstates = ZG^T. mass eigenstates, thus lambda = ZG(1,1) l1 + ZG(2,1) l2
+
+!  write(*,*) "st,ct,s2t,c2t,ls,lt ",st,ct,s2t," ",c2t,lam,lt
+
+call effpotasat(2,mt,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg(MDO),T1,T2,st,ct,O1,O2,sO,cO,q2,tanb,sqrt(vv/2),-real(lam),real(LT),mu,vevs(3)/sqrt(2d0),vevs(4)/sqrt(2d0),astrong,DMS,DMP,tadpoles)
+
+
+
+  do mi1=1,4
+     do mi2=1,4
+        PiS2(mi1,mi2) = DMS(mi1,mi2)
+        PiPS2(mi1,mi2) = DMP(mi1,mi2)
+!        write(*,*) PiS2(mi1,mi2)
+        end do
+     end do
+
+!     write(*,*) "tadpoles: ",temptads
+
+
+
+     ! write(*,*) "as at: "
+     ! write(*,*) PiS2
+ !---------------------------------------------
+ ! alpha_s alpha_b
+ !---------------------------------------------
+  X = Ab + muR * vevs(2) / vevs(1)
+  
+  DMS=0._dp
+  DMP=0._dp
+  call effpotasat(2,mb,mglu(1),mglu(2),real(ZG(1,1)**2),reaL(ZG(2,1)**2),MDO*conjg(MDO),msb2(1),msb2(2),sbsquark,cbsquark,O1,O2,sO,cO,q2,1d0/tanb,sqrt(vv/2),-real(lam),real(LT),mu,vevs(3)/sqrt(2d0),vevs(4)/sqrt(2d0),astrong,DMS,DMP,temptads) 
+
+
+! write(*,*) "as ab: "
+    do mi1=1,4
+       
+       if (mi1.lt.3) then
+          mi1hat=3-mi1
+       else
+          mi1hat=mi1
+       end if
+       tadpoles(mi1) = tadpoles(mi1)+temptads(mi1hat)
+    do mi2=1,4
+        
+        if(mi2.lt.3) then
+           mi2hat=3-mi2
+        else
+           mi2hat=mi2
+        end if
+!        write(*,*) "PiS2a(",mi1,mi2,") = DMS(",mi1hat,mi2hat,")"
+!        PiS2b(mi1,mi2) = DMS(mi1hat,mi2hat)
+        PiS2(mi1,mi2) = PiS2(mi1,mi2) + DMS(mi1hat,mi2hat)
+        PiPS2(mi1,mi2) = PiPS2(mi1,mi2) + DMP(mi1hat,mi2hat)
+!        write(*,"(ES15.7)",advance="no") real(DMS(mi1hat,mi2hat))
+        end do
+        write(*,*) 
+     end do
+    
+!     write(*,*) real(DMS)
+
+!     write(*,*) PiS2b
+
+ !    PiS2 = PiS2 + PiS2b
+
+     
+  
+     ! write(*,*) "Total two loop correction: "
+     ! write(*,*) PiS2
+
+  Iname = Iname - 1
+
+
+ end subroutine CalculateStrongCorrections2L
+
+
+
+
+
 
  Subroutine makefuncs(t,b,A0,T1,T2,B1,B2,s2t,c2t,s2b,c2b, &
     q,mu,vv,tanb,F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6, Ft,Fb,Gt,Gb,FAp)
@@ -3165,7 +3408,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
  End Subroutine makefuncstau
   
 
- Subroutine PiPseudoScalar2(gs, mg, mA2, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
+ Subroutine Yukawa2L_PseudoScalar(mA2, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
              & , A_t, A_tau, Y_b, Y_t, Y_tau, mu, PiA02, kont)
  !------------------------------------------------------------------
  ! calulates the 2-loop contribution to the pseudoscalar Higgs mass
@@ -3200,7 +3443,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
  !------------------------------------------------------------------
  Implicit None
   Integer, Intent(inout) :: kont 
-  Real(dp), Intent(in) :: gs, mg, mA2, vevs(2), mQ2, mU2, mD2, ML2, ME2
+  Real(dp), Intent(in) ::  mA2, vevs(2), mQ2, mU2, mD2, ML2, ME2
   Complex(dp), Intent(in) :: A_b, A_t, Y_t, Y_b, mu, A_tau, Y_tau
   Real(dp), Intent(out) :: PiA02
 
@@ -3214,7 +3457,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
          & , YRd = 2._dp / 3._dp
 
   Iname = Iname + 1
-  NameOfUnit(Iname) = "PiPseudoScalar2"
+  NameOfUnit(Iname) = "Yukawa2L_PseudoScalar"
 
   PiA02 = 0._dp
   kont = 0
@@ -3291,31 +3534,33 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
   Ab = Real(A_b/Y_b, dp)
   Atau = Real(A_tau/Y_tau, dp)
   muR = - Real(mu, dp) ! different sign convention
+  PiA02 =0._dp
+  FA=0._dp
+  FA_A=0._dp
+ !  !-----------------
+ !  ! alpha_s alpha_t  
+ !  !-----------------
+ !  Call strfuncsodd(mt2, mg, mStop2(2), mStop2(1), s2t, Q, At, FA, FA_A)
+ !  If (At.Eq.0._dp) Then
+ ! !     the function FA has poles in A=0. 
+ ! !     when necessary we consider the residues which is zero:
+ !   PiA02 = ht2 * muR/ ((mStop2(2)-mStop2(1)) *sb *cb) * FA_A
+ !  Else
+ !   PiA02 = ht2 *At *muR / ((mStop2(2)-mStop2(1))*sb*cb) * FA
+ !  End If
+ !  !-----------------
+ !  ! alpha_s alpha_b 
+ !  !-----------------
+ !  Call strfuncsodd(mb2, mg, mSbottom2(2), mSbottom2(1), s2b, Q, Ab, FA, FA_A)
+ !  If (Ab.Eq.0._dp) Then
+ ! !     the function FA has poles in A=0. 
+ ! !     when necessary we consider the residues, which is zero
+ !   PiA02 = PiA02 + hb2 * muR/ ((mSbottom2(2)-mSbottom2(1)) *sb *cb) * FA_A
+ !  Else
+ !   PiA02 = PiA02 +hb2 *Ab *muR / ((mSbottom2(2)-mSbottom2(1))*sb*cb) * FA
+ !  End If
 
-  !-----------------
-  ! alpha_s alpha_t  
-  !-----------------
-  Call strfuncsodd(mt2, mg, mStop2(2), mStop2(1), s2t, Q, At, FA, FA_A)
-  If (At.Eq.0._dp) Then
- !     the function FA has poles in A=0. 
- !     when necessary we consider the residues which is zero:
-   PiA02 = ht2 * muR/ ((mStop2(2)-mStop2(1)) *sb *cb) * FA_A
-  Else
-   PiA02 = ht2 *At *muR / ((mStop2(2)-mStop2(1))*sb*cb) * FA
-  End If
-  !-----------------
-  ! alpha_s alpha_b 
-  !-----------------
-  Call strfuncsodd(mb2, mg, mSbottom2(2), mSbottom2(1), s2b, Q, Ab, FA, FA_A)
-  If (Ab.Eq.0._dp) Then
- !     the function FA has poles in A=0. 
- !     when necessary we consider the residues, which is zero
-   PiA02 = PiA02 + hb2 * muR/ ((mSbottom2(2)-mSbottom2(1)) *sb *cb) * FA_A
-  Else
-   PiA02 = PiA02 +hb2 *Ab *muR / ((mSbottom2(2)-mSbottom2(1))*sb*cb) * FA
-  End If
-
-  PiA02 = 4._dp * gs**2 * PiA02 ! gs^2 CF Nc
+ !  PiA02 = 4._dp * gs**2 * PiA02 ! gs^2 CF Nc
 
   !-----------------------
   ! (alpha_t = alpha_b)^2  
@@ -3346,11 +3591,11 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
                  & , sb, cb, Q, muR, FB, FB_A)
 
   If(Atau/=0d0) Then
-    DMB = htau2*muR*Atau/(mStau2(2) - mStau2(1))/(sb*cb) * FA
+    DMB = htau2*muR*Atau/(mStau2(2) - mStau2(1))/(sb*cb) * FB
   Else
   !     the function FA has poles in A=0. 
   !     when necessary we consider the residues:
-    DMB = htau2*muR/(mStau2(2) - mStau2(1))/(sb*cb) * FA_A
+    DMB = htau2*muR/(mStau2(2) - mStau2(1))/(sb*cb) * FB_A
   Endif
   DMB = htau2 * DMB
 
@@ -3360,21 +3605,21 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
 
  Contains 
 
-  Subroutine strfuncsodd(t,mg,T1,T2,s2t,q,A,FA,FA_A)
-  Implicit None
-   Real(dp), Intent(in) :: t,mg,T1,T2,s2t,q,A
-   Real(dp), Intent(out) :: FA,FA_A
+  ! Subroutine strfuncsodd(t,mg,T1,T2,s2t,q,A,FA,FA_A)
+  ! Implicit None
+  !  Real(dp), Intent(in) :: t,mg,T1,T2,s2t,q,A
+  !  Real(dp), Intent(out) :: FA,FA_A
 
-   If (A.eq.0._dp) Then
-    FA_A = strresFAc(t,mg,T1,T2,q) - strresFAc(t,mg,T2,T1,q)
-    FA = 0._dp
-   Else
-    FA_A = 0._dp
-    FA = strFAab(T1,T2,s2t,q) + strFAc(t,mg,T1,T2,s2t,A,q) &
-     & - strFAc(t,mg,T2,T1,-s2t,A,q)
-   End If
+  !  If (A.eq.0._dp) Then
+  !   FA_A = strresFAc(t,mg,T1,T2,q) - strresFAc(t,mg,T2,T1,q)
+  !   FA = 0._dp
+  !  Else
+  !   FA_A = 0._dp
+  !   FA = strFAab(T1,T2,s2t,q) + strFAc(t,mg,T1,T2,s2t,A,q) &
+  !    & - strFAc(t,mg,T2,T1,-s2t,A,q)
+  !  End If
    
-  End Subroutine strfuncsodd
+  ! End Subroutine strfuncsodd
 
   Real(dp) Function strresFAc(t,mg,T1,T2,q)
   !     residue of FA for A=0
@@ -3565,10 +3810,10 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
 
   End Function tauresFAc
   
- End Subroutine PiPseudoScalar2
+ End Subroutine Yukawa2L_PseudoScalar
 
 
- Subroutine PiScalar2(Q2, gSU3, mglu, mA2, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
+ Subroutine Yukawa2L_Scalar(Q2, mA2, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
                     &, A_t, A_tau, Y_b, Y_t, Y_tau, mu, i_os, PiS2, kont)
  !-----------------------------------------------------------------------------
  ! in this routine the 2-loop contributions to the neutral scalar mass matrix
@@ -3598,7 +3843,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
  Implicit None
   Integer, intent(in) :: i_os
   Integer, Intent(inout) :: kont 
-  Real(dp), Intent(in) :: Q2, gSU3, mglu, mA2, vevs(2), mQ2, mU2, mD2, ML2, ME2
+  Real(dp), Intent(in) :: Q2, mA2, vevs(2), mQ2, mU2, mD2, ML2, ME2
   Complex(dp), Intent(in) :: A_b, A_t, Y_t, Y_b, mu, A_tau, Y_tau
   Real(dp), Intent(out) :: PiS2(2,2)
 
@@ -3614,7 +3859,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
        , YRd = 2._dp / 3._dp
 
   Iname = Iname + 1
-  NameOfUnit(Iname) = "PiScalar2"
+  NameOfUnit(Iname) = "Yukawa2L_Scalar"
 
   PiS2 = 0._dp
   kont = 0
@@ -3692,133 +3937,133 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
   muR = - Real(mu, dp) ! different sign convention
   X = At + muR * vevs(1) / vevs(2)
 
- !---------------------------------
- ! alpha_s alpha_t
- !---------------------------------
-  Call strfuncs(mt2, mglu, mst2(2), mst2(1), s2t, c2t, Q2, F1, F2, F3)
-  If (i_os.Ne.0) Then
-    Call strdfuncs(mt2, mglu, mst2(2), mst2(1), s2t, c2t, Q2   &
-      &  , At, X, DF1, DF2, DF3, DsF2, DsF3)
-  Else
-   DF1 = 0
-   DF2 = 0
-   DF3 = 0
-   DsF2 = 0
-   DsF3 = 0
-  End If
+!  !---------------------------------
+!  ! alpha_s alpha_t
+!  !---------------------------------
+!   Call strfuncs(mt2, mglu, mst2(2), mst2(1), s2t, c2t, Q2, F1, F2, F3)
+!   If (i_os.Ne.0) Then
+!     Call strdfuncs(mt2, mglu, mst2(2), mst2(1), s2t, c2t, Q2   &
+!       &  , At, X, DF1, DF2, DF3, DsF2, DsF3)
+!   Else
+!    DF1 = 0
+!    DF2 = 0
+!    DF3 = 0
+!    DsF2 = 0
+!    DsF3 = 0
+!   End If
 
-  If ((s2t.Ne.0._dp).And.(At.Ne.0._dp)) Then
-   Call strsfuncs(mglu, mst2(2), mst2(1), Q2, At, sF2, sF3)
-   F1 = F1 + i_os * DF1
-   F2 = F2 + i_os * DF2
-   F3 = F3 + i_os * DF3
-   sF2 = sF2 + i_os * DsF2
-   sF3 = sF3 + i_os * DsF3
-   PiS2(1,1) = 0.5_dp * ht2 * muR**2 * s2t**2 * F3 ! eq. (25)
+!   If ((s2t.Ne.0._dp).And.(At.Ne.0._dp)) Then
+!    Call strsfuncs(mglu, mst2(2), mst2(1), Q2, At, sF2, sF3)
+!    F1 = F1 + i_os * DF1
+!    F2 = F2 + i_os * DF2
+!    F3 = F3 + i_os * DF3
+!    sF2 = sF2 + i_os * DsF2
+!    sF3 = sF3 + i_os * DsF3
+!    PiS2(1,1) = 0.5_dp * ht2 * muR**2 * s2t**2 * F3 ! eq. (25)
      
-   PiS2(1,2) = 0.5_dp * ht2 * muR * At * s2t**2 * (F3 + sF3)  &! eq. (26)
-           & + ht2 * mt * muR * s2t * F2
+!    PiS2(1,2) = 0.5_dp * ht2 * muR * At * s2t**2 * (F3 + sF3)  &! eq. (26)
+!            & + ht2 * mt * muR * s2t * F2
      
-   PiS2(2,2) = 0.5_dp * ht2 * At**2 * s2t**2 * (F3 + 2._dp*sF3)  &! eq. (27)
-           & + 2._dp * ht2 * ( mt * At * s2t * (F2 + sF2) + mt2 * F1 )
+!    PiS2(2,2) = 0.5_dp * ht2 * At**2 * s2t**2 * (F3 + 2._dp*sF3)  &! eq. (27)
+!            & + 2._dp * ht2 * ( mt * At * s2t * (F2 + sF2) + mt2 * F1 )
 
-  !     some of the functions have poles in s2t=0 or in A=0. 
-  !     when necessary we consider the residues:     
-  Else If ((s2t.Eq.0._dp).And.(At.Eq.0._dp)) Then
-   F1 = F1 + i_os * DF1
-   PiS2(1,1) = 0._dp
-   PiS2(1,2) = 0._dp
-   PiS2(2,2) = 2._dp * ht2 * mt2 * F1
+!   !     some of the functions have poles in s2t=0 or in A=0. 
+!   !     when necessary we consider the residues:     
+!   Else If ((s2t.Eq.0._dp).And.(At.Eq.0._dp)) Then
+!    F1 = F1 + i_os * DF1
+!    PiS2(1,1) = 0._dp
+!    PiS2(1,2) = 0._dp
+!    PiS2(2,2) = 2._dp * ht2 * mt2 * F1
 
-  Else If ((s2t.Eq.0._dp).And.(At.Ne.0._dp)) Then 
-   Call strresfuncs(mt2, mglu, mst2(2), mst2(1), q2, F2_s, sF2_A, sF3_A)     
-   F1 = F1 + i_os * DF1
-   F2_s = F2_s + i_os * DF2
-   PiS2(1,1) = 0._dp
-   PiS2(1,2) = ht2 * mt * muR * F2_s
-   PiS2(2,2) = 2._dp * ht2 * (mt2 * F1 + mt * At * F2_s)
+!   Else If ((s2t.Eq.0._dp).And.(At.Ne.0._dp)) Then 
+!    Call strresfuncs(mt2, mglu, mst2(2), mst2(1), q2, F2_s, sF2_A, sF3_A)     
+!    F1 = F1 + i_os * DF1
+!    F2_s = F2_s + i_os * DF2
+!    PiS2(1,1) = 0._dp
+!    PiS2(1,2) = ht2 * mt * muR * F2_s
+!    PiS2(2,2) = 2._dp * ht2 * (mt2 * F1 + mt * At * F2_s)
 
-  Else If ((s2t.Ne.0._dp).And.(At.Eq.0._dp)) Then
-   Call strresfuncs(mt2, mglu, mst2(2), mst2(1), q2, F2_s, sF2_A, sF3_A)     
-   F1 = F1 + i_os * DF1
-   F2 = F2 + i_os * DF2
-   F3 = F3 + i_os * DF3
-   sF2_A = sF2_A + i_os * DsF2
-   sF3_A = sF3_A + i_os * DsF3
-   PiS2(1,1) = 0.5_dp * ht2 * muR**2 * s2t**2 * F3
-   PiS2(1,2) = 0.5_dp * ht2 * muR * s2t**2 * sF3_A + ht2 * mt * muR * s2t * F2
-   PiS2(2,2) = 2._dp * ht2 * (mt2 * F1 + mt * s2t * sF2_A)
+!   Else If ((s2t.Ne.0._dp).And.(At.Eq.0._dp)) Then
+!    Call strresfuncs(mt2, mglu, mst2(2), mst2(1), q2, F2_s, sF2_A, sF3_A)     
+!    F1 = F1 + i_os * DF1
+!    F2 = F2 + i_os * DF2
+!    F3 = F3 + i_os * DF3
+!    sF2_A = sF2_A + i_os * DsF2
+!    sF3_A = sF3_A + i_os * DsF3
+!    PiS2(1,1) = 0.5_dp * ht2 * muR**2 * s2t**2 * F3
+!    PiS2(1,2) = 0.5_dp * ht2 * muR * s2t**2 * sF3_A + ht2 * mt * muR * s2t * F2
+!    PiS2(2,2) = 2._dp * ht2 * (mt2 * F1 + mt * s2t * sF2_A)
  
-  End If
+!   End If
 
-  PiS2(2,1) = PiS2(1,2)
-  PiS2 = 4._dp * gSU3**2 * PiS2 ! gs^2 CF Nc
+!   PiS2(2,1) = PiS2(1,2)
+!   PiS2 = 4._dp * gSU3**2 * PiS2 ! gs^2 CF Nc
 
- !---------------------------------------------
- ! alpha_s alpha_b
- !---------------------------------------------
-  X = Ab + muR * vevs(2) / vevs(1)
+!  !---------------------------------------------
+!  ! alpha_s alpha_b
+!  !---------------------------------------------
+!   X = Ab + muR * vevs(2) / vevs(1)
 
-  Call strfuncs(mb2, mglu, msb2(2), msb2(1), s2b, c2b, Q2, F1, F2, F3)
-  If (i_os.Eq.0) Then
-   DF1 = 0
-   DF2 = 0
-   DF3 = 0
-   DsF2 = 0
-   DsF3 = 0
-  Else
-   Call strdfuncs(mb2, mglu, msb2(2), msb2(1), s2b, c2b, Q2, Ab, X   &
-                &, DF1, DF2, DF3, DsF2, DsF3)
-  End If
+!   Call strfuncs(mb2, mglu, msb2(2), msb2(1), s2b, c2b, Q2, F1, F2, F3)
+!   If (i_os.Eq.0) Then
+!    DF1 = 0
+!    DF2 = 0
+!    DF3 = 0
+!    DsF2 = 0
+!    DsF3 = 0
+!   Else
+!    Call strdfuncs(mb2, mglu, msb2(2), msb2(1), s2b, c2b, Q2, Ab, X   &
+!                 &, DF1, DF2, DF3, DsF2, DsF3)
+!   End If
 
-  If ((s2b.Ne.0._dp).And.(Ab.Ne.0._dp)) Then
-   Call strsfuncs(mglu, msb2(2), msb2(1), Q2, Ab, sF2, sF3)
-   F1 = F1 + i_os * DF1
-   F2 = F2 + i_os * DF2
-   F3 = F3 + i_os * DF3
-   sF2 = sF2 + i_os * DsF2
-   sF3 = sF3 + i_os * DsF3
-   Pi2Sa(2,2) = 0.5_dp * hb2 * muR**2 * s2b**2 * F3 ! eq. (25)
+!   If ((s2b.Ne.0._dp).And.(Ab.Ne.0._dp)) Then
+!    Call strsfuncs(mglu, msb2(2), msb2(1), Q2, Ab, sF2, sF3)
+!    F1 = F1 + i_os * DF1
+!    F2 = F2 + i_os * DF2
+!    F3 = F3 + i_os * DF3
+!    sF2 = sF2 + i_os * DsF2
+!    sF3 = sF3 + i_os * DsF3
+!    Pi2Sa(2,2) = 0.5_dp * hb2 * muR**2 * s2b**2 * F3 ! eq. (25)
      
-   Pi2Sa(1,2) = 0.5_dp * hb2 * muR * Ab * s2b**2 * (F3 + sF3)  &! eq. (26)
-            & + hb2 * mb * muR * s2b * F2
+!    Pi2Sa(1,2) = 0.5_dp * hb2 * muR * Ab * s2b**2 * (F3 + sF3)  &! eq. (26)
+!             & + hb2 * mb * muR * s2b * F2
      
-   Pi2Sa(1,1) = 0.5_dp * hb2 * Ab**2 * s2b**2 * (F3 + 2._dp*sF3) &! eq. (27)
-            & + 2._dp * hb2 * ( mb * Ab * s2b * (F2 + sF2) + mb2 * F1 )
+!    Pi2Sa(1,1) = 0.5_dp * hb2 * Ab**2 * s2b**2 * (F3 + 2._dp*sF3) &! eq. (27)
+!             & + 2._dp * hb2 * ( mb * Ab * s2b * (F2 + sF2) + mb2 * F1 )
 
-!     some of the functions have poles in s2t=0 or in A=0. 
-!     when necessary we consider the residues:     
-  Else If ((s2b.Eq.0._dp).And.(Ab.Eq.0._dp)) Then
+! !     some of the functions have poles in s2t=0 or in A=0. 
+! !     when necessary we consider the residues:     
+!   Else If ((s2b.Eq.0._dp).And.(Ab.Eq.0._dp)) Then
      
-   F1 = F1 + i_os * DF1
-   Pi2Sa(2,2) = 0._dp
-   Pi2Sa(1,2) = 0._dp
-   Pi2Sa(1,1) = 2._dp * hb2 * mb2 * F1
+!    F1 = F1 + i_os * DF1
+!    Pi2Sa(2,2) = 0._dp
+!    Pi2Sa(1,2) = 0._dp
+!    Pi2Sa(1,1) = 2._dp * hb2 * mb2 * F1
 
-  Else If ((s2b.Eq.0._dp).And.(Ab.Ne.0._dp)) Then 
-   Call strresfuncs(mb2, mglu, msb2(2), msb2(1), q2, F2_s, sF2_A, sF3_A)     
-   F1 = F1 + i_os * DF1
-   F2_s = F2_s + i_os * DF2
-   Pi2Sa(2,2) = 0._dp
-   Pi2Sa(1,2) = hb2 * mb * muR * F2_s
-   Pi2Sa(1,1) = 2._dp * hb2 * (mb2 * F1 + mb * Ab * F2_s)
+!   Else If ((s2b.Eq.0._dp).And.(Ab.Ne.0._dp)) Then 
+!    Call strresfuncs(mb2, mglu, msb2(2), msb2(1), q2, F2_s, sF2_A, sF3_A)     
+!    F1 = F1 + i_os * DF1
+!    F2_s = F2_s + i_os * DF2
+!    Pi2Sa(2,2) = 0._dp
+!    Pi2Sa(1,2) = hb2 * mb * muR * F2_s
+!    Pi2Sa(1,1) = 2._dp * hb2 * (mb2 * F1 + mb * Ab * F2_s)
 
-  Else If ((s2b.Ne.0._dp).And.(Ab.Eq.0._dp)) Then
+!   Else If ((s2b.Ne.0._dp).And.(Ab.Eq.0._dp)) Then
 
-   Call strresfuncs(mb2, mglu, msb2(2), msb2(1), q2, F2_s, sF2_A, sF3_A)     
-   F1 = F1 + i_os * DF1
-   F2 = F2 + i_os * DF2
-   F3 = F3 + i_os * DF3
-   sF2_A = sF2_A + i_os * DsF2
-   sF3_A = sF3_A + i_os * DsF3
+!    Call strresfuncs(mb2, mglu, msb2(2), msb2(1), q2, F2_s, sF2_A, sF3_A)     
+!    F1 = F1 + i_os * DF1
+!    F2 = F2 + i_os * DF2
+!    F3 = F3 + i_os * DF3
+!    sF2_A = sF2_A + i_os * DsF2
+!    sF3_A = sF3_A + i_os * DsF3
 
-   Pi2Sa(2,2) = 0.5_dp * hb2 * muR**2 * s2b**2 * F3
-   Pi2Sa(1,2) = 0.5_dp * hb2 * muR * s2b**2 * sF3_A + hb2 * mb * muR * s2b * F2
-   Pi2Sa(1,1) = 2._dp * hb2 * (mb2 * F1 + mb * s2b * sF2_A)
+!    Pi2Sa(2,2) = 0.5_dp * hb2 * muR**2 * s2b**2 * F3
+!    Pi2Sa(1,2) = 0.5_dp * hb2 * muR * s2b**2 * sF3_A + hb2 * mb * muR * s2b * F2
+!    Pi2Sa(1,1) = 2._dp * hb2 * (mb2 * F1 + mb * s2b * sF2_A)
  
-  Endif
-  Pi2Sa(2,1) = Pi2Sa(1,2)
-  PiS2 = PiS2 + 4._dp * gSU3**2 * Pi2Sa ! gs^2 CF Nc
+!   Endif
+!   Pi2Sa(2,1) = Pi2Sa(1,2)
+!   PiS2 = PiS2 + 4._dp * gSU3**2 * Pi2Sa ! gs^2 CF Nc
 
  !---------------------------------------------
  ! (alpha_t + alpha_b)^2
@@ -4763,9 +5008,9 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
   
   End Subroutine taudfuncs
 
- End Subroutine PiScalar2
+ End Subroutine Yukawa2L_Scalar
 
- Subroutine Two_Loop_Tadpoles_MSSM(gs, mg, mA2, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
+ Subroutine Yukawa2L_Tadpoles_MSSM(mA2, vevs, mD2, mU2, mQ2, ME2, ML2, A_b &
              & , A_t, A_tau, Y_b, Y_t, Y_tau, mu, tadpole, kont)
  !---------------------------------------------------------------------------
  ! Two-loop O(a_t a_s, a_b a_s, a_t^2) corrections to the Higgs tadpoles.
@@ -4799,7 +5044,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
  !---------------------------------------------------------------------------
  Implicit None
   Integer, Intent(inout) :: kont 
-  Real(dp), Intent(in) :: gs, mg, mA2, vevs(2), mQ2, mU2, mD2, ML2, ME2
+  Real(dp), Intent(in) :: mA2, vevs(2), mQ2, mU2, mD2, ML2, ME2
   Complex(dp), Intent(in) :: A_b, A_t, Y_t, Y_b, mu, A_tau, Y_tau
   Real(dp), Intent(out) :: tadpole(2)
   
@@ -4813,7 +5058,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
          & , YRd = 2._dp / 3._dp
 
   Iname = Iname + 1
-  NameOfUnit(Iname) = "Two_Loop_Tadpoles_MSSM"
+  NameOfUnit(Iname) = "Yukawa2L_Tadpoles_MSSM"
 
   tadpole = 0._dp
   parts = 0._dp
@@ -4890,22 +5135,22 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
   Atau = Real(A_tau/Y_tau, dp)
   muR = - Real(mu, dp) ! different sign convention
 
-  gs2 = gs**2
-  !---------------------------------
-  ! alpha_s alpha_t + alpha_t^2
-  !---------------------------------
-  Call strfuncs1(mt2, mg, mStop2(2), mStop2(1), s2t, c2t, Q, F2l, G2l)
-  parts(1,1) = mt * muR/tanB * s2t * F2l / vevs(1)**2
-  parts(2,1) = (mt * At * s2t * F2l + 2._dp * mt2 * G2l ) / vevs(2)**2
-  parts(:,1) = parts(:,1) * 4._dp * gs2  ! gs^2 CF Nc
+  ! gs2 = gs**2
+  ! !---------------------------------
+  ! ! alpha_s alpha_t + alpha_t^2
+  ! !---------------------------------
+  ! Call strfuncs1(mt2, mg, mStop2(2), mStop2(1), s2t, c2t, Q, F2l, G2l)
+  ! parts(1,1) = mt * muR/tanB * s2t * F2l / vevs(1)**2
+  ! parts(2,1) = (mt * At * s2t * F2l + 2._dp * mt2 * G2l ) / vevs(2)**2
+  ! parts(:,1) = parts(:,1) * 4._dp * gs2  ! gs^2 CF Nc
 
-  !---------------------------------
-  ! alpha_s alpha_b
-  !---------------------------------
-  Call strfuncs1(mb2,mg, mSbottom2(2),mSbottom2(1), s2b, c2b, Q, F2l, G2l)
-  parts(1,2) = (mb * Ab * s2b * F2l + 2._dp * mb2 * G2l ) / vevs(1)**2
-  parts(2,2) = mb * muR * tanB * s2b * F2l / vevs(2)**2
-  parts(:,2) = parts(:,2) * 4._dp * gs2  ! gs^2 CF Nc
+  ! !---------------------------------
+  ! ! alpha_s alpha_b
+  ! !---------------------------------
+  ! Call strfuncs1(mb2,mg, mSbottom2(2),mSbottom2(1), s2b, c2b, Q, F2l, G2l)
+  ! parts(1,2) = (mb * Ab * s2b * F2l + 2._dp * mb2 * G2l ) / vevs(1)**2
+  ! parts(2,2) = mb * muR * tanB * s2b * F2l / vevs(2)**2
+  ! parts(:,2) = parts(:,2) * 4._dp * gs2  ! gs^2 CF Nc
 
   !-----------------------------------------
   ! (alpha_t + alpha_b)^2
@@ -5098,29 +5343,29 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
 
   End Subroutine tautadfuncs
   
-  Subroutine strfuncs1(t,mg,T1,T2,s2t,c2t,q,F2l,G2l)
-  Implicit None
-   Real(dp), Intent(in) :: t, mg, T1, T2, s2t, c2t, q
-   Real(dp) :: g, mt
+  ! Subroutine strfuncs1(t,mg,T1,T2,s2t,c2t,q,F2l,G2l)
+  ! Implicit None
+  !  Real(dp), Intent(in) :: t, mg, T1, T2, s2t, c2t, q
+  !  Real(dp) :: g, mt
 
-   Real(dp), Intent(out) :: F2l,G2l
+  !  Real(dp), Intent(out) :: F2l,G2l
 
-   g = mg**2
-   mt = Sqrt(t)
+  !  g = mg**2
+  !  mt = Sqrt(t)
 
-   F2l = 4._dp * mg*mt * (1._dp + 4._dp * c2t**2) / s2t                       &
-     & - (2._dp * (T1-T2) + 4._dp * mg*mt / s2t) * Log(g/q) * Log(t/q)        &
-     & - 2._dp * (4._dp-s2t**2) * (T1-T2)                                     &
-     & + (4._dp * T1*T2 -s2t**2 * (T1+T2)**2) / (T1-T2) *Log(T1/q) *Log(T2/q) &
-     & + strF2lc(t,mg,T1,T2,s2t,c2t,q) - strF2lc(t,mg,T2,T1,-s2t,c2t,q)
+  !  F2l = 4._dp * mg*mt * (1._dp + 4._dp * c2t**2) / s2t                       &
+  !    & - (2._dp * (T1-T2) + 4._dp * mg*mt / s2t) * Log(g/q) * Log(t/q)        &
+  !    & - 2._dp * (4._dp-s2t**2) * (T1-T2)                                     &
+  !    & + (4._dp * T1*T2 -s2t**2 * (T1+T2)**2) / (T1-T2) *Log(T1/q) *Log(T2/q) &
+  !    & + strF2lc(t,mg,T1,T2,s2t,c2t,q) - strF2lc(t,mg,T2,T1,-s2t,c2t,q)
 
-   G2l = 5._dp*mg/mt*s2t*(T1-T2)-10._dp* (T1+T2-2*t) - 4._dp*g      &
-     & + 12._dp * t * (Log(t/q)**2 - 2._dp*Log(t/q) )               &
-     & + (4._dp*g - s2t*mg/mt * (T1-T2)) * Log(g/q) * Log(t/q)      &
-     & + s2t**2 * (T1+T2) * Log(T1/q) * Log(T2/q)                   &
-     & + strG2lc(t,mg,T1,T2,s2t,q) + strG2lc(t,mg,T2,T1,-s2t,q)
+  !  G2l = 5._dp*mg/mt*s2t*(T1-T2)-10._dp* (T1+T2-2*t) - 4._dp*g      &
+  !    & + 12._dp * t * (Log(t/q)**2 - 2._dp*Log(t/q) )               &
+  !    & + (4._dp*g - s2t*mg/mt * (T1-T2)) * Log(g/q) * Log(t/q)      &
+  !    & + s2t**2 * (T1+T2) * Log(T1/q) * Log(T2/q)                   &
+  !    & + strG2lc(t,mg,T1,T2,s2t,q) + strG2lc(t,mg,T2,T1,-s2t,q)
   
-  End Subroutine strfuncs1
+  ! End Subroutine strfuncs1
 
   Real(dp) Function strF2lc(t,mg,T1,T2,s2t,c2t,q)
   Implicit None
@@ -5163,7 +5408,7 @@ Subroutine SfermionMass1mssm(M_L2, M_R2, Af, mu, vevs, Yuk, T3, Yl, Yr, &
 
   End Function strG2lc
 
- End Subroutine Two_Loop_Tadpoles_MSSM
+ End Subroutine Yukawa2L_Tadpoles_MSSM
   
 
 End Module TwoLoopHiggsMass_SARAH

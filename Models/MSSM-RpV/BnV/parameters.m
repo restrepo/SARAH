@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -23,7 +26,10 @@ ParameterDefinitions = {
 {mu2,       { Description -> "Softbreaking right Up-Squark Mass"}},
 {md2,       { Description -> "Softbreaking right Down-Squark Mass"}},
 {mHd2,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
-{mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
+{mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}},
+
+{mlHd2,  { Description -> "Soft-breaking Higgs Slepton Mixing Term",
+             Value->0}}, 
 
 {MassB,     { Description -> "Bino Mass parameter"}},
 {MassWB,    { Description -> "Wino Mass parameter"}},
@@ -61,14 +67,38 @@ ParameterDefinitions = {
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
 {PhaseGlu,  { Description -> "Gluino-Phase" }},
 
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
+
 {L3,   {LaTeX -> "\\lambda_3",
              LesHouches ->  RVLAMUDD,
-             Symmetry -> AntiSymmetric,
 	     OutputName->L3 }},
 {T[L3],   {LaTeX -> "T_{\\lambda_3}",
              LesHouches ->  RVTUDD,
-             Symmetry -> AntiSymmetric,
-		OutputName -> T3}}
+		OutputName -> T3}},
+
+
+{L3[1],   {LaTeX -> "\\lambda^1_3",
+             LesHouches ->  RVLAMUDD1,
+	     OutputName->L31 }},
+{T[L3][1],   {LaTeX -> "T^1_{\\lambda_3}",
+             LesHouches ->  RVTUDD1,
+		OutputName -> T31}},
+
+{L3[2],   {LaTeX -> "\\lambda^2_3",
+             LesHouches ->  RVLAMUDD2,
+	     OutputName->L32 }},
+{T[L3][2],   {LaTeX -> "T^2_{\\lambda_3}",
+             LesHouches ->  RVTUDD2,
+		OutputName -> T32}},
+
+{L3[3],   {LaTeX -> "\\lambda^3_3",
+             LesHouches ->  RVLAMUDD3,
+	     OutputName->L33 }},
+{T[L3][3],   {LaTeX -> "T^3_{\\lambda_3}",
+             LesHouches ->  RVTUDD3,
+		OutputName -> T33}}
                                   
  }; 
  

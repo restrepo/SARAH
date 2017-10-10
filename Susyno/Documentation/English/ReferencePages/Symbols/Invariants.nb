@@ -1,0 +1,979 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     27518,        969]
+NotebookOptionsPosition[     22328,        799]
+NotebookOutlinePosition[     24135,        847]
+CellTagsIndexPosition[     24050,        842]
+WindowTitle->Invariants - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/Invariants\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/Invariants"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/\
+Invariants.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", 
+             "Susyno/ref/Invariants", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Invariants", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Invariants", "[", 
+       RowBox[{"group", ",", "rep1", ",", 
+        RowBox[{"<", "conjugate", ">"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]Calculates the invariants of rep1 (or Conjugate[rep1])"
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Invariants", "[", 
+       RowBox[{"group", ",", "rep1", ",", "rep2", ",", 
+        RowBox[{"<", "conjugate", ">"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]Calculates the invariants of rep1 x rep2 (or rep1 x \
+Conjugate[rep2])"
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Invariants", "[", 
+       RowBox[{"group", ",", "rep1", ",", "rep2", ",", "rep3", ",", 
+        RowBox[{"<", "conjugate", ">"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]Calculates the invariants of rep1 x rep2 x rep3 (or \
+rep1 x rep2 x Conjugate[rep3])"
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, 
+   "Rows" -> {None, None, {None}}, "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->268504155],
+
+Cell[TextData[{
+ Cell[BoxData["group"], "InlineFormula"],
+ " should be the ",
+ ButtonBox["Cartan matrix",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Susyno/ref/CartanMatrix"],
+ " of the intended group;"
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ "Each representation ",
+ Cell[BoxData["rep"], "InlineFormula"],
+ " should be a list of non-negative integers (Dynkin coefficients);"
+}], "Notes",
+ CellID->41030773],
+
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{"<", "conjugate", ">"}]], "InlineFormula"],
+ " is an optional parameter. If ",
+ Cell[BoxData["True"], "InlineFormula"],
+ " the last representation is conjugated. The default value is ",
+ Cell[BoxData["False"], "InlineFormula"],
+ ";"
+}], "Notes",
+ CellID->400920173],
+
+Cell[TextData[{
+ "There is also the possibility of ",
+ Cell[BoxData["group"], "InlineFormula"],
+ " being a list ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{"group1", ",", "group2", ",", "..."}], "}"}]], "InlineFormula"],
+ " and each ",
+ Cell[BoxData["rep"], "InlineFormula"],
+ " a list ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{"rep_group1", ",", "rep_group2", ",", "..."}], "}"}]], 
+  "InlineFormula"],
+ ";"
+}], "Notes",
+ CellID->75953507],
+
+Cell[TextData[{
+ "The output of this method is a list ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{"Invariant1", ",", "Invariant2", ",", "..."}], "}"}]], 
+  "InlineFormula"],
+ " where it is assumed that ",
+ Cell[BoxData["a"], "InlineFormula"],
+ " is a field transforming as ",
+ Cell[BoxData["rep1"], "InlineFormula"],
+ ", ",
+ Cell[BoxData["b"], "InlineFormula"],
+ " as ",
+ Cell[BoxData["rep2"], "InlineFormula"],
+ " and ",
+ Cell[BoxData["c"], "InlineFormula"],
+ " as ",
+ Cell[BoxData[
+  RowBox[{"rep3", "."}]], "InlineFormula"],
+ " These fields have group indices: ",
+ Cell[BoxData[
+  RowBox[{"a", "[", 
+   RowBox[{"ind_group1", ",", " ", "ind_group2", ",", "..."}], "]"}]], 
+  "InlineFormula"],
+ ", ",
+ Cell[BoxData[
+  RowBox[{"b", "[", 
+   RowBox[{"ind_group1", ",", " ", "ind_group2", ",", "..."}], "]"}]], 
+  "InlineFormula"],
+ ", ",
+ Cell[BoxData[
+  RowBox[{"c", "[", 
+   RowBox[{"ind_group1", ",", " ", "ind_group2", ",", "..."}], "]"}]], 
+  "InlineFormula"],
+ ";"
+}], "Notes",
+ CellID->10758554],
+
+Cell[TextData[{
+ "If there are no invariants, ",
+ Cell[BoxData[
+  RowBox[{"{", "}"}]], "InlineFormula"],
+ " is returned;"
+}], "Notes",
+ CellID->335181877],
+
+Cell["\<\
+Clearly this method must assume a particular basis for each representation so \
+the results are basis dependent.\
+\>", "Notes",
+ CellID->898809850]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->150111399],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->248615],
+
+Cell["If a and b are SU2 doublets [={1}], they form an invariant:", \
+"ExampleText",
+ CellID->513681956],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Invariants", "[", 
+  RowBox[{"SU2", ",", 
+   RowBox[{"{", "1", "}"}], ",", 
+   RowBox[{"{", "1", "}"}]}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->196926373],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", 
+     RowBox[{"a", "[", "2", "]"}]}], " ", 
+    RowBox[{"b", "[", "1", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", "1", "]"}], " ", 
+    RowBox[{"b", "[", "2", "]"}]}]}], "}"}]], "Output",
+ ImageSize->{157, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[1]=",
+ CellID->401099180]
+}, Open  ]],
+
+Cell["\<\
+How to put together two SU2 doublets (a and b) and a triplet c?\
+\>", "ExampleText",
+ CellID->155872588],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Invariants", "[", 
+  RowBox[{"SU2", ",", 
+   RowBox[{"{", "1", "}"}], ",", 
+   RowBox[{"{", "1", "}"}], ",", 
+   RowBox[{"{", "2", "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->459878862],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox[
+    RowBox[{
+     SqrtBox["2"], " ", 
+     RowBox[{"a", "[", "2", "]"}], " ", 
+     RowBox[{"b", "[", "2", "]"}], " ", 
+     RowBox[{"c", "[", "1", "]"}]}], 
+    SuperscriptBox["3", 
+     RowBox[{"1", "/", "4"}]]], "-", 
+   FractionBox[
+    RowBox[{
+     RowBox[{"a", "[", "2", "]"}], " ", 
+     RowBox[{"b", "[", "1", "]"}], " ", 
+     RowBox[{"c", "[", "2", "]"}]}], 
+    SuperscriptBox["3", 
+     RowBox[{"1", "/", "4"}]]], "-", 
+   FractionBox[
+    RowBox[{
+     RowBox[{"a", "[", "1", "]"}], " ", 
+     RowBox[{"b", "[", "2", "]"}], " ", 
+     RowBox[{"c", "[", "2", "]"}]}], 
+    SuperscriptBox["3", 
+     RowBox[{"1", "/", "4"}]]], "+", 
+   FractionBox[
+    RowBox[{
+     SqrtBox["2"], " ", 
+     RowBox[{"a", "[", "1", "]"}], " ", 
+     RowBox[{"b", "[", "1", "]"}], " ", 
+     RowBox[{"c", "[", "3", "]"}]}], 
+    SuperscriptBox["3", 
+     RowBox[{"1", "/", "4"}]]]}], "}"}]], "Output",
+ ImageSize->{488, 37},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->673530696]
+}, Open  ]],
+
+Cell["\<\
+The overall factor is of course irrelevant, therefore the following is also \
+an invariant:\
+\>", "ExampleText",
+ CellID->307224643],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Expand", "[", 
+  RowBox[{
+   SuperscriptBox["3", 
+    RowBox[{"1", "/", "4"}]], " ", "%"}], " ", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->744812328],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    SqrtBox["2"], " ", 
+    RowBox[{"a", "[", "2", "]"}], " ", 
+    RowBox[{"b", "[", "2", "]"}], " ", 
+    RowBox[{"c", "[", "1", "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"a", "[", "2", "]"}], " ", 
+    RowBox[{"b", "[", "1", "]"}], " ", 
+    RowBox[{"c", "[", "2", "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"a", "[", "1", "]"}], " ", 
+    RowBox[{"b", "[", "2", "]"}], " ", 
+    RowBox[{"c", "[", "2", "]"}]}], "+", 
+   RowBox[{
+    SqrtBox["2"], " ", 
+    RowBox[{"a", "[", "1", "]"}], " ", 
+    RowBox[{"b", "[", "1", "]"}], " ", 
+    RowBox[{"c", "[", "3", "]"}]}]}], "}"}]], "Output",
+ ImageSize->{471, 22},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->214857738]
+}, Open  ]],
+
+Cell["\<\
+If a is in the SU(3) fundamental representation [={1,0}] and b in its \
+conjugate...\
+\>", "ExampleText",
+ CellID->285596647],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Invariants", "[", 
+  RowBox[{"SU3", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], ",", "True"}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->125780274],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"a", "[", "1", "]"}], " ", 
+    RowBox[{"b", "[", "1", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", "2", "]"}], " ", 
+    RowBox[{"b", "[", "2", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", "3", "]"}], " ", 
+    RowBox[{"b", "[", "3", "]"}]}]}], "}"}]], "Output",
+ ImageSize->{221, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[4]=",
+ CellID->108371985]
+}, Open  ]],
+
+Cell["\<\
+... but there should be another way to do this since the conjugate of the \
+{1,0} representation is also known...it is {0,1}:\
+\>", "ExampleText",
+ CellID->178491849],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Invariants", "[", 
+  RowBox[{"SU3", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->3239219],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"a", "[", "3", "]"}], " ", 
+    RowBox[{"b", "[", "1", "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"a", "[", "2", "]"}], " ", 
+    RowBox[{"b", "[", "2", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", "1", "]"}], " ", 
+    RowBox[{"b", "[", "3", "]"}]}]}], "}"}]], "Output",
+ ImageSize->{221, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[5]=",
+ CellID->339767475]
+}, Open  ]],
+
+Cell[TextData[{
+ "The reason this last result is not a[1] b[1] + a[2] b[2] + a[3] b[3] is \
+because {0,1} is the conjugate of {1,0} only up to some change of basis \
+transformation ({0,1} is isomorphic to ",
+ Cell[BoxData[
+  SuperscriptBox[
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], "*"]], "InlineFormula"],
+ " but not the same). This basis choice for each representation [{1,0} and \
+{0,1} in this example] should not change the physics of a model. So it is \
+fine to say that field Q in the MSSM is a SU3 {1,0} while u and d are {0,1} \
+regardless of the basis used for each. But if we are to calculate, say, the \
+soft mass ",
+ Cell[BoxData[
+  SuperscriptBox["Q", "*"]], "InlineFormula"],
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    SuperscriptBox["m", "2"], "Q"], "Q"}]], "InlineFormula"],
+ " then ",
+ Cell[BoxData[
+  SuperscriptBox["Q", "*"]], "InlineFormula"],
+ " is in a very special basis of the representation {0,1} since it is exactly \
+the conjugate of field Q. As such, to built these soft mass terms we should \
+use the ",
+ Cell[BoxData[
+  RowBox[{"<", "conjugate", ">=", "True"}]], "InlineFormula"],
+ " option to get correct results."
+}], "ExampleText",
+ CellID->880463711],
+
+Cell["\<\
+In any case, we can see that in the above example if we define ...\
+\>", "ExampleText",
+ CellID->24660760],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"M", "=", 
+   RowBox[{"(", "\[NoBreak]", GridBox[{
+      {"0", "0", "1"},
+      {"0", 
+       RowBox[{"-", "1"}], "0"},
+      {"1", "0", "0"}
+     }], "\[NoBreak]", ")"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"oldBVector", "=", 
+  RowBox[{"Transpose", "[", 
+   RowBox[{"{", 
+    RowBox[{"Array", "[", 
+     RowBox[{"b", ",", 
+      RowBox[{"{", "3", "}"}]}], "]"}], "}"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"newBVector", "=", 
+  RowBox[{"Transpose", "[", 
+   RowBox[{"{", 
+    RowBox[{"Array", "[", 
+     RowBox[{"bNew", ",", 
+      RowBox[{"{", "3", "}"}]}], "]"}], "}"}], "]"}]}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->84067663],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"b", "[", "1", "]"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"b", "[", "2", "]"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"b", "[", "3", "]"}], "}"}]}], "}"}]], "Output",
+ ImageSize->{166, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[6]=",
+ CellID->82742420],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"bNew", "[", "1", "]"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"bNew", "[", "2", "]"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"bNew", "[", "3", "]"}], "}"}]}], "}"}]], "Output",
+ ImageSize->{229, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[6]=",
+ CellID->12438969]
+}, Open  ]],
+
+Cell["... and say that oldBVector=M.newBVector, then", "ExampleText",
+ CellID->15033159],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"substitution", "=", 
+  RowBox[{"MapThread", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"#1", "[", 
+        RowBox[{"[", "1", "]"}], "]"}], "->", 
+       RowBox[{"#2", "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "&"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"oldBVector", ",", 
+      RowBox[{"M", ".", "newBVector"}]}], "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->330752585],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"b", "[", "1", "]"}], "\[Rule]", 
+    RowBox[{"bNew", "[", "3", "]"}]}], ",", 
+   RowBox[{
+    RowBox[{"b", "[", "2", "]"}], "\[Rule]", 
+    RowBox[{"-", 
+     RowBox[{"bNew", "[", "2", "]"}]}]}], ",", 
+   RowBox[{
+    RowBox[{"b", "[", "3", "]"}], "\[Rule]", 
+    RowBox[{"bNew", "[", "1", "]"}]}]}], "}"}]], "Output",
+ ImageSize->{330, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[7]=",
+ CellID->227176342]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Invariants", "[", 
+   RowBox[{"SU3", ",", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "1"}], "}"}]}], "]"}], " ", "/.", " ", 
+  "substitution"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->291355122],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"a", "[", "1", "]"}], " ", 
+    RowBox[{"bNew", "[", "1", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", "2", "]"}], " ", 
+    RowBox[{"bNew", "[", "2", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", "3", "]"}], " ", 
+    RowBox[{"bNew", "[", "3", "]"}]}]}], "}"}]], "Output",
+ ImageSize->{284, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[8]=",
+ CellID->465219768]
+}, Open  ]],
+
+Cell[TextData[{
+ "We now get something in the more conventional form a[1] b'[1] + a[2] b'[2] \
++ a[3] b'[3]. This means that ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"-", 
+    RowBox[{
+     SuperscriptBox["M", 
+      RowBox[{"-", "1"}]], ".", 
+     SubscriptBox["rep", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]], ".", "M"}]}], "=", 
+   SubscriptBox["rep", 
+    SuperscriptBox[
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], "*"]]}]], "InlineFormula"],
+ " (there is also the minus sign, which is irrelevant). As discussed above, \
+this matrix M won't change the RGEs of a model since it is just a (unitary) \
+redefinition of fields."
+}], "ExampleText",
+ CellID->502041565],
+
+Cell["", "ExampleText",
+ CellID->4363169],
+
+Cell["\<\
+More complicated cases where group is a list of simple factors is also \
+possible:\
+\>", "ExampleText",
+ CellID->259255305],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Q", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], "}"}]}], ";"}], 
+  "    "}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"u", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "0", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], "}"}]}], ";"}], 
+  " "}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", "1", "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Invariants", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"SU2", ",", "SU3"}], "}"}], ",", "Q", ",", "u", ",", "Hu"}], 
+  "]"}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->595169869],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"2", ",", "3"}], "]"}], " ", 
+    RowBox[{"b", "[", 
+     RowBox[{"1", ",", "1"}], "]"}], " ", 
+    RowBox[{"c", "[", 
+     RowBox[{"1", ",", "1"}], "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"2", ",", "2"}], "]"}], " ", 
+    RowBox[{"b", "[", 
+     RowBox[{"1", ",", "2"}], "]"}], " ", 
+    RowBox[{"c", "[", 
+     RowBox[{"1", ",", "1"}], "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"2", ",", "1"}], "]"}], " ", 
+    RowBox[{"b", "[", 
+     RowBox[{"1", ",", "3"}], "]"}], " ", 
+    RowBox[{"c", "[", 
+     RowBox[{"1", ",", "1"}], "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"1", ",", "3"}], "]"}], " ", 
+    RowBox[{"b", "[", 
+     RowBox[{"1", ",", "1"}], "]"}], " ", 
+    RowBox[{"c", "[", 
+     RowBox[{"2", ",", "1"}], "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"1", ",", "2"}], "]"}], " ", 
+    RowBox[{"b", "[", 
+     RowBox[{"1", ",", "2"}], "]"}], " ", 
+    RowBox[{"c", "[", 
+     RowBox[{"2", ",", "1"}], "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"a", "[", 
+     RowBox[{"1", ",", "1"}], "]"}], " ", 
+    RowBox[{"b", "[", 
+     RowBox[{"1", ",", "3"}], "]"}], " ", 
+    RowBox[{"c", "[", 
+     RowBox[{"2", ",", "1"}], "]"}]}]}], "}"}]], "Output",
+ ImageSize->{484, 33},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[9]=",
+ CellID->182372882]
+}, Open  ]],
+
+Cell[TextData[{
+ "Note that in the output the first field/representation is always called ",
+ Cell[BoxData["a"], "InlineFormula"],
+ ", the second ",
+ Cell[BoxData["b"], "InlineFormula"],
+ " and the third ",
+ Cell[BoxData["c"], "InlineFormula"],
+ ". So in this last example, given that the groups are {SU2,SU3}, each of \
+these fields has two indices: (a or b or c)[SU2Index,SU3Index]."
+}], "ExampleText",
+ CellID->597458693]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Invariants - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 15, 31.2812500}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "Invariants[group, rep1, < conjugate >] Calculates the invariants of rep1 \
+(or Conjugate[rep1])Invariants[group, rep1, rep2, < conjugate >] Calculates \
+the invariants of rep1 x rep2 (or rep1 x Conjugate[rep2])Invariants[group, \
+rep1, rep2, rep3, < conjugate >] Calculates the invariants of rep1 x rep2 x \
+rep3 (or rep1 x rep2 x Conjugate[rep3])", "synonyms" -> {}, "title" -> 
+    "Invariants", "type" -> "Symbol", "uri" -> "Susyno/ref/Invariants"}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7515, 245, 461, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->150111399]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 23907, 835}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[591, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[670, 24, 178, 5, 70, "LinkTrail"],
+Cell[851, 31, 2306, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3182, 88, 53, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3238, 91, 1122, 29, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4397, 125, 580, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->268504155],
+Cell[4980, 144, 236, 8, 70, "Notes",
+ CellID->1067943069],
+Cell[5219, 154, 181, 5, 70, "Notes",
+ CellID->41030773],
+Cell[5403, 161, 306, 9, 70, "Notes",
+ CellID->400920173],
+Cell[5712, 172, 444, 16, 70, "Notes",
+ CellID->75953507],
+Cell[6159, 190, 1002, 36, 70, "Notes",
+ CellID->10758554],
+Cell[7164, 228, 154, 6, 70, "Notes",
+ CellID->335181877],
+Cell[7321, 236, 157, 4, 70, "Notes",
+ CellID->898809850]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7515, 245, 461, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->150111399],
+Cell[CellGroupData[{
+Cell[8001, 262, 145, 5, 70, "ExampleSection",
+ CellID->248615],
+Cell[8149, 269, 104, 2, 70, "ExampleText",
+ CellID->513681956],
+Cell[CellGroupData[{
+Cell[8278, 275, 189, 6, 70, "Input",
+ CellID->196926373],
+Cell[8470, 283, 393, 14, 36, "Output",
+ CellID->401099180]
+}, Open  ]],
+Cell[8878, 300, 114, 3, 70, "ExampleText",
+ CellID->155872588],
+Cell[CellGroupData[{
+Cell[9017, 307, 223, 7, 70, "Input",
+ CellID->459878862],
+Cell[9243, 316, 1082, 37, 58, "Output",
+ CellID->673530696]
+}, Open  ]],
+Cell[10340, 356, 142, 4, 70, "ExampleText",
+ CellID->307224643],
+Cell[CellGroupData[{
+Cell[10507, 364, 180, 6, 70, "Input",
+ CellID->744812328],
+Cell[10690, 372, 768, 25, 43, "Output",
+ CellID->214857738]
+}, Open  ]],
+Cell[11473, 400, 135, 4, 70, "ExampleText",
+ CellID->285596647],
+Cell[CellGroupData[{
+Cell[11633, 408, 252, 8, 70, "Input",
+ CellID->125780274],
+Cell[11888, 418, 466, 16, 36, "Output",
+ CellID->108371985]
+}, Open  ]],
+Cell[12369, 437, 176, 4, 70, "ExampleText",
+ CellID->178491849],
+Cell[CellGroupData[{
+Cell[12570, 445, 237, 8, 70, "Input",
+ CellID->3239219],
+Cell[12810, 455, 466, 16, 36, "Output",
+ CellID->339767475]
+}, Open  ]],
+Cell[13291, 474, 1201, 29, 70, "ExampleText",
+ CellID->880463711],
+Cell[14495, 505, 116, 3, 70, "ExampleText",
+ CellID->24660760],
+Cell[CellGroupData[{
+Cell[14636, 512, 683, 22, 70, "Input",
+ CellID->84067663],
+Cell[15322, 536, 375, 13, 36, "Output",
+ CellID->82742420],
+Cell[15700, 551, 384, 13, 36, "Output",
+ CellID->12438969]
+}, Open  ]],
+Cell[16099, 567, 88, 1, 70, "ExampleText",
+ CellID->15033159],
+Cell[CellGroupData[{
+Cell[16212, 572, 459, 15, 70, "Input",
+ CellID->330752585],
+Cell[16674, 589, 514, 17, 36, "Output",
+ CellID->227176342]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17225, 611, 292, 10, 70, "Input",
+ CellID->291355122],
+Cell[17520, 623, 475, 16, 36, "Output",
+ CellID->465219768]
+}, Open  ]],
+Cell[18010, 642, 697, 20, 70, "ExampleText",
+ CellID->502041565],
+Cell[18710, 664, 41, 1, 70, "ExampleText",
+ CellID->4363169],
+Cell[18754, 667, 133, 4, 70, "ExampleText",
+ CellID->259255305],
+Cell[CellGroupData[{
+Cell[18912, 675, 854, 32, 70, "Input",
+ CellID->595169869],
+Cell[19769, 709, 1456, 49, 54, "Output",
+ CellID->182372882]
+}, Open  ]],
+Cell[21240, 761, 424, 10, 70, "ExampleText",
+ CellID->597458693]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21713, 777, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[22135, 791, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[22301, 797, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

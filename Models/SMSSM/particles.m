@@ -12,7 +12,7 @@
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -43,9 +43,11 @@
      {Se ,  { Description -> "Sleptons"}}, 
      {Sv ,  { Description -> "Sneutrinos"}},                                 
      {hh   ,  {  Description -> "Higgs", 
-                 PDG -> {25, 35,45} }}, 
+                 PDG -> {25, 35,45},
+                PDG.IX->{101000001,101000002,101000003} }}, 
      {Ah   ,  {    Description -> "Pseudo-Scalar Higgs",
-                 PDG -> {0, 36, 46} }},                       
+                 PDG -> {0, 36, 46},
+                PDG.IX->{0,102000001,102000002} }},                       
       {Hpm,  { Description -> "Charged Higgs"}},                                                   
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson" }}, 
@@ -63,7 +65,8 @@
       {Glu,  { Description -> "Gluino" }},
                  
       {Chi,    {   Description -> "Neutralinos",
-                 PDG -> {1000022,1000023,1000025,1000035,1000045} }},
+                 PDG -> {1000022,1000023,1000025,1000035,1000045},
+                 PDG.IX ->{211000001,211000002,211000003,211000004,211000005} }},
                  
       {Cha,  { Description -> "Charginos"}}                                                                                          
      
@@ -74,7 +77,7 @@
 WeylFermionAndIndermediate = {
        {FHd0, { Description -> "Neutral Down-Higgsino"}},      
        {FHu0, { Description -> "Neutral Up-Higgsino" }}, 
-       {FHdm, { Description -> "Charged Down-Higgsino"}},                                                                                                             
+       {FHdm, { Description -> "Charged Down-Higgsino"}},  
        {FHup, { Description -> "Charged Up-Higgsino"}},
        {L0,   { Description -> "Neutralino Weyl-Spinor"}},
        {Lm,   { Description -> "Negative Chargino Weyl-Spinor"}},

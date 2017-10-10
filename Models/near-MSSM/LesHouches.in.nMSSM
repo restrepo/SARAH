@@ -1,0 +1,44 @@
+Block MODSEL 	 #  
+1 1 	 #  
+6 1 	 # Generation Mixing 
+Block SMINPUTS 	 # Standard Model inputs 
+2 1.166390E-05 	 # G_F,Fermi constant 
+3 1.190000E-01 	 # alpha_s(MZ) SM MSbar 
+4 9.118760E+01 	 # Z-boson pole mass 
+5 4.200000E+00 	 # m_b(mb) SM MSbar 
+6 1.729000E+02 	 # m_top(pole) 
+7 1.777000E+00 	 # m_tau(pole) 
+Block MINPAR 	 # Input parameters 
+1 6.000000E+02 	  # m0
+2 3.000000E+02 	  # m12
+3 1.000000E+01 	  # TanBeta
+5 1.50000E+03 	  # Azero
+7 0.000000E+02 	  # Lzero
+Block EXTPAR 	 # Input parameters 
+61 0.0030E+00 	  # LambdaInput
+62 0.5000E+00 	  # KappaInput
+63 1.00000E+03 	  # ALambdaInput
+64 -3.60000E+01 	  # AKappaInput
+65 3.368900E+02 	  # vSInput
+100 1.000000E+05 	  # TadInput
+Block SPhenoInput 	  # SPheno specific input 
+1 -1 	  # error level 
+2  1 	  # SPA conventions 
+11 1 	  # calculate branching ratios 
+13 1 	  # include 3-Body decays 
+12 1.000E-04 	  # write only branching ratios larger than this value 
+31 -1 	  # fixed GUT scale (-1: dynamical GUT scale) 
+32 0 	  # Strict unification 
+34 1.000E-04 	  # Precision of mass calculation 
+35 40 	  # Maximal number of iterations
+37 1 	  # Set Yukawa scheme  
+38 2 	  # 1- or 2-Loop RGEs 
+50 1 	  # Majorana phases: use only positive masses 
+51 0 	  # Write Output in CKM basis 
+52 0 	  # Write spectrum in case of tachyonic states 
+55 1 	  # Calculate one loop masses 
+57 1 	  # Calculate low energy constraints 
+60 1 	  # Include possible, kinetic mixing 
+65 1 	  # Solution tadpole equation 
+75 1 	  # Write HiggsBounds files 
+76 1 	  # Write WHIZARD file 

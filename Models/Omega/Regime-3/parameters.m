@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -41,10 +44,17 @@ ParameterDefinitions = {
 {ZD,        { Description -> "Down-Squark-Mixing-Matrix" }},             
 {ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
 {ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
-{ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
+{ZVR,        { LaTeX -> "Z^R",
+              OutputName -> ZVR,
+              LesHouches -> SNUMIXR }},
+{ZVI,        { LaTeX -> "Z^I",
+              OutputName -> ZVI,
+              LesHouches -> SNUMIXI }},   
 {ZH,        { Description->"Scalar-Mixing-Matrix"}},
 {ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix"}},
-{ZP,        { Description->"Charged-Mixing-Matrix"}},                      
+{ZP,        { Description->"Charged-Mixing-Matrix"}},  
+
+{UV,       { Description ->"Neutrino-Mixing-Matrix"}},                       
                                           
  
 {ZN,        { Description->"Neutralino Mixing-Matrix" }}, 
@@ -61,7 +71,13 @@ ParameterDefinitions = {
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
 {PhaseGlu,  { Description -> "Gluino-Phase" }},
 
-{WOp,  { LesHouches -> ND4 }}                                   
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
+
+{WOp,       {Description -> "Weinberg Operator"}},
+{Q[WOp],       {Description -> "Soft Breaking Weinberg Operator"}}
+                                 
  }; 
  
 

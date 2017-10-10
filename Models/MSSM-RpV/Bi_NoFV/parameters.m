@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
-{e,         { Description -> "electric charge"}}, 
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{e,         { Description -> "electric charge"}},
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+ 
 
 {Yu,        { Description -> "Up-Yukawa-Coupling",
 			  Form -> Diagonal   }}, 
@@ -40,9 +43,9 @@ ParameterDefinitions = {
 {MassG,     { Description -> "Gluino Mass parameter"}},
                            
 {vd,        { Description -> "Down-VEV",
-              Dependences -> None}}, 
+              Dependence -> None}}, 
 {vu,        { Description -> "Up-VEV",
-              Dependences -> None}},
+              Dependence -> None}},
 {vL,        { Description -> "Sneutrino-VEV"}},              
 {v,         { Description -> "EW-VEV"}},
 {TanBeta,   { Description -> "Tan Beta" }},              
@@ -81,11 +84,14 @@ ParameterDefinitions = {
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
 {PhaseGlu,  { Description -> "Gluino-Phase" }},  
 
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
+
 {\[Epsilon], { Description -> "Bilinear RpV-Parameter"}}, 
 {B[\[Epsilon]], { Description -> "Softbreaking Bilinear RpV-Parameter" }},
 
-{mHL2,  { LaTeX ->"m_{l H}^2",
-            LesHouches -> RVM2LH1}}
+{mlHd2,  { Description -> "Soft-breaking Higgs Slepton Mixing Term"}}
 
  }; 
  

@@ -7,10 +7,18 @@ ParameterDefinitions = {
 {g2,       { LaTeX -> "g_2",
              LesHouches -> {gauge,2}  }},
 
+{ZW, {Dependence ->   1/Sqrt[2] {{1, 1, 0},
+	                  {-\[ImaginaryI],\[ImaginaryI],0},
+	                  {0,0,Sqrt[2]} } }},
+
+{ZfW, {Dependence ->   1/Sqrt[2] {{1, 1, 0},
+	                  {-\[ImaginaryI],\[ImaginaryI],0},
+	                  {0,0,Sqrt[2]} } }},
+
            
 {g3,       { LaTeX -> "g_3",
              LesHouches -> {gauge, 3}  }},
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {YQ,       { LaTeX -> "Y_Q",
              LesHouches ->  YQ      }},
  
@@ -26,33 +34,30 @@ ParameterDefinitions = {
 
                                                                           
 {Mu3,    { LaTeX -> "\\mu",
-             Symmetry ->Symmetric,
              LesHouches -> Mu3        }},
                
 {B[Mu3], { LaTeX -> "B_{\\mu}",
-             Symmetry ->Symmetric,
              LesHouches -> BMu3       }},
 
 {f,        { LaTeX -> "f",
-	         Symmetry ->Symmetric,
-             LesHouches ->  FO      }},
+             LesHouches ->  FO,
+             OutputName -> fOM      }},
 
 {T[f],     { LaTeX -> "T^f",
-             Symmetry -> Symmetric,
              LesHouches -> TFO       }},
 
 {a,        { LaTeX -> "a",
-             LesHouches ->  AOM      }},
+             LesHouches ->  AOM,
+             OutputName -> aOM      }},
 
 {T[a],     { LaTeX -> "T^a",
              LesHouches -> TAOM       }},
 
 {AlphaOm, { LaTeX -> "\\alpha",
-            Symmetry ->AntiSymmetric,
-             LesHouches ->  ALPHAOM      }},
+             LesHouches ->  ALPHAOM,
+             OutputName ->alphaOM      }},
 
 {T[AlphaOm], { LaTeX -> "T^{\\alpha}",
-               Symmetry ->AntiSymmetric,
                LesHouches -> TALPHAOM       }},
 
 {Mdelta,   { LaTeX -> "M_{\\Delta}",

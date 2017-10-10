@@ -13,7 +13,7 @@ ParticleDefinitions[GaugeES] = {
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -65,7 +65,7 @@ ParticleDefinitions[GaugeES] = {
  WeylFermionAndIndermediate = {
        {FHd0, { Description -> "Neutral Down-Higgsino"}},      
        {FHu0, { Description -> "Neutral Up-Higgsino" }}, 
-       {FHdm, { Description -> "Charged Down-Higgsino"}},                                                                                                             
+       {FHdm, { Description -> "Charged Down-Higgsino"}}, 
        {FHup, { Description -> "Charged Up-Higgsino"}},
        {L0,   { Description -> "Neutralino Weyl-Spinor"}},
        {Lm,   { Description -> "Negative Chargino Weyl-Spinor"}},

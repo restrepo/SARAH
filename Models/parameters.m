@@ -20,29 +20,59 @@ ParameterDefinitionsMain = {
              DependenceNum -> e/Sin[ThetaW], 
              LesHouches -> {gauge, 2},
              OutputName-> g2 }},
+
+{{ Description -> "inverse weak coupling constant at mZ",
+              Value ->  137.035999679,
+              LaTeX -> "\\alpha^{-1}",
+              Real -> True,
+              OutputName -> aEWinv,
+              LesHouches -> {SMINPUTS,1} }},
+
+
+{{ Description -> "Fermi's constant",
+              Value ->  0.0000116639,
+              LaTeX -> "G_f",
+              Real -> True,
+              OutputName -> Gf,
+              LesHouches -> {SMINPUTS,2} }},
+
              
 {{ Description -> "electric charge",
-			 LaTeX -> "e",
-			 Value -> Sqrt[4 Pi 1/137.035999679],
-			 Real -> True,
- 			 LesHouches -> None,
+	      LaTeX -> "e",
+(*              Value -> Sqrt[4 Pi 1/137.035999679], *)
+              DependenceNum -> Sqrt[4 Pi/aEWinv],
+              Real -> True,
+              LesHouches -> None,
              OutputName-> el
-			         }},                 
+			         }},     
+
+ {{ Description -> "Weinberg-Angle",
+             LaTeX -> "\\Theta_W",
+             Real ->True,
+ (*            DependenceNum -> ArcCos[g2/Sqrt[g1^2+g2^2]], *)
+             DependenceNum -> ArcSin[Sqrt[1 - Mass[VWm]^2/Mass[VZ]^2]],
+             DependenceSPheno -> ArcCos[Abs[ZZ[1,1]]],
+ (*            Value -> 0.511621, *)
+             OutputName-> TW,
+             LesHouches -> None      }},             
              
 {{ Description -> "Strong-Coupling", 
-			 LaTeX -> "g_3",
-             Dependence ->  None, 
+             LaTeX -> "g_3",
+             Dependence ->  None,
+             DependenceNum -> Sqrt[AlphaS 4 Pi], 
              Value -> None, 
              LesHouches -> {gauge, 3},
              OutputName-> g3  }}, 
              
- {{ Description -> "Weinberg-Angle",
- 			 LaTeX -> "\\Theta_W",
- 			 Real ->True,
-             DependenceNum -> ArcCos[g2/Sqrt[g1^2+g2^2]],
-             Value -> 0.511621,
-             OutputName-> TW,
-             LesHouches -> None      }},                
+{{ Description -> "Alpha Strong", 
+			 LaTeX -> "\\alpha_S",
+             Value -> 0.119, 
+             Real -> True,
+             LesHouches -> {SMINPUTS,3},
+             OutputName-> aS  }}, 
+             
+             
+               
 
 
 (*----------------------------------------*)
@@ -53,32 +83,17 @@ ParameterDefinitionsMain = {
  
 {{ Description -> "Up-Yukawa-Coupling",
 			 LaTeX -> "Y_u",
-             Dependence ->  None, 
-             DependenceNum ->  Sqrt[2]/vu  {{Mass[Fu,1],0,0},
-             							    {0, Mass[Fu,2],0},
-             								{0, 0, Mass[Fu,3]}}, 
-             Value -> None, 
              LesHouches -> Yu,
              OutputName-> Yu
              }},  
              
 {{  Description -> "Down-Yukawa-Coupling",
 			 LaTeX -> "Y_d",
-             Dependence ->  None, 
-             DependenceNum ->  Sqrt[2]/vd {{Mass[Fd,1],0,0},
-             								{0, Mass[Fd,2],0},
-             								{0, 0, Mass[Fd,3]}}, 
-            Value -> None, 
              LesHouches -> Yd,
              OutputName-> Yd             }},
              
 {{  Description -> "Lepton-Yukawa-Coupling",
 			 LaTeX -> "Y_e",
-             Dependence ->  None, 
-             DependenceNum ->  Sqrt[2]/vd {{Mass[Fe,1],0,0},
-             								{0, Mass[Fe,2],0},
-             								{0, 0, Mass[Fe,3]}}, 
-             Value -> None, 
              LesHouches -> Ye,
              OutputName-> Ye            }},             
 
@@ -91,21 +106,18 @@ ParameterDefinitionsMain = {
 
 {{ Description -> "Trilinear-Lepton-Coupling",
 			 LaTeX -> "T_e",
-             Value -> None, 
              LesHouches -> Te,
              OutputName-> Te             }},
 
   
 {{  Description -> "Trilinear-Down-Coupling",
 			 LaTeX -> "T_d",
-             Value -> None, 
              LesHouches -> Td,
              OutputName-> Td             }},     
              
 
 {{  Description -> "Trilinear-Up-Coupling",
 			 LaTeX -> "T_u",
-             Value -> None, 
              LesHouches -> Tu,
              OutputName-> Tu             }}, 
 
@@ -131,6 +143,11 @@ ParameterDefinitionsMain = {
 			 LesHouches ->{HMIX,101},
              Value -> None,
              OutputName-> Bmu }},        
+
+{{   Description -> "Hypercharge FI-Term", 
+	     LaTeX -> "\\xi_Y",
+             LesHouches -> {FITERMS,1},
+             OutputName-> XiY }},
              
 (*----------------------------------------*)
 (* Soft-breaking masses                   *)
@@ -258,11 +275,11 @@ ParameterDefinitionsMain = {
              
 {{Description -> "Pseudo Scalar mixing angle",
 			 LaTeX -> "\\beta",
-			 DependenceSPheno -> ArcSin[ZA[1,2]],
+			 DependenceSPheno -> ArcSin[Abs[ZP[1,2]]],
   (*           DependenceNum -> ArcTan[TanBeta],  *)
              Real -> True, 
              LesHouches -> {HMIX, 10},
-             OutputName-> beta      }},
+             OutputName-> betaH      }},
              
 {{Description -> "Tan Beta" ,
 			 LaTeX -> "\\tan(beta)",
@@ -276,7 +293,39 @@ ParameterDefinitionsMain = {
 (*             DependenceNum ->1/2 ArcTan[Tan[2 \[Beta]] (Mass[Ah,2]^2+Mass[VZ]^2)/(Mass[Ah,2]^2-Mass[VZ]^2)], *)
              Real -> True, 
              LesHouches -> {HMIX, 11},
-             OutputName-> alpha     }},                          
+             OutputName-> alphaH     }},  
+
+(*----------------------------------------*)
+(* Rotations EWSB                         *)
+(*----------------------------------------*) 
+
+{{Description -> "Photon-Z Mixing Matrix",
+       Dependence ->  {{Cos[ThetaW],-Sin[ThetaW]},                             
+                       {Sin[ThetaW],Cos[ThetaW]}},
+       Real ->True,
+       LaTeX -> "Z^{\\gamma Z}",
+       LesHouches -> None,
+       OutputName -> ZZ }},
+
+{{Description -> "W Mixing Matrix",
+       Dependence ->   1/Sqrt[2] {{1, 1},
+                  {-\[ImaginaryI],\[ImaginaryI]}},
+       LaTeX -> "Z^{W}",
+       LesHouches -> None,
+       OutputName -> ZW }},
+
+
+{{Description -> "Wino Mixing Matrix",
+       Dependence ->   1/Sqrt[2] {{1, 1, 0},
+	                  {-\[ImaginaryI],\[ImaginaryI],0},
+	                  {0,0,Sqrt[2]} },
+       LaTeX -> "Z^{\\tilde{W}}",
+       LesHouches -> None,
+       OutputName -> ZfW }},
+
+
+     
+       
              
 (*----------------------------------------*)
 (* Mixing matrices (SUSY sector)          *)
@@ -322,14 +371,14 @@ ParameterDefinitionsMain = {
 			 LaTeX -> "V",
              Dependence ->  None, 
              Value -> None, 
-             LesHouches -> UMIX,
+             LesHouches -> VMIX,
              OutputName-> UP      }}, 
              
 {{  Description->"Chargino-minus Mixing-Matrix",
 			 LaTeX -> "U",
              Dependence ->  None, 
              Value -> None, 
-             LesHouches -> VMIX,
+             LesHouches -> UMIX,
              OutputName-> UM      }},              
 
 (*----------------------------------------*)
@@ -357,7 +406,7 @@ ParameterDefinitionsMain = {
              
 {{  Description->"Charged-Mixing-Matrix", 
  			 LaTeX -> "Z^+",
-             Real ->False,
+             Real ->True,
              DependenceOptional -> {{-Cos[\[Beta]],Sin[\[Beta]]},
                             {Sin[\[Beta]],Cos[\[Beta]]}}, 
              Value -> None, 
@@ -410,7 +459,27 @@ ParameterDefinitionsMain = {
              Dependence ->  None, 
              Value -> None, 
              LesHouches -> UURMIX,
-             OutputName-> ZUR      }},                   
+             OutputName-> ZUR      }}, 
+             
+ {{Description ->"Neutrino-Mixing-Matrix", 
+ 			 LaTeX -> "U^V",
+             Dependence ->  None, 
+             Value -> None, 
+             LesHouches -> UVMIX,
+             OutputName-> UV      }},  
+             
+             
+(*----------------------------------------*)
+(* PMNS Matrix                             *)
+(*----------------------------------------*)
+             
+{{Description ->"PMNS Matrix", 
+			 LaTeX -> "V^{PMNS}",
+             MatrixProduct -> {Ve,Vv},
+             Dependence ->  None, 
+             LesHouches -> VPMNS,
+             OutputName-> PMNS      }},                               
+                                            
              
 (*----------------------------------------*)
 (* CKM Matrix                             *)
@@ -424,7 +493,8 @@ ParameterDefinitionsMain = {
                                {-lWolf,1-1/2*lWolf^2, aWolf*lWolf^2},
                                {aWolf*lWolf^3*Sqrt[(1-rWolf)^2 +nWolf^2],-aWolf*lWolf^2,1}},
              LesHouches -> VCKM,
-             OutputName-> CKM      }}, 
+             DependenceSPheno -> MatMul[Transpose[conj[Vd]],Vu],
+             OutputName-> VCKM      }}, 
              
 {{Description ->"Complex CKM Matrix", 
 			 LaTeX -> "V^{CKM}",
@@ -467,49 +537,88 @@ ParameterDefinitionsMain = {
 (*----------------------------------------*)
 
              
-{{ Description->"Offdiagonal Up-Yukawa Coupling",
-			 Dependence -> sum[i001,1,3]*sum[i002,1,3]*Yu[i001,i002]*Delta[i001, i002]* \
-                             Vu[i001,index1]*conj[Uu[i002,index2]],
-             LaTeX -> "Y_u^0",
-             OutputName -> Yu0 }},    
+{{ Description->"SCKM Up-Yukawa-Coupling",
+             DependenceNum ->  Sqrt[2]/vu  {{Mass[Fu,1],0,0},
+					    {0, Mass[Fu,2],0},
+  				            {0, 0, Mass[Fu,3]}}, 
+             LaTeX -> "\\hat{Y}_u^0",
+             DependenceSPheno -> MatMul[MatMul[conj[Uu],Yu0],Transpose[Vu]],
+             LesHouches -> Yu,
+             OutputName -> ckYu }},    
 
-{{ Description->"Offdiagonal Down-Yukawa Coupling",
-			 Dependence -> sum[i003,1,3]*sum[i004,1,3]*Yd[i003,i004]*Delta[i003, i004]* \
-                             Vd[i003,index1]*conj[Ud[i004,index2]],
-              LaTeX -> "Y_d^0",
-             OutputName -> Yd0}},    
-
-{{ Description->"Offdiagonal Trilinear Down-Coupling",
-			 Dependence -> sum[i005,1,3]*sum[i006,1,3]*T[Yd][i005,i006]*Delta[i005, i006]* \
-                             Vd[i005,index1]*conj[Ud[i006,index2]],
-              LaTeX -> "T_d^0",
-             OutputName -> Td0 }},   
-
-{{ Description->"Offdiagonal Trilinear Up-Coupling",
-			   Dependence -> sum[i007,1,3]*sum[i008,1,3]*T[Yu][i007,i008]*Delta[i007, i008]* \
-                             Vu[i007,index1]*conj[Uu[i008,index2]],
-              LaTeX -> "T_u^0",
-             OutputName -> Tu0 }},
+{{ Description->"SCKM Down-Yukawa-Coupling",
+             DependenceNum ->  Sqrt[2]/vd {{Mass[Fd,1],0,0},
+ 				{0, Mass[Fd,2],0},
+ 				{0, 0, Mass[Fd,3]}}, 
+              LaTeX -> "\\hat{Y}_d^0",
+             DependenceSPheno -> MatMul[MatMul[conj[Ud],Yd0],Transpose[Vd]],
+             LesHouches -> Yd,
+             OutputName -> ckYd}},    
 
 
-{{Description->"Offdiagonal Softbreaking left Squark Mass",
-			 Dependence -> sum[i001,1,3]*sum[i002,1,3]*mq2[i001,i002]*Delta[i001, i002]* \
-                             Vd[i001,index1]*conj[Vd[i002,index2]],
-               LaTeX -> "m^{0,2}_{\\tilde{q}}",
+{{ Description->"SCKM Trilinear-Down-Coupling",
+              LaTeX -> "\\hat{T}_d^0",
+             LesHouches -> Td,
+             DependenceSPheno -> MatMul[MatMul[conj[Ud],T[Yd0]],Transpose[Vd]],
+             OutputName -> ckTd }},   
+
+{{ Description->"SCKM Trilinear-Up-Coupling",
+              LaTeX -> "\\hat{T}_u^0",
+             LesHouches -> Tu,
+             DependenceSPheno -> MatMul[MatMul[conj[Uu],T[Yu0]],Transpose[Vu]],
+             OutputName -> ckTu }},
+             
+            
+
+{{Description->"SCKM Softbreaking left Squark Mass",
+               LaTeX -> "\\hat{m}^{2}_{\\tilde{q}}",
+               LesHouches -> mq2,
+               DependenceSPheno -> MatMul[MatMul[Vd,mq02],Transpose[conj[Vd]]],               
                OutputName -> mq02 }},	
 
 
-{{Description->"Offdiagonal Softbreaking right Up-Squark Mass",
-			  Dependence -> sum[i001,1,3]*sum[i002,1,3]*mu2[i001,i002]*Delta[i001, i002]* \
-                             conj[Uu[i001,index1]]*Uu[i002,index2],
-               LaTeX -> "m^{0,2}_{\\tilde{u}}",
+{{Description->"SCKM Softbreaking right Up-Squark Mass",
+               LaTeX -> "\\hat{m}^{2}_{\\tilde{u}}",
+               LesHouches -> mu2,
+               DependenceSPheno -> MatMul[MatMul[conj[Uu],mu02],Transpose[Uu]],               
                OutputName -> mu02 }},             
              
-{{Description->"Offdiagonal Softbreaking right Up-Squark Mass",
-			 Dependence -> sum[i001,1,3]*sum[i002,1,3]*md2[i001,i002]*Delta[i001, i002]* \
-                             conj[Ud[i001,index1]]*Ud[i002,index2],
-               LaTeX -> "m^{0,2}_{\\tilde{d}}",
-               OutputName -> md02 }},             
+{{Description->"SCKM Softbreaking right Down-Squark Mass",
+               LaTeX -> "\\hat{m}^{2}_{\\tilde{d}}",
+               LesHouches -> md2,
+               DependenceSPheno -> MatMul[MatMul[conj[Ud],md02],Transpose[Ud]],                              
+               OutputName -> md02 }},  
+               
+(*----------------------------------------*)
+(* PMNS related                            *)
+(*----------------------------------------*)  
+
+{{ Description->"PMNS Electron-Yukawa-Coupling",
+             DependenceNum ->  Sqrt[2]/vd {{Mass[Fe,1],0,0},
+					{0, Mass[Fe,2],0},
+  				{0, 0, Mass[Fe,3]}}, 
+              LaTeX -> "\\hat{Y}_e^0",
+             DependenceSPheno ->MatMul[MatMul[Ve,Ye0],Transpose[Ue]] ,
+             LesHouches -> Ye,
+             OutputName -> pmYe}},  
+
+{{ Description->"PMNS Trilinear-Lepton-Coupling",
+              LaTeX -> "\\hat{T}_e^0",
+             LesHouches -> Te,
+             DependenceSPheno ->MatMul[MatMul[Ue,T[Ye0]],Transpose[conj[Ve]]],
+             OutputName -> pmTe }},              
+               
+{{Description->"PMNS Softbreaking right Slepton Mass",
+               LaTeX -> "\\hat{m}^{2}_{\\tilde{e}}",
+               LesHouches -> me2,
+               DependenceSPheno ->MatMul[MatMul[Ue,me02],Transpose[conj[Ue]]],
+               OutputName -> me02 }},             
+             
+{{Description->"PMNS Softbreaking left Slepton Mass",
+               LaTeX -> "\\hat{m}^{2}_{\\tilde{l}}",
+               LesHouches -> ml2,
+                DependenceSPheno ->MatMul[MatMul[Transpose[Ve],ml02],conj[Ve]],
+               OutputName -> ml02 }},                            
              
         
 
@@ -528,67 +637,180 @@ ParameterDefinitionsMain = {
 
 
 (*----------------------------------------*)
-(* For U(1) x U(1)                        *)
+(* For U(1)_Y x U(1)_{B-L}                *)
 (*----------------------------------------*)          
 
              
 {{Description -> "Theta'",
- 			 LaTeX -> "{\\Theta'}_W",
- 			 DependenceNum ->ArcTan[(2 g1g1p Sqrt[g1^2+g2^2])/(g1g1p^2 + 16 (x1^2+x2^2)/(vd^2+vu^2) -g1^2-g2^2)]/2,
- 			 Real ->True,
-             OutputName-> TWp      }},  
+             LaTeX -> "{\\Theta'}_W",
+             DependenceNum ->ArcTan[(2 g1BL Sqrt[g1^2+g2^2])/(g1BL^2 + 4 gBL^2 (x1^2+x2^2)/(vd^2+vu^2) -g1^2-g2^2)]/2,
+             Real ->True,
+             DependenceSPheno -> ArcCos[Abs[ZZ[3,3]]],
+             OutputName-> TWp,
+             LesHouches -> {ANGLES,10}      }},  
              
 {{Description -> "U(1)' Gauge Coupling",
               LaTeX -> "g_p",
               Real ->True,
+              OutputName -> gp,
               LesHouches -> {GAUGE,5} }}, 
               
 (*----------------------------------------*)
-(* Additional B-L Coupling                *)
+(* Additional B-L Parameters              *)
 (*----------------------------------------*)  
+
+(*
+{{Description -> "Photon-Z-Z' Mixing Matrix",
+       Dependence ->   {{Cos[ThetaW],Sin[ThetaW] Cos[ThetaWp], -Sin[ThetaW] Sin[ThetaWp] },                             
+                        {Sin[ThetaW],-Cos[ThetaW] Cos[ThetaWp],Cos[ThetaW] Sin[ThetaWp]},
+                        {0, Sin[ThetaWp], Cos[ThetaWp]}},
+       Real ->True,
+       LaTeX -> "Z^{\\gamma Z Z'}",
+       LesHouches -> None,
+       OutputName -> ZZ }},
+*)
+
+{{Description -> "Photon-Z-Z' Mixing Matrix",
+       Dependence ->   {{Cos[ThetaW],-Sin[ThetaW] Cos[ThetaWp], Sin[ThetaW] Sin[ThetaWp] },                             
+                        {Sin[ThetaW],Cos[ThetaW] Cos[ThetaWp],-Cos[ThetaW] Sin[ThetaWp]},
+                        {0, Sin[ThetaWp], Cos[ThetaWp]}},
+       Real ->True,
+       LaTeX -> "Z^{\\gamma Z Z'}",
+       LesHouches -> None,
+       OutputName -> ZZ }},
+
               
 {{Description -> "B-L-Coupling", 
-			 LaTeX -> "g_{B}",
-			 GUTnormalization -> Sqrt[3/2],
+		 LaTeX -> "g_{B}",
+		GUTnormalization -> Sqrt[3/2],
              Dependence -> None, 
-             LesHouches -> {gauge,4} }},              
+             LesHouches -> {gauge,4},
+             OutputName -> gBL }},              
               
 {{Description -> "Mixed Gauge Coupling 1",
-                LesHouches -> {Gauge, 10},
-                LaTeX -> "g_{Y B}" }},
+                LesHouches -> {gauge, 10},
+                LaTeX -> "g_{Y B}",
+             OutputName -> gYB }},
                 
 {{Description -> "Mixed Gauge Coupling 2",
-                 LesHouches -> {Gauge, 11},
-                 Dependence -> 0,
-                LaTeX -> "g_{B Y}"}},
+                 LesHouches -> {gauge, 11},
+                 LaTeX -> "g_{B Y}",
+                 OutputName -> gBY}},
                 
 {{Description -> "Z' mass", 
 			 LaTeX -> "M_{Z'}",
              Dependence -> None, 
              Real -> True,
              Value -> 1500, 
-             LesHouches -> None }},
+             LesHouches -> None,
+             OutputName -> MZp }},
              
 {{Description -> "Bino' Mass",
               LaTeX -> "{M}_{BL}",
-              LesHouches -> {BL,31} }},
+              LesHouches -> {BL,31},
+	      OutputName -> MBp }},
 
 {{Description -> "Mixed Gaugino Mass 1",
          LaTeX -> "{M}_{B B'}",
-         LesHouches -> {BL,32} }},
+         LesHouches -> {BL,32},
+	      OutputName -> MBBp }},
 
 {{Description -> "Mixed Gaugino Mass 2",
                LaTeX -> "{M}_{B' B}",
- 		       LesHouches -> {BL,32} }},
+ 		       LesHouches -> {BL,33},
+	      OutputName -> MBpB }},
 
 {{Description -> "Mu' Parameter",
-               LaTeX -> "{\\mu_X}",
-               LesHouches -> {BL,1} }},
+               LaTeX -> "{\\mu_{\\eta}}",
+               LesHouches -> {BL,1},
+	       OutputName -> MuP }},
                
 {{Description -> "B' Parameter",
-               LaTeX -> "B_X",
-               LesHouches -> {BL,2}}},
+               LaTeX -> "B_{\\eta}",
+               LesHouches -> {BL,2},
+	       OutputName -> BMuP}},
                
+
+{{Description -> "Bilepton 1 Soft-Breaking mass",
+               LaTeX->"m_{\\eta}^2",
+	       LesHouches -> {BL,11} ,
+	       OutputName -> mC12}},
+
+
+{{Description -> "Bilepton 2 Soft-Breaking mass",
+               LaTeX->"m_{\\bar{\\eta}}^2",
+	       LesHouches -> {BL,12} ,
+	       OutputName -> mC22}},
+
+
+{{Description -> "Bilepton 1 VEV",
+               LaTeX -> "v_{\\eta}",
+             DependenceNum ->  Sin[BetaP]*vX, 
+             OutputName -> x1,
+             Real -> True,
+             LesHouches -> {BL,41}   }},
+
+
+{{Description -> "Bilepton 2 VEV",
+               LaTeX -> "v_{\\bar{\\eta}}",
+             DependenceNum ->  Cos[BetaP]*vX, 
+             OutputName -> x2,
+             Real -> True,
+             LesHouches -> {BL,42}   }},
+
+
+{{Description -> "Bilepton VEV",
+              LaTeX -> "x",
+             Dependence ->  None, 
+             OutputName -> vX,
+             DependenceSPheno -> Sqrt[x1^2 + x2^2],
+             Real -> True,
+             LesHouches -> {BL,43}   }},
+
+{{Description -> "Bilepton Scalar Mixing Angle",
+              LaTeX -> "{\\alpha'}",
+             OutputName -> AlphaP   }},
+
+{{Description -> "Bilepton Pseudo Scalar Mixing Angle",
+             LaTeX -> "{\\beta'}",
+             DependenceNum -> ArcTan[TBetaP], 
+             Value -> None, 
+             OutputName -> Bp,
+             LesHouches -> {BL,10}  }},
+
+
+{{Description -> "Neutrino-X-Yukawa-Coupling",
+            LaTeX -> "Y_x",
+            OutputName -> Yx,
+           LesHouches->Yx }},
+
+{{  Description -> "Trilinear-Neutrino-X-Coupling",
+                OutputName -> Tx,
+                LaTeX -> "T_x",
+           	LesHouches->TX}},
+
+
+
+
+{{Description -> "Bilepton Scalar Mixing Matrix",
+             LaTeX -> "Z^{\\chi}",
+             Real -> True, 
+             OutputName -> ZC,
+             Dependence ->   {{-Sin[AlphaP],Cos[AlphaP]},
+                              {Cos[AlphaP],Sin[AlphaP]}}, 
+             LesHouches -> scalarPrimemix      }},
+
+            
+{{Description -> "Bilepton Pseudo Scalar Mixing Matrix", 
+             LaTeX -> "Z^{CA}",
+             Real -> True,
+             OutputName -> ZAC,
+             Dependence -> {{-Cos[BetaP],Sin[BetaP]},
+                            {Sin[BetaP],Cos[BetaP]}}, 
+             LesHouches -> PSPRIMEmix      }},
+
+           
+
                            
 
 
@@ -632,8 +854,6 @@ ParameterDefinitionsMain = {
 {{ Description -> "Softbreaking Singlet Mass", 
               LaTeX -> "m_S^2",
              DependenceNum ->  None, 
-             Real -> True,
-             Form -> Diagonal,
              LesHouches -> {NMSSMRUN,10},
              OutputName-> ms2 }},
               
@@ -664,7 +884,7 @@ ParameterDefinitionsMain = {
 {{ Description -> "Bilinear RpV-Parameter",
               LaTeX -> "\\epsilon",
              LesHouches -> RVKAPPA,
-             OutputName-> Eps }}, 
+             OutputName-> REps }}, 
                
 {{ Description -> "Softbreaking Bilinear RpV-Parameter",
                LaTeX -> "B_\\epsilon",
@@ -673,6 +893,7 @@ ParameterDefinitionsMain = {
              
 {{ Description -> "Soft-breaking Higgs Slepton Mixing Term",
             LaTeX ->"m_{l H}^2",
+            OutputName -> mlHd2,
             LesHouches -> RVM2LH1}},
              
              
@@ -682,22 +903,32 @@ ParameterDefinitionsMain = {
              
 
 {{ Description -> "Neutrino-Yukawa-Coupling",
-             LaTeX -> "Y_v",
+             LaTeX -> "Y_\\nu",
              LesHouches -> Yv,
              OutputName-> Yv
              }},     
 
 {{  Description -> "Trilinear-Neutrino-Coupling",
-              LaTeX -> "T_v",
+              LaTeX -> "T_\\nu",
              LesHouches -> Tv,
              OutputName-> Tv             }},
 
 {{ Description -> "Softbreaking right Sneutrino Mass",
-             LaTeX -> "{m_v^2}",
+             LaTeX -> "m_{\\nu}^2",
              DependenceNum ->  None, 
              LesHouches -> mv2,
              OutputName-> mv2
 			}},
+
+{{Description -> "Weinberg Operator",
+             LaTeX -> "\\kappa_{\\nu}",
+             OutputName ->  WOp,
+   	     LesHouches -> KappaNuL }},
+	     
+{{Description -> "Soft Breaking Weinberg Operator",
+             LaTeX -> "Q_{\\nu}",
+             OutputName ->  QWOp,
+   	     LesHouches -> QNuL }},  
 			
 			
 (*----------------------------------------*)
@@ -708,12 +939,34 @@ ParameterDefinitionsMain = {
 {{Description -> "SM Mu Parameter",
             LaTeX -> "\\mu",
 	        OutputName -> Mu,
-	        LesHouches -> None }},                                        
+	        LesHouches -> {SM,1} }},                                        
 
 {{ Description -> "SM Higgs Selfcouplings",
             LaTeX -> "\\lambda",
 	        OutputName -> Lam,
-	        LesHouches -> None }}
+	        LesHouches -> {SM,2} }},
+	        
+{{ Description -> "SM Higgs Mass Parameter",
+            LaTeX -> "m_H^2",
+	        OutputName -> mH2,
+	        LesHouches -> {SM,3}}},
+
+(*----------------------------------------*)
+(* Gravity                               *)
+(*----------------------------------------*)   
+
+{{ Description -> "Gravitino Mass",
+                LaTeX -> "m_{3/2}",
+	        OutputName -> m32,
+                Value ->  1,                  (* to circumvent problems when loading file in MadGraph *)
+	        LesHouches -> {MSUGRA,2}}},
+
+{{ Description -> "Planck Mass",
+            LaTeX -> "M_P",
+	        OutputName -> MP,
+                Value ->  2.43*10^18,
+	        LesHouches -> {MSUGRA,1}}}
+
 
 			                                 
  }; 

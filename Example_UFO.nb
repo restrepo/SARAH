@@ -1,0 +1,882 @@
+(************** Content-type: application/mathematica **************
+                     CreatedBy='Mathematica 5.2'
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     18892,        684]*)
+(*NotebookOutlinePosition[     19521,        706]*)
+(*  CellTagsIndexPosition[     19477,        702]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+    \(<< SARAH.m\)], "Input"],
+
+Cell[BoxData[
+    InterpretationBox[\("SARAH "\[InvisibleSpace]"SARAHVERSION"\),
+      SequenceForm[ "SARAH ", "SARAHVERSION"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("by Florian Staub, 2012"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("References:"\)], "Print"],
+
+Cell[BoxData[
+    \("  Comput.Phys.Commun.181 (2010) 1077-1086. \
+(arXiv:0909.2863[hep-ph])"\)], "Print"],
+
+Cell[BoxData[
+    \("  Comput.Phys.Commun.182 (2011) 808-833. \
+(arXiv:1002.0840[hep-ph])"\)], "Print"],
+
+Cell[BoxData[
+    \("  arXiv:1207.0906[hep-ph]"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[
+      RowBox[{"\<\"Begin evaluation of Model with:       \"\>", 
+        "\[InvisibleSpace]", 
+        TagBox[
+          StyleBox["\<\"Start[\\\"Name of Model\\\"]\"\>",
+            "Section",
+            FontSize->12],
+          (StyleForm[ #, "Section", FontSize -> 12]&)]}],
+      SequenceForm[ "Begin evaluation of Model with:       ", 
+        StyleForm[ "Start[\"Name of Model\"]", "Section", FontSize -> 12]],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("  e.g. Start[\"MSSM\"] or Start[\"NMSSM\",\"CKM\"]"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[
+      RowBox[{"\<\"To get a list with all installed models, use \"\>", 
+        "\[InvisibleSpace]", 
+        TagBox[
+          StyleBox["\<\"ShowModels\"\>",
+            "Section",
+            FontSize->12],
+          (StyleForm[ #, "Section", FontSize -> 12]&)]}],
+      SequenceForm[ "To get a list with all installed models, use ", 
+        StyleForm[ "ShowModels", "Section", FontSize -> 12]],
+      Editable->False]], "Print"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ 
+      Loading\ the\ model; \ \[IndentingNewLine]\ \ We\ use\ here\ for\ \
+demonstration\ purposes\ the\ MSSM\ without\ flavor\ violation . \ 
+            The\ WHIZARD\ output\ of\ the\ full\ MSSM\ takes\ some\ more\ \
+time ... \ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(\(Start["\<NMSSM\>"];\)\)], "Input"],
+
+Cell[BoxData[
+    \("Initialization"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("*****************************"\)], "Print"],
+
+Cell[BoxData[
+    \("Model files loaded   "\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("  Model    : "\[InvisibleSpace]"NMSSM"\),
+      SequenceForm[ "  Model    : ", "NMSSM"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("  Author(s): "\[InvisibleSpace]"F.Staub"\),
+      SequenceForm[ "  Author(s): ", "F.Staub"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("  Date     : "\[InvisibleSpace]"2012-06-09"\),
+      SequenceForm[ "  Date     : ", "2012-06-09"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("*****************************"\)], "Print"],
+
+Cell[BoxData[
+    \("Generate all Superfields"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking Model Files ..."\)], "Print"],
+
+Cell[BoxData[
+    \("    Model File is okay"\)], "Print"],
+
+Cell[BoxData[
+    \("    Particle File is okay"\)], "Print"],
+
+Cell[BoxData[
+    \("    Parameter File is okay"\)], "Print"],
+
+Cell[BoxData[
+    \("Create all component Fields"\)], "Print"],
+
+Cell[BoxData[
+    \("Generate Parameter Dependences"\)], "Print"],
+
+Cell[BoxData[
+    \("Set Information for Rotations"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking Anomalies"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No ("\[InvisibleSpace]hypercharge\
+\[InvisibleSpace]")^3 Gauge Anomaly"\),
+      SequenceForm[ "     No (", hypercharge, ")^3 Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("     No Witten Anomaly"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No ("\[InvisibleSpace]hypercharge\
+\[InvisibleSpace]")x("\[InvisibleSpace]left\[InvisibleSpace]")^2  Gauge \
+Anomaly"\),
+      SequenceForm[ 
+      "     No (", hypercharge, ")x(", left, ")^2  Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No \
+("\[InvisibleSpace]color\[InvisibleSpace]")^3 Gauge Anomaly"\),
+      SequenceForm[ "     No (", color, ")^3 Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     No ("\[InvisibleSpace]hypercharge\
+\[InvisibleSpace]")x("\[InvisibleSpace]color\[InvisibleSpace]")^2  Gauge \
+Anomaly"\),
+      SequenceForm[ 
+      "     No (", hypercharge, ")x(", color, ")^2  Gauge Anomaly"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Calc Superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking charge conservation of superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("     No violation of charge conservation in superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("     No violation of R-Parity in superpotential"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc F-Terms"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Fermion-Scalar"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Soft Breaking"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Kinetic Terms"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc D-Terms"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Gaugino Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Vector Boson Self Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Vector Boson - Gaugino - Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Gauge Transformations"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Complete Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Evolve States: "\[InvisibleSpace]"GaugeES"\),
+      SequenceForm[ "Evolve States: ", "GaugeES"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Ghost Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mixings of Matter Fields"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Save Model Information: "\[InvisibleSpace]GaugeES\),
+      SequenceForm[ "Save Model Information: ", GaugeES],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("      TadpoleEquations"\)], "Print"],
+
+Cell[BoxData[
+    \("      Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("      Split Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Evolve States: "\[InvisibleSpace]"EWSB"\),
+      SequenceForm[ "Evolve States: ", "EWSB"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Parametrize Higgs Sector"\)], "Print"],
+
+Cell[BoxData[
+    \("Update Gauge Transformations"\)], "Print"],
+
+Cell[BoxData[
+    \("Update Gauge Transformations"\)], "Print"],
+
+Cell[BoxData[
+    \("Add Phases"\)], "Print"],
+
+Cell[BoxData[
+    \("Update Gauge Transformations"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Ghost Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mixings of Matter Fields"\)], "Print"],
+
+Cell[BoxData[
+    \("Calc Mass Matrices"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SdL, SdR}\),
+      SequenceForm[ "    For ", {SdL, SdR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SvL}\),
+      SequenceForm[ "    For ", {SvL}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SuL, SuR}\),
+      SequenceForm[ "    For ", {SuL, SuR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SeL, SeR}\),
+      SequenceForm[ "    For ", {SeL, SeR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{phid, phiu, phiS}\),
+      SequenceForm[ "    For ", {phid, phiu, phiS}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{sigmad, sigmau, sigmaS}\),
+      
+      SequenceForm[ "    For ", {sigmad, sigmau, sigmaS}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{SHdm, conj[SHup]}\),
+      SequenceForm[ "    For ", {SHdm, 
+        conj[ SHup]}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{fB, fW0, FHd0, FHu0, 
+          FsR}\),
+      SequenceForm[ "    For ", {fB, fW0, FHd0, FHu0, FsR}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For "\[InvisibleSpace]{fWm, 
+          FHdm}\[InvisibleSpace]{fWp, FHup}\),
+      SequenceForm[ "    For ", {fWm, FHdm}, {fWp, FHup}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For \
+"\[InvisibleSpace]{FeL}\[InvisibleSpace]{conj[FeR]}\),
+      SequenceForm[ "    For ", {FeL}, {
+        conj[ FeR]}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For \
+"\[InvisibleSpace]{FdL}\[InvisibleSpace]{conj[FdR]}\),
+      SequenceForm[ "    For ", {FdL}, {
+        conj[ FdR]}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    For \
+"\[InvisibleSpace]{FuL}\[InvisibleSpace]{conj[FuR]}\),
+      SequenceForm[ "    For ", {FuL}, {
+        conj[ FuR]}],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Update Gauge Transformations"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Tadpole Equations"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Save Model Information: "\[InvisibleSpace]EWSB\),
+      SequenceForm[ "Save Model Information: ", EWSB],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("      TadpoleEquations"\)], "Print"],
+
+Cell[BoxData[
+    \("      Interactions"\)], "Print"],
+
+Cell[BoxData[
+    \("      Split Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Finishing"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate final Lagrangian"\)], "Print"],
+
+Cell[BoxData[
+    \("Add Matrix Products"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking for massless particles"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculating Tree Level Masses"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     For "\[InvisibleSpace]GaugeES\),
+      SequenceForm[ "     For ", GaugeES],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("     For "\[InvisibleSpace]EWSB\),
+      SequenceForm[ "     For ", EWSB],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Simplify Mass Matrices"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking for Spectrum File"\)], "Print"],
+
+Cell[BoxData[
+    \("     No Spectrum File defined"\)], "Print"],
+
+Cell[BoxData[
+    \("Reading Parameter Values and Dependences"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate Mixing Matrices"\)], "Print"],
+
+Cell[BoxData[
+    \("Checking for CP even and odd scalars"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("All Done... "\[InvisibleSpace]"NMSSM"\
+\[InvisibleSpace]" is ready!"\),
+      SequenceForm[ "All Done... ", "NMSSM", " is ready!"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[
+      RowBox[{"\<\"Are you unfamiliar with SARAH? Use \"\>", 
+        "\[InvisibleSpace]", 
+        TagBox[
+          StyleBox["\<\"SARAH`FirstSteps\"\>",
+            "Section",
+            FontSize->12],
+          (StyleForm[ #, "Section", FontSize -> 12]&)]}],
+      SequenceForm[ "Are you unfamiliar with SARAH? Use ", 
+        StyleForm[ "SARAH`FirstSteps", "Section", FontSize -> 12]],
+      Editable->False]], "Print"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ Writing\ the\ UFO\ model\ files\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(MakeUFO[]\)], "Input"],
+
+Cell[BoxData[
+    \("Have to calculate the vertices first..."\)], "Print"],
+
+Cell[BoxData[
+    \("Checking model for missing definitions"\)], "Print"],
+
+Cell[BoxData[
+    \("Generate Directories"\)], "Print"],
+
+Cell[BoxData[
+    \("Building Particle List"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("Calculate All Vertices"\)], "Print"],
+
+Cell[BoxData[
+    \("-----------------------"\)], "Print"],
+
+Cell[BoxData[
+    \("      Three Scalar - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Four Scalar - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Scalar - One Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Scalar - Two Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Three Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Fermion - One Scalar - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Fermion - One Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Four Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Ghost - One Vector Boson - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Ghost - One Scalar - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \("      Two Scalar - One Auxiliary - Interaction"\)], "Print"],
+
+Cell[BoxData[
+    \(\*"\<\"\"\>"\)], "Print"],
+
+Cell[BoxData[
+    \("Simplify Vertices"\)], "Print"],
+
+Cell[BoxData[
+    \("Writing vertices to files"\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("Done... all vertices are saved in \
+"\[InvisibleSpace]"/home/fnstaub/Documents/Uni/SARAH/sarah3/Output/NMSSM/EWSB/\
+Vertices/"\),
+      SequenceForm[ 
+      "Done... all vertices are saved in ", 
+        "/home/fnstaub/Documents/Uni/SARAH/sarah3/Output/NMSSM/EWSB/Vertices/\
+"],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Creating particle List"\)], "Print"],
+
+Cell[BoxData[
+    \("Creating parameter List"\)], "Print"],
+
+Cell[BoxData[
+    \("Write particles files"\)], "Print"],
+
+Cell[BoxData[
+    \("Expand generations "\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: "\[InvisibleSpace]SSS\
+\),
+      SequenceForm[ "    ... performed vertex type: ", SSS],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: \
+"\[InvisibleSpace]SSVV\),
+      SequenceForm[ "    ... performed vertex type: ", SSVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: "\[InvisibleSpace]SSV\
+\),
+      SequenceForm[ "    ... performed vertex type: ", SSV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: "\[InvisibleSpace]SVV\
+\),
+      SequenceForm[ "    ... performed vertex type: ", SVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: "\[InvisibleSpace]FFS\
+\),
+      SequenceForm[ "    ... performed vertex type: ", FFS],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: "\[InvisibleSpace]FFV\
+\),
+      SequenceForm[ "    ... performed vertex type: ", FFV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: "\[InvisibleSpace]VVV\
+\),
+      SequenceForm[ "    ... performed vertex type: ", VVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("    ... performed vertex type: \
+"\[InvisibleSpace]VVVV\),
+      SequenceForm[ "    ... performed vertex type: ", VVVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    \("Write Vertex and Couplings file "\)], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]SSS\),
+      SequenceForm[ "   ...  writing ", SSS],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]SSVV\),
+      SequenceForm[ "   ...  writing ", SSVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]SSV\),
+      SequenceForm[ "   ...  writing ", SSV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]SVV\),
+      SequenceForm[ "   ...  writing ", SVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]FFS\),
+      SequenceForm[ "   ...  writing ", FFS],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]FFV\),
+      SequenceForm[ "   ...  writing ", FFV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]VVV\),
+      SequenceForm[ "   ...  writing ", VVV],
+      Editable->False]], "Print"],
+
+Cell[BoxData[
+    InterpretationBox[\("   ...  writing "\[InvisibleSpace]VVVV\),
+      SequenceForm[ "   ...  writing ", VVVV],
+      Editable->False]], "Print"]
+}, Open  ]]
+},
+FrontEndVersion->"5.2 for X",
+ScreenRectangle->{{0, 1366}, {0, 768}},
+WindowSize->{1364, 682},
+WindowMargins->{{0, Automatic}, {24, Automatic}}
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[1776, 53, 43, 1, 27, "Input"],
+Cell[1822, 56, 161, 3, 23, "Print"],
+Cell[1986, 61, 57, 1, 23, "Print"],
+Cell[2046, 64, 45, 1, 23, "Print"],
+Cell[2094, 67, 46, 1, 23, "Print"],
+Cell[2143, 70, 105, 2, 23, "Print"],
+Cell[2251, 74, 103, 2, 23, "Print"],
+Cell[2357, 78, 60, 1, 23, "Print"],
+Cell[2420, 81, 45, 1, 23, "Print"],
+Cell[2468, 84, 487, 11, 23, "Print"],
+Cell[2958, 97, 85, 1, 23, "Print"],
+Cell[3046, 100, 469, 11, 23, "Print"]
+}, Open  ]],
+Cell[3530, 114, 271, 5, 43, "Input"],
+
+Cell[CellGroupData[{
+Cell[3826, 123, 56, 1, 27, "Input"],
+Cell[3885, 126, 49, 1, 23, "Print"],
+Cell[3937, 129, 45, 1, 23, "Print"],
+Cell[3985, 132, 64, 1, 23, "Print"],
+Cell[4052, 135, 56, 1, 23, "Print"],
+Cell[4111, 138, 161, 3, 23, "Print"],
+Cell[4275, 143, 165, 3, 23, "Print"],
+Cell[4443, 148, 171, 3, 23, "Print"],
+Cell[4617, 153, 64, 1, 23, "Print"],
+Cell[4684, 156, 59, 1, 23, "Print"],
+Cell[4746, 159, 59, 1, 23, "Print"],
+Cell[4808, 162, 57, 1, 23, "Print"],
+Cell[4868, 165, 60, 1, 23, "Print"],
+Cell[4931, 168, 61, 1, 23, "Print"],
+Cell[4995, 171, 62, 1, 23, "Print"],
+Cell[5060, 174, 65, 1, 23, "Print"],
+Cell[5128, 177, 64, 1, 23, "Print"],
+Cell[5195, 180, 53, 1, 23, "Print"],
+Cell[5251, 183, 220, 4, 23, "Print"],
+Cell[5474, 189, 57, 1, 23, "Print"],
+Cell[5534, 192, 287, 6, 23, "Print"],
+Cell[5824, 200, 208, 4, 23, "Print"],
+Cell[6035, 206, 289, 6, 23, "Print"],
+Cell[6327, 214, 54, 1, 23, "Print"],
+Cell[6384, 217, 81, 1, 23, "Print"],
+Cell[6468, 220, 93, 1, 23, "Print"],
+Cell[6564, 223, 82, 1, 23, "Print"],
+Cell[6649, 226, 47, 1, 23, "Print"],
+Cell[6699, 229, 54, 1, 23, "Print"],
+Cell[6756, 232, 53, 1, 23, "Print"],
+Cell[6812, 235, 53, 1, 23, "Print"],
+Cell[6868, 238, 47, 1, 23, "Print"],
+Cell[6918, 241, 60, 1, 23, "Print"],
+Cell[6981, 244, 75, 1, 23, "Print"],
+Cell[7059, 247, 82, 1, 23, "Print"],
+Cell[7144, 250, 61, 1, 23, "Print"],
+Cell[7208, 253, 59, 1, 23, "Print"],
+Cell[7270, 256, 45, 1, 23, "Print"],
+Cell[7318, 259, 70, 1, 23, "Print"],
+Cell[7391, 262, 169, 3, 23, "Print"],
+Cell[7563, 267, 70, 1, 23, "Print"],
+Cell[7636, 270, 58, 1, 23, "Print"],
+Cell[7697, 273, 64, 1, 23, "Print"],
+Cell[7764, 276, 183, 3, 23, "Print"],
+Cell[7950, 281, 57, 1, 23, "Print"],
+Cell[8010, 284, 53, 1, 23, "Print"],
+Cell[8066, 287, 57, 1, 23, "Print"],
+Cell[8126, 290, 45, 1, 23, "Print"],
+Cell[8174, 293, 70, 1, 23, "Print"],
+Cell[8247, 296, 163, 3, 23, "Print"],
+Cell[8413, 301, 70, 1, 23, "Print"],
+Cell[8486, 304, 59, 1, 23, "Print"],
+Cell[8548, 307, 63, 1, 23, "Print"],
+Cell[8614, 310, 63, 1, 23, "Print"],
+Cell[8680, 313, 45, 1, 23, "Print"],
+Cell[8728, 316, 63, 1, 23, "Print"],
+Cell[8794, 319, 58, 1, 23, "Print"],
+Cell[8855, 322, 64, 1, 23, "Print"],
+Cell[8922, 325, 53, 1, 23, "Print"],
+Cell[8978, 328, 157, 3, 23, "Print"],
+Cell[9138, 333, 147, 3, 23, "Print"],
+Cell[9288, 338, 157, 3, 23, "Print"],
+Cell[9448, 343, 157, 3, 23, "Print"],
+Cell[9608, 348, 173, 3, 23, "Print"],
+Cell[9784, 353, 192, 4, 23, "Print"],
+Cell[9979, 359, 183, 4, 23, "Print"],
+Cell[10165, 365, 200, 4, 23, "Print"],
+Cell[10368, 371, 211, 4, 23, "Print"],
+Cell[10582, 377, 200, 5, 23, "Print"],
+Cell[10785, 384, 200, 5, 23, "Print"],
+Cell[10988, 391, 200, 5, 23, "Print"],
+Cell[11191, 398, 63, 1, 23, "Print"],
+Cell[11257, 401, 62, 1, 23, "Print"],
+Cell[11322, 404, 177, 3, 23, "Print"],
+Cell[11502, 409, 57, 1, 23, "Print"],
+Cell[11562, 412, 53, 1, 23, "Print"],
+Cell[11618, 415, 57, 1, 23, "Print"],
+Cell[11678, 418, 45, 1, 23, "Print"],
+Cell[11726, 421, 70, 1, 23, "Print"],
+Cell[11799, 424, 44, 1, 23, "Print"],
+Cell[11846, 427, 70, 1, 23, "Print"],
+Cell[11919, 430, 61, 1, 23, "Print"],
+Cell[11983, 433, 54, 1, 23, "Print"],
+Cell[12040, 436, 66, 1, 23, "Print"],
+Cell[12109, 439, 64, 1, 23, "Print"],
+Cell[12176, 442, 153, 3, 23, "Print"],
+Cell[12332, 447, 147, 3, 23, "Print"],
+Cell[12482, 452, 57, 1, 23, "Print"],
+Cell[12542, 455, 61, 1, 23, "Print"],
+Cell[12606, 458, 64, 1, 23, "Print"],
+Cell[12673, 461, 75, 1, 23, "Print"],
+Cell[12751, 464, 60, 1, 23, "Print"],
+Cell[12814, 467, 71, 1, 23, "Print"],
+Cell[12888, 470, 45, 1, 23, "Print"],
+Cell[12936, 473, 204, 4, 23, "Print"],
+Cell[13143, 479, 45, 1, 23, "Print"],
+Cell[13191, 482, 45, 1, 23, "Print"],
+Cell[13239, 485, 461, 11, 23, "Print"]
+}, Open  ]],
+Cell[13715, 499, 74, 1, 27, "Input"],
+
+Cell[CellGroupData[{
+Cell[13814, 504, 42, 1, 27, "Input"],
+Cell[13859, 507, 74, 1, 23, "Print"],
+Cell[13936, 510, 73, 1, 23, "Print"],
+Cell[14012, 513, 55, 1, 23, "Print"],
+Cell[14070, 516, 57, 1, 23, "Print"],
+Cell[14130, 519, 58, 1, 23, "Print"],
+Cell[14191, 522, 57, 1, 23, "Print"],
+Cell[14251, 525, 58, 1, 23, "Print"],
+Cell[14312, 528, 67, 1, 23, "Print"],
+Cell[14382, 531, 66, 1, 23, "Print"],
+Cell[14451, 534, 84, 1, 23, "Print"],
+Cell[14538, 537, 84, 1, 23, "Print"],
+Cell[14625, 540, 73, 1, 23, "Print"],
+Cell[14701, 543, 79, 1, 23, "Print"],
+Cell[14783, 546, 85, 1, 23, "Print"],
+Cell[14871, 549, 72, 1, 23, "Print"],
+Cell[14946, 552, 83, 1, 23, "Print"],
+Cell[15032, 555, 77, 1, 23, "Print"],
+Cell[15112, 558, 81, 1, 23, "Print"],
+Cell[15196, 561, 45, 1, 23, "Print"],
+Cell[15244, 564, 52, 1, 23, "Print"],
+Cell[15299, 567, 60, 1, 23, "Print"],
+Cell[15362, 570, 351, 8, 23, "Print"],
+Cell[15716, 580, 57, 1, 23, "Print"],
+Cell[15776, 583, 58, 1, 23, "Print"],
+Cell[15837, 586, 56, 1, 23, "Print"],
+Cell[15896, 589, 54, 1, 23, "Print"],
+Cell[15953, 592, 191, 4, 23, "Print"],
+Cell[16147, 598, 193, 4, 23, "Print"],
+Cell[16343, 604, 191, 4, 23, "Print"],
+Cell[16537, 610, 191, 4, 23, "Print"],
+Cell[16731, 616, 191, 4, 23, "Print"],
+Cell[16925, 622, 191, 4, 23, "Print"],
+Cell[17119, 628, 191, 4, 23, "Print"],
+Cell[17313, 634, 193, 4, 23, "Print"],
+Cell[17509, 640, 67, 1, 23, "Print"],
+Cell[17579, 643, 159, 3, 23, "Print"],
+Cell[17741, 648, 161, 3, 23, "Print"],
+Cell[17905, 653, 159, 3, 23, "Print"],
+Cell[18067, 658, 159, 3, 23, "Print"],
+Cell[18229, 663, 159, 3, 23, "Print"],
+Cell[18391, 668, 159, 3, 23, "Print"],
+Cell[18553, 673, 159, 3, 23, "Print"],
+Cell[18715, 678, 161, 3, 23, "Print"]
+}, Open  ]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+

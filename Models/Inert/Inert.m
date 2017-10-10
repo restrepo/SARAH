@@ -1,50 +1,42 @@
-
-
 Off[General::spell]
-Print["Model file for the SM loaded"];
 
-ModelNameLaTeX ="Standard Model";
+Model`Name = "Inert";
+Model`NameLaTeX ="Inert doublet Model";
+Model`Authors = "B.Herrmann, F.Staub";
+Model`Date = "2014-11-06";
+
+(* 2013-09-01: changing to new conventions for FermionFields/MatterFields *)
+(* 2014-04-24: removed mixing between neutral Higgs fields *)
+(* 2014-11-06: Changed sign in Lagrangian *)
 
 
 (*-------------------------------------------*)
 (*   Particle Content*)
 (*-------------------------------------------*)
 
-(* Gauge Superfields *)
+(* Global Symmetries *)
 
-Gauge[[1]]={B,   U[1], hypercharge, g1,False};
-Gauge[[2]]={WB, SU[2], left,        g2,True};
-Gauge[[3]]={G,  SU[3], color,       g3,False};
+Global[[1]] = {Z[2], Z2};
 
+(* Gauge Groups *)
 
-(* Chiral Superfields *)
-
-Fields[[1]] = {{uL,  dL},  3, q,   1/6, 2, 3};  
-Fields[[2]] = {{vL,  eL},  3, l,  -1/2, 2, 1};
-Fields[[3]] = {{Hd0, Hdm}, 1, Hd, -1/2, 2, 1};
-Fields[[4]] = {{Hup, Hu0}, 1, Hu,  1/2, 2, 1};
-
-Fields[[5]] = {conj[dR], 3, d,  1/3, 1, -3};
-Fields[[6]] = {conj[uR], 3, u, -2/3, 1, -3};
-Fields[[7]] = {conj[eR], 3, e,    1, 1,  1};
+Gauge[[1]]={B,   U[1], hypercharge, g1,False,1};
+Gauge[[2]]={WB, SU[2], left,        g2,True, 1};
+Gauge[[3]]={G,  SU[3], color,       g3,False,1};
 
 
-(*------------------------------------------------------*)
-(* Superpotential *)
-(*------------------------------------------------------*)
+(* Matter Fields *)
 
-         
-SuperPotential = { };
-  
+FermionFields[[1]] = {q, 3, {uL, dL},     1/6, 2,  3, 1};  
+FermionFields[[2]] = {l, 3, {vL, eL},    -1/2, 2,  1, 1};
+FermionFields[[3]] = {d, 3, conj[dR],     1/3, 1, -3, 1};
+FermionFields[[4]] = {u, 3, conj[uR],    -2/3, 1, -3, 1};
+FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1, 1};
 
-(*-------------------------------------------*)
-(* Integrate Out or Delete Particles         *)
-(*-------------------------------------------*)
+ScalarFields[[1]] =  {Hd, 1, {Hd0, Hdm},    -1/2, 2,  1,  1};
+ScalarFields[[2]] =  {Hu, 1, {Hup, Hu0},     1/2, 2,  1, -1};
 
-IntegrateOut={};
-DeleteParticles={SdL, SdR,  SuL, SuR, SeL, SeR, SvL, 
-                FHd0, FHdm, FHu0, FHup,
-                fB, fWB, fG};
+
 
 
 (*----------------------------------------------*)
@@ -52,95 +44,59 @@ DeleteParticles={SdL, SdR,  SuL, SuR, SeL, SeR, SvL,
 (*----------------------------------------------*)
 
 NameOfStates={GaugeES, EWSB};
-NoFTerms=True;
-NoDTerms=True;
 
 (* ----- Before EWSB ----- *)
 
 
-DEFINITION[GaugeES][GaugeFixing]=
-		{ {Der[VWB],  -1/(2 RXi[W])},
-  		  {Der[VG],   -1/(2 RXi[G]) }};
   		  
 DEFINITION[GaugeES][Additional]= {
-	{LagHC, {Overwrite->True, AddHC->True}},
-	{LagNoHC,{Overwrite->True, AddHC->False}}
+	{LagHC, {AddHC->True}},
+	{LagNoHC,{ AddHC->False}}
 };
 
-LagNoHC = Mu1 conj[SHd].SHd + Mu2 conj[SHu].SHu + Lambda1 conj[SHd].SHd.conj[SHd].SHd +
-		Lambda2 conj[SHu].SHu.conj[SHu].SHu + Lambda3 conj[SHu].SHu.conj[SHd].SHd +
-		Lambda5 conj[SHu].SHd.SHu.conj[SHd];
-
-LagHC = Lambda5/2 conj[SHu].SHd.conj[SHu].SHd - Yd SHd.Fq.conj[FdR] -
-			Ye SHd.Fl.conj[FeR] + Yu conj[SHd].Fq.conj[FuR];
 
 
-(* Gauge Sector *)
+LagNoHC = -(MHD conj[Hd].Hd + MHU conj[Hu].Hu + Lambda1 conj[Hd].Hd.conj[Hd].Hd + \
+		Lambda2 conj[Hu].Hu.conj[Hu].Hu + Lambda3 conj[Hu].Hu.conj[Hd].Hd  + Lambda4 conj[Hu].Hd.Hu.conj[Hd]);
 
-DEFINITION[EWSB][GaugeSector]= 
-{ {VWB, {1,{VWm,1/Sqrt[2]},{conj[VWm],1/Sqrt[2]}},
-        {2,{VWm,-\[ImaginaryI]/Sqrt[2]},{conj[VWm],\[ImaginaryI]/Sqrt[2]}},
-        {3,{VP, Sin[ThetaW]},{VZ, Cos[ThetaW]}}},
-  {VB,  {1,{VP, Cos[ThetaW]},{VZ,-Sin[ThetaW]}}}                         };     
+
+LagHC = -(Lambda5/2 Hu.Hd.Hu.Hd + Yd Hd.q.d + Ye Hd.l.e + Yu conj[Hd].q.u);
+
+
+
+DEFINITION[EWSB][GaugeSector] =
+{ 
+  {{VB,VWB[3]},{VP,VZ},ZZ},
+  {{VWB[1],VWB[2]},{VWp,conj[VWp]},ZW}
+};    
         
         
           	
 
 (* ----- VEVs ---- *)
 
+
 DEFINITION[EWSB][VEVs]= 
-{    {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid, \
-1/Sqrt[2]}},
-     {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, \
-1/Sqrt[2]}}     };
+{    {Hd0, {v, 1/Sqrt[2]}, {G0, \[ImaginaryI]/Sqrt[2]},{hh, 1/Sqrt[2]}},
+     {Hu0, {0, 0}, {A0, \[ImaginaryI]/Sqrt[2]},{H0, 1/Sqrt[2]}}     };
+
  
+
 (* ---- Mixings ---- *)
 
 
 DEFINITION[EWSB][MatterSector]= 
-{    {{phid, phiu}, {hh, UH}},
-     {{sigmad, sigmau}, {Ah, UA}},
-     {{conj[SHup],SHdm},{Hpm,UP}}
+{    {{Hup,conj[Hdm]},{Hp,ZP}},
+     {{{dL}, {conj[dR]}}, {{DL,ZDL}, {DR,ZDR}}},
+     {{{uL}, {conj[uR]}}, {{UL,ZUL}, {UR,ZUR}}},
+     {{{eL}, {conj[eR]}}, {{EL,ZEL}, {ER,ZER}}}
            
  }; 
 
 
-(*--- Gauge Fixing ---- *)
-
-
-DEFINITION[EWSB][GaugeFixing]=
-  {	{Der[VP],                                            - 1/(2 RXi[P])},	
-	{Der[VWm]+\[ImaginaryI] Mass[VWm] RXi[W] Hpm[{1}],   - 1/(RXi[W])},
-	{Der[VZ] - Mass[VZ] RXi[Z] Ah[{1}],                  - 1/(2 RXi[Z])},
-	{Der[VG],                                            - 1/(2 RXi[G])}};
-
- (* Re-Define Couplings *)
- 
-
-(*------------------------------------------------------*)
-(* Dirac-Spinors *)
-(*------------------------------------------------------*)
-
-dirac[[1]] = {Fd,  FdL, FdR};
-dirac[[2]] = {Fe,  FeL, FeR};
-dirac[[3]] = {Fu,  FuL, FuR};
-dirac[[4]] = {Fv,  FvL, 0};
-
-
-
-
-(*------------------------------------------------------*)
-(* Automatized Output        *)
-(*------------------------------------------------------*)
-
-(* 
-makeOutput = {
-                   {EWSB, {TeX, FeynArts}}
-             };   
-            *)
-            
-SpectrumFile= None;		
-
-	
-
+DEFINITION[EWSB][DiracSpinors]={
+ Fd ->{  DL, conj[DR]},
+ Fe ->{  EL, conj[ER]},
+ Fu ->{  UL, conj[UR]},
+ Fv ->{  vL, 0}};
 

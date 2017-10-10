@@ -3,6 +3,9 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
 
 {e,         { Description -> "electric charge"}}, 
 
@@ -63,7 +66,11 @@ ParameterDefinitions = {
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},   
+{PhaseGlu,  { Description -> "Gluino-Phase" }},
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},   
                                                                       
 {\[Kappa],   {Description -> "Singlet Self-Interaction"}},                               
 {T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 
@@ -74,7 +81,8 @@ ParameterDefinitions = {
 {vS,        { Description -> "Singlet-VEV"}},    
              
 {ZT,        { Real->True,
-              Dependence -> {{-Cos[\[Beta]],Sin[\[Beta]]},
+              OutputName -> ZT,
+              DependenceOptional -> {{-Cos[\[Beta]],Sin[\[Beta]]},
                             {Sin[\[Beta]], Cos[\[Beta]]}},
               LaTeX -> "Z^T" }}, 
             
@@ -84,12 +92,16 @@ ParameterDefinitions = {
              
 {ZA,        { LaTeX -> "Z^A",
              Real -> True,
-             Dependence -> {{1,0,0},
+             DependenceOptional -> {{1,0,0},
              				{0,Cos[\[Phi]], -Sin[\[Phi]]},
              				{0,Sin[\[Phi]], Cos[\[Phi]]}}, 
-            DependenceOptional -> None,
-               DependenceNum -> None,
-               LesHouches->"ZAMIX"  }}                      
+               OutputName -> ZA,
+               LesHouches->"ZAMIX"  }},
+
+{\[Phi], {Real -> True,
+          LaTeX -> "\\phi",
+          OutputName -> phi,
+          LesHouches -> None }}                      
 
  }; 
  

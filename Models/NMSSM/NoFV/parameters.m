@@ -3,6 +3,9 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
 
 {e,         { Description -> "electric charge"}}, 
 
@@ -29,11 +32,16 @@ ParameterDefinitions = {
 {T[Yu],     { Description -> "Trilinear-Up-Coupling",
               Form -> Diagonal}}, 
 
-{mq2,       { Description -> "Softbreaking left Squark Mass"}},
-{me2,       { Description -> "Softbreaking right Slepton Mass"}},
-{ml2,       { Description -> "Softbreaking left Slepton Mass"}},
-{mu2,       { Description -> "Softbreaking right Up-Squark Mass"}},
-{md2,       { Description -> "Softbreaking right Down-Squark Mass"}},
+{mq2,       { Description -> "Softbreaking left Squark Mass",
+              Form -> Diagonal}},
+{me2,       { Description -> "Softbreaking right Slepton Mass",
+              Form -> Diagonal}},
+{ml2,       { Description -> "Softbreaking left Slepton Mass",
+              Form -> Diagonal}},
+{mu2,       { Description -> "Softbreaking right Up-Squark Mass",
+              Form -> Diagonal}},
+{md2,       { Description -> "Softbreaking right Down-Squark Mass",
+              Form -> Diagonal}},
 {mHd2,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
 {mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
 
@@ -51,58 +59,48 @@ ParameterDefinitions = {
              
     
 {ZD,        { LaTeX -> "Z^D",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZD, 
              LesHouches -> sdownmix			  }},
              
 {ZS,        { LaTeX -> "Z^S",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZS, 
              LesHouches -> sstrmix			  }},             
              
 {ZB,        { LaTeX -> "Z^B",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZB, 
              LesHouches -> sbotmix			  }},
      
          
              
 {ZU,        { LaTeX -> "Z^U",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZU, 
              LesHouches ->  supmix			       }},
              
          
              
 {ZC,        { LaTeX -> "Z^C",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZC, 
              LesHouches ->  scharmmix			       }},
 
 
          
              
 {ZT,        { LaTeX -> "Z^T",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZT, 
              LesHouches ->  stopmix			       }},
              
              
 {ZE,        { LaTeX -> "Z^E",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZE, 
              LesHouches -> selemix			        }}, 
              
 {ZM,        { LaTeX -> "Z^\\mu",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZM, 
              LesHouches -> smumix			        }}, 
 
 {ZTau,        { LaTeX -> "Z^\\tau",
-             Dependence ->  None, 
-             Value -> None, 
-             LesHouches -> staumix,
-		OutputName->ZTa			        }},
+             OutputName -> ZTau, 
+             LesHouches -> staumix			        }},
 
 {ZH,        { Description->"Scalar-Mixing-Matrix", 
                Dependence -> None,
@@ -125,7 +123,11 @@ ParameterDefinitions = {
 
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},   
+{PhaseGlu,  { Description -> "Gluino-Phase" }},  
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}}, 
                                                                       
 {\[Kappa],   {Description -> "Singlet Self-Interaction"}},                               
 {T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 

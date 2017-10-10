@@ -1,0 +1,911 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     29970,        901]
+NotebookOptionsPosition[     24493,        720]
+NotebookOutlinePosition[     26198,        767]
+CellTagsIndexPosition[     26113,        762]
+WindowTitle->DimR - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"See Also \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"ReduceRepProduct\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/ref/ReduceRepProduct"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/DimR\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/DimR"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/DimR.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", "Susyno/ref/DimR", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["DimR", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"DimR", "[", 
+       RowBox[{"group", ",", "rep"}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]Computes the dimension of the representation ",
+     Cell[BoxData["rep"], "InlineFormula"],
+     " of ",
+     Cell[BoxData["group"], "InlineFormula"]
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"DimR", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"group1", ",", "group2", ",", "..."}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"rep_group1", ",", "rep_group2", ",", "..."}], "}"}]}], 
+       "]"}]], "InlineFormula"],
+     " \[LineSeparator]Computes the dimensions of the representations ",
+     Cell[BoxData["rep_group1"], "InlineFormula"],
+     " of ",
+     Cell[BoxData["group1"], "InlineFormula"],
+     ",  ",
+     Cell[BoxData["rep_group2"], "InlineFormula"],
+     " of ",
+     Cell[BoxData["group2"], "InlineFormula"],
+     ", ..."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {None, {None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->116338842],
+
+Cell[TextData[{
+ "The ",
+ Cell[BoxData["group"], "InlineFormula"],
+ "s should be ",
+ ButtonBox["Cartan matrices",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Susyno/ref/CartanMatrix"],
+ " of the intended groups;"
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ "Each representation ",
+ Cell[BoxData["rep"], "InlineFormula"],
+ " should be a list of non-negative integers (Dynkin coefficients)."
+}], "Notes",
+ CellID->41030773]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->12875750],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->299717603],
+
+Cell["\<\
+Dimension of the fundamental representation of SU(3) (which is {1,0}):\
+\>", "ExampleText",
+ CellID->513681956],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DimR", "[", 
+  RowBox[{"SU3", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->196926373],
+
+Cell[BoxData["3"], "Output",
+ ImageSize->{11, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[1]=",
+ CellID->150879602]
+}, Open  ]],
+
+Cell["\<\
+Dimensions of {1,1} of SU(3), {2} of SU(2) and {1,1,1,7} of F4:\
+\>", "ExampleText",
+ CellID->45311829],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DimR", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"SU3", ",", "SU2", ",", "F4"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", "2", "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1", ",", "1", ",", "7"}], "}"}]}], "}"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1978605],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"8", ",", "3", ",", "44493176832"}], "}"}]], "Output",
+ ImageSize->{137, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->517386451]
+}, Open  ]],
+
+Cell["\<\
+Calculate the dimensions of a list of representations of SU(3):\
+\>", "ExampleText",
+ CellID->788],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Print", "[", "\"\<Some representations of SU(3):\>\"", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"listOfSU3Reps", "=", 
+  RowBox[{"Flatten", "[", 
+   RowBox[{
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"i", ",", "j"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "0", ",", "2"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"j", ",", "0", ",", "2"}], "}"}]}], "]"}], ",", "1"}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Print", "[", "\"\<Dimensions:\>\"", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"DimR", "[", 
+    RowBox[{"SU3", ",", "#"}], "]"}], "&"}], " ", "/@", " ", 
+  "listOfSU3Reps"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->189750059],
+
+Cell[BoxData["\<\"Some representations of SU(3):\"\>"], "Print",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->104694130],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2"}], "}"}]}], "}"}]], "Output",
+ ImageSize->{457, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->266597180],
+
+Cell[BoxData["\<\"Dimensions:\"\>"], "Print",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->271783040],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1", ",", "3", ",", "6", ",", "3", ",", "8", ",", "15", ",", "6", ",", "15",
+    ",", "27"}], "}"}]], "Output",
+ ImageSize->{190, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->347434119]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[TextData[{
+   "Possible Issues",
+   "\[NonBreakingSpace]\[NonBreakingSpace]",
+   Cell["(1)", "ExampleCount"]
+  }], "ExampleSection"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1305812373],
+
+Cell["\<\
+Any list of non-negative integers will define a representation of a group \
+provided that the size of the list is equal to the group's rank. In practice \
+the group's rank is equal to the size of the Cartan matrix of the group:\
+\>", "ExampleText",
+ CellID->328620293],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Print[\"Rank of SU(5):\"];
+Length[SU5]\
+\>", "Input",
+ CellLabel->"In[1]:=",
+ CellID->174115121],
+
+Cell[BoxData["\<\"Rank of SU(5):\"\>"], "Print",
+ CellLabel->"During evaluation of In[7]:=",
+ CellID->310420813],
+
+Cell[BoxData["4"], "Output",
+ ImageSize->{11, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[1]=",
+ CellID->38527983]
+}, Open  ]],
+
+Cell["\<\
+In this last example, since rank=4, {1,2,3,4} and {10,0,0,1} are examples of \
+representations of SU(5):\
+\>", "ExampleText",
+ CellID->103860211],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"DimR", "[", 
+  RowBox[{"SU5", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}]}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"DimR", "[", 
+  RowBox[{"SU5", ",", 
+   RowBox[{"{", 
+    RowBox[{"10", ",", "0", ",", "0", ",", "1"}], "}"}]}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->842154],
+
+Cell[BoxData["198450"], "Output",
+ ImageSize->{48, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->213074828],
+
+Cell[BoxData["4290"], "Output",
+ ImageSize->{32, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->528653519]
+}, Open  ]],
+
+Cell["\<\
+On the other hand {2} and {0,0,1,2,3} are not SU(5) representations so the \
+following code is meaningless:\
+\>", "ExampleText",
+ CellID->3898682],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"DimR", "[", 
+  RowBox[{"SU5", ",", 
+   RowBox[{"{", "2", "}"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"DimR", "[", 
+  RowBox[{"SU5", ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "1", ",", "2", ",", "3"}], "}"}]}], 
+  "]"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->237063641],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Thread", "::", "\<\"tdlen\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Objects of unequal length in \\\\\\\
+\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(\\(\\({2}\\)\\) + \\(\
+\\({1, 1, 1, 1}\\)\\)\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+combined.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->381964607],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "::", "\<\"nmtx\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The first two levels of the \
+one-dimensional list \\\\\\\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\
+\\!\\({\\(\\({2}\\)\\) + \\(\\({1, 1, 1, 1}\\)\\)}\\), \\\"MT\\\"]\\)\
+\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be transposed.\\\\\\\"\\\", \
+\\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
+\\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->4426554],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Thread", "::", "\<\"tdlen\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Objects of unequal length in \\\\\\\
+\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(\\(\\({2}\\)\\) + \\(\
+\\({1, 1, 1, 1}\\)\\)\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+combined.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->184254176],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "::", "\<\"nmtx\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The first two levels of the \
+one-dimensional list \\\\\\\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\
+\\!\\({\\(\\({2}\\)\\) + \\(\\({1, 1, 1, 1}\\)\\)}\\), \\\"MT\\\"]\\)\
+\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be transposed.\\\\\\\"\\\", \
+\\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
+\\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->561049600],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Thread", "::", "\<\"tdlen\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Objects of unequal length in \\\\\\\
+\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(\\(\\({2}\\)\\) + \\(\
+\\({1, 1, 1, 1}\\)\\)\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+combined.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->16752147],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"General", "::", "\<\"stop\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Further output of \\\\\\\"\\\", \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(Thread :: \\\"tdlen\\\"\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" will be suppressed \
+during this calculation.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->581989712],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "::", "\<\"nmtx\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The first two levels of the \
+one-dimensional list \\\\\\\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\
+\\!\\({\\(\\({2}\\)\\) + \\(\\({1, 1, 1, 1}\\)\\)}\\), \\\"MT\\\"]\\)\
+\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be transposed.\\\\\\\"\\\", \
+\\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
+\\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->283655155],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"General", "::", "\<\"stop\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Further output of \\\\\\\"\\\", \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(Transpose :: \\\"nmtx\\\"\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" will be suppressed \
+during this calculation.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->668815898],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ ImageSize->{79, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->58158556],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Thread", "::", "\<\"tdlen\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Objects of unequal length in \\\\\\\
+\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(\\(\\({0, 0, 1, 2, 3}\
+\\)\\) + \\(\\({1, 1, 1, 1}\\)\\)\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+combined.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->648275243],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "::", "\<\"nmtx\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The first two levels of the \
+one-dimensional list \\\\\\\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\
+\\!\\({\\(\\({1, 1, 1, 1}\\)\\) + \\(\\({0, 0, 1, 2, 3}\\)\\)}\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+transposed.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
+\\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->468422026],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Thread", "::", "\<\"tdlen\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Objects of unequal length in \\\\\\\
+\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(\\(\\({0, 0, 1, 2, 3}\
+\\)\\) + \\(\\({1, 1, 1, 1}\\)\\)\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+combined.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->90792226],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "::", "\<\"nmtx\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The first two levels of the \
+one-dimensional list \\\\\\\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\
+\\!\\({\\(\\({1, 1, 1, 1}\\)\\) + \\(\\({0, 0, 1, 2, 3}\\)\\)}\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+transposed.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
+\\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->105366607],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Thread", "::", "\<\"tdlen\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Objects of unequal length in \\\\\\\
+\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(\\(\\({0, 0, 1, 2, 3}\
+\\)\\) + \\(\\({1, 1, 1, 1}\\)\\)\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+combined.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->389381478],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"General", "::", "\<\"stop\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Further output of \\\\\\\"\\\", \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(Thread :: \\\"tdlen\\\"\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" will be suppressed \
+during this calculation.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->254238256],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "::", "\<\"nmtx\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The first two levels of the \
+one-dimensional list \\\\\\\"\\\", \\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\
+\\!\\({\\(\\({1, 1, 1, 1}\\)\\) + \\(\\({0, 0, 1, 2, 3}\\)\\)}\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" cannot be \
+transposed.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
+\\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->391175893],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"General", "::", "\<\"stop\"\>"}], ":", 
+  " ", "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"Further output of \\\\\\\"\\\", \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\(Transpose :: \\\"nmtx\\\"\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" will be suppressed \
+during this calculation.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->123581627],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ ImageSize->{79, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[3]=",
+ CellID->127416194]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["SEE ALSO",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "SeeAlsoSection",
+ CellID->1255426704],
+
+Cell[TextData[Cell[BoxData[
+ StyleBox[
+  ButtonBox["ReduceRepProduct",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Susyno/ref/ReduceRepProduct"],
+  FontFamily->"Verdana"]], "InlineFormula"]], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"DimR - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 14, 31.5781250}", "context" -> "Susyno`", 
+    "keywords" -> {"Representation", "Dimension"}, "index" -> True, "label" -> 
+    "Susyno Paclet Symbol", "language" -> "en", "paclet" -> "Susyno", 
+    "status" -> "None", "summary" -> 
+    "DimR[group, rep] Computes the dimension of the representation rep of \
+groupDimR[{group1, group2, ...}, {rep_group1, rep_group2, ...}] Computes the \
+dimensions of the representations rep_group1 of group1, rep_group2 of group2, \
+...", "synonyms" -> {}, "title" -> "DimR", "type" -> "Symbol", "uri" -> 
+    "Susyno/ref/DimR"}, "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5685, 176, 460, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->12875750]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 25971, 755}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[585, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[664, 24, 178, 5, 70, "LinkTrail"],
+Cell[845, 31, 2524, 59, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3394, 94, 47, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3444, 97, 1155, 34, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4636, 136, 580, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->116338842],
+Cell[5219, 155, 245, 9, 70, "Notes",
+ CellID->1067943069],
+Cell[5467, 166, 181, 5, 70, "Notes",
+ CellID->41030773]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[5685, 176, 460, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->12875750],
+Cell[CellGroupData[{
+Cell[6170, 193, 148, 5, 70, "ExampleSection",
+ CellID->299717603],
+Cell[6321, 200, 121, 3, 70, "ExampleText",
+ CellID->513681956],
+Cell[CellGroupData[{
+Cell[6467, 207, 174, 6, 70, "Input",
+ CellID->196926373],
+Cell[6644, 215, 158, 5, 36, "Output",
+ CellID->150879602]
+}, Open  ]],
+Cell[6817, 223, 113, 3, 70, "ExampleText",
+ CellID->45311829],
+Cell[CellGroupData[{
+Cell[6955, 230, 399, 14, 70, "Input",
+ CellID->1978605],
+Cell[7357, 246, 224, 7, 36, "Output",
+ CellID->517386451]
+}, Open  ]],
+Cell[7596, 256, 108, 3, 70, "ExampleText",
+ CellID->788],
+Cell[CellGroupData[{
+Cell[7729, 263, 752, 22, 70, "Input",
+ CellID->189750059],
+Cell[8484, 287, 128, 2, 70, "Print",
+ CellID->104694130],
+Cell[8615, 291, 715, 25, 36, "Output",
+ CellID->266597180],
+Cell[9333, 318, 109, 2, 70, "Print",
+ CellID->271783040],
+Cell[9445, 322, 284, 9, 36, "Output",
+ CellID->347434119]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9778, 337, 231, 7, 70, "ExampleSection",
+ CellID->1305812373],
+Cell[10012, 346, 278, 5, 70, "ExampleText",
+ CellID->328620293],
+Cell[CellGroupData[{
+Cell[10315, 355, 106, 5, 70, "Input",
+ CellID->174115121],
+Cell[10424, 362, 112, 2, 70, "Print",
+ CellID->310420813],
+Cell[10539, 366, 157, 5, 36, "Output",
+ CellID->38527983]
+}, Open  ]],
+Cell[10711, 374, 155, 4, 70, "ExampleText",
+ CellID->103860211],
+Cell[CellGroupData[{
+Cell[10891, 382, 349, 11, 70, "Input",
+ CellID->842154],
+Cell[11243, 395, 163, 5, 36, "Output",
+ CellID->213074828],
+Cell[11409, 402, 161, 5, 36, "Output",
+ CellID->528653519]
+}, Open  ]],
+Cell[11585, 410, 156, 4, 70, "ExampleText",
+ CellID->3898682],
+Cell[CellGroupData[{
+Cell[11766, 418, 316, 10, 70, "Input",
+ CellID->237063641],
+Cell[12085, 430, 646, 12, 70, "Message",
+ CellID->381964607],
+Cell[12734, 444, 674, 12, 70, "Message",
+ CellID->4426554],
+Cell[13411, 458, 646, 12, 70, "Message",
+ CellID->184254176],
+Cell[14060, 472, 676, 12, 70, "Message",
+ CellID->561049600],
+Cell[14739, 486, 645, 12, 70, "Message",
+ CellID->16752147],
+Cell[15387, 500, 638, 11, 70, "Message",
+ CellID->581989712],
+Cell[16028, 513, 676, 12, 70, "Message",
+ CellID->283655155],
+Cell[16707, 527, 640, 11, 70, "Message",
+ CellID->668815898],
+Cell[17350, 540, 222, 7, 36, "Output",
+ CellID->58158556],
+Cell[17575, 549, 658, 12, 70, "Message",
+ CellID->648275243],
+Cell[18236, 563, 688, 12, 70, "Message",
+ CellID->468422026],
+Cell[18927, 577, 657, 12, 70, "Message",
+ CellID->90792226],
+Cell[19587, 591, 688, 12, 70, "Message",
+ CellID->105366607],
+Cell[20278, 605, 658, 12, 70, "Message",
+ CellID->389381478],
+Cell[20939, 619, 638, 11, 70, "Message",
+ CellID->254238256],
+Cell[21580, 632, 688, 12, 70, "Message",
+ CellID->391175893],
+Cell[22271, 646, 640, 11, 70, "Message",
+ CellID->123581627],
+Cell[22914, 659, 223, 7, 36, "Output",
+ CellID->127416194]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23198, 673, 417, 12, 70, "SeeAlsoSection",
+ CellID->1255426704],
+Cell[23618, 687, 223, 6, 70, "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23878, 698, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[24300, 712, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[24466, 718, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

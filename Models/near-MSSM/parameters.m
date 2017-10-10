@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -71,7 +74,11 @@ ParameterDefinitions = {
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},   
+{PhaseGlu,  { Description -> "Gluino-Phase" }}, 
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},  
                                                                       
 {\[Kappa],   {Description -> "Singlet Self-Interaction"}},                               
 {T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 
@@ -82,10 +89,12 @@ ParameterDefinitions = {
 {vS,        { Description -> "Singlet-VEV"}},
 
 {Tad,       { LaTeX -> "\\xi",
-              LesHouches -> {HMIX,30} }},             
+              LesHouches -> {HMIX,30},
+              OutputName -> Tad }},             
 
 {L[Tad],       { LaTeX -> "L_{\\xi}",
-              LesHouches -> {HMIX,31}}}
+              LesHouches -> {HMIX,31},
+              OutputName -> LTad}}
  }; 
  
 

@@ -1,0 +1,449 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     13038,        439]
+NotebookOptionsPosition[      9842,        333]
+NotebookOutlinePosition[     11368,        377]
+CellTagsIndexPosition[     11283,        372]
+WindowTitle->PositiveRoots - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/PositiveRoots\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/PositiveRoots"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/\
+PositiveRoots.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", 
+             "Susyno/ref/PositiveRoots", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["PositiveRoots", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PositiveRoots", "[", "group", "]"}]], "InlineFormula"],
+     " \[LineSeparator]Computes the positive roots of ",
+     Cell[BoxData["group"], "InlineFormula"]
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {{None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->460707508],
+
+Cell[TextData[{
+ Cell[BoxData["group"], "InlineFormula"],
+ " should be the ",
+ ButtonBox["Cartan matrix",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Susyno/ref/CartanMatrix"],
+ " of the intended group;"
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ "The roots are given as Dynkin coefficients ",
+ Cell[BoxData[
+  RowBox[{"2", 
+   FractionBox[
+    RowBox[{
+     RowBox[{"<", 
+      RowBox[{"positive", " ", "root"}]}], ",", 
+     RowBox[{
+      SubscriptBox["\[Alpha]", "i"], ">"}]}], 
+    RowBox[{
+     RowBox[{"<", 
+      SubscriptBox["\[Alpha]", "i"]}], ",", 
+     RowBox[{
+      SubscriptBox["\[Alpha]", "i"], ">"}]}]]}]], "InlineFormula"],
+ ". See a Lie Algebra book for more information."
+}], "Notes",
+ CellID->298002273]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->34910759],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->203983083],
+
+Cell["SU(3) has 3 positive roots:", "ExampleText",
+ CellID->513681956],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PositiveRoots", "[", "SU3", "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->196926373],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"2", ",", 
+     RowBox[{"-", "1"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1"}], "}"}]}], "}"}]], "Output",
+ ImageSize->{173, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[1]=",
+ CellID->255742140]
+}, Open  ]],
+
+Cell["\<\
+Without going into details we can check two interesting facts. First, the \
+'biggest' positive root is also the highest weight of the adjoint \
+representation of the group. In practice this means that \
+adjointRep=PositiveRoots[group][[-1]] (last positive root is the biggest):\
+\>", "ExampleText",
+ CellID->294520119],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Print", "[", "\"\<Adjoint of SU(3):\>\"", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"PositiveRoots", "[", "SU3", "]"}], "[", 
+  RowBox[{"[", 
+   RowBox[{"-", "1"}], "]"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->912708148],
+
+Cell[BoxData["\<\"Adjoint of SU(3):\"\>"], "Print",
+ CellLabel->"During evaluation of In[11]:=",
+ CellID->510986299],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1"}], "}"}]], "Output",
+ ImageSize->{43, 15},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ CellLabel->"Out[2]=",
+ CellID->163963371]
+}, Open  ]],
+
+Cell["\<\
+Another thing we can check is that the dimension of the algebra (=dimension \
+of the adjoint representation) is equal to 2 #positive roots+#simple roots. \
+In practice this means that dim(group)= 2 \
+Length[PositiveRoots[group]]+Length[group]:\
+\>", "ExampleText",
+ CellID->43802990],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"dimG", "=", 
+   RowBox[{
+    RowBox[{"2", " ", 
+     RowBox[{"Length", "[", 
+      RowBox[{"PositiveRoots", "[", "SU3", "]"}], "]"}]}], "+", 
+    RowBox[{"Length", "[", "SU3", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Print", "[", 
+    RowBox[{
+    "\"\<The SU(3) algebra has \>\"", ",", "dimG", " ", ",", 
+     "\"\< elements\>\""}], "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dimG", "=", 
+   RowBox[{
+    RowBox[{"2", " ", 
+     RowBox[{"Length", "[", 
+      RowBox[{"PositiveRoots", "[", "E7", "]"}], "]"}]}], "+", 
+    RowBox[{"Length", "[", "E7", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Print", "[", 
+   RowBox[{
+   "\"\<The E(7) algebra has \>\"", ",", "dimG", " ", ",", 
+    "\"\< elements\>\""}], "]"}], ";"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->565864080],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The SU(3) algebra has \"\>", "\[InvisibleSpace]", "8", 
+   "\[InvisibleSpace]", "\<\" elements\"\>"}],
+  SequenceForm["The SU(3) algebra has ", 8, " elements"],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[240]:=",
+ CellID->616167546],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The E(7) algebra has \"\>", "\[InvisibleSpace]", "133", 
+   "\[InvisibleSpace]", "\<\" elements\"\>"}],
+  SequenceForm["The E(7) algebra has ", 133, " elements"],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[240]:=",
+ CellID->55674743]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"PositiveRoots - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 16, 5.3593750}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "PositiveRoots[group] Computes the positive roots of group", 
+    "synonyms" -> {}, "title" -> "PositiveRoots", "type" -> "Symbol", "uri" -> 
+    "Susyno/ref/PositiveRoots"}, "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5066, 159, 460, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->34910759]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 11141, 365}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[594, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[673, 24, 178, 5, 70, "LinkTrail"],
+Cell[854, 31, 2318, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3197, 88, 56, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3256, 91, 420, 12, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3713, 108, 580, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->460707508],
+Cell[4296, 127, 236, 8, 70, "Notes",
+ CellID->1067943069],
+Cell[4535, 137, 494, 17, 70, "Notes",
+ CellID->298002273]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[5066, 159, 460, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->34910759],
+Cell[CellGroupData[{
+Cell[5551, 176, 148, 5, 70, "ExampleSection",
+ CellID->203983083],
+Cell[5702, 183, 70, 1, 70, "ExampleText",
+ CellID->513681956],
+Cell[CellGroupData[{
+Cell[5797, 188, 111, 3, 70, "Input",
+ CellID->196926373],
+Cell[5911, 193, 403, 15, 36, "Output",
+ CellID->255742140]
+}, Open  ]],
+Cell[6329, 211, 328, 6, 70, "ExampleText",
+ CellID->294520119],
+Cell[CellGroupData[{
+Cell[6682, 221, 267, 8, 70, "Input",
+ CellID->912708148],
+Cell[6952, 231, 116, 2, 70, "Print",
+ CellID->510986299],
+Cell[7071, 235, 203, 7, 36, "Output",
+ CellID->163963371]
+}, Open  ]],
+Cell[7289, 245, 293, 6, 70, "ExampleText",
+ CellID->43802990],
+Cell[CellGroupData[{
+Cell[7607, 255, 908, 28, 70, "Input",
+ CellID->565864080],
+Cell[CellGroupData[{
+Cell[8540, 287, 305, 7, 70, "Print",
+ CellID->616167546],
+Cell[8848, 296, 306, 7, 70, "Print",
+ CellID->55674743]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9227, 311, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[9649, 325, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[9815, 331, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

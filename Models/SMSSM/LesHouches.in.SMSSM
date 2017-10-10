@@ -1,0 +1,32 @@
+Block MODSEL 	 #  
+1 1 	 #  
+6 1 	 # Generation Mixing 
+Block SMINPUTS 	 # Standard Model inputs 
+2 1.166390E-05 	 # G_F,Fermi constant 
+3 1.190000E-01 	 # alpha_s(MZ) SM MSbar 
+4 9.118760E+01 	 # Z-boson pole mass 
+5 4.200000E+00 	 # m_b(mb) SM MSbar 
+6 1.729000E+02 	 # m_top(pole) 
+7 1.777000E+00 	 # m_tau(pole) 
+Block MINPAR 	 # Input parameters 
+1 7.000000E+01 	  # m0
+2 4.000000E+02 	  # m12
+3 1.000000E+01 	  # TanBeta
+4 1.000000E+00 	  # SignumMu
+5 3.000000E+02 	  # Azero
+6 1.000000E+02 	  # Bzero
+7 0.000000E+01 	  # Lzero
+Block EXTPAR 	 # Input parameters 
+61 0.10000E+00 	  # LambdaInput
+62 0.80000E+00 	  # KappaInput
+63 2.000000E+02 	  # ALambdaInput
+64 3.000000E+01 	  # AKappaInput
+65 6.00000E+02 	  # vSInput
+100 0.000000E+02 	  # TadInput
+101 -1.000000E+02 	  # MSInput
+Block SPhenoInput 	  # SPheno specific input 
+1 -1 	  # error level 
+2  1 	  # SPA conventions 
+11 1 	  # calculate branching ratios 
+12 1.00000000E-04 	  # write only branching ratios larger than this value 
+21 0 	  # calculate cross section 

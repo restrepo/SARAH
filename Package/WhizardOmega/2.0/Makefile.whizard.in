@@ -1,4 +1,4 @@
-# $Id: Makefile.whizard.in 243 2010-07-04 12:42:02Z ChristianSpeckner $
+# $Id: Makefile.whizard.in 3435 2011-07-24 22:20:34Z cnspeckn $
 
 prefix = @prefix@
 install = @INSTALL@

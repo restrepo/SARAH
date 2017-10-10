@@ -4,6 +4,11 @@ ParameterDefinitions = {
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
 
+{AlphaS,    {Description -> "Alpha Strong"}},	
+
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 {e,         { Description -> "electric charge"}}, 
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
@@ -41,7 +46,12 @@ ParameterDefinitions = {
 {ZD,        { Description -> "Down-Squark-Mixing-Matrix" }},             
 {ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
 {ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
-{ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
+{ZVR,        { LaTeX -> "Z^R",
+              OutputName -> ZVR,
+              LesHouches -> SNUMIXR }},
+{ZVI,        { LaTeX -> "Z^I",
+              OutputName -> ZVI,
+              LesHouches -> SNUMIXI }},
 {ZH,        { Description->"Scalar-Mixing-Matrix"}},
 {ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix"}},
 {ZP,        { Description->"Charged-Mixing-Matrix"}},                      
@@ -56,144 +66,112 @@ ParameterDefinitions = {
 {ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
 {ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
 {ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
-{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
+{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},
+{UV,       { Description ->"Neutrino-Mixing-Matrix"}},             
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
 {PhaseGlu,  { Description -> "Gluino-Phase" }},
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
  
 
 {Yb3,       { LaTeX -> "Y_b",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> Yb3,
              LesHouches -> YB3
              }},     
 
 
 
 {Yw3,       { LaTeX -> "Y_w",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> Yw3,
              LesHouches -> YW3
              }},     
 
 
 {Yx3,       { LaTeX -> "Y_x",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> Yx3,
              LesHouches -> YX3
              }},  
 
 
 {T[Yb3],       { LaTeX -> "T_b",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> Tb3,
              LesHouches -> TB3
              }},     
 
 
 
 {T[Yw3],       { LaTeX -> "T_w",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> Tw3,
              LesHouches -> TW3
              }},     
 
 
 {T[Yx3],       { LaTeX -> "T_x",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> Tx3,
              LesHouches -> TX3
              }},  
                
 {MXM3,     { LaTeX -> "M_X",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> MXM3,
              LesHouches -> MXM3        }},                
              
 {MWM3,     { LaTeX -> "M_W",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> MWM3,
              LesHouches -> MWM3        }},              
              
 {MGM3,     { LaTeX -> "M_G",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> MGM3,
              LesHouches -> MGM3        }},             
              
 {MBM3,     { LaTeX -> "M_B",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> MBM3,
              LesHouches -> MBM3         }},  
              
              
 {B[MXM3],     { LaTeX -> "B_X",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> BXM,
              LesHouches -> BXM3     }},                
              
 {B[MWM3],     { LaTeX -> "B_W",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> BWM,
              LesHouches -> BWM3      }},                
              
              
 {B[MGM3],     { LaTeX -> "B_G",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> BGM,
              LesHouches -> BGM3     }},             
              
 {B[MBM3],     { LaTeX -> "B_B",
-             Real -> False,
-			 Dependence -> None, 
-             Value -> None, 
+             OutputName -> BBM,
              LesHouches -> BBM3        }},               
                           
 {mHw32,       { LaTeX -> "m_{W}^2",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None,
+             OutputName -> mhw2,
 	     LesHouches -> MHW32  }}, 
              
              
 {mHg32,       { LaTeX -> "m_{G}^2",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None,
+             OutputName -> mhg2,
 	     LesHouches -> MHG32}}, 
              
 {mHx32,       { LaTeX -> "m_{X}^2",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None,
+             OutputName -> mhx2,
 	     LesHouches -> MHX32}},              
 
 {mHb32,       { LaTeX -> "m_{B}^2",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None,
+             OutputName -> mhb2,
 	     LesHouches -> MHB32 }}, 
              
 {mHxb32,       { LaTeX -> "m_{\\bar{X}}^2",
-             Real -> False,
-             Dependence ->  None, 
-             Value -> None,
+             OutputName -> mxb2,
 	     LesHouches -> MHXB32 }},
 
-{MNuL,       { LaTeX -> "m_{\\nu_L}",
-	     LesHouches -> MNUL }}
+{WOp,       {Description -> "Weinberg Operator"}},
+{Q[WOp],       {Description -> "Soft Breaking Weinberg Operator"}}
+
                 
  }; 
  

@@ -13,7 +13,7 @@ ParticleDefinitions[GaugeES] = {
       {SHup, { Description -> "Charged Up-Higgs"}},                                                   
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -24,7 +24,7 @@ ParticleDefinitions[GaugeES] = {
       {HC,   { Description -> "Charged Higgsinos"}},  
 
       {SsR,  { Description -> "Singlet"}},                     
-      {S,    { Description -> "Singlino" }},
+      {FS,   { Description -> "Singlino" }},
       {Fd1,  { Description -> "Dirac Left Down-Quark"}},
       {Fd2,  { Description -> "Dirac Right Down-Quark"}},
       {Fu1,  { Description -> "Dirac Left Up-Quark"}},
@@ -33,14 +33,35 @@ ParticleDefinitions[GaugeES] = {
       {Fe2,  { Description -> "Dirac Right Electron"}},
       {Fv,   { Description -> "Neutrinos" }},
 
-      {VU,   { LaTeX -> "U" }},
-      {Fs1,  { LaTeX -> "\\tilde{S}_1"}},
-      {Fs2,  { LaTeX -> "\\tilde{S}_2"}},
-      {Fs3,  { LaTeX -> "\\tilde{S}_3"}},
+      {VU,   { LaTeX -> "U",
+               OutputName -> VU,
+               FeynArtsNr -> 10 }},
 
-      {SS1,  { LaTeX -> "S_1"}},
-      {SS2,  { LaTeX -> "S_2"}},
-      {SS3,  { LaTeX -> "S_3"}}
+      {gU,   { LaTeX -> "g_U",
+               OutputName -> gU,
+               FeynArtsNr -> 10 }},
+      {Fs1,  { LaTeX -> "\\tilde{S}_1",
+               FeynArtsNr -> 31,
+               OutputName -> Fs1}},
+      {Fs2,  { LaTeX -> "\\tilde{S}_2",
+               FeynArtsNr -> 32,
+               OutputName -> Fs2}},
+      {Fs3,  { LaTeX -> "\\tilde{S}_3",
+               FeynArtsNr -> 33,
+               OutputName -> Fs3}},
+
+      {SS1,  { LaTeX -> "S_1",
+               FeynArtsNr -> 31,
+               OutputName -> SS1}},
+      {SS2,  { LaTeX -> "S_2",
+               FeynArtsNr -> 32,
+               OutputName -> SS2}},
+      {SS3,  { LaTeX -> "S_3",
+               FeynArtsNr -> 33,
+               OutputName -> SS3}},
+      {FU,  { LaTeX -> "\\tilde{u}_1",
+               FeynArtsNr -> 10,
+               OutputName -> FU}}
 
       };
       
@@ -58,9 +79,11 @@ ParticleDefinitions[GaugeES] = {
      {Se ,  { Description -> "Sleptons"}}, 
      {Sv ,  { Description -> "Sneutrinos"}},                                 
      {hh   ,  {  Description -> "Higgs", 
-                 PDG -> {25, 35,45,55,65,75} }}, 
+                 PDG -> {25, 35,45,55,65,75},
+                 PDG.IX ->{101000001,101000002,101000003,101000004,101000005,101000006  } }}, 
      {Ah   ,  {    Description -> "Pseudo-Scalar Higgs",
-                 PDG -> {0, 36, 46,56,66,76} }},                       
+                 PDG -> {0, 36, 46,56,66,76},
+                 PDG.IX ->{0,102000001,102000002,102000003,102000004,102000005  } }},                       
       {Hpm,  { Description -> "Charged Higgs"}},                                                   
       {VP,   { Description -> "Photon"}},
  
@@ -82,7 +105,8 @@ ParticleDefinitions[GaugeES] = {
       {Glu,  { Description -> "Gluino" }},
                  
       {Chi,    {   Description -> "Neutralinos",
-                 PDG -> {1000022,1000023,1000025,1000035,1000045,1000055,1000065,1000075,1000085} }},
+                 PDG -> {1000022,1000023,1000025,1000035,1000045,1000055,1000065,1000075,1000085},
+                 PDG.IX ->{211000001,211000002,211000003,211000004,211000005,211000006,211000007,211000008,211000009} }},
                  
       {Cha,  { Description -> "Charginos"}}                                                                                          
      
@@ -93,7 +117,7 @@ ParticleDefinitions[GaugeES] = {
  WeylFermionAndIndermediate = {
        {FHd0, { Description -> "Neutral Down-Higgsino"}},      
        {FHu0, { Description -> "Neutral Up-Higgsino" }}, 
-       {FHdm, { Description -> "Charged Down-Higgsino"}},                                                                                                             
+       {FHdm, { Description -> "Charged Down-Higgsino"}}, 
        {FHup, { Description -> "Charged Up-Higgsino"}},
        {L0,   { Description -> "Neutralino Weyl-Spinor"}},
        {Lm,   { Description -> "Negative Chargino Weyl-Spinor"}},

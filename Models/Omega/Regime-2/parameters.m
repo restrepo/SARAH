@@ -4,19 +4,7 @@ ParameterDefinitions = {
              LesHouches -> {gauge,4},
              GUTnormalization -> Sqrt[3/2] }},
 	     
-{gBLgR,		{Dependenc->0,
-             LesHouches -> {gauge,10}}},
-	     
-{gRgBL,		{Dependenc->0,
-             LesHouches -> {gauge,11}}},
-
-{MassBWR0,	{Dependenc->0,
-             LesHouches -> {MSOFT,10}}},
-
-{MassWR0B,	{Dependenc->0,
-             LesHouches -> {MSOFT,11}}},
-
-                           
+                          
 {gL,       { LaTeX -> "g_L", 
              LesHouches -> {gauge,6}  }},
 
@@ -25,7 +13,7 @@ ParameterDefinitions = {
              
 {g3,       { LaTeX -> "g_3",
              LesHouches -> {gauge, 3} }},
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {Yu,       { Description -> "Up-Yukawa-Coupling"}},               
 {Yd,       { Description -> "Down-Yukawa-Coupling"}},             
 {Ye,       { Description -> "Lepton-Yukawa-Coupling"}},
@@ -37,7 +25,7 @@ ParameterDefinitions = {
 {B[\[Mu]],  { Description -> "Bmu-parameter"}}, 
 
 {fc1,       { LaTeX -> "f^1_c",
-             LesHouches ->  FC1      }},
+             LesHouches ->  FC1}},
 
 {T[fc1],    { LaTeX -> "T_{f_{c_1}}",
               LesHouches -> TFC1       }},
@@ -220,6 +208,8 @@ ParameterDefinitions = {
 	   LesHouches -> TBOM}},
 
 {vR, {LaTeX ->"v_R"}},
+
+{ZZ, {Dependence -> {{Cos[\[Xi]],Sin[\[Xi]]},{-Sin[\[Xi]],Cos[\[Xi]]} } }},
 
 
 {\[Xi],    { LaTeX -> "\\xi", 

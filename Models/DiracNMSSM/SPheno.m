@@ -1,0 +1,85 @@
+ModelName = "DiracNMSSMnuhm";
+
+MINPAR={{1,m0},
+        {2,m12},
+        {3,TanBeta},
+        {5,Azero}};
+
+EXTPAR = {
+	   {61,LambdaInput},
+	   {63,ALambdaInput},
+           {65,vSInput},
+           {66,vSbInput},
+           {70, MSinput},
+           {71, BMSinput},
+           {80, mS2input},
+           {81, mSb2input},
+           {82, mHd2input},
+           {83, mHu2input}
+	 };
+
+RealParameters = {TanBeta,m0};
+
+ParametersToSolveTadpoles = {L[tad],L[tadb],\[Mu],B[\[Mu]]};
+
+RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
+RenormalizationScale = MSu[1]*MSu[6];
+
+
+
+ConditionGUTscale = g1 == g2;
+
+BoundarySUSYScale = {
+{vS, vSinput},
+{vSb, vSbinput}
+};
+
+
+BoundaryHighScale={
+{T[Ye], Azero*Ye},
+{T[Yd], Azero*Yd},
+{T[Yu], Azero*Yu},
+{mq2, DIAGONAL m0^2},
+{ml2, DIAGONAL m0^2},
+{md2, DIAGONAL m0^2},
+{mu2, DIAGONAL m0^2},
+{me2, DIAGONAL m0^2},
+{mHd2, mHd2input},
+{mHu2,  mHu2input},
+{ms2,  mS2input},
+{msb2,  mSb2input},
+{\[Lambda], LambdaInput},
+{T[\[Lambda]], ALambdaInput*LambdaInput},
+{MS, MSinput},
+{B[MS], BMSinput},
+{MassB, m12},
+{MassWB,m12},
+{MassG,m12},
+{tad, 0},
+{tadb, 0}
+};
+
+
+
+BoundaryLowScaleInput={
+ {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+};
+
+
+
+ListDecayParticles = Automatic;
+ListDecayParticles3B = Automatic;
+
+
+UseHiggs2LoopMSSM = True;
+
+IncludeFineTuning = True;
+FineTuningParameters={
+{m0,1},{m12,1/2},{B[\[Mu]],1},{\[Mu],1/2},{L[tad],1},{L[tadb],1},{MSinput,1/2},{BMSinput,1},
+{mHd2input,1},{mHu2input,1},{mS2input,1},{mSb2input,1},{LambdaInput,1},{ALambdaInput,1/2}
+};
+
+
+
+

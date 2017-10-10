@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling",
               Form -> Diagonal,
@@ -31,7 +34,7 @@ ParameterDefinitions = {
               Form -> Diagonal}}, 
 
 {\[Mu],     { Description -> "Mu-parameter",
-              OutputName -> "Mue"}}, 
+              OutputName-> Mue}}, 
 {B[\[Mu]],  { Description -> "Bmu-parameter"}},        
 
 {mq2,       { Description -> "Softbreaking left Squark Mass",
@@ -72,59 +75,54 @@ ParameterDefinitions = {
              
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
 {PhaseGlu,  { Description -> "Gluino-Phase" }},   
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}},
        
        
 {ZD,        { LaTeX -> "Z^D",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZD, 
              LesHouches -> sdownmix			  }},
              
 {ZS,        { LaTeX -> "Z^S",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZS, 
              LesHouches -> sstrmix			  }},             
              
 {ZB,        { LaTeX -> "Z^B",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZB, 
              LesHouches -> sbotmix			  }},
      
          
              
 {ZU,        { LaTeX -> "Z^U",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZU, 
              LesHouches ->  supmix			       }},
              
          
              
 {ZC,        { LaTeX -> "Z^C",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZC, 
              LesHouches ->  scharmmix			       }},
 
 
          
              
 {ZT,        { LaTeX -> "Z^T",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZT, 
              LesHouches ->  stopmix			       }},
              
              
 {ZE,        { LaTeX -> "Z^E",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZE, 
              LesHouches -> selemix			        }}, 
              
 {ZM,        { LaTeX -> "Z^\\mu",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZM, 
              LesHouches -> smumix			        }}, 
 
 {ZTau,        { LaTeX -> "Z^\\tau",
-             Dependence ->  None, 
-             Value -> None, 
+             OutputName -> ZTau, 
              LesHouches -> staumix			        }}
              
              

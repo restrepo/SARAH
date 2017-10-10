@@ -1,48 +1,47 @@
 Off[General::spell]
-Print["Model file for the MSSM loaded"];
 
-ModelName = "MSSMNoFV2";
-ModelNameLaTeX ="MSSM without flavor violation";
+Model`Name = "MSSMNoFV2";
+Model`NameLaTeX ="MSSM without flavor violation";
+Model`Authors = "F.Staub";
+Model`Date = "2012-09-01";
+
+(* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
 
 
 (*-------------------------------------------*)
 (*   Particle Content*)
 (*-------------------------------------------*)
 
-(* Gauge Superfields *)
+(* Global symmetries *)
 
-Gauge[[1]]={B,   U[1], hypercharge, g1,False};
-Gauge[[2]]={WB, SU[2], left,        g2,True};
-Gauge[[3]]={G,  SU[3], color,       g3,False};
+Global[[1]] = {Z[2],RParity};
+RpM = {-1,-1,1};
+RpP = {1,1,-1};
+
+(* Vector Superfields *)
+
+Gauge[[1]]={B,   U[1], hypercharge, g1,False,RpM};
+Gauge[[2]]={WB, SU[2], left,        g2,True, RpM};
+Gauge[[3]]={G,  SU[3], color,       g3,False,RpM};
 
 
 (* Chiral Superfields *)
 
-Fields[[1]] = {{uL,  dL},  3, q,   1/6, 2, 3};  
-Fields[[2]] = {{vL,  eL},  3, l,  -1/2, 2, 1};
-Fields[[3]] = {{Hd0, Hdm}, 1, Hd, -1/2, 2, 1};
-Fields[[4]] = {{Hup, Hu0}, 1, Hu,  1/2, 2, 1};
+SuperFields[[1]] = {q,  3, {uL,  dL},    1/6, 2, 3, RpM};  
+SuperFields[[2]] = {l,  3, {vL,  eL},   -1/2, 2, 1, RpM};
+SuperFields[[3]] = {Hd, 1, {Hd0, Hdm},  -1/2, 2, 1, RpP};
+SuperFields[[4]] = {Hu, 1, {Hup, Hu0},   1/2, 2, 1, RpP};
 
-Fields[[5]] = {conj[dR], 3, d,  1/3, 1, -3};
-Fields[[6]] = {conj[uR], 3, u, -2/3, 1, -3};
-Fields[[7]] = {conj[eR], 3, e,    1, 1,  1};
+SuperFields[[5]] = {d, 3, conj[dR],  1/3, 1, -3, RpM};
+SuperFields[[6]] = {u, 3, conj[uR], -2/3, 1, -3, RpM};
+SuperFields[[7]] = {e, 3, conj[eR],    1, 1,  1, RpM};
 
 
 (*------------------------------------------------------*)
 (* Superpotential *)
 (*------------------------------------------------------*)
 
-         
-SuperPotential = { {{1, Yu},{u,q,Hu}}, {{-1,Yd},{d,q,Hd}},
-                   {{-1,Ye},{e,l,Hd}}, {{1,\[Mu]},{Hu,Hd}}};
-  
-
-(*-------------------------------------------*)
-(* Integrate Out or Delete Particles         *)
-(*-------------------------------------------*)
-
-IntegrateOut={};
-DeleteParticles={};
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd;
 
 
 (*----------------------------------------------*)
@@ -51,12 +50,6 @@ DeleteParticles={};
 
 NameOfStates={GaugeES, EWSB};
 
-(* ----- Before EWSB ----- *)
-
-
-DEFINITION[GaugeES][GaugeFixing]=
-		{ {Der[VWB],  -1/(2 RXi[W])},
-  		  {Der[VG],   -1/(2 RXi[G]) }};
 
 
 
@@ -65,14 +58,12 @@ DEFINITION[GaugeES][GaugeFixing]=
 
 (* Gauge Sector *)
 
-DEFINITION[EWSB][GaugeSector]= 
-{{VWB,{1,{VWm,1/Sqrt[2]},{conj[VWm],1/Sqrt[2]}},
-      {2,{VWm,-\[ImaginaryI]/Sqrt[2]},{conj[VWm],\[ImaginaryI]/Sqrt[2]}},
-      {3,{VP,Sin[ThetaW]},{VZ,Cos[ThetaW]}}},
- {VB, {1,{VP,Cos[ThetaW]},{VZ,-Sin[ThetaW]}}},
- {fWB,{1,{fWm,1/Sqrt[2]},{fWp,1/Sqrt[2]}},
-      {2,{fWm,-\[ImaginaryI]/Sqrt[2]},{fWp,\[ImaginaryI]/Sqrt[2]}},
-      {3,{fW0,1}}}};
+DEFINITION[EWSB][GaugeSector] =
+{ 
+  {{VB,VWB[3]},{VP,VZ},ZZ},
+  {{VWB[1],VWB[2]},{VWm,conj[VWm]},ZW},
+  {{fWB[1],fWB[2],fWB[3]},{fWm,fWp,fW0},ZfW}
+};   
         
         
           	
@@ -104,36 +95,40 @@ DEFINITION[EWSB][Phases]=
 {    {fG, PhaseGlu}
     }; 
 
-(*--- Gauge Fixing ---- *)
-
-DEFINITION[EWSB][GaugeFixing]=
-  {	{Der[VP],                                            - 1/(2 RXi[P])},	
-	{Der[VWm]+\[ImaginaryI] Mass[VWm] RXi[W] Hpm[{1}],   - 1/(RXi[W])},
-	{Der[VZ] - Mass[VZ] RXi[Z] Ah[{1}],                  - 1/(2 RXi[Z])},
-	{Der[VG],                                            - 1/(2 RXi[G])}};
-
 
 (*------------------------------------------------------*)
 (* Dirac-Spinors *)
 (*------------------------------------------------------*)
 
-dirac[[1]] = {Fd,  FdL, FdR};
-dirac[[2]] = {Fe,  FeL, FeR};
-dirac[[3]] = {Fu,  FuL, FuR};
-dirac[[4]] = {Fv,  FvL, 0};
-dirac[[5]] = {Chi, L0, conj[L0]}; 
-dirac[[6]] = {Cha, Lm, conj[Lp]};
-dirac[[7]] = {Glu, fG, conj[fG]}; 
 
+DEFINITION[GaugeES][DiracSpinors]={
+Bino ->{  fB, conj[fB]},
+Wino ->{ fWB, conj[fWB]},
+H0 ->{ FHd0, conj[FHu0]},
+HC ->{ FHdm, conj[FHup]},
+Fd1 ->{ FdL, 0},
+Fd2 ->{ 0, FdR},
+Fu1 ->{ FuL, 0},
+Fu2 ->{ 0, FuR},
+Fe1 ->{ FeL, 0},
+Fe2 ->{ 0, FeR},
+Fv ->{ FvL,0},
+Glu ->{ fG, conj[fG]}
+};
 
-(* Unbroken EW *)
-
-dirac[[8]] = {Bino, fB, conj[fB]};
-dirac[[9]] = {Wino, fWB, conj[fWB]};
-dirac[[10]] = {H0, FHd0, conj[FHu0]};
-dirac[[11]] = {HC, FHdm, conj[FHup]};
+DEFINITION[EWSB][DiracSpinors]={
+ Fd ->{  FdL, FdR},
+ Fe ->{  FeL, FeR},
+ Fu ->{  FuL, FuR},
+ Fv ->{  FvL, 0},
+ Chi ->{ L0, conj[L0]},
+ Cha ->{ Lm, conj[Lp]},
+ Glu ->{ fG, conj[fG]}
+};
 
 
 SpectrumFile=None;
 
+(* Model not supported by SPheno *)
+SetOptions[MakeAll, IncludeSPheno->False];
 

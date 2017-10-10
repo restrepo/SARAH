@@ -1,0 +1,815 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     25815,        805]
+NotebookOptionsPosition[     22776,        706]
+NotebookOutlinePosition[     24335,        751]
+CellTagsIndexPosition[     24250,        746]
+WindowTitle->Error 06 - Wolfram Mathematica
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[" ", "SymbolColorBar",
+ CellMargins->{{Inherited, Inherited}, {-5, 0}}],
+
+Cell[TextData[{
+ ButtonBox["Mathematica",
+  BaseStyle->{"Link", "LinkTrail"},
+  ButtonData->"paclet:Susyno/guide/Susyno"],
+ StyleBox[" > ", "LinkTrailSeparator"]
+}], "LinkTrail"],
+
+Cell[BoxData[GridBox[{
+   {Cell["SUSYNO PACLET SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"Tutorials \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Susyno/tutorial/SusynoTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox["\<\"URL \[RightGuillemet]\"\>",
+        StripOnInput->False], {"\<\"Susyno/ref/Error06\"\>":>
+       None, "\<\"Copy Mathematica url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Susyno/ref/Error06"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web url\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/mathematica/Susyno/ref/Error06.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web url\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+            "http://reference.wolfram.com/mathematica/", "Susyno/ref/Error06",
+              ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Error 06", "ObjectName",
+ CellID->1224892054],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Error", " ", "06"}]], "InlineFormula"],
+     " \[LineSeparator]This error message is generated when some \
+representation of some simple gauge group is not valid"
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "ColumnsIndexed" -> {}, "Rows" -> {{None}}, 
+   "RowsIndexed" -> {}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[
+  FrameBox[
+   StyleBox[
+    RowBox[{"MORE", " ", "INFORMATION"}], "NotesFrameText"],
+   StripOnInput->False],
+  Appearance->{Automatic, None},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->417804582],
+
+Cell[TextData[{
+ "Representations of simple gauge groups are specified by their Dynkin \
+coefficients. These are a list of list of non-negative integers. The size of \
+this list is called the group rank and is the same as ",
+ Cell[BoxData[
+  RowBox[{"Length", "[", "group", "]"}]], "InlineFormula"],
+ " for some a given simple group."
+}], "Notes",
+ CellID->1067943069]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["EXAMPLES",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->25328307],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection",
+ CellID->124381603],
+
+Cell["\<\
+The highlighted line is wrong (aaa in not a non-negative integer):\
+\>", "ExampleText",
+ CellID->340568843],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"norm", "=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Q", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"u", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"L", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"e", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  StyleBox[
+   RowBox[{
+    RowBox[{"Hd", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "aaa", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], ";"}],
+   Background->RGBColor[1., 0.7254901960784313, 0.7254901960784313]], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"model", "=", 
+    RowBox[{"{", 
+     RowBox[{
+     "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BetaFunctions2L", "[", "model", "]"}], ";"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->127042558],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox[
+    ButtonBox[
+     PaneSelectorBox[{False->"\<\"[ERROR CODE 06]\"\>", True->
+      StyleBox["\<\"[ERROR CODE 06]\"\>", "HyperlinkActive"]}, Dynamic[
+       CurrentValue["MouseOver"]],
+      BaseStyle->{"Hyperlink"},
+      BaselinePosition->Baseline,
+      FrameMargins->0,
+      ImageSize->Automatic],
+     BaseStyle->"Link",
+     ButtonData->"paclet:Susyno/ref/Error06",
+     ButtonNote->"paclet:Susyno/ref/Error06"],
+    Annotation[#, "paclet:Susyno/ref/Error06", "Hyperlink"]& ], 
+   "\[InvisibleSpace]", "\<\" \\\"\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", "aaa", "}"}], "\[InvisibleSpace]", "\<\"\\\" of \"\>", 
+   "\[InvisibleSpace]", 
+   StyleBox["\<\"field #\"\>",
+    StripOnInput->False,
+    FontWeight->Bold], "\[InvisibleSpace]", 
+   StyleBox["7",
+    StripOnInput->False,
+    FontWeight->Bold], 
+   "\[InvisibleSpace]", "\<\" is not a valid representation of simple group #\
+\"\>", "\[InvisibleSpace]", "1", "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm[
+   Hyperlink["[ERROR CODE 06]", "paclet:Susyno/ref/Error06"], 
+   " \"", {$CellContext`aaa}, "\" of ", 
+   Style["field #", Bold], 
+   Style[7, Bold], " is not a valid representation of simple group #", 1, "."],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[43]:=",
+ CellID->686931979]
+}, Open  ]],
+
+Cell["\<\
+The highlighted line is wrong ({-2,0} is not a list of non-negative integers):\
+\>", "ExampleText",
+ CellID->95388868],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"norm", "=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Q", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"u", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"L", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"e", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  StyleBox[
+   RowBox[{
+    RowBox[{"Hd", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "0", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "2"}], ",", "0"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], ";"}],
+   Background->RGBColor[1., 0.7254901960784313, 0.7254901960784313]], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"model", "=", 
+    RowBox[{"{", 
+     RowBox[{
+     "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BetaFunctions2L", "[", "model", "]"}], ";"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->327234172],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox[
+    ButtonBox[
+     PaneSelectorBox[{False->"\<\"[ERROR CODE 06]\"\>", True->
+      StyleBox["\<\"[ERROR CODE 06]\"\>", "HyperlinkActive"]}, Dynamic[
+       CurrentValue["MouseOver"]],
+      BaseStyle->{"Hyperlink"},
+      BaselinePosition->Baseline,
+      FrameMargins->0,
+      ImageSize->Automatic],
+     BaseStyle->"Link",
+     ButtonData->"paclet:Susyno/ref/Error06",
+     ButtonNote->"paclet:Susyno/ref/Error06"],
+    Annotation[#, "paclet:Susyno/ref/Error06", "Hyperlink"]& ], 
+   "\[InvisibleSpace]", "\<\" \\\"\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "2"}], ",", "0"}], "}"}], 
+   "\[InvisibleSpace]", "\<\"\\\" of \"\>", "\[InvisibleSpace]", 
+   StyleBox["\<\"field #\"\>",
+    StripOnInput->False,
+    FontWeight->Bold], "\[InvisibleSpace]", 
+   StyleBox["7",
+    StripOnInput->False,
+    FontWeight->Bold], 
+   "\[InvisibleSpace]", "\<\" is not a valid representation of simple group #\
+\"\>", "\[InvisibleSpace]", "2", "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm[
+   Hyperlink["[ERROR CODE 06]", "paclet:Susyno/ref/Error06"], " \"", {-2, 0}, 
+   "\" of ", 
+   Style["field #", Bold], 
+   Style[7, Bold], " is not a valid representation of simple group #", 2, "."],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[53]:=",
+ CellID->399589811]
+}, Open  ]],
+
+Cell["\<\
+The highlighted line is wrong. This is because {0,0,1} is not a valid \
+representation of SU(3), since SU(3) has group rank 2 (Length[SU2]=2). \
+Therefore the representations of SU(3) are lists of 2 non-negative integers:\
+\>", "ExampleText",
+ CellID->905490],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"norm", "=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"3", "/", "5"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Q", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{"1", "/", "6"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"u", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "->", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{"1", "/", "3"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"L", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "/", "2"}], " ", "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"e", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", "norm"}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "3"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", 
+      RowBox[{"-", "1"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Hu", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"U1", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], "norm"}]}], " ", ",", 
+     RowBox[{"SU2", "->", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"SU3", "->", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+     RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  StyleBox[
+   RowBox[{
+    RowBox[{"Hd", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"U1", "\[Rule]", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "2"}], "norm"}]}], " ", ",", 
+       RowBox[{"SU2", "->", 
+        RowBox[{"{", "0", "}"}]}], ",", 
+       RowBox[{"SU3", "->", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0", ",", "1"}], "}"}]}], ",", 
+       RowBox[{"NFlavours", "\[Rule]", "1"}], ",", 
+       RowBox[{"DiscreteSym", "\[Rule]", "1"}]}], "}"}]}], ";"}],
+   Background->RGBColor[1., 0.7254901960784313, 0.7254901960784313]], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"model", "=", 
+    RowBox[{"{", 
+     RowBox[{
+     "Q", ",", "u", ",", "d", ",", "L", ",", "e", ",", "Hu", ",", "Hd"}], 
+     "}"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BetaFunctions2L", "[", "model", "]"}], ";"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->20056095],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox[
+    ButtonBox[
+     PaneSelectorBox[{False->"\<\"[ERROR CODE 06]\"\>", True->
+      StyleBox["\<\"[ERROR CODE 06]\"\>", "HyperlinkActive"]}, Dynamic[
+       CurrentValue["MouseOver"]],
+      BaseStyle->{"Hyperlink"},
+      BaselinePosition->Baseline,
+      FrameMargins->0,
+      ImageSize->Automatic],
+     BaseStyle->"Link",
+     ButtonData->"paclet:Susyno/ref/Error06",
+     ButtonNote->"paclet:Susyno/ref/Error06"],
+    Annotation[#, "paclet:Susyno/ref/Error06", "Hyperlink"]& ], 
+   "\[InvisibleSpace]", "\<\" \\\"\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "1"}], "}"}], 
+   "\[InvisibleSpace]", "\<\"\\\" of \"\>", "\[InvisibleSpace]", 
+   StyleBox["\<\"field #\"\>",
+    StripOnInput->False,
+    FontWeight->Bold], "\[InvisibleSpace]", 
+   StyleBox["7",
+    StripOnInput->False,
+    FontWeight->Bold], 
+   "\[InvisibleSpace]", "\<\" is not a valid representation of simple group #\
+\"\>", "\[InvisibleSpace]", "2", "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm[
+   Hyperlink["[ERROR CODE 06]", "paclet:Susyno/ref/Error06"], " \"", {0, 0, 
+   1}, "\" of ", 
+   Style["field #", Bold], 
+   Style[7, Bold], " is not a valid representation of simple group #", 2, "."],
+  Editable->False]], "Print",
+ CellLabel->"During evaluation of In[63]:=",
+ CellID->157475194]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[ButtonBox["TUTORIALS",
+ BaseStyle->None,
+ Appearance->{Automatic, None},
+ Evaluator->None,
+ Method->"Preemptive",
+ ButtonFunction:>(FrontEndExecute[{
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], All, ButtonCell], 
+    FrontEndToken["OpenCloseGroup"], 
+    FrontEnd`SelectionMove[
+     FrontEnd`SelectedNotebook[], After, 
+     CellContents]}]& )]], "TutorialsSection",
+ CellID->250839057],
+
+Cell[TextData[ButtonBox["Susyno Tutorial",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Susyno/tutorial/SusynoTutorial"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 566},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Error 06 - Wolfram Mathematica",
+TaggingRules->{
+ "ModificationHighlight" -> False, 
+  "Metadata" -> {
+   "built" -> "{2012, 3, 2, 12, 15, 10.4687500}", "context" -> "Susyno`", 
+    "keywords" -> {}, "index" -> True, "label" -> "Susyno Paclet Symbol", 
+    "language" -> "en", "paclet" -> "Susyno", "status" -> "None", "summary" -> 
+    "Error 06 This error message is generated when some representation of \
+some simple gauge group is not valid", "synonyms" -> {}, "title" -> 
+    "Error 06", "type" -> "Symbol", "uri" -> "Susyno/ref/Error06"}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "7.0 for Microsoft Windows (32-bit) (February 18, 2009)",
+   StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[4671, 140, 460, 13, 70, "PrimaryExamplesSection",
+   CellTags->"PrimaryExamplesSection",
+   CellID->25328307]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 24108, 739}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[589, 21, 76, 1, 70, "SymbolColorBar"],
+Cell[668, 24, 178, 5, 70, "LinkTrail"],
+Cell[849, 31, 2293, 53, 70, "AnchorBarGrid",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3167, 88, 51, 1, 70, "ObjectName",
+ CellID->1224892054],
+Cell[3221, 91, 425, 12, 70, "Usage",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3683, 108, 580, 17, 70, "NotesSection",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->417804582],
+Cell[4266, 127, 368, 8, 70, "Notes",
+ CellID->1067943069]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[4671, 140, 460, 13, 70, "PrimaryExamplesSection",
+ CellTags->"PrimaryExamplesSection",
+ CellID->25328307],
+Cell[CellGroupData[{
+Cell[5156, 157, 148, 5, 70, "ExampleSection",
+ CellID->124381603],
+Cell[5307, 164, 117, 3, 70, "ExampleText",
+ CellID->340568843],
+Cell[CellGroupData[{
+Cell[5449, 171, 4021, 124, 70, "Input",
+ CellID->127042558],
+Cell[9473, 297, 1338, 34, 70, "Print",
+ CellID->686931979]
+}, Open  ]],
+Cell[10826, 334, 128, 3, 70, "ExampleText",
+ CellID->95388868],
+Cell[CellGroupData[{
+Cell[10979, 341, 4045, 125, 70, "Input",
+ CellID->327234172],
+Cell[15027, 468, 1371, 36, 70, "Print",
+ CellID->399589811]
+}, Open  ]],
+Cell[16413, 507, 269, 5, 70, "ExampleText",
+ CellID->905490],
+Cell[CellGroupData[{
+Cell[16707, 516, 4028, 124, 70, "Input",
+ CellID->20056095],
+Cell[20738, 642, 1362, 35, 70, "Print",
+ CellID->157475194]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22161, 684, 419, 12, 70, "TutorialsSection",
+ CellID->250839057],
+Cell[22583, 698, 151, 3, 70, "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+Cell[22749, 704, 23, 0, 70, "FooterCell"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

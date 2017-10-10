@@ -51,6 +51,9 @@
      Case(12) ! minimal value such that a branching ratio is written out
       Call SetWriteMinBR(wert)
 
+     Case(13) ! minimal value such that a branching ratio is written out
+      If (wert.Eq.0) Enable3BDecays = .False.    
+
      Case(21)  ! whether to calculate cross sections or not
       If (Int(wert).Eq.1) L_CS = .True.
       If (Int(wert).Eq.0) L_CS = .False.
@@ -179,11 +182,72 @@
        IgnoreNegativeMassesMZ=.True.
       End If
 
+     Case(54)
+      If (wert.Ne.1._dp) Then
+       WriteOutputForNonConvergence=.False.
+      Else
+       WriteOutputForNonConvergence=.True.
+      End If
 
-     Case(60) ! exit for sure with non-zero value if a problem occurs
+     Case(55)
+      If (wert.Ne.0._dp) Then
+       CalculateOneLoopMasses=.True.
+      Else
+       CalculateOneLoopMasses=.False.
+      End If
+
+     Case(56)
+      If (wert.Ne.0._dp) Then
+       CalculateTwoLoopHiggsMasses=.True.
+      Else
+       CalculateTwoLoopHiggsMasses=.False.
+      End If
+
+     Case(57)
+      If (wert.Ne.0._dp) Then
+       CalculateLowEnergy=.True.
+      Else
+       CalculateLowEnergy=.False.
+      End If
+
+     Case(58)
+      If (wert.Ne.0._dp) Then
+       IncludeDeltaVB=.True.
+      Else
+       IncludeDeltaVB=.False.
+      End If
+
+     Case(60)
+      If (wert.Ne.0._dp) Then
+       KineticMixing=.True.
+      Else
+       KineticMixing=.False.
+      End If
+
+     Case(62)
+      If (wert.Ne.1._dp) Then
+       IgnoreMuSignFlip=.False.
+      Else
+       IgnoreMuSignFlip=.True.
+      End If
+
+
+     Case(65)
+      If (wert.gt.0) SolutionTadpoleNr = wert 
+
+     Case(72)
+      If (wert.Ne.0._dp) Then
+       WriteGUTvalues=.True.
+      Else
+       WriteGUTvalues=.False.
+      End If
+
+
+     Case(75) ! Writes the parameter file for WHIZARD
+      If (wert.Eq.1) Write_WHIZARD = .True.     
+
+     Case(76) ! Writes input files for HiggsBounfs
       If (wert.Eq.1) Write_HiggsBounds = .True.      
-
-
 
      Case(80) ! exit for sure with non-zero value if a problem occurs
       If (wert.Eq.1) Non_Zero_Exit = .True.      

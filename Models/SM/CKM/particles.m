@@ -1,7 +1,6 @@
 
 ParticleDefinitions[GaugeES] = {
-      {SH0,  { RParity -> 1,  
-                 PDG -> 0,
+      {H0,  {   PDG -> {0},
                  Width -> 0, 
                  Mass -> Automatic,
                  FeynArtsNr -> 1,
@@ -9,8 +8,7 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "H0" }},                         
       
       
-      {SHm,  { RParity -> 1,  
-                 PDG -> 0,
+      {Hp,  {   PDG -> {0},
                  Width -> 0, 
                  Mass -> Automatic,
                  FeynArtsNr -> 2,
@@ -21,7 +19,7 @@ ParticleDefinitions[GaugeES] = {
     
       {VB,   { Description -> "B-Boson"}},                                                   
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Boson"}},          
+      {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},
@@ -41,16 +39,16 @@ ParticleDefinitions[GaugeES] = {
   ParticleDefinitions[EWSB] = {
             
       
-    {hh   ,  { RParity -> 1,  
-                 PDG -> {25},
+    {hh   ,  {   PDG -> {25},
+                 PDG.IX ->{101000001},
                  Width -> {0, 0}, 
                  Mass ->LesHouches,
                  FeynArtsNr -> 1,
                  LaTeX -> "h",
                  OutputName -> "h" }}, 
                  
-     {Ah   ,  { RParity -> 1,  
-                 PDG -> {0},
+     {Ah   ,  {  PDG -> {0},
+                 PDG.IX ->{0},
                  Width -> {0, 0}, 
                  Mass ->LesHouches,
                  FeynArtsNr -> 2,
@@ -58,23 +56,23 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "Ah" }},                       
       
       
-      {SHm,     { RParity -> 1,  
-                 PDG -> {0},
+      {Hp,     { PDG -> {0},
+                 PDG.IX ->{0},
                  Width -> 0, 
                  Mass ->LesHouches,
                  FeynArtsNr -> 3,
-                 LaTeX -> "H^-",
-                 OutputName -> "Hm" }},                                                             
+                 LaTeX -> "H^+",
+                 OutputName -> "Hp" }},                                                             
       
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson" }}, 
       {VG,   { Description -> "Gluon" }},          
-      {VWm,  { Description -> "W-Boson" }},         
+      {VWp,  { Description -> "W+ - Boson" }},         
       {gP,   { Description -> "Photon Ghost"}},                                                   
-      {gWm,  { Description -> "Negative W-Boson Ghost"}}, 
-      {gWmC, { Description -> "Positive W-Boson Ghost" }}, 
+      {gWp,  { Description -> "Positive W+ - Boson Ghost"}}, 
+      {gWpC, { Description -> "Negative W+ - Boson Ghost" }}, 
       {gZ,   { Description -> "Z-Boson Ghost" }},
-      {gG,   { Description -> "Gluon Ghost" }},          
+      {gG,   { Description -> "Gluon Ghost" }},               
                                
                  
       {Fd,   { Description -> "Down-Quarks"}},   
@@ -88,8 +86,7 @@ ParticleDefinitions[GaugeES] = {
         
  WeylFermionAndIndermediate = {
      
-    {SH,      { RParity -> 1,  
-                 PDG -> 0,
+    {SH,      {  PDG -> {0},
                  Width -> 0, 
                  Mass -> Automatic,
                  LaTeX -> "H",

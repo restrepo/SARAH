@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -29,6 +32,8 @@ ParameterDefinitions = {
 {mHd2,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
 {mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
 
+{mlHd2,  { Description -> "Soft-breaking Higgs Slepton Mixing Term"}},
+
 {MassB,     { Description -> "Bino Mass parameter"}},
 {MassWB,    { Description -> "Wino Mass parameter"}},
 {MassG,     { Description -> "Gluino Mass parameter"}},
@@ -47,20 +52,26 @@ ParameterDefinitions = {
 {ZH,        { Description->"Scalar-Mixing-Matrix",
 				  Dependence->None,
   				  DependenceOptional->None,
-  				  DependenceNum->None}},
+  				  DependenceNum->None,
+                                  LesHouches -> RVHMIX}},
 {ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix",
 				  Dependence->None,
   				  DependenceOptional->None,
-  				  DependenceNum->None}},
+  				  DependenceNum->None,
+                                  LesHouches -> RVAMIX}},
 {ZP,        { Description->"Charged-Mixing-Matrix",
 				  Dependence->None,
   				  DependenceOptional->None,
-  				  DependenceNum->None}},                      
+  				  DependenceNum->None,
+                                  LesHouches -> RVLMIX}},                      
                                           
  
-{ZN,        { Description->"Neutralino Mixing-Matrix" }}, 
-{UP,        { Description->"Chargino-plus Mixing-Matrix"}}, 
-{UM,        { Description->"Chargino-minus Mixing-Matrix"}}, 
+{ZN,        { Description->"Neutrino-Mixing-Matrix",
+              LesHouches -> RVNMIX }}, 
+{UP,        { Description->"Right-Lepton-Mixing-Matrix",
+              LesHouches -> RVVMIX}}, 
+{UM,        { Description->"Left-Lepton-Mixing-Matrix",
+              LesHouches -> RVUMIX}}, 
 
                    
 {ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
@@ -69,21 +80,23 @@ ParameterDefinitions = {
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},  
+{PhaseGlu,  { Description -> "Gluino-Phase" }}, 
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}}, 
 
 {\[Epsilon], { Description -> "Bilinear RpV-Parameter"}}, 
 {B[\[Epsilon]], { Description -> "Softbreaking Bilinear RpV-Parameter" }},
 
 {L1, { LaTeX -> "\\lambda_1",
              LesHouches ->  RVLAMLLE,
-             Symmetry -> AntiSymmetric,
 	     OutputName -> L1}},
 {L2, { LaTeX -> "\\lambda_2",
              LesHouches ->  RVLAMLQD,
 	     OutputName -> L2}},
 {T[L1], { LaTeX -> "T_{\\lambda_1}",
              LesHouches ->  RVTLLE,
-             Symmetry -> AntiSymmetric,
 	     OutputName -> T1}},
 {T[L2], { LaTeX -> "T_{\\lambda_2}",
              LesHouches ->  RVTLQD,

@@ -1,0 +1,19 @@
+__date__ = "17 October 2011"
+__author__ = "florian.staub@cern.ch"
+
+import cmath
+from object_library import all_functions, Function
+
+
+# complex conjugation
+
+conj = Function(name = 'conj',
+           arguments = ('z',),
+          expression = 'z.conjugate()')
+
+
+
+
+
+
+

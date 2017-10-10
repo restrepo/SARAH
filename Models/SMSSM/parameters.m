@@ -3,8 +3,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
-
+{AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
+{Gf,        { Description -> "Fermi's constant"}},
+{aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
+
 
 {Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
 {Yd,        { Description -> "Down-Yukawa-Coupling"}},
@@ -71,7 +74,11 @@ ParameterDefinitions = {
 {ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
               
 {ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},   
+{PhaseGlu,  { Description -> "Gluino-Phase" }},  
+
+{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix" }},
+{ZfW, {Description ->    "Wino Mixing Matrix"}}, 
                                                                       
 {\[Kappa],   {Description -> "Singlet Self-Interaction"}},                               
 {T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 
@@ -87,17 +94,25 @@ ParameterDefinitions = {
               Dependence -> None}},                          
               
 {L1,        { Description -> "Tadpole Term",
-              LaTeX -> "L_1"}},              
+	      LesHouches -> {HMIX,30},
+              LaTeX -> "L_1",
+              OutputName->L1}},              
 
 {MS,        { Description -> "Singlet Mass Term",
-              LaTeX -> "M_S"}}, 
+              LesHouches -> {HMIX,31},
+              LaTeX -> "M_S",
+              OutputName->MS}}, 
 
 
 {L[L1],        { Description -> "Softbreaking Tadpole Term",
-              LaTeX -> "\\xi_1"}},              
+              LesHouches -> {HMIX,32},
+              LaTeX -> "\\xi_1",
+              OutputName->LL1}},              
 
 {B[MS],        { Description -> "Softbreaking Singlet Mass Term",
-              LaTeX -> "B_S"}} 
+			  LesHouches -> {HMIX,33},
+              LaTeX -> "B_S",
+              OutputName->BMS}} 
 
 
  }; 
