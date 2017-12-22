@@ -123,7 +123,7 @@ DEFINITION[EWSB][MatterSector]=
      {{sigmad, sigmau, sigmaS}, {Ah, ZA}},
      {{SHdm,conj[SHup]},{Hpm,ZP}},
      {{fB, fW0, FHd0, FHu0, FsR}, {L0, ZN}},
-     {{FvL,FvR,Fx}, {FV, UV}},  
+     {{FvL,conj[FvR],Fx}, {FV, UV}},  
      {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
      {{{FeL},{conj[FeR]}},{{FEL,ZEL},{FER,ZER}}},
      {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},

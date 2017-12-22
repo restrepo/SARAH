@@ -601,6 +601,132 @@ Return[{Flatten[sub],fac}];
 SA`DimensionGG[x_,y_]:=SA`DimensionGG[(x/. diracSub[ALL])[[1]],y]/;FreeQ[diracFermions[ALL],x]==False
 
 
+(*---------------------------*)
+(* SU(4) Algebra *)
+(*---------------------------*)
+
+LambdaPS=Table[0,{15},{4},{4}];
+LambdaPS[[1;;8,1;;3,1;;3]]=Lambda;
+LambdaPS[[9,1,4]]=1;
+LambdaPS[[9,4,1]]=1;
+LambdaPS[[12,1,4]]=-I;
+LambdaPS[[12,4,1]]=I;
+LambdaPS[[10,4,2]]=1;
+LambdaPS[[10,2,4]]=1;
+LambdaPS[[13,2,4]]=-I;
+LambdaPS[[13,4,2]]=I;
+LambdaPS[[11,4,3]]=1;
+LambdaPS[[11,3,4]]=1;
+LambdaPS[[14,3,4]]=-I;
+LambdaPS[[14,4,3]]=I;
+LambdaPS[[15]]=DiagonalMatrix[{1,1,1,-3}]/Sqrt[6];
+
+
+(*In the file MathSumMatrizes,there is a definition fSU4[a_Integer,b_Integer,c_Integer]:=fPS[[a,b,c]],so fPS should be a table!!*)
+fPS=Table[-1/4*I Tr[ConjugateTranspose[LambdaPS[[a]]].(LambdaPS[[b]].LambdaPS[[c]]-LambdaPS[[c]].LambdaPS[[b]])],{a,1,15},{b,1,15},{c,1,15}];
+
+(*Replace SU(4) generators by SU(3) ones and Kroneckers*)
+
+LamPS[8+a_Symbol,b_Symbol,c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j1}]=={};
+LamPS[11+a_Symbol,b_Symbol,c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j1}]=={};
+
+LamPS[8+a_Symbol,b_Symbol,c_Symbol]:=0/;Complement[{a},{ct1,ct2,ct3,ct4}]=={}&&Complement[{b,c},{j1,j2,j3,j4}]=={};
+LamPS[11+a_Symbol,b_Symbol,c_Symbol]:=0/;Complement[{a},{ct1,ct2,ct3,ct4}]=={}&&Complement[{b,c},{j1,j2,j3,j4}]=={};
+
+(*Back to sef-adjoint generators*)
+LamPS[8+a_Symbol,b_Symbol,4]:=1/2*Delta[b,a];
+LamPS[8+a_Symbol,4,b_Symbol]:=1/2*Delta[b,a];
+
+LamPS[11+a_Symbol,b_Symbol,4]:=-1/2*I*Delta[b,a];
+LamPS[11+a_Symbol,4,b_Symbol]:=1/2*I*Delta[b,a];
+
+LamPS[15,a_Symbol,b_Symbol]:=1/(2 Sqrt[6]) Delta[a,b];LamPS[15,4,a_Symbol]:=0;LamPS[15,a_Symbol,4]:=0;
+
+LamPS[a_,b_,c_]:=Lam[a,b,c]/2/;(a===col1||a===col2||a===col3||a===col4);
+
+(*what is zero for sure*)
+LamPS[11+col3,col1,col2]=0;
+LamPS[11+col3,col2,col1]=0;
+LamPS[8+col3,col2,col1]=0;
+LamPS[8+col3,col1,col2]=0;
+Delta[4,col1]=0;
+Delta[4,col1b]=0;
+Delta[4,col2]=0;
+Delta[4,col2b]=0;
+Delta[4,col3]=0;
+Delta[4,col3b]=0;
+LamPS[8+a_,4,4]=0;
+LamPS[11+a_,4,4]=0;
+
+Lam[a_,4,b_]:=0;
+Lam[a_,b_,4]:=0;
+
+sum[a_,1,3,Lam[b_,a_,a_]]:=0;
+
+sum[j1,1,15,fSU4[j1,c1_,a_Integer+c3_] fSU4[j1,c2_,b_Integer+c4_]]:=sum[j2,1,8,fSU4[j2,c1,a+c3] fSU4[j2,c2,b+c4]]+sum[j2,1,3,fSU4[8+j2,c1,a+c3] fSU4[8+j2,c2,b+c4]]
++sum[j2,1,3,fSU4[11+j2,c1,a+c3] fSU4[11+j2,c2,b+c4]]/;Complement[{c1,c2,c3,c4},{ct1,ct2,ct3,ct4}]=={}
+
+sum[j1,1,15,fSU4[j1,a_Integer+c1_,b_Integer] fSU4[j1,c2_+c_Integer,d_Integer]]:=sum[j2,1,8,fSU4[j2,a+c1,b] fSU4[j2,c2+c,d]]+sum[j2,1,3,fSU4[j2+8,a+c1,b] fSU4[j2+8,c2+c,d]]+sum[j2,1,3,fSU4[j2+11,a+c1,b] fSU4[j2+11,c2+c,d]]+fSU4[15,a+c1,b] fSU4[15,c2+c,d]/;Complement[{c1,c2},{ct1,ct2,ct3,ct4}]=={}
+
+
+sum[j1,1,15,fSU4[j1,c1_,c3_] fSU4[j1,a_Integer+c2_,b_Integer+c4_]]:=sum[j2,1,8,fSU4[j2,c1,c3] fSU4[j2,a+c2,b+c4]]+sum[j2,1,3,fSU4[8+j2,c1,c3] fSU4[8+j2,a+c2,b+c4]]
++sum[j2,1,3,fSU4[11+j2,c1,c3] fSU4[11+j2,a+c2,b+c4]]/;Complement[{c1,c2,c3,c4},{ct1,ct2,ct3,ct4}]=={}
+
+
+sum[j1,1,15,fSU4[j1,c1_,c3_] fSU4[j1,c2_,c4_]]:=sum[j2,1,8,fSU3[j2,c1,c3] fSU3[j2,c2,c4]]/;Complement[{c1,c2,c3,c4},{ct1,ct2,ct3,ct4}]=={};
+
+
+fSU4[a_Symbol,b_Symbol,c_Symbol+8]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[a_Symbol,b_Symbol,c_Symbol+11]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+
+fSU4[g_Symbol,8+a_Symbol,8+b_Symbol]:=I (Lam[g,a,b]/4-conj[Lam[g,a,b]/4])/;Complement[{a,b,g},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[g_Symbol,11+a_Symbol,11+b_Symbol]:=I (Lam[g,a,b]/4-conj[Lam[g,a,b]/4])/;Complement[{a,b,g},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[g_Symbol,8+a_Symbol,11+b_Symbol]:=-Lam[g,a,b]/4-conj[Lam[g,a,b]/4]/;Complement[{a,b,g},{ct1,ct2,ct3,ct4,j2}]=={};
+
+
+(*a,b color indices*)
+fSU4[8+a_Symbol,8+b_Symbol,15]:=0/;Complement[{a,b},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[11+a_Symbol,11+b_Symbol,15]:=0/;Complement[{a,b},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[8+a_Symbol,11+b_Symbol,15]:=Sqrt[2/3]*Delta[a,b]/;Complement[{a,b},{ct1,ct2,ct3,ct4,j2}]=={};
+
+(*a,b color indices*)
+fSU4[8+a_Symbol,8+b_Symbol,14+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2,col1}]=={};
+fSU4[11+a_Symbol,11+b_Symbol,14+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2,col1}]=={};
+fSU4[8+a_Symbol,11+b_Symbol,14+c_Symbol]:=Sqrt[2/3]*Delta[a,b]*Delta[c,1]/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[8+a_Symbol,11+b_Symbol,14+c_Symbol]:=Sqrt[2/3]*Delta[a,b]/;(Complement[{a,b},{ct1,ct2,ct3,ct4,j2}]=={}&&c===col1);
+
+(*a,b,c color indices running from 1 to 3*)
+fSU4[8+a_Symbol,8+b_Symbol,8+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[8+a_Symbol,8+b_Symbol,11+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[8+a_Symbol,11+b_Symbol,11+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[11+a_Symbol,11+b_Symbol,11+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+
+fSU4[a_Symbol,8+c_Symbol,15]:=-Sqrt[2/3]*(Delta[a,12]*Delta[c,1]+Delta[a,13]*Delta[c,2]+Delta[a,14]*Delta[c,3])/;Complement[{a,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[a_Symbol,11+c_Symbol,15]:=Sqrt[2/3]*(Delta[a,9]*Delta[c,1]+Delta[a,10]*Delta[c,2]+Delta[a,11]*Delta[c,3])/;Complement[{a,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[a_Symbol,8+c_Symbol,14+b_Symbol]:=-Sqrt[2/3]*Delta[b,1]*(Delta[a,12]*Delta[c,1]+Delta[a,13]*Delta[c,2]+Delta[a,14]*Delta[c,3])/;Complement[{a,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[a_Symbol,11+c_Symbol,14+b_Symbol]:=Sqrt[2/3]*Delta[b,1]*(Delta[a,9]*Delta[c,1]+Delta[a,10]*Delta[c,2]+Delta[a,11]*Delta[c,3])/;Complement[{a,c},{ct1,ct2,ct3,ct4,j2}]=={};
+
+
+
+(*multiple 15*)
+fSU4[a_Symbol,15,15]=0;
+fSU4[a_Symbol,b_Symbol,15]:=0/;Complement[{a,b},{ct1,ct2,ct3,ct4,j2,j1}]=={};
+(*H*)(*This is not true e.g.for a=9,b=12. Can not j2 and j1 have these values??*)
+fSU4[a_Symbol,14+b_Symbol,15]:=0/;Complement[{a,b},{ct1,ct2,ct3,ct4,j2,j1,col1}]=={};
+fSU4[a_Plus,15,15]=0;
+fSU4[a_Symbol,14+b_Symbol,14+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[a_Plus,14+b_Symbol,14+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+fSU4[a_Symbol,b_Symbol,14+c_Symbol]:=0/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2,col1}]=={};
+(*H*)(*The same remark as above*)
+
+fSU4[a_Symbol,b_Symbol,c_Symbol]:=fSU3[a,b,c]/;Complement[{a,b,c},{ct1,ct2,ct3,ct4,j2}]=={};
+
+
+fSU4[a_,b_,c_]:=-fSU4[b,a,c]/;((Head[a]===Plus&&Head[b]===Symbol)||(Head[a]===Plus&&Head[b]===Plus&&OrderedQ[{a[[1]],b[[1]]}]==False)||(a==15&&(Head[b]===Plus||Head[b]===Symbol)));
+fSU4[a_,b_,c_]:=-fSU4[a,c,b]/;((Head[b]===Plus&&Head[c]===Symbol)||(Head[b]===Plus&&Head[c]===Plus&&OrderedQ[{b[[1]],c[[1]]}]==False)||(b==15&&(Head[c]===Plus||Head[c]===Symbol)));
+fSU4[a_,b_,c_]:=-fSU4[c,b,a]/;((Head[a]===Plus&&Head[c]===Symbol)||(Head[a]===Plus&&Head[c]===Plus&&OrderedQ[{a[[1]],c[[1]]}]==False)||(a==15&&(Head[c]===Plus||Head[c]===Symbol)));
+
+
 
 
 

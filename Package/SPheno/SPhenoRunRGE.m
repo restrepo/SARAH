@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 GenerateRunRGE:=Block[{i,j,k,l,j2,temp},
 
 Print["  Write 'RunRGE'"];
@@ -60,7 +61,7 @@ WriteString[sphenoSugra,"Real(dp) :: test \n"];
 ];
 
 WriteString[sphenoSugra,"Integer :: i1, i2, i3, i4 \n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Real(dp),Intent(inout)::g1A("<>ToString[numberLow]<>")\n"];,
 WriteString[sphenoSugra,"Real(dp),Intent(inout)::g1A("<>ToString[numberAllwithVEVs]<>")\n"];
 ];
@@ -68,7 +69,7 @@ WriteString[sphenoSugra,"Real(dp),Intent(out)::g1C("<>ToString[numberAll]<>"),mG
 WriteString[sphenoSugra,"Real(dp)::tz,dt,t_out \n"];
 WriteString[sphenoSugra,"Real(dp)::mudim,gGUT,gA_h("<>ToString[numberLow]<>"),g1b("<>ToString[numberLow]<>"),m_hi,m_lo\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberLow]<>")\n"];,
 WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberAllwithVEVs]<>")\n"];
 ]; 
@@ -114,7 +115,7 @@ WriteString[sphenoSugra,"mudim=Max(mudim,mZ2)\n"];
 WriteString[sphenoSugra,"tz=0.5_dp*Log(mZ2/mudim)\n"];
 WriteString[sphenoSugra,"dt=tz/100._dp\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1A,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1A,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -131,7 +132,7 @@ WriteString[sphenoSugra,"FoundUnification= .False. \n"];
 WriteString[sphenoSugra,"tz=Log(sqrt(mudim)/m_lo)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -148,7 +149,7 @@ WriteString[sphenoSugra,"If (.Not.UseFixedGUTScale) Then\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e20_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -171,7 +172,7 @@ WriteString[sphenoSugra,"Else\n"];
 WriteString[sphenoSugra,"  tz=Log(m_lo/GUT_scale)\n"];
 WriteString[sphenoSugra,"  mGUT=GUT_scale\n"];
 WriteString[sphenoSugra,"  dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -184,7 +185,7 @@ WriteString[sphenoSugra,"End If\n\n"];
 
 WriteString[sphenoSugra,"mGUT_Save=mGUT\n"];
 
-WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1c)\n\n"];
+WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1c,mGUT)\n\n"];
 
 
 WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
@@ -206,7 +207,7 @@ WriteString[sphenoSugra,"tz=Log(m_lo/GUT_scale)\n"];
 WriteString[sphenoSugra,"mGUT=GUT_scale\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -219,7 +220,7 @@ WriteString[sphenoSugra,"End If\n"];
 WriteString[sphenoSugra,"Else!.not.UseFixedGUTScale\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e15_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -235,7 +236,7 @@ WriteString[sphenoSugra,"End If\n"];
 
 WriteString[sphenoSugra,"End If ! UseFixedScale \n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
 ];
@@ -243,21 +244,21 @@ MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{
 SetBoundaryThresholdUp[k,False]; 
 
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
 ];
 
 WriteString[sphenoSugra,"Else\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
 ];
 
 SetBoundaryThresholdUp[k,True];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
 ];
@@ -270,7 +271,7 @@ WriteString[sphenoSugra,"m_hi="<>SPhenoForm[Thresholds[[k+1,1]]]<>"\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/m_hi)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -281,7 +282,7 @@ WriteString[sphenoSugra,"  Write(*,*) \" Problem with RGE running. Errorcode:\",
 WriteString[sphenoSugra,"Call TerminateProgram \n"];
 WriteString[sphenoSugra,"End If \n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
 ];
@@ -289,7 +290,7 @@ MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{
 WriteString[sphenoSugra,"m_lo=m_hi\n"];
 WriteString[sphenoSugra,"End If\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
 ];,
@@ -300,7 +301,7 @@ WriteString[sphenoSugra,"If (UseFixedGUTScale) Then\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/GUT_scale)\n"];
 WriteString[sphenoSugra,"mGUT=GUT_scale\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -318,7 +319,7 @@ WriteString[sphenoSugra,"If (.not.greater) Then! I am still below GUT scale\n"];
 
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e20_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -344,7 +345,7 @@ WriteString[sphenoSugra,"If (StrictUnification) g1B(3)=gGUT\n"];
 WriteString[sphenoSugra,"Else! I have already crossed the GUT scale\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e15_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -368,7 +369,7 @@ For[k=1,k<= Length[Thresholds],
 WriteString[sphenoSugra,"End If\n"];
 k++;];
 
-WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1C)\n\n"];
+WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1C,mGUT)\n\n"];
 
 For[i=1,i<=Length[ThresholdParticles],
 WriteString[sphenoSugra,"NumberGenerations"<>SPhenoForm[ThresholdParticles[[i]]]  <>" = " <>ToString[getGenSF[ThresholdParticles[[i]]]]<> "\n"];
@@ -468,15 +469,20 @@ WriteString[sphenoSugra,"Real(dp) :: test \n"];
 ];
 
 WriteString[sphenoSugra,"Integer :: i1, i2, i3, i4 \n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Real(dp),Intent(inout)::g1A("<>ToString[numberLow]<>")\n"];,
 WriteString[sphenoSugra,"Real(dp),Intent(inout)::g1A("<>ToString[numberAllwithVEVs]<>")\n"];
 ];
 WriteString[sphenoSugra,"Real(dp),Intent(out)::g1C("<>ToString[numberAll]<>"),mGUT\n"];
 WriteString[sphenoSugra,"Real(dp)::tz,dt,t_out \n"];
-WriteString[sphenoSugra,"Real(dp)::mudim,gGUT,gA_h("<>ToString[numberLow]<>"),g1b("<>ToString[numberLow]<>"),m_hi,m_lo\n"];
+WriteString[sphenoSugra,"Real(dp)::mudim,gGUT,gA_h("<>ToString[numberLow]<>"),m_hi,m_lo\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
+WriteString[sphenoSugra,"Real(dp)::g1B("<>ToString[numberLow]<>")\n"];,
+WriteString[sphenoSugra,"Real(dp)::g1B("<>ToString[numberAllwithVEVs]<>")\n"];
+];
+
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberLow]<>")\n"];,
 WriteString[sphenoSugra,"Real(dp)::g1S("<>ToString[numberAllwithVEVs]<>")\n"];
 ]; 
@@ -525,7 +531,7 @@ WriteString[sphenoSugra,"tz=Log(sqrt(mudim)/m_lo)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
 WriteString[sphenoSugra,"g1B=g1A\n\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -542,7 +548,7 @@ WriteString[sphenoSugra,"If (.Not.UseFixedGUTScale) Then\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e20_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -565,7 +571,7 @@ WriteString[sphenoSugra,"Else\n"];
 WriteString[sphenoSugra,"  tz=Log(m_lo/GUT_scale)\n"];
 WriteString[sphenoSugra,"  mGUT=GUT_scale\n"];
 WriteString[sphenoSugra,"  dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -578,7 +584,7 @@ WriteString[sphenoSugra,"End If\n\n"];
 
 WriteString[sphenoSugra,"mGUT_Save=mGUT\n"];
 
-WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1c)\n\n"];
+WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1c,mGUT)\n\n"];
 
 
 WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
@@ -600,7 +606,7 @@ WriteString[sphenoSugra,"tz=Log(m_lo/GUT_scale)\n"];
 WriteString[sphenoSugra,"mGUT=GUT_scale\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -613,7 +619,7 @@ WriteString[sphenoSugra,"End If\n"];
 WriteString[sphenoSugra,"Else!.not.UseFixedGUTScale\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e15_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -629,28 +635,28 @@ WriteString[sphenoSugra,"End If\n"];
 
 WriteString[sphenoSugra,"End If ! UseFixedScale \n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
 ];
 
 SetBoundaryThresholdUp[k,False]; 
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
 ];
 
 WriteString[sphenoSugra,"Else\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
 ];
 
 SetBoundaryThresholdUp[k,True];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
 ];
@@ -663,7 +669,7 @@ WriteString[sphenoSugra,"m_hi="<>SPhenoForm[Thresholds[[k+1,1]]]<>"\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/m_hi)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -674,7 +680,7 @@ WriteString[sphenoSugra,"  Write(*,*) \" Problem with RGE running. Errorcode:\",
 WriteString[sphenoSugra,"Call TerminateProgram \n"];
 WriteString[sphenoSugra,"End If \n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"g1B"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1B"},{},sphenoSugra];
 ];
@@ -682,7 +688,7 @@ MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{
 WriteString[sphenoSugra,"m_lo=m_hi\n"];
 WriteString[sphenoSugra,"End If\n"];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"g1B"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"g1B"},sphenoSugra];
 ];,
@@ -693,7 +699,7 @@ WriteString[sphenoSugra,"If (UseFixedGUTScale) Then\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/GUT_scale)\n"];
 WriteString[sphenoSugra,"mGUT=GUT_scale\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeint(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
 ];
@@ -711,7 +717,7 @@ WriteString[sphenoSugra,"If (.not.greater) Then! I am still below GUT scale\n"];
 
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e20_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintB2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -737,7 +743,7 @@ WriteString[sphenoSugra,"If (StrictUnification) g1B(3)=gGUT\n"];
 WriteString[sphenoSugra,"Else! I have already crossed the GUT scale\n"];
 WriteString[sphenoSugra,"tz=Log(m_lo/1.e15_dp)\n"];
 WriteString[sphenoSugra,"dt=-tz/50._dp\n"];
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES] && HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberLow]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberLow]<>",checkGUT"<>ToString[numberLow]<>",t_out,kont)\n\n"];,
 WriteString[sphenoSugra,"Call odeintC2(g1B,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",checkGUT"<>ToString[numberAllwithVEVs]<>",t_out,kont)\n\n"];
 ];
@@ -761,7 +767,7 @@ For[k=1,k<= Length[Thresholds],
 WriteString[sphenoSugra,"End If\n"];
 k++;];
 
-WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1C)\n\n"];
+WriteString[sphenoSugra,"Call BoundaryHS(g1B,g1C,mGUT)\n\n"];
 
 For[i=1,i<=Length[ThresholdParticles],
 WriteString[sphenoSugra,"NumberGenerations"<>SPhenoForm[ThresholdParticles[[i]]]  <>" = " <>ToString[getGenSF[ThresholdParticles[[i]]]]<> "\n"];
@@ -1049,6 +1055,7 @@ WriteString[sphenoSugra,"ThresholdCrossed = "<>ToString[nr]<>"\n\n"];
 
 
 
+(* ::Input::Initialization:: *)
 RGErunningRegime :=Block[{i,k},
 
 WriteString[sphenoSugra,"gAReg"<> ToString[RegimeNr] <>" = g1A \n"]; 
@@ -1139,8 +1146,8 @@ WriteString[sphenoSugra,"End If\n"];
 k++;];
 
 If[VEVsRunning[[1]]===True,
-WriteString[sphenoSugra,"Call BoundaryHS(gBReg1,gCbReg1)\n\n"];,
-WriteString[sphenoSugra,"Call BoundaryHS(gBReg1,gCaReg1)\n\n"];
+WriteString[sphenoSugra,"Call BoundaryHS(gBReg1,gCbReg1,mGUT)\n\n"];,
+WriteString[sphenoSugra,"Call BoundaryHS(gBReg1,gCaReg1,mGUT)\n\n"];
 ];
 
 WriteString[sphenoSugra,"m_hi=mGUT \n"];
@@ -1363,6 +1370,7 @@ WriteString[sphenoSugra,"End If \n"];
 
 
 
+(* ::Input::Initialization:: *)
 WriteIfGutScaleCrossed[name_,len_,app_]:=Block[{},
 
 WriteString[sphenoSugra,"Call checkGUT"<>ToString[len]<>app<>"("<>name<>",delta0,unified,greater) \n"];
@@ -1403,6 +1411,7 @@ WriteString[sphenoSugra,"End If ! UseFixedScale \n"];
 
 
 
+(* ::Input::Initialization:: *)
 WriteSearchingforGUTScale[name_,len_]:=Block[{},
 
 WriteString[sphenoSugra,"If (UseFixedGUTScale) Then\n"];
@@ -1473,6 +1482,7 @@ WriteString[sphenoSugra,"End If\n"];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 WriteGUTchecks:=Block[{i},
 If[Head[RegimeNr]===Integer && RegimeNr>1,
@@ -1484,6 +1494,7 @@ SubNr = "R"<>ToString[i];
 WriteChecksForUnification[i,NumberLowAllRegimes[[i]],LowScaleParametersAllRegimes[[i]], ConditionGUTscale[[i]],SubNr];
 i++;];,
 WriteChecksForUnification[1,numberLow,lowScaleNames,ConditionGUTscale,""];
+If[FreeQ[BoundarySUSYScale,TADPOLES]==False || HighscaleMatching==True,WriteChecksForUnification[1,numberAllwithVEVs,listAllParametersAndVEVs,ConditionGUTscale,""];];
 ];
 ];
 

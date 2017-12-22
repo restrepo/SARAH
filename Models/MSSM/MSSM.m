@@ -94,7 +94,7 @@ DEFINITION[EWSB][VEVs]=
 
 DEFINITION[EWSB][MatterSector]= 
 {    {{SdL, SdR}, {Sd, ZD}},
-	 {{SvL}, {Sv, ZV}},
+     {{SvL}, {Sv, ZV}},
      {{SuL, SuR}, {Su, ZU}},
      {{SeL, SeR}, {Se, ZE}},
      {{phid, phiu}, {hh, ZH}},
@@ -110,8 +110,7 @@ DEFINITION[EWSB][Phases]=
 {    {fG, PhaseGlu}
     }; 
 
-	
-	
+
 DEFINITION[EWSB][DiracSpinors]={
  Fd ->{  FDL, conj[FDR]},
  Fe ->{  FEL, conj[FER]},

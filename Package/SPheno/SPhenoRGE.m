@@ -258,7 +258,8 @@ numberAll = numberLow;
 
 
 
-If[Length[NeededAnaDimsForVEVs]>0 ,
+(* If[Length[NeededAnaDimsForVEVs]>0 ||Length[BetaVEV]>0, *)
+If[Length[BetaVEV]>0,
 (*
 Print["-------------------------------"];
 Print["Write RGEs including VEVs      "];
@@ -274,8 +275,9 @@ listBeta1LoopVEVs = listBeta1Loop;
 listBeta2LoopVEVs = listBeta2Loop;
 
 
-For[i=1,i<=Length[NeededAnaDimsForVEVs],
-listAllParametersAndVEVs =Join[listAllParametersAndVEVs,{NeededAnaDimsForVEVs[[i,2]]}];
+For[i=1,i<=(*Length[NeededAnaDimsForVEVs]*)Length[BetaVEV],
+(* listAllParametersAndVEVs =Join[listAllParametersAndVEVs,{NeededAnaDimsForVEVs[[i,2]]}]; *)
+listAllParametersAndVEVs =Join[listAllParametersAndVEVs,{BetaVEV[[i,1]]}];
 listBeta1LoopVEVs = Join[listBeta1LoopVEVs,{BetaVEV[[i,2]]}];
 listBeta2LoopVEVs = Join[listBeta2LoopVEVs,{BetaVEV[[i,3]]}];
 i++;];
@@ -298,9 +300,10 @@ WriteParametersToG[listAllParametersAndVEVs,numberAllwithVEVs ];
 
 DynamicRGEall="Writing Beta-Functions";
 WriteSPhenoRGE[listAllParametersAndVEVs,listBeta1LoopVEVs,listBeta2LoopVEVs ,{},If[Head[TraceAbbr]===List,TraceAbbr,{}], numberAllwithVEVs];
-];,
+]; ,
 numberAllwithVEVs = numberAll;
-listAllParametersAndVEVs = listAllParameters;
+listAllParametersAndVEVs = listAllParameters; 
+(* numberAllwithVEVs=numberAll+GetNumberParameters[listVEVs/. A_[i1]\[Rule]A]; *)
 ];
 
 

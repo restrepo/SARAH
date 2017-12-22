@@ -17,6 +17,7 @@ ParameterDefinitions = {
 {Yd0,      { Description->"Down-Yukawa-Coupling",
                 Dependence -> sum[i003,1,3]*sum[i004,1,3]*Yd[i003,i004]*Delta[i003, i004]* \
                              Ud[i003,index1]*Vd[i004,index2],
+                                             LesHouches -> Yd0               }},    
 
 {Ye0,      { Description->"Lepton-Yukawa-Coupling",
                 Dependence -> sum[i003,1,3]*sum[i004,1,3]*Ye[i003,i004]*Delta[i003, i004]* \

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 CalcGaugeTransformations:=Block[{i,j},
 
 PrintDebug["Calc Gauge Transformations"];
@@ -111,6 +112,7 @@ Return[res];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 UpdateGaugeTransformations[sub_,subInv_,nameUGT_]:=Block[{i,temp},
 
@@ -292,6 +294,7 @@ Return[x];
 
 
 
+(* ::Input::Initialization:: *)
 CalcGhostLagrangian[GaugeFixing_]:=Block[{i,GaugeFixingTemp},
 
 GaugeFixingTemp = GaugeFixing /. Der[a_]->Der[a,lor2];
@@ -341,6 +344,7 @@ i++;
 ];
 
 
+(* ::Input::Initialization:: *)
 
 makeGhost[x_]:=Block[{temp,ghostp},
 If[Head[x]===Plus,
@@ -363,6 +367,7 @@ Return[ghostp];
 
 
 
+(* ::Input::Initialization:: *)
 GenerateGaugeFixing[kinetic_,name_,nr_]:=Block[{scalars,gb,temp={}, res,i,j,nameXi,num,un},
 If[Head[DEFINITION[name][GaugeFixing]]===List,
 GaugeFixing::Defined="Since version 3.1.0 SARAH derives the gauge fixing terms by itself. The given input in the model file is longer necessary and it will be ingored.";
@@ -373,7 +378,9 @@ gb = SA`NewGaugeBosons;
 gb =Select[Particles[Current],(#[[4]]===V)&];
 gb=Transpose[gb][[1]];
 scalars=Select[Particles[Current],(#[[4]]===S)&];
+If[scalars=!={},
 scalars=Transpose[scalars][[1]];
+];
 
 (*H*)(*If there are auxilary gauges,the gauge bosons of the broken gauge group stay in Particles[Currents] at this stage,hece are removed from the list gb*)
 If[AuxGaugesPresent===True,
@@ -416,9 +423,9 @@ If[getEntryField[gb[[i]],Mass]=!=0,
 For[j=1,j<=Length[scalars],
 If[MemberQ[realVar,scalars[[j]]]===MemberQ[realVar,gb[[i]]], (* new in order to prevent unncessary calculations *)
 If[DeleteCases[getIndizes[scalars[[j]]],generation]===DeleteCases[DeleteCases[getIndizes[gb[[i]]],lorentz],generation],
-res+=DPV[DPV[kinetic /. vacuumF /. Select[vacuumS,FreeQ[#,scalars[[j]]]&]/. Select[vacuumV,FreeQ[#,gb[[i]]]&]/. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,scalars[[j]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[a__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2 ;
+res+=DPV[DPV[kinetic /. vacuumF /. Select[vacuumS,FreeQ[#,scalars[[j]]]&]/. Select[vacuumV,FreeQ[#,gb[[i]]]&]/. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,scalars[[j]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[a__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2 /.Delta[__,lt1]->1;
 If[conj[scalars[[j]]]=!=scalars[[j]],
-res+=DPV[DPV[kinetic /. vacuumF  /. Select[vacuumS,FreeQ[#,scalars[[j]]]&] /. Select[vacuumV,FreeQ[#,gb[[i]]]&]/. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,conj[scalars[[j]]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2;
+res+=DPV[DPV[kinetic /. vacuumF  /. Select[vacuumS,FreeQ[#,scalars[[j]]]&] /. Select[vacuumV,FreeQ[#,gb[[i]]]&]/. zero[_][_]->0 /. zero[_]->0,conj[gb[[i]]],1,1]/. vacuumV /. zero[_][_]->0 /. zero[_]->0,conj[scalars[[j]]],2,2] /. vacuumS /. zero[_][_]->0 /. zero[_]->0 /. Mom[a_,b_] /;(getType[a]===NoField)->0  /. Mom[a_,b_]->a /. g[__]->1 /. gen1->gn1 /. gen2->gn2 /.gt1->gen1 /. gt2->gen2/.Delta[__,lt1]->1;
 ];
 ];
 ];

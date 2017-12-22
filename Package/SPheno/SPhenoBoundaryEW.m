@@ -945,7 +945,7 @@ WriteTadpoleSolutionOnlyHigh[sphenoSugra];
 
 WriteGUTnormalization[sphenoSugra];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES]&& HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"gMZ"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gMZ"},sphenoSugra];
 ];
@@ -1225,14 +1225,14 @@ WriteString[sphenoSugra,"g3SM = Sqrt(4._dp*pi*alpha3) \n"];
 WriteString[sphenoSugra,"!--------------------\n"];
 WriteString[sphenoSugra,"!for 2-loop parts\n"];
 WriteString[sphenoSugra,"!--------------------\n"];
-WriteString[sphenoSugra,"xt2=3._dp*(G_F*mf_u2(3)*oo8pi2*oosqrt2)**2&\n"];
-WriteString[sphenoSugra,"    &*rho_2(mHiggs/mf_U(3)) \n"];
+WriteString[sphenoSugra,"xt2=3._dp*(G_F*mf_u(3)**2*oo8pi2*oosqrt2)**2&\n"];
+WriteString[sphenoSugra,"    &*rho_2(mHiggs/mf_u(3)) \n"];
 WriteString[sphenoSugra,"fac(1)=alphaMZ*alphaS_mZ*oo4pi&\n"];
-WriteString[sphenoSugra,"      &*(2.145_dp*mf_u2(3)/mZ2+0.575*Log(mf_u(3)/mZ)-0.224_dp&\n"];
-WriteString[sphenoSugra,"      &-0.144_dp*mZ2/mf_u2(3))/Pi\n"];
+WriteString[sphenoSugra,"      &*(2.145_dp*mf_u(3)**2/mZ2+0.575*Log(mf_u(3)/mZ)-0.224_dp&\n"];
+WriteString[sphenoSugra,"      &-0.144_dp*mZ2/mf_u(3)**2)/Pi\n"];
 WriteString[sphenoSugra,"fac(2)=alphamZ*alphaS_mZ*oo4pi&\n"];
-WriteString[sphenoSugra,"      &*(-2.145_dp*mf_u2(3)/mW2+1.262*Log(mf_u(3)/mZ)-2.24_dp&\n"];
-WriteString[sphenoSugra,"      &-0.85_dp*mZ2/mf_u2(3))/Pi\n"];
+WriteString[sphenoSugra,"      &*(-2.145_dp*mf_u(3)**2/mW2+1.262*Log(mf_u(3)/mZ)-2.24_dp&\n"];
+WriteString[sphenoSugra,"      &-0.85_dp*mZ2/mf_u(3)**2)/Pi\n"];
 
 
 WriteString[sphenoSugra,"Do i1=1,100 \n"];
@@ -1252,6 +1252,8 @@ WriteString[sphenoSugra,SPhenoForm[Weinberg]<>"= Asin(Sqrt(sinw2_Q)) \n"];
 
 WriteString[sphenoSugra,"mHiggs= sqrt(Lambda_SM)*vSM \n"];
 WriteString[sphenoSugra,"MuSM = 0.5_dp*Lambda_SM*vSM**2 \n"];
+WriteString[sphenoSugra,"Yu_MZ(3,3)=mf_u(3)/vSM*Sqrt(2._dp) \n"];
+WriteString[sphenoSugra,"YuSM=Yu_MZ \n"];
 MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
 
 WriteString[sphenoSugra,"If (.not.OneLoopMatching) dmZ2= 0._dp \n"];
@@ -1275,6 +1277,8 @@ WriteString[sphenoSugra,"vev2=mZ2_mZ*CosW2SinW2/(pi*alphamZ) -("<>SPhenoForm[SA`
 WriteString[sphenoSugra,"vSM=Sqrt(vev2)\n"];
 
 WriteString[sphenoSugra,"MuSM = 0.5_dp*Lambda_SM*vSM**2 \n"];
+WriteString[sphenoSugra,"Yu_MZ(3,3)=mf_u(3)/vSM*Sqrt(2._dp) \n"];
+WriteString[sphenoSugra,"YuSM=Yu_MZ \n"];
 MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
 
 WriteString[sphenoSugra,"If (.not.OneLoopMatching) dmZ2= 0._dp \n"];
@@ -1301,6 +1305,8 @@ WriteString[sphenoSugra,"vSM=sqrt(vev2) \n"];
 
 WriteString[sphenoSugra,"mHiggs= sqrt(Lambda_SM)*vSM \n"];
 WriteString[sphenoSugra,"MuSM = 0.5_dp*Lambda_SM*vSM**2 \n"];
+WriteString[sphenoSugra,"Yu_MZ(3,3)=mf_u(3)/vSM*Sqrt(2._dp) \n"];
+WriteString[sphenoSugra,"YuSM=Yu_MZ \n"];
 MakeCall["OneLoop_Z_W_SM" , {},{"vSM","g1SM","g2SM","g3SM","Lambda_SM","-YuSM","YdSM","YeSM"},{"kont","dmZ2","dmW2","dmW2_0"},sphenoSugra];
 
 WriteString[sphenoSugra,"If (.not.OneLoopMatching) dmZ2= 0._dp \n"];
@@ -1338,7 +1344,7 @@ WriteString[sphenoSugra,"    Call TerminateProgram\n"];
 WriteString[sphenoSugra,"End If\n \n"];
 WriteString[sphenoSugra,"If (Abs(sinW2_Q-sinW2_old).Lt.0.1_dp*delta0) Exit\n\n"];
 WriteString[sphenoSugra,"sinW2_old=sinW2_Q\n"];
-WriteString[sphenoSugra,"delta_rw=delta_rho*(1._dp-delta_r)+delta_r\n"];
+WriteString[sphenoSugra,"delta_rw=(delta_rho+fac(2)/sinW2_Q+xt2)*(1._dp-delta_r)+delta_r\n"];
 WriteString[sphenoSugra,"If ((0.25_dp-alphamz*pi/(sqrt2*G_F*mz2*rho*(1._dp-delta_rw))).Lt.0._dp) Then\n"];
 WriteString[sphenoSugra,"    kont=-404\n"];
 WriteString[sphenoSugra,"    Call AddError(404)\n"];
@@ -1354,7 +1360,7 @@ WriteString[sphenoSugra,"sinW2=1._dp-cosW2\n"];
 WriteString[sphenoSugra,"End Do\n\n"];
 
 
-WriteString[sphenoSugra,"delta_rw=delta_rho*(1._dp-delta_r)+delta_r\n"];
+WriteString[sphenoSugra,"delta_rw=(delta_rho+fac(2)/sinW2_Q+xt2)*(1._dp-delta_r)+delta_r\n"];
 WriteString[sphenoSugra,"mW2=mZ2*rho*(0.5_dp& \n"];
 WriteString[sphenoSugra,"   &+Sqrt(0.25_dp-alphamz*pi/(sqrt2*G_F*mz2*rho*(1._dp-delta_rw))))\n"];
 WriteString[sphenoSugra,"mW=Sqrt(mW2)\n"];
@@ -1828,7 +1834,7 @@ WriteTadpoleSolutionOnlyHigh[sphenoSugra];
 
 WriteGUTnormalization[sphenoSugra];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES]&& HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"gMZ"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gMZ"},sphenoSugra];
 ];
@@ -2070,15 +2076,15 @@ WriteString[sphenoSugra,"g3SM = Sqrt(4._dp*pi*alpha3) \n"];
 WriteString[sphenoSugra,"!--------------------\n"];
 WriteString[sphenoSugra,"!for 2-loop parts\n"];
 WriteString[sphenoSugra,"!--------------------\n"];
-WriteString[sphenoSugra,"xt2=3._dp*(G_F*mf_u2(3)*oo8pi2*oosqrt2)**2&\n"];
+WriteString[sphenoSugra,"xt2=3._dp*(G_F*mf_u(3)**2*oo8pi2*oosqrt2)**2&\n"];
 WriteString[sphenoSugra,"    &*Abs("<>SPhenoForm[HiggsMixingMatrix]<>"(1,2))**2*rho_2(Sqrt("<>SPhenoForm[SPhenoMassSq[HiggsBoson]]<>"(1))/mf_U(3))&\n"];
 WriteString[sphenoSugra,"    &*((1._dp+tanb**2)/tanb**2)\n"];
 WriteString[sphenoSugra,"fac(1)=alphaMZ*alphaS_mZ*oo4pi&\n"];
-WriteString[sphenoSugra,"      &*(2.145_dp*mf_u2(3)/mZ2+0.575*Log(mf_u(3)/mZ)-0.224_dp&\n"];
-WriteString[sphenoSugra,"      &-0.144_dp*mZ2/mf_u2(3))/Pi\n"];
+WriteString[sphenoSugra,"      &*(2.145_dp*mf_u(3)**2/mZ2+0.575*Log(mf_u(3)/mZ)-0.224_dp&\n"];
+WriteString[sphenoSugra,"      &-0.144_dp*mZ2/mf_u(3)**2)/Pi\n"];
 WriteString[sphenoSugra,"fac(2)=alphamZ*alphaS_mZ*oo4pi&\n"];
-WriteString[sphenoSugra,"      &*(-2.145_dp*mf_u2(3)/mW2+1.262*Log(mf_u(3)/mZ)-2.24_dp&\n"];
-WriteString[sphenoSugra,"      &-0.85_dp*mZ2/mf_u2(3))/Pi\n"];
+WriteString[sphenoSugra,"      &*(-2.145_dp*mf_u(3)**2/mW2+1.262*Log(mf_u(3)/mZ)-2.24_dp&\n"];
+WriteString[sphenoSugra,"      &-0.85_dp*mZ2/mf_u(3)**2)/Pi\n"];
 
 
 WriteString[sphenoSugra,"Do i1=1,100 \n"];
@@ -2109,6 +2115,9 @@ WriteString[sphenoSugra,ToString[SPhenoMass[VectorW]] <> "= Sqrt("<>ToString[SPh
 SetGoldstoneMasses[sphenoSugra];
 
 MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoSugra];
+WriteString[sphenoSugra,"! Top pole mass to calculate delta_rho\n"];
+WriteString[sphenoSugra,"MFu(3)=mf_u(3)\n"];
+WriteString[sphenoSugra,"MFu2(3)=MFu(3)**2\n"];
 
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"mZ2"},{"kont","dmZ2"},sphenoSugra];
 
@@ -2188,7 +2197,6 @@ AddExtraEWvevDefinition[sphenoSugra];
 *)
 
 MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoSugra];
-
 MakeCall["Pi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{"mW2"},{"kont","dmW2"},sphenoSugra];
 MakeCall["Pi1Loop"<>ToString[VectorW],Flatten[{massesW,couplingsW}],{"0._dp"},{"kont","dmW2_0"},sphenoSugra];
 WriteString[sphenoSugra,"If (.not.OneLoopMatching) dmW2 = 0._dp \n"];
@@ -2224,7 +2232,7 @@ WriteString[sphenoSugra,"    Call TerminateProgram\n"];
 WriteString[sphenoSugra,"End If\n \n"];
 WriteString[sphenoSugra,"If (Abs(sinW2_Q-sinW2_old).Lt.0.1_dp*delta0) Exit\n\n"];
 WriteString[sphenoSugra,"sinW2_old=sinW2_Q\n"];
-WriteString[sphenoSugra,"delta_rw=delta_rho*(1._dp-delta_r)+delta_r\n"];
+WriteString[sphenoSugra,"delta_rw=(delta_rho+fac(2)/sinW2_Q+xt2)*(1._dp-delta_r)+delta_r\n"];
 WriteString[sphenoSugra,"If ((0.25_dp-alphamz*pi/(sqrt2*G_F*mz2*rho*(1._dp-delta_rw))).Lt.0._dp) Then\n"];
 WriteString[sphenoSugra,"    kont=-404\n"];
 WriteString[sphenoSugra,"    Call AddError(404)\n"];
@@ -2684,7 +2692,7 @@ WriteTadpoleSolutionOnlyHigh[sphenoSugra];
 
 WriteGUTnormalization[sphenoSugra];
 
-If[FreeQ[BoundarySUSYScale,TADPOLES],
+If[FreeQ[BoundarySUSYScale,TADPOLES]&& HighscaleMatching=!=True,
 MakeCall["ParametersToG"<>ToString[numberLow],lowScaleNames,{},{"gMZ"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gMZ"},sphenoSugra];
 ];

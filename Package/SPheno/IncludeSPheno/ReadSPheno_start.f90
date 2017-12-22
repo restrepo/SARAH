@@ -411,7 +411,10 @@
      Case(78) ! Use conventions for MG
       If (wert.Eq.1) Then 
         OutputForMG = .True.  
-      End if      
+      End if  
+      
+     Case(79) ! Writes Wilson coefficients in WCXF format
+      If (wert.Eq.1) Write_WCXF = .True.         
 
 
      Case(80) ! exit for sure with non-zero value if a problem occurs

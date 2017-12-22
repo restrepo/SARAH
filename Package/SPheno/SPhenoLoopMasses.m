@@ -1078,7 +1078,7 @@ k++;];
 
 
  For[i=1,i<=Length[listNotMixedMasses],
-If[listNotMixedMasses[[i,4]]=!=0 && FreeQ[SMParticles,listNotMixedMasses[[i,1]]] && listNotMixedMasses[[i,6]]=!=VectorMass,
+If[listNotMixedMasses[[i,4]]=!=0 && FreeQ[SMParticles,listNotMixedMasses[[i,1]]] (*&& listNotMixedMasses[[i,6]]=!=VectorMass*),
 nameCurrent=listNotMixedMasses[[i,2]];
 particleCurrent=ToString[listNotMixedMasses[[i,1]]];
 parametersCurrent=listNotMixedMasses[[i,3]];
@@ -1118,7 +1118,7 @@ k++;];
 
 
 For[i=1,i<=Length[listNotMixedMasses],
-If[listNotMixedMasses[[i,4]]=!=0 && FreeQ[SMParticles,listNotMixedMasses[[i,1]]] && listNotMixedMasses[[i,6]]=!=VectorMass,
+If[listNotMixedMasses[[i,4]]=!=0 && FreeQ[SMParticles,listNotMixedMasses[[i,1]]] (* && listNotMixedMasses[[i,6]]=!=VectorMass *),
 WriteString[sphenoLoop,listNotMixedMasses[[i,2]] <> " = "<>listNotMixedMasses[[i,2]]<>"_1L \n"];WriteString[sphenoLoop,listNotMixedMasses[[i,2]] <> "2 = "<>listNotMixedMasses[[i,2]]<>"2_1L \n"];
 ];
 i++;];

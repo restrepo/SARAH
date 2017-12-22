@@ -20,12 +20,12 @@
 
 
 (* ::Input::Initialization:: *)
-MakeModelData:=Block[{i,k,i2,temp,dim,pos,name,templist,tlist},
+MakeModelData:=Block[{i,k,j,i2,temp,dim,pos,name,templist,tlist},
 If[Head[RegimeNr]===Integer,
 AddParametersFromOtherRegimes;
 ];
 
-AdditionalParametersLagrange=Select[AdditionalParametersLagrange,FreeQ[ListAllInputParameters,#]&];
+AdditionalParametersLagrange=Intersection[Select[AdditionalParametersLagrange,FreeQ[ListAllInputParameters,#]&]];
 
 (*
 Print["-----------------------------------"];
@@ -74,6 +74,7 @@ WriteString[ModelData,"Real(dp) :: f_k_CONST=0.1598_dp, h_k_CONST, f_eta_q_CONST
 
 Get[ToFileName[{$sarahDir,"FlavorKit"},"hadronic_parameters.m"]];
 Get[ToFileName[{$sarahDir,"FlavorKit"},"FLHA_WilsonCoefficients.m"]];
+Get[ToFileName[{$sarahDir,"FlavorKit"},"WCXF_WilsonCoefficients.m"]];
 For[i=1,i<=Length[FLHA`MASSandLIFETIME],
 WriteString[ModelData,"Real(dp) :: "<>FLHA`MASSandLIFETIME[[i,2,1]]<>"="<>ToString[FortranForm[FLHA`MASSandLIFETIME[[i,2,2]]]]<>", "<>FLHA`MASSandLIFETIME[[i,3,1]]<>"="<>ToString[FortranForm[FLHA`MASSandLIFETIME[[i,3,2]]]]<>"\n"];
 i++;];
@@ -84,6 +85,16 @@ i++;];
 For[i=1,i<=Length[FLHA`WilsonCoefficients],
 WriteString[ModelData,"Complex(dp) :: "<>ToString[FLHA`WilsonCoefficients[[i,5]]]<>" = 0._dp\n"];
 i++;];
+
+For[j=1,j<=WCXF`Outputs,
+For[i=1,i<=Length[WCXF`Values[j]],
+If[WCXF`Values[j][[i,3]]===Complex,
+WriteString[ModelData,"Complex(dp) :: "<>ToString[WCXF`Values[j][[i,1]]]<>" = 0._dp\n"];,
+WriteString[ModelData,"Real(dp) :: "<>ToString[WCXF`Values[j][[i,1]]]<>" = 0._dp\n"];
+];
+i++;];
+j++;];
+
 ];
 
 
@@ -156,7 +167,7 @@ If[FreeQ[realVar,tlist[[i]]]==False, realVar=Join[realVar,{name}];];
 i++;
 ];
 
-tlist = listAllParametersAndVEVs;
+tlist =Join[listAllParameters,listVEVs];
 For[i=1,i<=Length[tlist],
 name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
 If[FreeQ[SPhenoParameters,name],
@@ -879,6 +890,7 @@ WriteString[ModelData,"Logical :: runningTopMZ= .False. \n"];
 WriteString[ModelData,"Logical :: PrintDebugInformation = .False. \n"];
 WriteString[ModelData,"Logical ::IncludeThresholdsAtScale \n"];
 WriteString[ModelData,"Logical :: PurelyNumericalEffPot \n"];
+WriteString[ModelData,"Logical :: Write_WCXF = .false. \n"];
 
 
 WriteString[ModelData,"Complex(dp) :: CKMcomplex(3,3) \n"];

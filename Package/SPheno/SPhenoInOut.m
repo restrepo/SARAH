@@ -243,6 +243,7 @@ AppendSourceCode["ReadRoutines.f90",sphenoInOut];
 If[IncludeFlavorKit=!=True || SkipFlavorKit===True,
 AppendSourceCode["ReadFLHA.f90",sphenoInOut];,
 WriteFLHAroutines;
+WriteWCXFroutines;
 ];
 WriteReadInFunctions;
 AppendSourceCode["SwitchToSCKM.f90",sphenoInOut];
@@ -802,6 +803,10 @@ If[SPhenoHiggsBoundsIncluded===True,
 WriteString[sphenoInOut, "If(Write_HiggsBounds) Call WriteHiggsBounds \n \n"];
 WriteString[sphenoInOut, "If(Write_HiggsBounds5) Call WriteHiggsBounds5 \n \n"];
 ];
+];
+
+If[SkipFlavorKit=!=True,
+WriteString[sphenoInOut, "If(Write_WCXF) Call WriteWCXF\n \n"];
 ];
 
 If[SPhenoOnlyForHM=!=True,
@@ -1386,7 +1391,7 @@ CheckSCKM:=Block[{},
 SLHA1Possible = False;
 WriteCKMBasis=False;
 If[SupersymmetricModel===True,
-If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || OnlyLowEnergySPheno===True,
+If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SneutrinoMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || OnlyLowEnergySPheno===True,
 WriteCKMBasis=False;
 SLHA1Possible = False;,
 WriteCKMBasis=True;
@@ -1402,7 +1407,7 @@ WriteInOutSCKM:=Block[{i,i1,i2,i3,i4,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2}
 SLHA1Possible = False;
 WriteCKMBasis=False;
 If[SupersymmetricModel===True,
-If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || OnlyLowEnergySPheno===True,
+If[Select[{"Softbreaking right Down-Squark Mass","Softbreaking right Up-Squark Mass","Trilinear-Up-Coupling","Trilinear-Down-Coupling","Up-Yukawa-Coupling","Down-Yukawa-Coupling","Down-Squark-Mixing-Matrix","Up-Squark-Mixing-Matrix","Softbreaking left Squark Mass"},(FreeQ[ParameterDefinitions,#])& ] =!= {} || Select[{DownSquarkMM,UpSquarkMM,SneutrinoMM,SoftSquark,SoftUp,SoftDown,TrilinearUp,TrilinearDown,DownYukawa,UpYukawa},(FreeQ[parameters,#])& ] =!= {} || OnlyLowEnergySPheno===True,
 WriteCKMBasis=False;
 SLHA1Possible = False;,
 WriteCKMBasis=True;
@@ -1464,18 +1469,6 @@ If[SLHA1Possible ===False,
 WriteString[sphenoInOut,"\n \n \n ! ----------- Use SLHA 1 conventions if demanded -------- \n \n"];
 WriteString[sphenoInOut,"If(WriteSLHA1) Write(*,*) \"SLHA 1 output for given model not possible\" \n"];,
 WriteString[sphenoInOut, "If(WriteSLHA1) Then \n"];
-
-(*
-WriteString[sphenoInOut,"Call SLHA1converter("
-<>SPhenoForm[SPhenoMass[BottomSquark]]<>","<>SPhenoForm[SPhenoMassSq[BottomSquark]]<>","
-<>SPhenoForm[SPhenoMass[TopSquark]]<>","<>SPhenoForm[SPhenoMassSq[TopSquark]]<>","
-<>SPhenoForm[SPhenoMass[Selectron]]<>","<>SPhenoForm[SPhenoMassSq[Selectron]]<>","
-<>SPhenoForm[SPhenoMass[Sneutrino]]<>","<>SPhenoForm[SPhenoMassSq[Sneutrino]]<>", "];
-WriteString[sphenoInOut,SPhenoForm[SPhenoWidth[BottomSquark]]<>","<>SPhenoForm[SPhenoWidth[TopSquark]]<>","<>SPhenoForm[SPhenoWidth[Selectron]]<>","SPhenoForm[SPhenoWidth[Sneutrino]]<>","<>SPhenoForm[SPhenoBR[BottomSquark]]<>","<>SPhenoForm[SPhenoBR[TopSquark]]<>","<>SPhenoForm[SPhenoBR[Selectron]]<>","<>SPhenoForm[SPhenoBR[Sneutrino]]<>", & \n"];
-WriteString[sphenoInOut,"  & "<>ToString[getDimSPheno[SPhenoBR[BottomSquark]][[2]]]<>","<>ToString[getDimSPheno[SPhenoBR[TopSquark]][[2]]]<>","<>ToString[getDimSPheno[SPhenoBR[Selectron]][[2]]]<>","<>ToString[getDimSPheno[SPhenoBR[Sneutrino]][[2]]]<>","];
-WriteString[sphenoInOut,SPhenoForm[DownSquarkMM]<>","<>SPhenoForm[UpSquarkMM]<>","<>SPhenoForm[SleptonMM]<>","<>SPhenoForm[SneutrinoMM]<>",Ztop,Zbottom,Ztau, "];WriteString[sphenoInOut, "PDG"<>SPhenoForm[BottomSquark]<>", PDG"<>SPhenoForm[TopSquark]<>", PDG"<>SPhenoForm[Selectron]<>", PDG"<>SPhenoForm[Sneutrino]<>", NameParticle"<>SPhenoForm[BottomSquark]<>", NameParticle"<>SPhenoForm[TopSquark]<>", NameParticle"<>SPhenoForm[Selectron]<>", NameParticle"<>SPhenoForm[Sneutrino]<>") \n"];
-*)
-
 
 WriteString[sphenoInOut,"Call SLHA1converter("
 <>SPhenoForm[SPhenoMass[BottomSquark]]<>","<>SPhenoForm[SPhenoMassSq[BottomSquark]]<>","
@@ -2131,7 +2124,7 @@ WriteString[sphenoInOut,"  Do gt2="<>ToString[getGenSPhenoStart[p2]] <> ", "<>To
 
 WriteString[sphenoInOut,"If ("<>SPhenoBR[particle,j,icount]<>".Gt.BrMin) Then \n"];
 
-If[p1 ===VectorW && p2 === VectorW,
+If[p1 ===VectorW && p2 === VectorW && particle===HiggsBoson,
 StringPT1="\"^* \"";
 StringPT1s="\" \"";
 WriteString[sphenoInOut,"CurrentPDG2(1) = -" <>SPhenoPDG[p1,gt1] <>" \n"];
@@ -2711,6 +2704,40 @@ i++;];
 
 ];
 
+WriteWCXFroutines:=Block[{i,j,blocks,res,temp},
+WriteString[sphenoInOut,"Subroutine WriteWCXF \n"];
+For[j=1,j<=WCXF`Outputs,
+WriteString[sphenoInOut,"   Open(123,file=\"WC."<>ModelName<>"_"<>ToString[j]<>".json\",status=\"unknown\")\n"];
+WriteString[sphenoInOut,"Write(123,*) \"{\"\n"];
+WriteString[sphenoInOut,"Write(123,*) '  \"eft\": \""<>ToString[WCXF`EFT[j]]<>"\",'\n"];
+WriteString[sphenoInOut,"Write(123,*) '  \"basis\": \""<>ToString[WCXF`Basis[j]]<>"\",'\n"];
+WriteString[sphenoInOut,"Write(123,*) '  \"scale\": \""<>ToString[WCXF`Scale[j]]<>"\",'\n"];
+WriteString[sphenoInOut,"Write(123,*) '  \"values\": {'\n"];
+For[i=1,i<=Length[WCXF`Values[j]],
+Switch[WCXF`Values[j][[i,3]],
+Complex,
+WriteString[sphenoInOut,"Write(123,*) '    \""<>WCXF`Values[j][[i,1]]<>"\": {' \n"];
+WriteString[sphenoInOut,"Write(123,*) '      \"Re\": ',Real("<>WCXF`Values[j][[i,1]]<>",dp), ',' \n"];
+WriteString[sphenoInOut,"Write(123,*) '      \"Im\": ',AImag("<>WCXF`Values[j][[i,1]]<>") \n"];
+If[i<Length[WCXF`Values[j]],
+WriteString[sphenoInOut,"Write(123,*) '    },' \n"];,
+WriteString[sphenoInOut,"Write(123,*) '    }' \n"];
+];,
+Real,
+If[i<Length[WCXF`Values[j]],
+WriteString[sphenoInOut,"Write(123,*) '    \""<>WCXF`Values[j][[i,1]]<>"\":',"<>WCXF`Values[j][[i,1]]<>"',' \n"];,
+WriteString[sphenoInOut,"Write(123,*) '    \""<>WCXF`Values[j][[i,1]]<>"\":',"<>WCXF`Values[j][[i,1]]<>" \n"];
+];
+];
+i++;];
+WriteString[sphenoInOut,"Write(123,*) \"  }\"\n"];
+WriteString[sphenoInOut,"Write(123,*) \"}\"\n"];
+
+WriteString[sphenoInOut,"    Close(123) \n"];
+j++;];
+WriteString[sphenoInOut,"End Subroutine WriteWCXF \n"];
+
+];
 
 WriteFLHAroutines:=Block[{i,j,blocks,res,temp},
 Get[ToFileName[{$sarahDir,"FlavorKit"},"hadronic_parameters.m"]];
