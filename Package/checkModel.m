@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 CheckModel:=Block[{startedtime},
 startedtime=TimeUsed[];
 (*
@@ -387,6 +388,11 @@ missingPDG=Select[missingPDG,(FreeQ[SGauge,#]||Length[getPDG[#]]<1)&];
 missingPDG=Select[missingPDG,(FreeQ[FGauge/.diracSubBack1[ES]/.diracSubBack2[ES],#]||Length[getPDG[#]]<1)&];
 If[missingPDG=!={},Message[CheckModelFiles::WrongPDG,missingPDG];];
 
+Print["    electric charge"];
+allParticleNames=Flatten[{Transpose[PART[F]][[1]],Transpose[PART[V]][[1]],Transpose[PART[S]][[1]]}];
+missingEC=Select[allParticleNames,(ElectricCharge[#]===None&)];
+If[missingEC=!={},Message[CheckModelFiles::ElectricCharge,missingEC];];
+
 Print["    checking Length of OutputNames"];
 longNames=Select[allParticleNames,((StringLength[ToString[getOutputName[#,1,1]]]+(getRParity[#,ES] /. {1->0,-1->1}))>8)&];
 If[longNames=!={},
@@ -474,6 +480,7 @@ i++;];
 
 
 
+(* ::Input::Initialization:: *)
 CheckParameterDefinitionsFinal:=Block[{i,missingParticle={},missingParameter={},missingPDG={},missingLHparameter={},allParticleNames,allParameterNames,missingOutputNames},Print["Checking parameter definitions"];
 allParameterNames=Transpose[parameters][[1]];
 

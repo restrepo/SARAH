@@ -758,7 +758,7 @@ ParameterDefinitions = {
 {lU10,{ 
      Real -> False, 
      LesHouches -> {NMSSM10,46} , 
-     LaTeX -> "{\\lambda_U}"  , 
+     LaTeX -> "\\lambda_U"  , 
      OutputName -> lu10  }}, 
 
 {T[lU10],{ 

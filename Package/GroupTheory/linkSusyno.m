@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ---------------------------------------------------- *)
 (* Functions to link Susyno by Renato Fonseca to SARAH *)
 (* ---------------------------------------------------- *)
@@ -78,9 +79,8 @@ If[reps[[i,1]]<0,conjugations=Join[conjugations,{True}];,conjugations=Join[conju
 i++;];
 If[Length[reps]===4,
 temp=Get4Invariants[group,repsNC];
-
-If[FreeQ[temp,CG]==False || FreeQ[temp,Delta]==False,
-
+If[FreeQ[temp,CG]==False || FreeQ[temp,Delta]==False ,
+If[temp=!={},
 SA`RnR++;
 Off[Part::"pspec"];
 Off[Part::"pkspec1"];
@@ -89,8 +89,10 @@ ReleaseHold[Hold[Set[CG[group,Reverse/@repsNC][i1_,i2_,i3_,i4_],RHS]]/. RHS -> t
 ReleaseHold[Hold[Set[InvMat[SA`RnR-1][i1_,i2_,i3_,i4_],RHS]]/. RHS -> temp[[2]] ];
 On[Part::"pspec"]; 
 On[Part::"pkspec1"];
-Return[InvMat[SA`RnR-1]];
-
+Return[InvMat[SA`RnR-1]];,
+LagInput::ZeroCoupling="The contraction `` vanishes";
+Message[LagInput::ZeroCoupling,dim];
+];
 ];,
 temp=Invariants[SusynoForm[group],Abs/@reps,Conjugations->conjugations];
 ];
@@ -222,6 +224,7 @@ SA`NeededInvariantsSusyno={};
 SA`NeededGeneratorsSusyno={};
 
 
+(* ::Input::Initialization:: *)
 SusynoForm[SU[x_]]:=ToExpression["SU"<>ToString[x]];
 SusynoForm[SO[x_]]:=ToExpression["SO"<>ToString[x]];
 SusynoForm[E[x_]]:=ToExpression["E"<>ToString[x]];
@@ -230,6 +233,7 @@ SusynoForm[G[x_]]:=ToExpression["G"<>ToString[x]];
 SusynoForm[SP[x_]]:=ToExpression["SP"<>ToString[x]];
 
 
+(* ::Input::Initialization:: *)
 GetInformationSusyno[Nr_,k_]:=Block[{i,resSusyno,temp},
 resSusyno = CallSusyno[Fields[[Nr,k+3]],Gauge[[k,2]]];
 MakeGroupConstants[Nr,k,resSusyno[[2]],resSusyno[[3]],resSusyno[[4]],resSusyno[[5]]];
@@ -258,6 +262,7 @@ expanded=Join[expanded,temp];
 
 
 
+(* ::Input::Initialization:: *)
 CallSusyno[rep_,group_]:=Block[{dim,dimS,dynkin,temp,pos,checkvariableexistsSARAH,DL},
 If[SusynoLoaded=!=True,
 Message[SARAH::UnknownGaugeGroup,group];

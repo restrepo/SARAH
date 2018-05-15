@@ -170,7 +170,7 @@ ParticleDefinitions[EWSB] = {
 
 {F1x,{ 
      FeynArtsNr -> 6, 
-     LaTeX -> "\\Psi_{F_{1x}}", 
+     LaTeX -> "{\\Psi_{1x}}", 
      Mass -> LesHouches, 
      OutputName -> "F1x", 
      PDG -> {60}, 
@@ -179,7 +179,7 @@ ParticleDefinitions[EWSB] = {
 
 {F2x,{ 
      FeynArtsNr -> 16, 
-     LaTeX -> "\\Psi_{F_{2x}}", 
+     LaTeX -> "{\\Psi_{2x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx2", 
      PDG -> {62}, 
@@ -188,7 +188,7 @@ ParticleDefinitions[EWSB] = {
 
 {F3x,{ 
      FeynArtsNr -> 18, 
-     LaTeX -> "\\Psi_{F_{3x}}", 
+     LaTeX -> "{\\Psi_{3x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx3", 
      PDG -> {65}, 
@@ -197,7 +197,7 @@ ParticleDefinitions[EWSB] = {
 
 {F4x,{ 
      FeynArtsNr -> 20, 
-     LaTeX -> "\\Psi_{F_{4x}}", 
+     LaTeX -> "{\\Psi_{4x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx4", 
      PDG -> {67}, 
@@ -206,7 +206,7 @@ ParticleDefinitions[EWSB] = {
 
 {F5x,{ 
      FeynArtsNr -> 22, 
-     LaTeX -> "\\Psi_{F_{5x}}", 
+     LaTeX -> "{\\Psi_{5x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx5", 
      PDG -> {70}, 
@@ -215,7 +215,7 @@ ParticleDefinitions[EWSB] = {
 
 {F6x,{ 
      FeynArtsNr -> 24, 
-     LaTeX -> "\\Psi_{F_{6x}}", 
+     LaTeX -> "{\\Psi_{6x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx6", 
      PDG -> {71}, 
@@ -224,7 +224,7 @@ ParticleDefinitions[EWSB] = {
 
 {F7x,{ 
      FeynArtsNr -> 26, 
-     LaTeX -> "\\Psi_{F_{7x}}", 
+     LaTeX -> "{\\Psi_{7x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx7", 
      PDG -> {73}, 
@@ -233,7 +233,7 @@ ParticleDefinitions[EWSB] = {
 
 {F8x,{ 
      FeynArtsNr -> 28, 
-     LaTeX -> "\\Psi_{F_{8x}}", 
+     LaTeX -> "{\\Psi_{8x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx8", 
      PDG -> {74}, 
@@ -242,7 +242,7 @@ ParticleDefinitions[EWSB] = {
 
 {F9x,{ 
      FeynArtsNr -> 30, 
-     LaTeX -> "\\Psi_{F_{9x}}", 
+     LaTeX -> "{\\Psi_{9x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx9", 
      PDG -> {75}, 
@@ -251,7 +251,7 @@ ParticleDefinitions[EWSB] = {
 
 {F10x,{ 
      FeynArtsNr -> 8, 
-     LaTeX -> "\\Psi_{F_{10x}}", 
+     LaTeX -> "{\\Psi_{10x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx10", 
      PDG -> {77}, 
@@ -260,7 +260,7 @@ ParticleDefinitions[EWSB] = {
 
 {F11x,{ 
      FeynArtsNr -> 10, 
-     LaTeX -> "\\Psi_{F_{11x}}", 
+     LaTeX -> "{\\Psi_{11x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx11", 
      PDG -> {80}, 
@@ -269,7 +269,7 @@ ParticleDefinitions[EWSB] = {
 
 {F12x,{ 
      FeynArtsNr -> 12, 
-     LaTeX -> "\\Psi_{F_{12x}}", 
+     LaTeX -> "{\\Psi_{12x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx12", 
      PDG -> {82}, 
@@ -278,7 +278,7 @@ ParticleDefinitions[EWSB] = {
 
 {F13x,{ 
      FeynArtsNr -> 14, 
-     LaTeX -> "\\Psi_{F_{13x}}", 
+     LaTeX -> "{\\Psi_{13x}}", 
      Mass -> LesHouches, 
      OutputName -> "Fx13", 
      PDG -> {85}, 
@@ -289,7 +289,7 @@ ParticleDefinitions[EWSB] = {
 
 {F1y,{ 
      FeynArtsNr -> 32, 
-     LaTeX -> "\\Psi_{F_{1y}}", 
+     LaTeX -> "{\\Psi_{1y}}", 
      Mass -> LesHouches, 
      OutputName -> "F1y", 
      PDG -> {61}, 
@@ -298,7 +298,7 @@ ParticleDefinitions[EWSB] = {
 
 {F2y,{ 
      FeynArtsNr -> 40, 
-     LaTeX -> "\\Psi_{F_{2y}}", 
+     LaTeX -> "{\\Psi_{2y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy2", 
      PDG -> {63}, 
@@ -307,7 +307,7 @@ ParticleDefinitions[EWSB] = {
 
 {F3y,{ 
      FeynArtsNr -> 42, 
-     LaTeX -> "\\Psi_{F_{3y}}", 
+     LaTeX -> "{\\Psi_{3y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy3", 
      PDG -> {66}, 
@@ -316,7 +316,7 @@ ParticleDefinitions[EWSB] = {
 
 {F4y,{ 
      FeynArtsNr -> 44, 
-     LaTeX -> "\\Psi_{F_{4y}}", 
+     LaTeX -> "{\\Psi_{4y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy4", 
      PDG -> {68}, 
@@ -325,7 +325,7 @@ ParticleDefinitions[EWSB] = {
 
 {F6y,{ 
      FeynArtsNr -> 46, 
-     LaTeX -> "\\Psi_{F_{6y}}", 
+     LaTeX -> "{\\Psi_{6y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy6", 
      PDG -> {72}, 
@@ -334,7 +334,7 @@ ParticleDefinitions[EWSB] = {
 
 {F9y,{ 
      FeynArtsNr -> 48, 
-     LaTeX -> "\\Psi_{F_{9y}}", 
+     LaTeX -> "{\\Psi_{9y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy9", 
      PDG -> {76}, 
@@ -342,7 +342,7 @@ ParticleDefinitions[EWSB] = {
      Width -> Automatic}}, 
 {F10y,{ 
      FeynArtsNr -> 34, 
-     LaTeX -> "\\Psi_{F_{10y}}", 
+     LaTeX -> "{\\Psi_{10y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy10", 
      PDG -> {78}, 
@@ -351,7 +351,7 @@ ParticleDefinitions[EWSB] = {
 
 {F11y,{ 
      FeynArtsNr -> 36, 
-     LaTeX -> "\\Psi_{F_{11y}}", 
+     LaTeX -> "{\\Psi_{11y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy11", 
      PDG -> {81}, 
@@ -360,7 +360,7 @@ ParticleDefinitions[EWSB] = {
 
 {F12y,{ 
      FeynArtsNr -> 38, 
-     LaTeX -> "\\Psi_{F_{12y}}", 
+     LaTeX -> "{\\Psi_{12y}}", 
      Mass -> LesHouches, 
      OutputName -> "Fy12", 
      PDG -> {83}, 
@@ -369,7 +369,7 @@ ParticleDefinitions[EWSB] = {
 
 {F2z,{ 
      FeynArtsNr -> 54, 
-     LaTeX -> "\\Psi_{F_{2z}}", 
+     LaTeX -> "{\\Psi_{2z}}", 
      Mass -> LesHouches, 
      OutputName -> "Fz2", 
      PDG -> {64}, 
@@ -378,7 +378,7 @@ ParticleDefinitions[EWSB] = {
 
 {F4z,{ 
      FeynArtsNr -> 56, 
-     LaTeX -> "\\Psi_{F_{4z}}", 
+     LaTeX -> "{\\Psi_{4z}}", 
      Mass -> LesHouches, 
      OutputName -> "Fz4", 
      PDG -> {69}, 
@@ -387,7 +387,7 @@ ParticleDefinitions[EWSB] = {
 
 {F10z,{ 
      FeynArtsNr -> 50, 
-     LaTeX -> "\\Psi_{F_{10z}}", 
+     LaTeX -> "{\\Psi_{10z}}", 
      Mass -> LesHouches, 
      OutputName -> "Fz10", 
      PDG -> {79}, 
@@ -396,7 +396,7 @@ ParticleDefinitions[EWSB] = {
 
 {F12z,{ 
      FeynArtsNr -> 52, 
-     LaTeX -> "\\Psi_{F_{12z}}", 
+     LaTeX -> "{\\Psi_{12z}}", 
      Mass -> LesHouches, 
      OutputName -> "Fz12", 
      PDG -> {84}, 

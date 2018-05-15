@@ -415,6 +415,7 @@ CheckModelFiles::MissingParameter="The following parameters are not defined in P
 CheckModelFiles::MissingOutputName="For the following particles is no OutputName defined: ``";
 CheckModelFiles::MissingOutputNameParameter="For the following parameters is no OutputName defined: ``";
 CheckModelFiles::WrongPDG="The number of PDG numbers defined for the following particles does not fit to their number of generations: ``";
+CheckModelFiles::missingEC="No electric charge defined for: ``";
 CheckModelFiles::WrongPDGIX="The number of PDG.IX numbers defined for the following particles does not fit to their number of generations: ``";
 CheckModelFiles::MissingLH="For the following parameters is no LesHouches Block defined: ``";
 

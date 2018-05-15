@@ -523,9 +523,10 @@ SA`CheckGlobalLagLevel=False;
 present=(C@@#)&/@Join[SA`LagTermsNonSUSY,conj/@SA`LagTermsNonSUSY];
 
 notpresent=Complement[allowed,present];
-Print[notpresent];
+(* Print[notpresent]; *)
 If[notpresent=!={},
-Message[PossibleTerms::NonSUSY,(List@@#)&/@notpresent];,
+Message[PossibleTerms::NonSUSY,(List@@#)&/@notpresent];
+Print["  Please note: this function is not working perfect for non-susy models. Double checking the results is mandatory!"];,
 Print["    All terms allowed by gauge invariance are present"];
 ];
 
@@ -970,6 +971,9 @@ Return[temp];
 Get2to2scattering:=Block[{AllScalars,pairs,lag,ScatterMatrix},
 AllScalars=Transpose[Select[Particles[GaugeES],#[[4]]==S&]][[1]];
 AllScalars=Join[AllScalars,conj/@AllScalars];
+AllScalars=Select[AllScalars,FreeQ[getIndizes[#],color]&];
+AllScalars=Select[AllScalars,FreeQ[RemoveParticlesFromScattering,#]&];
+
 pairs=Intersection[Map[Sort[#]&,Tuples[AllScalars,{2}],{1}]];
 lag=LagSSSS[GaugeES];
 ScatterMatrix=Table[If[pairs[[i2,2]]===pairs[[i2,1]],1/Sqrt[2],1]If[pairs[[i1,2]]===pairs[[i1,1]],1/Sqrt[2],1]D[D[D[D[lag,pairs[[i1,1]]],pairs[[i1,2]]],pairs[[i2,1]]],pairs[[i2,2]]],{i1,1,Length[pairs]},{i2,1,Length[pairs]}]  /. Delta[a_Integer,b_Symbol]->1/. Delta[b_Integer,a_Symbol]->1;

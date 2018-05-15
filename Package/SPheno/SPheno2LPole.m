@@ -603,7 +603,7 @@ Return[symfac];
 ];
 
 
-(************************************************************************************************************************)(******************************************************GENERATOR FUNCTION**********************************)(************************************************************************************************************************)generatePOLEfunctions[nh_,type_,equivalences_,chains_,metasets_:{}]:=Module[{ps,finalnumberofdiags,ninternalparticles,numberofcouplings,i,j,iic,iii,k,x,diag,NrDiags,diagrams,diagselection,diagdata,BreakFlag,tempcoup,coups,prefactor,constantprefactor,string,funcstring,finalstring,symfactor,Scalarcouplingnumber,myparts,nmyparts,setofindices,findpart,target,descriptioninternalprops,allindicesstrings,mylistinternals,indstring,indicestowrite,partsgens,gaugebosonsincoup,gbgaugegroup,topodata,generalddata,specificddata,fermionflag,SPOLEprefactor,POLEprefactor,FPOLEprefactor},
+(************************************************************************************************************************)(******************************************************GENERATOR FUNCTION**********************************)(************************************************************************************************************************)generatePOLEfunctions[nh_,type_,equivalences_,chains_,metasets_:{}]:=Module[{ps,finalnumberofdiags,ninternalparticles,numberofcouplings,i,j,iic,iii,k,x,diag,NrDiags,diagrams,diagselection,diagdata,BreakFlag,tempcoup,coups,prefactor,constantprefactor,string,funcstring,finalstring,symfactor,Scalarcouplingnumber,myparts,nmyparts,setofindices,findpart,target,descriptioninternalprops,allindicesstrings,mylistinternals,indstring,indicestowrite,partsgens,gaugebosonsincoup,gbgaugegroup,topodata,generalddata,specificddata,fermionflag,SPOLEprefactor,POLEprefactor,FPOLEprefactor,gaugeindices},
 Clear[topdata,topodata,diagdata];
 If[nh==1,
 dynamictwolooptadpoletopology="Topology "<>ToString[type];,
@@ -720,7 +720,14 @@ If[gbgaugegroup=!={},
 GaugeBosonFlag=True;
 gbgaugegroup=gbgaugegroup[[1,1]];(*This should now have all the info about the group necessary*)
 (* Now want colour factor \[Rule] dimension of gauge group * dynkin index for first particle *)
+(* = dimension of rep * casimir *)
+(* Assume that we need to multiply by dimension of all unbroken gauge groups that the field is charged under *)
+gaugeindices=DeleteCases[DeleteCases[getIndizesWI[RE[myparts[[1]]]],{generation,_},3],{lorentz,_},3];
+colourfactor=Times@@(Transpose[gaugeindices][[2]]);
+colourfactor*=SA`Casimir[RE[myparts[[1]]],dataUnBrokenGaugeGroups[[gbgaugegroup,1]]];
+(*
 colourfactor=dataUnBrokenGaugeGroups[[gbgaugegroup,6]]*SA`Dynkin[RE[myparts[[1]]],dataUnBrokenGaugeGroups[[gbgaugegroup,1]]];
+*)
 ];
 ];
 

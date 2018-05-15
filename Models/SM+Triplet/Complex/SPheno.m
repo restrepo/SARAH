@@ -5,7 +5,8 @@ MINPAR={
         {2,LTInput},
         {3,LT2Input},
         {4,LTHInput},
-        {5,KInput},
+        {5,LTH2Input},        
+        {6,KInput},
 
         {10,vTInput}
 
@@ -20,7 +21,7 @@ DEFINITION[MatchingConditions]= {
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
- {v, vSM}
+ {v,  vSM}
  };
 
 
@@ -30,6 +31,7 @@ BoundaryLowScaleInput={
   {LT, LTInput},
   {LT2, LT2Input},
   {LHT, LTHInput},
+  {LHT2, LTH2Input},
   {KHT, KInput}
 };
 
@@ -37,7 +39,7 @@ BoundaryLowScaleInput={
 ListDecayParticles = {Fu,Fe,Fd,hh,Ah,Hpm};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
-DefaultInputValues ={LHInput -> -0.1, LTInput -> -0.2 LT2Input -> -0.1, LTHInput -> -0.2, KInput->0.1, vTInput->3 };
+DefaultInputValues ={LHInput -> 0.1, LTInput -> 0.2 LT2Input -> 0.1, LTHInput -> 0.2, LTH2Input->0.2, KInput->10., vTInput->3 };
 
 
 RenConditionsDecays={

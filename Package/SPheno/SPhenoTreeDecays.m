@@ -446,10 +446,6 @@ SVV,
 		WriteString[sphenoDecay, "End if \n"];,
 	_,
 		WriteString[sphenoDecay, "coup = "<>ToString[processes[[i,3,1,1,1]]]<>ind <> "\n"];
-		(* If[p1===p2, 
-		WriteString[sphenoDecay,"Call ScalarToTwoVectorBosons(m_in,m1out,coup,gam) \n"];, 
-		WriteString[sphenoDecay,"Call ScalarToTwoVectorBosonsNew(m_in,m1out,m2out,coup,gam) \n"];
-		]; *)
 		WriteString[sphenoDecay,"Call ScalarToTwoVectorBosons(m_in,m1out,m2out,coup,gam) \n"];
 	];
 ];
@@ -481,7 +477,7 @@ FFV,
 		];
 ];
 factor = processes[[i,4]]*processes[[i,5]];
-If[AntiField[particle]===particle,factor = 2*factor;];,
+If[AntiField[particle]===particle && (AntiField[p1]=!=p1 || AntiField[p2]=!=p2) && AntiField[p1]=!=p2,factor = 2*factor;];,
 
 V,
 Switch[VType[getType[particle], getType[p1],getType[p2]],
@@ -505,11 +501,6 @@ If[getGenSPheno[p1]>1,
 If[p1===p2,
 WriteString[sphenoDecay,"If (gt1.ne.gt2) gam = 2._dp*gam \n"];
 ];
-(*
-If[p1===AntiField[p2],
-WriteString[sphenoDecay,"If (gt1.ne.gt2) gam = 0.5_dp*gam \n"];
-];
-*)
 ];
 
 factor = processes[[i,4]]*processes[[i,5]];

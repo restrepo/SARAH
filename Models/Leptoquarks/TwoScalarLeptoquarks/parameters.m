@@ -335,7 +335,7 @@ ParameterDefinitions = {
      LaTeX -> "{\\lambda}_{\\Omega \\Theta}"  , 
      OutputName -> lamot  }}, 
 
-{LambdaPS,{ 
+{LambdaSP,{ 
      Real -> False, 
      LesHouches -> {SM,30}  , 
      LaTeX -> "{\\lambda}_{\\Phi S}"  , 

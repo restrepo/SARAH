@@ -155,7 +155,6 @@ ParameterDefinitions = {
 {Ve,        {Description ->"Left-Lepton-Mixing-Matrix"}},
 {Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}},
 
-{ZM,	    {Description -> "Neutrino-Mixing-Matrix"}},
 
 {ZH,        { Description->"Scalar-Mixing-Matrix", 
                Dependence -> None,

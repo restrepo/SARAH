@@ -32,7 +32,7 @@ ScalarFields[[1]] =  {H, 1, {Hp, H0},     1/2, 2,  1};
 ScalarFields[[2]] =  {Phi, 1, PhiLQ,     -4/3, 1,  3};
 ScalarFields[[3]] =  {Omega, 1, OmegaLQ,     -1/3, 1,  3};
 ScalarFields[[4]] =  {The, 1, theta,     1, 1, 1};
-ScalarFields[[5]] =  {s, 1, sing,     0, 1, 1};
+ScalarFields[[5]] =  {s, 1, Sing,     0, 1, 1};
 
 
         
@@ -58,7 +58,7 @@ LagNoHC =  -(-muH2 conj[H].H
 + LambdaH/2 conj[H].H.conj[H].H 
 + LambdaS/2 conj[s].s.conj[s].s 
 + LambdaOS conj[Omega].Omega.conj[s].s 
-+ LambdaPS conj[Phi].Phi.conj[s].s 
++ LambdaSP conj[Phi].Phi.conj[s].s 
 + LambdaTS conj[The].The.conj[s].s 
 + LambdaHS conj[H].H.conj[s].s 
 + LambdaHO conj[H].H.conj[Omega].Omega 
@@ -97,7 +97,7 @@ DEFINITION[EWSB][GaugeSector] =
 
 DEFINITION[EWSB][VEVs]= 
 {    {H0, {v, 1/Sqrt[2]}, {sigmaH, \[ImaginaryI]/Sqrt[2]},{phiH, 1/Sqrt[2]}},
-     {sing, {vS, 1/Sqrt[2]},  {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS, 1/Sqrt[2]}}};
+     {Sing, {vS, 1/Sqrt[2]},  {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS, 1/Sqrt[2]}}};
  
 
 DEFINITION[EWSB][MatterSector]=   

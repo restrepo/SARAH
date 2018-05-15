@@ -60,6 +60,10 @@ ParameterDefinitions = {
 {LHT,  { LaTeX -> "\\lambda_{HT}",
         OutputName -> LHT,
         LesHouches -> {HMIX,19} }},        
+        
+{LHT2,  { LaTeX -> "\\lambda_{HT'}",
+        OutputName -> LHT2,
+        LesHouches -> {HMIX,16} }},       
 
 {ThetaW,    { Description -> "Weinberg-Angle",
               DependenceNum -> ArcSin[Sqrt[1 - Mass[VWp]^2/Mass[VZ]^2]]}},

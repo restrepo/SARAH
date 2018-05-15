@@ -83,7 +83,7 @@ InitTrig;
 
 CreateClassesFA[False];
 FeynArtsVertices[AddCounterT];
-WriteModelFA[AddCounterT];
+WriteModelFA[AddCounterT,eigS];
 
 Print[""];
 
@@ -791,7 +791,7 @@ M$CouplingMatrices=ReleaseHold[M$CouplingMatrices /.sum[a_,b_,c_,d_]->IndexSum[d
 ];
 
 
-WriteModelFA[addCT_]:= Block[{Minutes,iii,i},
+WriteModelFA[addCT_,eigS_]:= Block[{Minutes,iii,i},
 
 Print["Write Model-File"];
 
@@ -919,17 +919,17 @@ WriteString[outputfile,"(* Fermion WV renormalisation constants *)\n"];
 For[iii=1,iii<=Length[PART[F]],
 If[FreeQ[MajoranaPart,PART[F][[iii,1]]],
 If[getGen[PART[F][[iii,1]]]===1,
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[1]]],1,1]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a]]<>"][[1]] \n"];
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[2]]],1,1]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a]]<>"][[2]] \n"];,
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[1]]],i1_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[1]] \n"];
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[2]]],i1_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[2]] \n"];
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[1]]],i2_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>","<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i2}]]<>"][[1]] \n"];
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[2]]],i2_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>""<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[2]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[1]]],1,1]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a]]<>"][[1]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[2]]],1,1]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a]]<>"][[2]] \n"];,
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[1]]],i1_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[1]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[2]]],i1_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[2]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[1]]],i2_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>","<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i2}]]<>"][[1]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[2]]],i2_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>""<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[2]] \n"];
 ];,
 If[getGen[PART[F][[iii,1]]]===1,
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[1]]],1,1]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a]]<>"][[1]] \n"];,
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[1]]],i1_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[1]] \n"];
-WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[EWSB])[[1]]],i1_,i2_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>","<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i2}]]<>"][[1]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[1]]],1,1]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a]]<>"][[1]] \n"];,
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[1]]],i1_,i1_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>"][[1]] \n"];
+WriteString[outputfile,"RenConst["<>ToString[FA`Zf[RE[(PART[F][[iii,1]]/. diracSub[eigS])[[1]]],i1_,i2_]]<>"]:=FieldRC["<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i1}]]<>","<>ToString[getFull[PART[F][[iii,1]]] /. subFA /. F[a_,b__]->F[a,{i2}]]<>"][[1]] \n"];
 ];
 ];
 iii++;];

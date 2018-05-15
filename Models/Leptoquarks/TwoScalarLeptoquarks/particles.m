@@ -342,11 +342,11 @@ ParticleDefinitions[GaugeES] = {
      PDG -> {53}   , 
      Width -> Automatic}}, 
 
-{sing,{ 
+{Sing,{ 
      FeynArtsNr -> 18   , 
      LaTeX -> "S"   , 
      Mass -> LesHouches, 
-     OutputName -> "sing",
+     OutputName -> "Sing",
      PDG -> {55}, 
      Width -> Automatic}}, 
 

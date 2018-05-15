@@ -1155,8 +1155,14 @@ S,
 	ScalarPropagators = Join[ScalarPropagators,{Particles[Current][[i,1]]}];
 	];,
 V,
-	If[(FreeQ[VerticesInv[All],C[Pex1,Pex2,Particles[Current][[i,1]]]]==False && FreeQ[VerticesInv[All],C[Pex3,Pex4,AntiField[Particles[Current][[i,1]]]]]==False) ||
-(FreeQ[VerticesInv[All],C[Pex1,Pex2,AntiField[Particles[Current][[i,1]]]]]==False && FreeQ[VerticesInv[All],C[Pex3,Pex4,Particles[Current][[i,1]]]]==False),
+	(* If[(FreeQ[VerticesInv[All],C[Pex1,Pex2,Particles[Current][[i,1]]]]\[Equal]False && FreeQ[VerticesInv[All],C[Pex3,Pex4,AntiField[Particles[Current][[i,1]]]]]\[Equal]False) ||
+(FreeQ[VerticesInv[All],C[Pex1,Pex2,AntiField[Particles[Current][[i,1]]]]]\[Equal]False && FreeQ[VerticesInv[All],C[Pex3,Pex4,Particles[Current][[i,1]]]]\[Equal]False), *)
+If[(FreeQ[VerticesInv[All],C[Pex1,Pex2,Particles[Current][[i,1]]]]==False && FreeQ[VerticesInv[All],C[Pex3,Pex4,AntiField[Particles[Current][[i,1]]]]]==False) ||
+(FreeQ[VerticesInv[All],C[Pex1,Pex3,Particles[Current][[i,1]]]]==False && FreeQ[VerticesInv[All],C[Pex2,Pex4,AntiField[Particles[Current][[i,1]]]]]==False) ||
+(FreeQ[VerticesInv[All],C[Pex1,Pex4,Particles[Current][[i,1]]]]==False && FreeQ[VerticesInv[All],C[Pex3,Pex2,AntiField[Particles[Current][[i,1]]]]]==False) ||
+(FreeQ[VerticesInv[All],C[Pex1,Pex2,AntiField[Particles[Current][[i,1]]]]]==False && FreeQ[VerticesInv[All],C[Pex3,Pex4,Particles[Current][[i,1]]]]==False)||
+(FreeQ[VerticesInv[All],C[Pex1,Pex3,AntiField[Particles[Current][[i,1]]]]]==False && FreeQ[VerticesInv[All],C[Pex2,Pex4,Particles[Current][[i,1]]]]==False)||
+(FreeQ[VerticesInv[All],C[Pex1,Pex4,AntiField[Particles[Current][[i,1]]]]]==False && FreeQ[VerticesInv[All],C[Pex3,Pex2,Particles[Current][[i,1]]]]==False),
 	If[FreeQ[massless,Particles[Current][[i,1]]], (* massless vectors (i.e. photon) have to be treated differently! *)
 	VectorPropagators = Join[VectorPropagators,{Particles[Current][[i,1]]}];,
 	PhotonPropagators = Join[PhotonPropagators,{Particles[Current][[i,1]]}];

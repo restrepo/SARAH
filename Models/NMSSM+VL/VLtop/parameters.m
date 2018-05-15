@@ -100,21 +100,21 @@ ParameterDefinitions = {
        LesHouches -> Tt,
        OutputName->Tt }},           
 
-{LR,  {LaTeX -> "\\lambda_{R}",
+{LamT,  {LaTeX -> "\\lambda_{R}",
        LesHouches -> {VECTORTOP, 1},
-       OutputName->LR }},
+       OutputName->LamT }},
 
 
-{T[LR], {  LaTeX -> "T_{\\lambda R}",
+{T[LamT], {  LaTeX -> "T_{\\lambda R}",
        LesHouches -> {VECTORTOP, 2},
-	   OutputName->TLR }},
+	   OutputName->TLT }},
     
-{LV,  {LaTeX -> "\\lambda_{V}",
+{LamV,  {LaTeX -> "\\lambda_{V}",
        LesHouches -> LV,
-       OutputName->LV }},
+       OutputName->LamV }},
 
 
-{T[LV], {  LaTeX -> "T_{\\lambda V}",
+{T[LamV], {  LaTeX -> "T_{\\lambda V}",
        LesHouches -> TLV,
        OutputName->TLV }}
              

@@ -150,6 +150,7 @@ ParticleDefinitions[EWSB] = {
                  Width -> {0}, 
                  Mass -> {0},
                  LaTeX -> {"H^+","H^-"},
+                 ElectricCharge -> 1,
                  OutputName -> {"Hp","Hm"}
                  }}, 
 

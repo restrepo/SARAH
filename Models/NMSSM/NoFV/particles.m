@@ -60,10 +60,11 @@ ParticleDefinitions[GaugeES] = {
       
   ParticleDefinitions[EWSB] = {
 
-        {Sd ,  {  Description->"Down Squark",
-                PDG ->  {1000001,20000015},
+      {Sd ,  {  Description->"Down Squark",
+                PDG ->  {1000001,2000001},
                 Mass -> LesHouches,
                 FeynArtsNr -> 141,   
+                ElectricCharge -> -1/3,
                 LaTeX -> "\\tilde{d}",
                 OutputName -> "sd" }},
                 
@@ -71,6 +72,7 @@ ParticleDefinitions[GaugeES] = {
                 PDG ->  {1000003,2000003},
                 Mass -> LesHouches,
                 FeynArtsNr -> 142,   
+                ElectricCharge -> -1/3,
                 LaTeX -> "\\tilde{s}",
                 OutputName -> "ss" }},        
                
@@ -78,6 +80,7 @@ ParticleDefinitions[GaugeES] = {
                 PDG ->  {1000005,2000005},
                 Mass -> LesHouches,
                 FeynArtsNr -> 143,   
+                ElectricCharge -> -1/3, 
                 LaTeX -> "\\tilde{b}",
                 OutputName -> "sb" }},            
               
@@ -85,7 +88,8 @@ ParticleDefinitions[GaugeES] = {
       {Su ,  {  Description->"Up Squark",
                 PDG ->  {1000002,2000002},
                 Mass -> LesHouches,
-                FeynArtsNr -> 131,   
+                FeynArtsNr -> 131, 
+                ElectricCharge -> 2/3,  
                 LaTeX -> "\\tilde{u}",
                 OutputName -> "su" }}, 
                 
@@ -93,6 +97,7 @@ ParticleDefinitions[GaugeES] = {
                 PDG ->  {1000004,2000004},
                 Mass -> LesHouches,
                 FeynArtsNr -> 132,   
+                ElectricCharge -> 2/3,
                 LaTeX -> "\\tilde{c}",
                 OutputName -> "sc" }},    
       
@@ -101,6 +106,7 @@ ParticleDefinitions[GaugeES] = {
                 Mass -> LesHouches,
                 FeynArtsNr -> 133,   
                 LaTeX -> "\\tilde{t}",
+                ElectricCharge -> 2/3,
                 OutputName -> "st" }},                        
       
       
@@ -108,6 +114,7 @@ ParticleDefinitions[GaugeES] = {
                 PDG ->  {1000011,2000011},
                 Mass -> LesHouches,
                 FeynArtsNr -> 121,   
+                ElectricCharge -> -1,
                 LaTeX -> "\\tilde{e}",
                 OutputName -> "se" }}, 
                 
@@ -115,6 +122,7 @@ ParticleDefinitions[GaugeES] = {
                 PDG ->  {1000013,2000013},
                 Mass -> LesHouches,
                 FeynArtsNr -> 122,   
+                ElectricCharge -> -1,
                 LaTeX -> "\\tilde{\\mu}",
                 OutputName -> "sm" }}, 
                 
@@ -122,6 +130,7 @@ ParticleDefinitions[GaugeES] = {
                   PDG ->  {1000015,2000015},
                 Mass -> LesHouches,
                 FeynArtsNr -> 123,   
+                ElectricCharge -> -1,
                 LaTeX -> "\\tilde{\\tau}",
                 OutputName -> "sl" }},                        
     
@@ -129,23 +138,26 @@ ParticleDefinitions[GaugeES] = {
                 PDG ->  {1000012},
                 Mass ->LesHouches,
                 FeynArtsNr -> 111,   
+                ElectricCharge -> 0,
                 LaTeX -> "\\tilde{\\nu}_e",
-                OutputName -> "sne" }},      
-                
+                OutputName -> "sve" }},   
+                   
      {SvmL ,  { Description->"Muon Sneutrino",
                  PDG ->  {1000014},
                 Mass ->LesHouches,
-                FeynArtsNr -> 112,   
+                FeynArtsNr -> 112, 
+                ElectricCharge -> 0,  
                 LaTeX -> "\\tilde{\\nu}_{\\mu}",
-                OutputName -> "snm" }},                                   
+                OutputName -> "svm" }},                                   
 
      {SvtL ,  {  Description->"Tau Sneutrino",
                 PDG ->  {1000016},
                 Mass ->LesHouches,
                 FeynArtsNr -> 113,   
+                ElectricCharge -> 0,  
                 LaTeX -> "\\tilde{\\nu}_{\\tau}",
-                OutputName -> "snt" }},                                 
-
+                OutputName -> "svt" }},
+                                      
                                 
      {hh   ,  {  Description -> "Higgs", 
                  PDG -> {25, 35,45} }}, 
@@ -162,10 +174,11 @@ ParticleDefinitions[GaugeES] = {
       {gZ,   { Description -> "Z-Boson Ghost" }},  
       {gG,   { Description -> "Gluon Ghost" }},           
                      
-      {Fd,    { Description->"Down Quark",
+  {Fd,    { Description->"Down Quark",
                  PDG -> {1},
                  Mass -> 0.0035,
                  FeynArtsNr -> 41,
+                 ElectricCharge -> -1/3,
                  LaTeX -> "d",
                  OutputName -> "d" }},   
                  
@@ -173,6 +186,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {3},
                  Mass -> 0.104,
                  FeynArtsNr -> 42,
+                 ElectricCharge -> -1/3,
                  LaTeX -> "s",
                  OutputName -> "s" }},   
                  
@@ -180,6 +194,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {5},
                  Mass -> 4.20,
                  FeynArtsNr -> 43,
+                 ElectricCharge -> -1/3,
                  LaTeX -> "b",
                  OutputName -> "b" }},                               
                  
@@ -187,6 +202,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {2},
                  Width -> 0, 
                  Mass -> 0.0015,
+                ElectricCharge -> 2/3,
                  FeynArtsNr -> 31,
                  LaTeX -> "u",
                  OutputName -> "u" }},   
@@ -195,6 +211,7 @@ ParticleDefinitions[GaugeES] = {
                   PDG -> {4},
                  Width ->  0, 
                  Mass -> 1.27,
+                ElectricCharge -> 2/3,
                  FeynArtsNr -> 32,
                  LaTeX -> "c",
                  OutputName -> "c" }}, 
@@ -203,6 +220,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {6},
                  Width -> 1.59, 
                  Mass -> 171.2,
+                ElectricCharge -> 2/3,
                  FeynArtsNr -> 33,
                  LaTeX -> "t",
                  OutputName -> "t" }},                            
@@ -211,6 +229,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {11},
                  Mass -> 0.000511,
                  FeynArtsNr -> 21,
+                ElectricCharge -> -1,
                  LaTeX -> "e",
                  OutputName -> "e" }},
 
@@ -218,6 +237,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {13},
                  Mass -> 0.105,
                  FeynArtsNr -> 22,
+                ElectricCharge -> -1,
                  LaTeX -> "m",
                  OutputName -> "m" }},
                  
@@ -225,6 +245,7 @@ ParticleDefinitions[GaugeES] = {
                  PDG -> {15},
                  Mass -> 1.776,
                  FeynArtsNr -> 23,
+                ElectricCharge -> -1,
                  LaTeX -> "\\tau",
                  OutputName -> "ta" }},                                  
                  
@@ -233,6 +254,7 @@ ParticleDefinitions[GaugeES] = {
                  Width -> 0, 
                  Mass -> 0.,
                  FeynArtsNr -> 51,
+                ElectricCharge -> 0,  
                  LaTeX -> "\\nu_e",
                  OutputName -> "ve" }},
                  
@@ -241,6 +263,7 @@ ParticleDefinitions[GaugeES] = {
                  Width -> 0, 
                  Mass -> 0.,
                  FeynArtsNr -> 52,
+                ElectricCharge -> 0,  
                  LaTeX -> "\\nu_{\\mu}",
                  OutputName -> "vm" }},
                  
@@ -249,8 +272,9 @@ ParticleDefinitions[GaugeES] = {
                  Width -> 0, 
                  Mass -> 0.,
                  FeynArtsNr -> 53,
+                ElectricCharge -> 0,  
                  LaTeX -> "\\nu_{\\tau}",
-                 OutputName -> "vt" }}       ,                
+                 OutputName -> "vt" }}                     ,                
                                                   
       {Glu,  { Description -> "Gluino" }},
                  

@@ -277,91 +277,91 @@ ParameterDefinitions = {
 (*  ----------- Additional parameters in the model ---------- *) 
 
 {Lambda3,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,2}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{3}"  (* auto generated LaTeX name *), 
      OutputName -> lam3  (* auto generated Output name *)}}, 
 
 {Lambda4,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,4}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{4}"  (* auto generated LaTeX name *), 
      OutputName -> lam4  (* auto generated Output name *)}}, 
 
 {MS2,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,6}  (* auto generated Les Houches entry *), 
      LaTeX -> "m_S^2"  (* auto generated LaTeX name *), 
      OutputName -> ms2  (* auto generated Output name *)}}, 
 
 {MO2,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,8}  (* auto generated Les Houches entry *), 
      LaTeX -> "M^2O_"  (* auto generated LaTeX name *), 
      OutputName -> mo2  (* auto generated Output name *)}}, 
 
 {Lambda9,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,10}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{9}"  (* auto generated LaTeX name *), 
      OutputName -> lam9  (* auto generated Output name *)}}, 
 
 {LambdaS,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,12}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{S}"  (* auto generated LaTeX name *), 
      OutputName -> lams  (* auto generated Output name *)}}, 
 
 {Kappa2,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,14}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\kappa}_{2}"  (* auto generated LaTeX name *), 
      OutputName -> kap2  (* auto generated Output name *)}}, 
 
 {Kappa1,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,16}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\kappa}_{1}"  (* auto generated LaTeX name *), 
      OutputName -> kap1  (* auto generated Output name *)}}, 
 
 {LambdaH,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,18}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{H}"  (* auto generated LaTeX name *), 
      OutputName -> lamh  (* auto generated Output name *)}}, 
 
 {Lambda1,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,20}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{1}"  (* auto generated LaTeX name *), 
      OutputName -> lam1  (* auto generated Output name *)}}, 
 
 {Lambda2,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,22}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{2}"  (* auto generated LaTeX name *), 
      OutputName -> lam2  (* auto generated Output name *)}}, 
 
 {Lambda8,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,24}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{8}"  (* auto generated LaTeX name *), 
      OutputName -> lam8  (* auto generated Output name *)}}, 
 
 {Lambda11,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,26}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{11}"  (* auto generated LaTeX name *), 
      OutputName -> lam11  (* auto generated Output name *)}}, 
 
 {Lambda7,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,28}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{7}"  (* auto generated LaTeX name *), 
      OutputName -> lam7  (* auto generated Output name *)}}, 
 
 {Lambda6,{ 
-     Real -> False, 
+     Real -> True, 
      LesHouches -> {SM8C,30}  (* auto generated Les Houches entry *), 
      LaTeX -> "{\\lambda}_{6}"  (* auto generated LaTeX name *), 
      OutputName -> lam6  (* auto generated Output name *)}}

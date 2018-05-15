@@ -28,7 +28,7 @@ Sow[Reap[Sow[{temp[[mi,1,1]]}];
 (*entries start with the particles in the coupling,then a list of group structures*)
 For[mj=1,mj<=Length[dataUnBrokenGaugeGroups],mj++,
 tt=ExtractStructure[temp[[mi,1,2,1]],dataUnBrokenGaugeGroups[[mj,2]]];
-tttt2=Select[tt,#[[2,1]]=!=0&];
+tttt2=Select[tt,#[[2]]=!=0&];
 POLEstructures=Table[tttt2[[mk,1]],{mk,1,Length[tttt2]}];
 Sow[POLEstructures]];][[2,1]](*end inner reap*)];] (*end for...*)][[2,1]];(*end outer Reap*)
 specialPOLEverticesorg=Table[C@@specialPOLEvertices[[mi,1,1]]/.{A_[{___}]->A},{mi,1,Length[specialPOLEvertices]}];];
@@ -263,11 +263,29 @@ Switch[topologytag,
 Bub,
 (* do the sum over one four-point vertex, multiplied over all structures *)
 tosum=1;
+For[i=2,i<=Length[vertex],i++,
+If[Length[vertex[[i]]]>1,(* multiple colour structures \[Rule] already summed over *)
+Return[1];
+,
+tosum*=vertex[[i,1]];
+];
+];(* end For *)
 (* First work out which pairs there are *)
 i=1;
 While[gaugeindices[[i]]=={}&&i<5,i++];
 j=i+1;
-While[conj[templistoffields[[j]]]=!=templistoffields[[i]]&&j<5,j++];
+
+While[j<5&&conj[templistoffields[[j]]]=!=templistoffields[[i]],j++];
+
+	(*Catch the cases when there are no conjugates:we just need to find the other field with matching indices since we assume that there can only be one possible pairing of indices,otherwise will have more than one colour structure\[Rule]to modify,maybe*)
+If[j==5,
+j=i+1;
+While[j<5&&gaugeindices[[j]]=!=gaugeindices[[i]],j++];
+If[j==5,
+Print["Warning: problem with extracting colour factor!",orderedsetsofparticles];
+];
+];
+
 
 pair1={i,j};
 pair2=DeleteCases[{1,2,3,4},i|j];
@@ -288,13 +306,7 @@ Sow[{vertinds[[itosub[[k]],l]]->vertinds[[itosum[[k]],l]]}];
 ]]][[2,1]]];	
 
 
-For[i=2,i<=Length[vertex],i++,
-If[Length[vertex[[i]]]>1,(* multiple colour structures \[Rule] already summed over *)
-Return[1];
-,
-tosum*=vertex[[i,1]];
-];
-];(* end For *)
+
 ,
 Sun4,(* do the sum over two four-point vertices, assuming a simple structure *)
 tosum=1;
@@ -486,7 +498,7 @@ AppendTo[ddata,{MoSSSSS,{pfuncstring->"MfSSSSS",pprefactor->1/2,topdata->{{{fiel
 (*SCALARS AND VECTORS*)listWoSSSV={WoSSSV,Select[diagsW,POLEtypes[#]===SSSV&]};
 AppendTo[ddata,{WoSSSV,{pfuncstring->"WfSSSV",pprefactor->1/2,topdata->{{{field,gE1},{field,gE2},{Internal[1],i1},{AntiField@Internal[1],i1}}}}}];
 listMoSSSSV={MoSSSSV,Select[diagsM,POLEtypes[#]===SSSSV&]};
-AppendTo[ddata,{MoSSSSV,{pfuncstring->"MfSSSSV",pprefactor->1/2,topdata->{{{field,gE1},{Internal[1],i1},{Internal[2],i2}},{{field,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[2],i2}}}}}];
+AppendTo[ddata,{MoSSSSV,{pfuncstring->"MfSSSSV",pprefactor->1/2,topdata->{{{field,gE1},{Internal[1],i1},{Internal[3],i2}},{{field,gE2},{AntiField@Internal[1],i1},{AntiField@Internal[3],i2}}}}}];
 (*SCALARS AND FERMIONS*)listWoSSFF={WoSSFF,delconj[Select[diagsW,POLEordertypes[#]===SSFF&]]};
 AppendTo[ddata,{WoSSFF,{topdata->{{{field,gE1},{field,gE2},{Internal[1],i1},{Internal[2],i2}},{{AntiField@Internal[1],i1},{Internal[3],i3},{Internal[4],i4}},{{AntiField@Internal[2],i2},{AntiField@Internal[3],i3},{AntiField@Internal[4],i4}}},(*first combination*){{pfuncstring->"WfSSFbFb",pprefactor->1/2,pfermionmasses->{{Internal[3],i3},{Internal[4],i4}},pcouplingtypes->{0,L,L}},(*second combo*){pfuncstring->"WfSSFF",pprefactor->1/2,pfermionmasses->{},pcouplingtypes->{0,L,R}}}}}];
 listMoFFFFS={MoFFFFS,delconj[Select[diagsM,POLEordertypes[#]===FFFFS&]]};

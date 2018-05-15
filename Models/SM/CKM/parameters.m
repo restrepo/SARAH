@@ -24,9 +24,18 @@ ParameterDefinitions = {
                              Ue[i003,index1]*Ve[i004,index2],
                 LesHouches -> Ye0 }},   
 
-{Yu,        { Description -> "SCKM Up-Yukawa-Coupling"   }}, 
-{Yd,        { Description -> "SCKM Down-Yukawa-Coupling"}},
-{Ye,        { Description -> "PMNS Electron-Yukawa-Coupling"}}, 
+{Yu,        { Description -> "SCKM Up-Yukawa-Coupling",
+             DependenceNum ->  Sqrt[2]/v  {{Mass[Fu,1],0,0},
+					    {0, Mass[Fu,2],0},
+  				            {0, 0, Mass[Fu,3]}}}}, 
+{Yd,        { Description -> "SCKM Down-Yukawa-Coupling",
+             DependenceNum ->  Sqrt[2]/v {{Mass[Fd,1],0,0},
+ 				{0, Mass[Fd,2],0},
+ 				{0, 0, Mass[Fd,3]}}}},
+{Ye,        { Description -> "PMNS Electron-Yukawa-Coupling",
+			  DependenceNum ->  Sqrt[2]/v* {{Mass[Fe,1],0,0},
+             									{0, Mass[Fe,2],0},
+             									{0, 0, Mass[Fe,3]}}  }}, 
 
 
              
@@ -54,7 +63,7 @@ ParameterDefinitions = {
 {Ue,       { Description ->"Right-Lepton-Mixing-Matrix" }},         
               
 {ThetaW,    { Description -> "Weinberg-Angle",
-              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWm]^2/Mass[VZ]^2]]}},
+              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWp]^2/Mass[VZ]^2]]  }},
 
 {ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
 {ZW, {Description -> "W Mixing Matrix",

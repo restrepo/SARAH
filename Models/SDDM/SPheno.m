@@ -55,7 +55,7 @@ ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 FlagLoopContributions = True;  
 
-DefaultInputValues ={Lambda1IN -> 0.28, LamSHIN -> 0.01, LamSIN -> 0};
+DefaultInputValues ={Lambda1IN -> 0.28, LamS1IN -> 0.1, LamS2IN -> 0.1, LamS12IN -> 0.1, LamS21IN -> 0.1, LamS4IN -> 0.1, LamS4cIN -> 0.1, mu22IN->200,muSIN->200};
 
 
 (* turn off RGEs for loop-decays *)                     

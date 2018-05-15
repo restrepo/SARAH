@@ -64,53 +64,53 @@ For[l=1,l<=2,
 CombindedBlocks={};
 WriteString[filenames[[l]],"Block MODSEL      #  \n"];
 If[l==1,
-WriteString[filenames[[l]],"1 1               #  1/0: High/low scale input \n"];,
-WriteString[filenames[[l]],"1 0               #  1/0: High/low scale input \n"];
+WriteString[filenames[[l]]," 1 1               #  1/0: High/low scale input \n"];,
+WriteString[filenames[[l]]," 1 0               #  1/0: High/low scale input \n"];
 ];
-WriteString[filenames[[l]],"2 "<>ToString[iminpar]<>"              # Boundary Condition  \n"];
-WriteString[filenames[[l]],"6 1               # Generation Mixing \n"];
+WriteString[filenames[[l]]," 2 "<>ToString[iminpar]<>"              # Boundary Condition  \n"];
+WriteString[filenames[[l]]," 6 1               # Generation Mixing \n"];
 If[l==2,
 If[SupersymmetricModel===False,
-WriteString[filenames[[l]],"12 173.5          # Renormalization scale \n"];,
-WriteString[filenames[[l]],"12 1000.          # Renormalization scale \n"];
+WriteString[filenames[[l]]," 12 173.5          # Renormalization scale \n"];,
+WriteString[filenames[[l]]," 12 1000.          # Renormalization scale \n"];
 ];
 ];
 WriteString[filenames[[l]],"Block SMINPUTS    # Standard Model inputs \n"];
-WriteString[filenames[[l]],"2 1.166370E-05    # G_F,Fermi constant \n"];
-WriteString[filenames[[l]],"3 1.187000E-01    # alpha_s(MZ) SM MSbar \n"];
-WriteString[filenames[[l]],"4 9.118870E+01    # Z-boson pole mass \n"];
-WriteString[filenames[[l]],"5 4.180000E+00    # m_b(mb) SM MSbar \n"];
-WriteString[filenames[[l]],"6 1.735000E+02    # m_top(pole) \n"];
-WriteString[filenames[[l]],"7 1.776690E+00    # m_tau(pole) \n"];
+WriteString[filenames[[l]]," 2 1.166370E-05    # G_F,Fermi constant \n"];
+WriteString[filenames[[l]]," 3 1.187000E-01    # alpha_s(MZ) SM MSbar \n"];
+WriteString[filenames[[l]]," 4 9.118870E+01    # Z-boson pole mass \n"];
+WriteString[filenames[[l]]," 5 4.180000E+00    # m_b(mb) SM MSbar \n"];
+WriteString[filenames[[l]]," 6 1.735000E+02    # m_top(pole) \n"];
+WriteString[filenames[[l]]," 7 1.776690E+00    # m_tau(pole) \n"];
 WriteString[filenames[[l]],"Block MINPAR      # Input parameters \n"];
 
 If[Head[MINPAR[[1,1]]]=!=List,
 For[i=1,i<=Length[MINPAR],
 If[l==1 || (FreeQ[BoundaryLowScaleInput,MINPAR[[i,2]]]==False && FreeQ[EXTPAR,MINPAR[[i,2]]]==True)||(FreeQ[DEFINITION[MatchingConditions],MINPAR[[i,2]]]==False&& FreeQ[EXTPAR,MINPAR[[i,2]]]==True),
  If[NumericQ[MINPAR[[i,2]]/.defv]===False,
-WriteString[filenames[[l]],ToString[MINPAR[[i,1]]]<>"   0.000000E+00    # "<>ToString[MINPAR[[i,2]]] <>"\n"];,
-WriteString[filenames[[l]],ToString[MINPAR[[i,1]]]<>"   "<>ToStringFNr[MINPAR[[i,2]]/.defv] <>"    # "<>ToString[MINPAR[[i,2]]] <>"\n"];
+WriteString[filenames[[l]]," "<>ToString[MINPAR[[i,1]]]<>"   0.000000E+00    # "<>ToString[MINPAR[[i,2]]] <>"\n"];,
+WriteString[filenames[[l]]," "<>ToString[MINPAR[[i,1]]]<>"   "<>ToStringFNr[MINPAR[[i,2]]/.defv] <>"    # "<>ToString[MINPAR[[i,2]]] <>"\n"];
 ];
 ];
 i++;];,
 For[i=1,i<=Length[MINPAR[[iminpar]]],
 If[l==1 || (FreeQ[BoundaryLowScaleInput,MINPAR[[iminpar,i,2]]]==False && FreeQ[EXTPAR,MINPAR[[iminpar,i,2]]]==True) ||(FreeQ[DEFINITION[MatchingConditions],MINPAR[[iminpar,i,2]]]==False&& FreeQ[EXTPAR,MINPAR[[iminpar,i,2]]]==True),
  If[NumericQ[MINPAR[[iminpar,i,2]]/.defv]===False,
-WriteString[filenames[[l]],ToString[MINPAR[[iminpar,i,1]]]<>" 0.000000E+00    # "<>ToString[MINPAR[[iminpar,i,2]]] <>"\n"];,
-WriteString[filenames[[l]],ToString[MINPAR[[iminpar,i,1]]]<>"  "<>ToStringFNr[MINPAR[[iminpar,i,2]]/.defv] <>"    # "<>ToString[MINPAR[[iminpar,i,2]]] <>"\n"];
+WriteString[filenames[[l]]," "<>ToString[MINPAR[[iminpar,i,1]]]<>" 0.000000E+00    # "<>ToString[MINPAR[[iminpar,i,2]]] <>"\n"];,
+WriteString[filenames[[l]]," "<>ToString[MINPAR[[iminpar,i,1]]]<>"  "<>ToStringFNr[MINPAR[[iminpar,i,2]]/.defv] <>"    # "<>ToString[MINPAR[[iminpar,i,2]]] <>"\n"];
 ];
 ];
 i++;];
 ];
 
 If[Head[EXTPAR]===List,
-If[Select[Transpose[EXTPAR][[2]],(FreeQ[BoundarySUSYScale,#]==False || FreeQ[BoundaryEWSBScale,#]==False || FreeQ[BoundaryHighScale,#]==False || FreeQ[BoundaryConditionsUp,#]==False  || FreeQ[BoundaryConditionsDown,#]==False)&]=!={} || l==2,
+If[Select[Transpose[EXTPAR][[2]],(FreeQ[BoundarySUSYScale,#]==False || FreeQ[BoundaryEWSBScale,#]==False || FreeQ[BoundaryHighScale,#]==False || FreeQ[BoundaryConditionsUp,#]==False  || FreeQ[BoundaryConditionsDown,#]==False)&]=!={} || l==2  || OnlyLowEnergySPheno===True,
 WriteString[filenames[[l]],"Block EXTPAR      # Input parameters \n"];
 For[i=1,i<=Length[EXTPAR],
 If[l==1 || (FreeQ[BoundaryLowScaleInput,EXTPAR[[i,2]]]==False ),
  If[NumericQ[EXTPAR[[i,2]]/.defv]===False,
-WriteString[filenames[[l]],ToString[EXTPAR[[i,1]]]<>" 0.000000E+00    # "<>ToString[EXTPAR[[i,2]]] <>"\n"];,
-WriteString[filenames[[l]],ToString[EXTPAR[[i,1]]]<>" "<>ToStringFNr[EXTPAR[[i,2]]/.defv] <>"    # "<>ToString[EXTPAR[[i,2]]] <>"\n"];
+WriteString[filenames[[l]]," "<>ToString[EXTPAR[[i,1]]]<>" 0.000000E+00    # "<>ToString[EXTPAR[[i,2]]] <>"\n"];,
+WriteString[filenames[[l]]," "<>ToString[EXTPAR[[i,1]]]<>" "<>ToStringFNr[EXTPAR[[i,2]]/.defv] <>"    # "<>ToString[EXTPAR[[i,2]]] <>"\n"];
 ];
 ];
 i++;];
@@ -135,6 +135,7 @@ WriteString[filenames[[l]]," 15 1.000E-30       # write only decay if width larg
 If[SA`AddOneLoopDecay === True,
 WriteString[filenames[[l]]," 16 1              # One-loop decays \n"];
 ];
+WriteString[filenames[[l]]," 19 -2              # Matching order (-2:automatic, -1:pole, 0-2: tree, one- & two-loop) \n"];
 WriteString[filenames[[l]]," 31 -1              # fixed GUT scale (-1: dynamical GUT scale) \n"];
 WriteString[filenames[[l]]," 32 0               # Strict unification \n"];
 WriteString[filenames[[l]]," 34 1.000E-04       # Precision of mass calculation \n"];
@@ -148,7 +149,7 @@ WriteString[filenames[[l]]," 52 0               # Write spectrum in case of tach
 If[SupersymmetricModel=!=False,
 WriteString[filenames[[l]]," 55 1               # Calculate loop corrected masses \n"];,
 WriteString[filenames[[l]]," 55 0               # Calculate loop corrected masses \n"];
-WriteString[filenames[[l]]," 61 0               # Running SM parameters\n"];
+(* WriteString[filenames[[l]]," 61 0               # Running SM parameters\n"]; *)
 ];
 WriteString[filenames[[l]]," 57 1               # Calculate low energy constraints \n"];
 If[Count[Gauge,U[1],3]>1,WriteString[filenames[[l]]," 60 1               # Include possible, kinetic mixing \n"];];
@@ -168,14 +169,22 @@ WriteString[filenames[[l]]," 79 1               # Write WCXF files (exchange for
 WriteString[filenames[[l]]," 86 0.              # Maximal width to be counted as invisible in Higgs decays; -1: only LSP \n"];
 If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          # Maximal mass of particles taken into account in loops \n"];
 ];
-WriteString[filenames[[l]],"510 0.              # Write tree level values for tadpole solutions \n"];
-WriteString[filenames[[l]],"515 0               # Write parameter values at GUT scale \n"];
-WriteString[filenames[[l]],"520 1.              # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! \n"];
-WriteString[filenames[[l]],"521 1.              # Diphoton/Digluon widths including higher order \n"];
-WriteString[filenames[[l]],"525 0.              # Write loop contributions to diphoton decay of Higgs \n"];
-WriteString[filenames[[l]],"530 1.              # Write Blocks for Vevacious \n"];
+If[AddTreeLevelUnitarityLimits===True,
+WriteString[filenames[[l]]," 440 1               # Tree-level unitarity constraints (limit s->infinity) \n"];
+WriteString[filenames[[l]]," 441 1               # Full tree-level unitarity constraints \n"];
+WriteString[filenames[[l]]," 442 1000.           # sqrt(s_min)   \n"];
+WriteString[filenames[[l]]," 443 2000.           # sqrt(s_max)   \n"];
+WriteString[filenames[[l]]," 444 5               # steps   \n"];
+WriteString[filenames[[l]]," 445 0               # running   \n"];
+];
+WriteString[filenames[[l]]," 510 0.              # Write tree level values for tadpole solutions \n"];
+WriteString[filenames[[l]]," 515 0               # Write parameter values at GUT scale \n"];
+WriteString[filenames[[l]]," 520 1.              # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! \n"];
+WriteString[filenames[[l]]," 521 1.              # Diphoton/Digluon widths including higher order \n"];
+WriteString[filenames[[l]]," 525 0.              # Write loop contributions to diphoton decay of Higgs \n"];
+WriteString[filenames[[l]]," 530 1.              # Write Blocks for Vevacious \n"];
 If[IncludeFineTuning===True,
-WriteString[filenames[[l]],"550 1.             # Calculate Fine-Tuning \n"];
+WriteString[filenames[[l]]," 550 1.             # Calculate Fine-Tuning \n"];
 ];
 
 
@@ -259,8 +268,8 @@ Switch[Length[getDimSPheno[listIn[[i]]]],
 	 CombindedBlocks = Join[CombindedBlocks,{{LHBlockName[listIn[[i]]],{LHPos[listIn[[i]]], listIn[[i]]}}}];,
 	For[i1=1,i1<=getDimSPheno[listIn[[i]]][[1]],
 	 If[NumericQ[listIn[[i]][i1]/.defv]===False,
-	WriteString[filenames[[l]],ToString[i1]<>"   0.000000E+00         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>")\n"];,
-	WriteString[filenames[[l]],ToString[i1]<>"   "<>ToStringFNr[listIn[[i]][i1]/.defv] <>"         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>")\n"];
+	WriteString[filenames[[l]]," "<>ToString[i1]<>"   0.000000E+00         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>")\n"];,
+	WriteString[filenames[[l]]," "<>ToString[i1]<>"   "<>ToStringFNr[listIn[[i]][i1]/.defv] <>"         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>")\n"];
 	];
 	i1++;];
 	];,
@@ -268,8 +277,8 @@ Switch[Length[getDimSPheno[listIn[[i]]]],
 	For[i1=1,i1<=getDimSPheno[listIn[[i]]][[1]],
 	For[i2=1,i2<=getDimSPheno[listIn[[i]]][[2]],
 		 If[NumericQ[listIn[[i]][i1,i2]/.defv]===False,
-	WriteString[filenames[[l]],ToString[i1]<>" "<>ToString[i2]<>"   0.000000E+00         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>")\n"];,
-	WriteString[filenames[[l]],ToString[i1]<>" "<>ToString[i2]<>"   "<>ToStringFNr[listIn[[i]][i1,i2]/.defv] <>"         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>")\n"];
+	WriteString[filenames[[l]]," "<>ToString[i1]<>" "<>ToString[i2]<>"   0.000000E+00         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>")\n"];,
+	WriteString[filenames[[l]]," "<>ToString[i1]<>" "<>ToString[i2]<>"   "<>ToStringFNr[listIn[[i]][i1,i2]/.defv] <>"         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>")\n"];
 	];
 	i2++;];
 	i1++;];,
@@ -278,8 +287,8 @@ Switch[Length[getDimSPheno[listIn[[i]]]],
 	For[i2=1,i2<=getDimSPheno[listIn[[i]]][[2]],
 	For[i3=1,i3<=getDimSPheno[listIn[[i]]][[3]],
 	If[NumericQ[listIn[[i]][i1,i2,i3]/.defv]===False,
-	WriteString[filenames[[l]],ToString[i1]<>" "<>ToString[i2]<>" "<>ToString[i3]<>"   0.000000E+00         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>","<>ToString[i3]<>")\n"];,
-	WriteString[filenames[[l]],ToString[i1]<>" "<>ToString[i2]<>" "<>ToString[i3]<>"  "<>ToStringFNr[listIn[[i]][i1,i2]/.defv] <>"         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>","<>ToString[i3]<>")\n"];
+	WriteString[filenames[[l]]," "<>ToString[i1]<>" "<>ToString[i2]<>" "<>ToString[i3]<>"   0.000000E+00         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>","<>ToString[i3]<>")\n"];,
+	WriteString[filenames[[l]]," "<>ToString[i1]<>" "<>ToString[i2]<>" "<>ToString[i3]<>"  "<>ToStringFNr[listIn[[i]][i1,i2]/.defv] <>"         # "<>SPhenoForm[listIn[[i]]] <>"("<>ToString[i1] <>","<>ToString[i2]<>","<>ToString[i3]<>")\n"];
 	];
 	i3++;];
 	i2++;];
@@ -294,7 +303,7 @@ CombindedBlocks = Intersection[Table[Select[CombindedBlocks,(CombindedBlocks[[i,
 For[i=1,i<=Length[CombindedBlocks],
 WriteString[filenames[[l]],"Block "<>ToUpperCase[CombindedBlocks[[i,1,1]]] <>"IN       #  \n"];
 For[k=2,k<=Length[CombindedBlocks[[i,1]]],
-WriteString[filenames[[l]],ToString[CombindedBlocks[[i,1,k,1]]]<>"   0.000000E+00         # "<>SPhenoForm[CombindedBlocks[[i,1,k,2]]] <>"\n"];
+WriteString[filenames[[l]]," "<>ToString[CombindedBlocks[[i,1,k,1]]]<>"   0.000000E+00         # "<>SPhenoForm[CombindedBlocks[[i,1,k,2]]] <>"\n"];
 k++;];
 i++;];
 
@@ -455,11 +464,15 @@ If[IncludeFineTuning===True,
 WriteString[sphenoMake," ${name}(FineTuning_"<>ModelName<>".o) \\\n"];
 ];
 
+If[AddTreeLevelUnitarityLimits===True,
+WriteString[sphenoMake," ${name}(Unitarity_"<>ModelName<>".o) \\\n"];
+];
+
 
 If[AddLowEnergyConstraint ===True,
-WriteString[sphenoMake," ${name}(LowEnergy_"<>ModelName<>".o) \\\n"];
 If[SkipFlavorKit=!=True,WriteString[sphenoMake,"${name}(FlavorKit_LFV_"<>ModelName<>".o) ${name}(FlavorKit_QFV_"<>ModelName<>".o) ${name}(FlavorKit_Observables_"<>ModelName<>".o)\\\n"];
 ];
+WriteString[sphenoMake," ${name}(LowEnergy_"<>ModelName<>".o) \\\n"];
 ];
 
 If[HighscaleMatching===True,

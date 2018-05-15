@@ -95,4 +95,6 @@ DefaultInputValues ={LambdaHINPUT -> -0.12,
                      gBL1INPUT -> 0,
                      g1BLINPUT -> 0                     
                      };
+                     
+SA`AddOneLoopDecay = False;                     
 

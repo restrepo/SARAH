@@ -13,17 +13,10 @@ EXTPAR = {
    {101, v1Input},
    {102, v2Input},
    {103, v3Input},
-   {200, Qq},
-   {201, Ql},
-   {202, QHd},
-   {203, QHu},
-   {204, Qd},
-   {205, Qu},
-   {206, Qe},
-   {207, Qs},
-   {208, Qs1},
-   {209, Qs2},
-   {210, Qs3}       };
+   {111, mSS1input},
+   {112, mSS2input},
+   {113, mS1S2input},
+   {200, QH}     };
 
 RealParameters = {TanBeta, vSInput, v1Input, v2Input, v3Input,m0};
 
@@ -32,12 +25,20 @@ ParametersToSolveTadpoles = {mHd2,mHu2,ms2,ms12,ms22,ms32};
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
+DEFINITION[MatchingConditions]=Default[THDMII];
 
 BoundarySUSYScale = {
 {vS, vSInput},  
 {vS1, v1Input}, 
 {vS2, v2Input}, 
-{vS3, v3Input}
+{vS3, v3Input},
+{\[Kappa], KappaInput},
+{\[Lambda], LambdaInput},
+{T[\[Kappa]], AKappaInput*\[Kappa]},
+{T[\[Lambda]], ALambdaInput*\[Lambda]},
+{mss12, mSS1input},
+{mss22, mSS2input},
+{ms1s22,mS1S2input}
 };
 
 
@@ -57,13 +58,6 @@ BoundaryHighScale={
 {md2, DIAGONAL m0^2},
 {mu2, DIAGONAL m0^2},
 {me2, DIAGONAL m0^2},
-{ms2, m0^2},
-{mHd2, m0^2},
-{mHu2, m0^2},
-{\[Kappa], KappaInput},
-{\[Lambda], LambdaInput},
-{T[\[Kappa]], AKappaInput*\[Kappa]},
-{T[\[Lambda]], ALambdaInput*\[Lambda]},
 {MassB, m12},
 {MassWB,m12},
 {MassG,m12},
@@ -78,10 +72,8 @@ BoundaryLowScaleInput={
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
-DEFINITION[MatchingConditions]=Default[THDMII];
 
 
+DefaultInputValues = {m0 -> 2000, m12 -> 1000, TanBeta->20,  Azero -> -1500,  LambdaInput -> 0.1, ALambdaInput -> 1000, KappaInput->0.3, AKappaInput->-550, vSInput -> 1500, v1Input->100, v2Input->200, v3Input-> 300, QH->0.5, mSS1input->-10^4,mS1S2input->-10^4,mSS2input->-10^4  };
 
-DefaultInputValues = {m0 -> 3000, m12 -> 1000, TanBeta->20,  Azero -> -2500,  LambdaInput -> 0.07, ALambdaInput -> 1500, KappaInput->0.3, AKappaInput->-10, vSInput -> 4000, v1Input->1000, v2Input->2000, v3Input->2000,\
-Qq->1./(2 Sqrt[6]), Ql->1./(2 Sqrt[6]), QHd-> -1./(Sqrt[6]), QHu-> -1./(Sqrt[6]), Qd->-1./(2 Sqrt[6]), Qe->-1./(2 Sqrt[6]), Qu->-1./(2 Sqrt[6]),  Qs->2./(Sqrt[6]),  Qs1->-2./(Sqrt[6]),  Qs2->-2./(Sqrt[6]),  Qs3->-4./(Sqrt[6])  };
 

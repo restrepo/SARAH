@@ -50,7 +50,7 @@ BoundaryLowScaleInput={
 ListDecayParticles = {Fu,Fe,Fd,hh,Hpm,xiMM,Ah};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
-DefaultInputValues ={vXInput->1, M1input->1000, M2input->1000,Lambda1input->0.2,Lambda2input->0.5,Lambda3input->0.5,Lambda4input->0.5,Lambda5input->0.5 };
+DefaultInputValues ={M1input->1000, M2input->1000,Lambda1input->0.2,Lambda2input->0.5,Lambda3input->0.5,Lambda4input->0.5,Lambda5input->0.5,sHinput->0.2 };
 
 AddTreeLevelUnitarityLimits=True;
 

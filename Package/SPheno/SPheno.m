@@ -46,6 +46,7 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 
 <<SPhenoLowEnergy`;
 <<SPhenoHiggsBoundsOutput`;
+<<SPhenoUnitarity`;
 
  <<SPhenoLoopDecays`; 
 <<SPhenoCT`; 
@@ -185,9 +186,9 @@ If[IntermediateScale ===True,
 SuffixRegime="R"<>ToString[RegimeNr];
 If[Head[HeavyFields]===List,
 (* ModelOutput[Eigenstates, ReadLists\[Rule]ReadL, IncludeLoopCorrections \[Rule]True,IncludeRGEs\[Rule]True, VerticesForLoops\[Rule]True,IncludeVertices\[Rule]True];  *)
- ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->False,IncludeRGEs->True, VerticesForLoops->False,IncludeVertices->False];
+ ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->False,IncludeRGEs->True,TwoLoopRGEs->TwoL, VerticesForLoops->False,IncludeVertices->False];
 getUnmixedMassesDummy[Eigenstates]; ,
- ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->False,IncludeRGEs->True, VerticesForLoops->False,IncludeVertices->False]; 
+ ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->False,IncludeRGEs->True,TwoLoopRGEs->TwoL, VerticesForLoops->False,IncludeVertices->False]; 
 ];,
 
 
@@ -198,7 +199,7 @@ ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,Include
 MakeDummyListRGEs;
 ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->False,VerticesForLoops->True];
 ];,
-ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->True, VerticesForLoops->True];
+ModelOutput[Eigenstates, ReadLists->ReadL, IncludeLoopCorrections ->True,IncludeRGEs->True,TwoLoopRGEs->TwoL, VerticesForLoops->True];
 ];
 
  (* ModelOutput[Eigenstates, ReadLists\[Rule]ReadL, IncludeLoopCorrections \[Rule]True,IncludeRGEs\[Rule]True, VerticesForLoops\[Rule]True];  *)
@@ -311,6 +312,8 @@ InitInfoForSPheno[Eigenstates];
 If[Head[RealParameters]===List,
 realVar = Join[realVar,RealParameters];
 ];
+
+realVar = Join[realVar,ToExpression/@getOutputNameParameter/@Select[realVar,getOutputNameParameter[#]=!=#&]];
 
 If[Head[RegimeNr]==Integer,
 If[IntermediateScale =!=True,

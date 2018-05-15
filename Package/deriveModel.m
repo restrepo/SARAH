@@ -19,11 +19,13 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ------------------------------------------------- *)
 (* Calculates all Vertices / Generates a TeX-Output  *)
 (* ------------------------------------------------- *)
 
 
+(* ::Input::Initialization:: *)
 
 Options[ModelOutput]={ SixParticleInteractions->False,effectiveOperators->False, ReadLists->False, WriteTeX-> False, WriteCHep->False,  WriteWHIZARD->False, WriteFeynArts->False, WriteUFO->False, FeynmanDiagrams ->True, IncludeLoopCorrections ->False,IncludeRGEs->False,TwoLoopRGEs->True,VerticesForLoops->False, SimplifySums->True, IncludeVertices->True,Eigenstates->Automatic };
 
@@ -141,6 +143,7 @@ ITypesNonRen={ {SSSSSS,S,S,S,S,S,S}, {SSSSVV,S,S,S,S,V,V}, {SSVVVV,S,S,V,V,V,V},
 
 
 
+(* ::Input::Initialization:: *)
 InitVertexCalculation[Eigenstates_,WriteTeX_]:=Block[{},
 Print["Generate Directories"];
 
@@ -217,6 +220,7 @@ CreateTeXNameList[Eigenstates];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 
 ReadVertexList[ES_,effectiveOperators_,SixP_,VLoop_]:=Block[{i},
@@ -249,6 +253,7 @@ i++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 MakeVertexList[ES_,opt___]:=MakeVertexListFun[ES, effectiveOperators/.{opt}/.Options[MakeVertexList],SixParticleInteractions/.{opt}/.Options[MakeVertexList], VerticesForLoops /.{opt}/.Options[MakeVertexList],SimplifySums /.{opt}/.Options[MakeVertexList],GenericClasses /.{opt}/.Options[MakeVertexList]];
 
 MakeVertexListFun[ES_,effectiveOperators_,SixParticleInteractions_, VerticesForLoops_,SimplifySums_,classes_]:=Block[{s1,s2,s3,s4,s5,s6,fin,iteration,starttime},
@@ -651,6 +656,7 @@ Close[sphenoFlavorKitObs];
 
 
 
+(* ::Input::Initialization:: *)
 
 
 

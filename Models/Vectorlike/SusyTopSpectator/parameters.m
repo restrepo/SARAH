@@ -181,7 +181,19 @@ ParameterDefinitions = {
          LaTeX -> "m_{\\tilde e \\tilde e'}^2"}},
 {mll12, {OutputName -> mll12,
          LesHouches -> mll12,
-         LaTeX -> "m_{\\tilde l \\tilde q'}^2"}}
+         LaTeX -> "m_{\\tilde l \\tilde q'}^2"}},
+         
+{PhaseTR, {OutputName -> PhiTR,
+         LesHouches -> {PHASES,1},
+         LaTeX -> "\\phi_{\\tau_R}"}},
+         
+{PhaseTL, {OutputName -> PhiTL,
+         LesHouches -> {PHASES,2},
+         LaTeX -> "\\phi_{T_L}"}},
+         
+{PhaseBL, {OutputName -> PhiBL,
+         LesHouches -> {PHASES,3},
+         LaTeX -> "\\phi_{B_L}"}}                 
          
                                   
  }; 

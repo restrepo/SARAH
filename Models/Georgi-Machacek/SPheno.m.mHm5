@@ -1,5 +1,8 @@
 OnlyLowEnergySPheno = True;
 
+ModelName="GMsHm5";
+OutputSeparateSPhenoDir=True;
+
 MINPAR={
         {3,Lambda3input},
         {4,Lambda4input},

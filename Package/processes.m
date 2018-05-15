@@ -409,6 +409,7 @@ _,Return[{a,b}]
 
 (* ::Input::Initialization:: *)
 
+(*
 SymmFactor2BodyDecay[pD_,p1_,p2_]:=Block[{},
 If[getType[getBlank[pD]]===S,
 If[getBlank[p1]===getBlank[p2],
@@ -423,7 +424,29 @@ Return[1/2];,
 Return[1];
 ];
 ];
+]; *)
+
+SymmFactor2BodyDecay[pD_,p1_,p2_]:=Block[{res},
+res=1;
+
+(* Identical states *)
+If[p1===p2,
+res=res 1/2;
 ];
+
+(*
+(* conjugated final state possible?*)
+If[AntiField[getBlank[pD]]===getBlank[pD],
+If[getBlank[p1]=!=getBlank[p2],
+If[AntiField[p1]===p1 &&  AntiField[p2]===p2,
+res=res 1/2;
+];
+];
+];
+*)
+Return[res];
+];
+
 
 CalculateColorFactor[pD_,p1_,p2_]:=ChargeFactor[pD,p1,p2];
 (*
@@ -472,7 +495,7 @@ If[temp=!={},Return[Times@@Transpose[temp][[2]]];,Return[1];];];
 
 
 (* ::Input::Initialization:: *)
-CalculateSymmetryFactor[p1_,p2_]:=Block[{},
+CalculateSymmetryFactor[p1_,p2_]:=Block[{fac},
 fac=1/2;
 If[getBlank[p1]=!=getBlank[p2],
 If[(AntiField[p1]===p1 && AntiField[p2]===p2),
@@ -616,7 +639,7 @@ If[FreeQ[extfields,External[3]],
 norm=1;
 ,
 If[getType[External[3]/.extfields]===V&&SA`DynL[External[3]/.extfields,allind[[i]]]=!={0},
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/.extfields],norm=1;,norm=Generator[group,SA`DynL[RE[extfields[[2,2]]],gname]]@@fixvar/.Lam[a_,b_,c_]->Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]->A[SU[n],b][c,a,b]/.sub[[k]];
+If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]]/.extfields],norm=1;,norm=Generator[group,SA`DynL[RE[extfields[[2,2]]],gname]/.{0,1}->{1,0}]@@fixvar/.Lam[a_,b_,c_]->Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]->A[SU[n],b][c,a,b]/.sub[[k]];
 If[norm===0,norm=1;];];
 ,
 

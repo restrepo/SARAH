@@ -24,6 +24,7 @@ ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 DefaultInputValues ={LambdaIN -> 0.27};
 
+AddTreeLevelUnitarityLimits=True;
 
 RenConditionsDecays={
 {dCosTW, 1/2*Cos[ThetaW] * (PiVWp/(MVWp^2) - PiVZ/(mVZ^2)) },

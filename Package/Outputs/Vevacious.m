@@ -141,13 +141,13 @@ FunctionVevacious2[complexPar_,zerop_,outputfile_,renscheme_]:=Block[{i,j,ES,tem
       Get[ToFileName[{$sarahCurrentModelDir},"SPheno.m"]];
 
       For[i=1,i<=Length[ParametersToSolveTadpolesLowScaleInput],
-        subExtraTermsTree = Join[subExtraTermsTree, {ParametersToSolveTadpolesLowScaleInput[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpolesLowScaleInput[[i]]]]<>"tree"]}];
-        subExtraTermsLoop = Join[subExtraTermsLoop, {ParametersToSolveTadpolesLowScaleInput[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpolesLowScaleInput[[i]]]]<>"loop"]}];
+        subExtraTermsTree = Join[subExtraTermsTree, {ParametersToSolveTadpolesLowScaleInput[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpolesLowScaleInput[[i]]]]<>"Tree"]}];
+        subExtraTermsLoop = Join[subExtraTermsLoop, {ParametersToSolveTadpolesLowScaleInput[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpolesLowScaleInput[[i]]]]<>"Loop"]}];
       i++;];
 
       For[i=1,i<=Length[ParametersToSolveTadpoles],
-        subExtraTermsTree = Join[subExtraTermsTree, {ParametersToSolveTadpoles[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpoles[[i]]]]<>"tree"]}];
-        subExtraTermsLoop = Join[subExtraTermsLoop, {ParametersToSolveTadpoles[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpoles[[i]]]]<>"loop"]}];
+        subExtraTermsTree = Join[subExtraTermsTree, {ParametersToSolveTadpoles[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpoles[[i]]]]<>"Tree"]}];
+        subExtraTermsLoop = Join[subExtraTermsLoop, {ParametersToSolveTadpoles[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpoles[[i]]]]<>"Loop"]}];
       i++;];
 
 
@@ -254,11 +254,12 @@ Print["Finished! Output was written to file ",$sarahCurrentVevaciousDir];
 
 
 GenerateParameterOutputNameALL[prefix_,complexPar_,ES_]:=Block[{i},
-      subparameters={};
+Off[Parameter::NoLesHouches];
+       subparameters={};
       For[i=1,i<=Length[parameters],
 	  If[FreeQ[Particles[ES],parameters[[i,1]]]==False,SkipLHMessage=True;,SkipLHMessage=False;];
-      If[FreeQ[TadpoleEquations[ES],parameters[[i,1]]]==False || FreeQ[MassMatrices[ES]/. RXi[_]->0,parameters[[i,1]]]==False || FreeQ[MassMatricesGauge[ES]/. RXi[_]->0,parameters[[i,1]]]==False,
-		If[FreeQ[SA`VEVs,parameters[[i,1]]]==True,
+      If[FreeQ[TadpoleEquations[ES],parameters[[i,1]]]==False || FreeQ[MassMatrices[ES]/. RXi[_]->0,parameters[[i,1]]]==False || FreeQ[MassMatricesGauge[ES]/. RXi[_]->0,parameters[[i,1]]]==False  || LHBlockName[parameters[[i,1]]]=!="NONE",
+      If[FreeQ[SA`VEVs,parameters[[i,1]]]==True,
          If[conj[parameters[[i,1]]]===parameters[[i,1]] || MemberQ[complexPar,parameters[[i,1]]]==False,
               Switch[Length[parameters[[i,2]]],
                   0,
@@ -356,6 +357,7 @@ GenerateParameterOutputNameALL[prefix_,complexPar_,ES_]:=Block[{i},
 			];
            i++;];
       SkipLHMessage=False;
+      On[Parameter::NoLesHouches];
       Return[subparameters];
       ];
 
@@ -381,12 +383,14 @@ GenerateXLM[renscheme_]:=Block[{i,j,k},
 GenerateVpp[renscheme_]:=Block[{i,j,k},
       WriteDetailsVpp;
       WriteBlocksVpp;
-
+(*
 WriteString[homout,"<AllowedNonZeroVariables>\n"];      
       WriteFieldVariablesVpp;
       WriteDerivedParametersVpp;
 WriteString[homout,"</AllowedNonZeroVariables>\n\n"];
-
+*)
+      WriteFieldVariablesVpp;
+      WriteDerivedParametersVpp;
       WritePotVpp;
       
 WriteString[homout,"<LoopCorrections RenormalizationScheme=\""<>If[renscheme==="DR","DRBAR","MSBAR"]<>"\" GaugeFixing=\"LANDAU\">\n"];  
@@ -419,7 +423,8 @@ WriteString[homout,"</FieldVariables> \n\n"];
  WriteString[homout,"<DsbMinimum> \n"];
   For[i=1,i<=Length[subVEVtoScalar],
    If[LHBlockName[subVEVtoScalar[[i,1]] /. A_[b_]->A]=!="None",
-    WriteString[homout,ToString[subVEVtoScalar[[i,2]]]<>"="<>ToString[subVEVtoScalar[[i,1]]]<>"\n"];
+    (* WriteString[homout,ToString[subVEVtoScalar[[i,2]]]<>"="<>ToString[subVEVtoScalar[[i,1]]]<>"\n"]; *)
+    WriteString[homout,ToString[subVEVtoScalar[[i,2]]]<>"="<>LHBlockName[subVEVtoScalar[[i,1]]]<>"["<>ToString[LHPos[subVEVtoScalar[[i,1]]]]<>"]\n"];
     ];
  i++;];
 WriteString[homout,"</DsbMinimum> \n\n"];
@@ -434,6 +439,7 @@ WriteDerivedParametersVpp:=Block[{temp},
   temp=Intersection[temp];
   WriteString[homout,"<DerivedParameters> \n"];
   
+  (*
   For[i=1,i<=Length[temp],
    WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"=SLHAELEMENT["<>LHBlockName[temp[[i]]]<>","<>ToString[LHPos[temp[[i]]]]<>"] \n"];
    WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"SarahTree=SLHAELEMENT[TREE"<>LHBlockName[temp[[i]]]<>","<>ToString[LHPos[temp[[i]]]]<>"] \n"];
@@ -441,15 +447,26 @@ WriteDerivedParametersVpp:=Block[{temp},
    WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"SarahLoop=SLHAELEMENT[LOOP"<>LHBlockName[temp[[i]]]<>","<>ToString[LHPos[temp[[i]]]]<>"] \n"];
    WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"Loop=IFNONZERO["<>ToString[getOutputNameParameter[temp[[i]]]]<>"SarahLoop,"<>ToString[getOutputNameParameter[temp[[i]]]]<>"] \n"];
    i++;];
+   *)
+     For[i=1,i<=Length[temp],
+        WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"="<>LHBlockName[temp[[i]]]<>"["<>ToString[LHPos[temp[[i]]]]<>"] \n"];
+   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"SarahTree=TREE"<>LHBlockName[temp[[i]]]<>"["<>ToString[LHPos[temp[[i]]]]<>"] \n"];
+   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"Tree=IFNONZERO["<>ToString[getOutputNameParameter[temp[[i]]]]<>"SarahTree,"<>ToString[getOutputNameParameter[temp[[i]]]]<>"] \n"];
+   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"SarahLoop=LOOP"<>LHBlockName[temp[[i]]]<>"["<>ToString[LHPos[temp[[i]]]]<>"] \n"];
+   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"Loop=IFNONZERO["<>ToString[getOutputNameParameter[temp[[i]]]]<>"SarahLoop,"<>ToString[getOutputNameParameter[temp[[i]]]]<>"] \n"];
+   i++;];
 
 SkipLHMessage=True;
+
+(*
   For[i=1,i<=Length[subVEVtoScalar],
    If[LHBlockName[subVEVtoScalar[[i,1]] /. A_[b_]->A]=!="None",
-    WriteString[homout,ToString[subVEVtoScalar[[i,1]]]<>"=SLHAELEMENT["<>LHBlockName[subVEVtoScalar[[i,1]]]<>","<>ToString[LHPos[subVEVtoScalar[[i,1]]]]<>"]\n"];
+(*    WriteString[homout,ToString[subVEVtoScalar[[i,1]]]<>"=SLHAELEMENT["<>LHBlockName[subVEVtoScalar[[i,1]]]<>","<>ToString[LHPos[subVEVtoScalar[[i,1]]]]<>"]\n"]; *)
+    WriteString[homout,ToString[subVEVtoScalar[[i,1]]]<>"="<>LHBlockName[subVEVtoScalar[[i,1]]]<>"["<>ToString[LHPos[subVEVtoScalar[[i,1]]]]<>"]\n"];
     ];
  i++;];
+ *)
 SkipLHMessage=False;
-
   WriteString[homout,"</DerivedParameters> \n\n"];
 ];
 
@@ -460,9 +477,18 @@ WriteDetailsVpp:=Block[{},
 ];
 
 WriteBlocksVpp:=Block[{i,j,temp,extra},
- extra=Intersection[LHBlockName/@Join[ParametersToSolveTadpoles,ParametersToSolveTadpolesLowScaleInput]];
+If[Length[ParametersToSolveTadpoles]>0 && Length[ParametersToSolveTadpolesLowScaleInput]>0,
+ extra=Intersection[LHBlockName/@Join[ParametersToSolveTadpoles,ParametersToSolveTadpolesLowScaleInput]];,
+ If[Length[ParametersToSolveTadpoles]>0,
+ extra=Intersection[LHBlockName/@ParametersToSolveTadpoles];,
+ extra=Intersection[LHBlockName/@ParametersToSolveTadpolesLowScaleInput];
+ ];
+ ];
+ extra=ToExpression/@extra;
  temp=Select[subout,Head[#]=!=RuleDelayed&];
  temp=Intersection[Table[temp[[i,2]],{i,1,Length[temp]}]  /. A_[b_Integer]->A /. A_[b_]->A];
+ temp=Intersection[Join[temp,LHBlockName/@SA`VEVs]];
+ 
  WriteString[homout,"<SlhaBlocks>\n"];
   For[i=1,i<=Length[temp],
      WriteString[homout,ToString[temp[[i]]]<>"\n"];

@@ -52,10 +52,7 @@ BoundaryLowScaleInput={
  {U1Qb, twoTimesU1QbINPUT/2},
  {vS, vSINPUT},
  {Yx, LHInput[Yx]},
- {Yv, LHInput[Yv]},
- {g1, g1SM},
- {g2, g2SM},
- {g3, g3SM}
+ {Yv, LHInput[Yv]}
 };
 
 
@@ -75,6 +72,5 @@ DefaultInputValues ={LambdaHINPUT -> -0.09,
                      threeTimesU1QmINPUT -> 1,
                      U1QkINPUT -> 1
                      };
-                     
-DEFINITION[MatchingConditions]=Default[THDMII];                     
+                                    
 

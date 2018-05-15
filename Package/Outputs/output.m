@@ -372,6 +372,7 @@ Format[PL,TeXForm]:=Format["\\frac{1-\\gamma_5}{2}",OutputForm];
 Format[PR,TeXForm]:=Format["\\frac{1+\\gamma_5}{2}",OutputForm];
 Format[gamma[a_],TeXForm]:=Format["\\gamma_{"<>ToString[TeXForm[a]]<>"}",OutputForm];
 Format[abs[a_],TeXForm]:=Format["|"<>ToString[TeXForm[a]]<>"|^2",OutputForm];
+Format[abs2[a_],TeXForm]:=Format["|"<>ToString[TeXForm[a]]<>"|^4",OutputForm];
 Format[Delta[a_,b_],TeXForm]:=Format["\\delta_{"<>ToString[TeXForm[a]]<>" "<>ToString[TeXForm[b]]<>"}",OutputForm];
 Format[Der[a_],TeXForm]:=Format["\\partial_{\\mu}"<>TeXOutput[a],OutputForm];
 Format[epsTensor[a__],TeXForm]:=Format["\\epsilon^{"<>StringReplace[ToString[TeXForm/@{a}] ,","->""]<>"}",OutputForm];
@@ -741,6 +742,10 @@ Unprotect[Span];
 Format[x_Span, FortranForm]:=Format[ToString[FortranForm[x[[1]]]]<>":"<>ToString[FortranForm[x[[2]]]],OutputForm]/;SARAHFortran==True;
 Protect[Span];
 
+Unprotect[Integer];
+Format[x_Integer, FortranForm]:=If[x>10^4,Format[FortranForm[N[x]],OutputForm],Format[x,OutputForm]]/;SARAHFortran==True;
+Protect[Integer];
+
 For[i=1,i<=Length[threeIndexParameter],
 For[j=1,j<=5,
 Format[threeIndexParameter[[i]][j], FortranForm]=Format[SPhenoForm[threeIndexParameter[[i]]]<>ToString[j],OutputForm] ;
@@ -982,6 +987,15 @@ Switch[temp2,
 ];
 If[StringTake[basis,{1}]==="{",
 If[(StringCount[basis,"{"])===1+(StringCount[basis,"}"]),basis=StringDrop[basis,{1}];];
+];
+
+If[StringLength[sub]>0,
+If[StringTake[sub,{-1}]==="}",
+If[(StringCount[sub,"}"])===1+(StringCount[sub,"{"]),
+If[(StringCount[sub,"}"]+StringCount[basis,"}"])===1+(StringCount[sub,"{"]+StringCount[basis,"{"]),
+sub=StringDrop[sub,{-1}];];
+];
+];
 ];
 
 res = basis;

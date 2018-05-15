@@ -40,13 +40,13 @@ SuperFields[[7]] = {e, 3, conj[eR],     1, 1,  1, RpM, Exp[2*Pi*I/3]};
 SuperFields[[8]] = {s, 1, sR,     0, 1,  1, RpP, Exp[2*Pi*I/3]};
 
 SuperFields[[9]] = {t1, 1, conj[t1], -2/3, 1, -3, RpM, Exp[2*Pi*I/3]};
-SuperFields[[10]] = {t2, 1, conj[t2],  2/3, 1,  3, RpM, Exp[2*Pi*I/3]};
+SuperFields[[10]] = {t2, 1, t2,  2/3, 1,  3, RpM, Exp[2*Pi*I/3]};
 
 (*------------------------------------------------------*)
 (* Superpotential *)
 (*------------------------------------------------------*)
 
-SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s + \[Kappa]/3 s.s.s + Yt t1.q.Hu + LR t1.t2.s + LV u.t2.s;
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s + \[Kappa]/3 s.s.s + Yt t1.q.Hu + LamT t1.t2.s + LamV u.t2.s;
 
 
 (*----------------------------------------------*)
@@ -95,7 +95,7 @@ DEFINITION[EWSB][MatterSector]=
 
 {    {{SdL, SdR}, {Sd, ZD}},
      {{SvL}, {Sv, ZV}},
-     {{SuL, SuR,St1,conj[St2]}, {Su, ZU}},
+     {{SuL, SuR,St1,St2}, {Su, ZU}},
      {{SeL, SeR}, {Se, ZE}},
      {{phid, phiu, phiS}, {hh, ZH}},
      {{sigmad, sigmau,sigmaS}, {Ah, ZA}},
@@ -104,7 +104,7 @@ DEFINITION[EWSB][MatterSector]=
      {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
      {{{FeL},{conj[FeR]}},{{FEL,ZEL},{FER,ZER}}},
      {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},
-     {{{FuL,conj[Ft2]},{conj[FuR],conj[Ft1]}},{{FUL,ZUL},{FUR,ZUR}}}         
+     {{{FuL,Ft2},{conj[FuR],conj[Ft1]}},{{FUL,ZUL},{FUR,ZUR}}}         
    }; 
 
 DEFINITION[EWSB][Phases]= 

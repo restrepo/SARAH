@@ -25,7 +25,7 @@ DEFINITION[MatchingConditions]={
  (* Matching for gauge couplings *)
  {gR, Sqrt[5/3]*g1RBLFactor*g1SM},
  {gBL, -((-g1SM^2 gRBL + gBLR gR gRBL + Sqrt[g1SM^2 (gBLR - gR)^2 (-g1SM^2 + gR^2 + gRBL^2)])/(g1SM^2 - gR^2))},
- {g2, g2SM},
+ {gL, g2SM},
  {g3, g3SM},
  
  
@@ -106,7 +106,8 @@ BoundaryEWSBScale = {
   {vChiR, vR*TanBetaR/Sqrt[1 + TanBetaR^2]},
   {vChiRb, vR*1/Sqrt[1 + TanBetaR^2]}};
 
-
+  
+(*
 BoundaryEWSBScaleRunningDown = {
   {gBLt, gBL*Sqrt[2/3]},
   {gRBLt, 1*gRBL},
@@ -115,7 +116,15 @@ BoundaryEWSBScaleRunningDown = {
   {g1RBLFactor, gR/gYaux},
   {gYaux, Sqrt[3/5]*gYaux}
  };
+*)
 
+
+BoundaryEWSBScaleRunningDown = {
+  {gBLt, gBL*Sqrt[2/3]},
+  {g1RBLFactor, (Sqrt[3/5]*gR*Sqrt[(gBLR - gR)^2 + (gBL - gRBL)^2])/(gBL*gR - gBLR*gRBL)}
+ };
+
+ 
 (* Boundary conditions for SUSY scale input *)
 
 BoundaryLowScaleInput = {
@@ -139,6 +148,8 @@ ListDecayParticles = {hh, Ah, Hpm, Sd, Su, Se, Sv, Chi, Cha, Glu, Fu, Fv, VZ, VZ
 ListDecayParticles3B = Automatic;
 
 
+(* to speed up things *)
+SA`AddOneLoopDecay = False
 
 (* -------------------------------------------------------- *)
 (* Definitions                                              *)

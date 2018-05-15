@@ -19,7 +19,7 @@ DEFINITION[MatchingConditions]= {
  {g1, g1SM},
  {g2, g2SM},
  {g3, g3SM},
- {v, vSM}
+ {v,  Sqrt[vSM^2-vTinput^2]}
  };
 
 
@@ -35,7 +35,7 @@ BoundaryLowScaleInput={
 ListDecayParticles = {Fu,Fe,Fd,hh,Hpm};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
-DefaultInputValues ={LHInput -> -0.1, LTInput -> -0.2 LT2Input -> -0.1, LTHInput -> -0.2, KInput->0.1, vTInput->3 };
+DefaultInputValues ={LHInput -> 0.1, LTInput -> 0.2, LTHInput -> 0.2, KInput->0.1, vTInput->3 };
 
 
 RenConditionsDecays={

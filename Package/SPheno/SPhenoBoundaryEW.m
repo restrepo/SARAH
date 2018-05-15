@@ -232,7 +232,7 @@ WriteString[sphenoSugra,SPhenoForm[SPhenoMass[TopQuark]]<>" = sqrt("<>SPhenoForm
 
 WriteString[sphenoSugra,"alphaQ = AlphaEw_T(alphaEW_MS,mudim,"];
 For[i=1,i<=Length[coupAlphaEWSB],
-WriteString[sphenoSugra,SPhenoForm[SPhenoMass[coupAlphaEWSB[[i,1]]]]];
+WriteString[sphenoSugra,"Abs("<>SPhenoForm[SPhenoMass[coupAlphaEWSB[[i,1]]]]<>")"];
 If[i!= Length[coupAlphaEWSB],
 WriteString[sphenoSugra,","];
 ];
@@ -250,7 +250,7 @@ WriteString[sphenoSugra,SPhenoForm[SPhenoMass[TopQuark]]<>" = sqrt("<>SPhenoForm
 WriteString[sphenoSugra,"alpha3 = AlphaS_T(alphaS_MS,mudim,"];
 
 For[i=1,i<=Length[coupAlphaStrong],
-WriteString[sphenoSugra,SPhenoForm[SPhenoMass[coupAlphaStrong[[i,1]]]]];
+WriteString[sphenoSugra,"Abs("<>SPhenoForm[SPhenoMass[coupAlphaStrong[[i,1]]]]<>")"];
 If[i!= Length[coupAlphaStrong],
 WriteString[sphenoSugra,","];
 ];
@@ -2038,7 +2038,7 @@ WriteString[sphenoSugra,SPhenoForm[SPhenoMass[TopQuark]]<>" = sqrt("<>SPhenoForm
 
 WriteString[sphenoSugra,"alphaMZ = AlphaEwDR(mZ,"];
 For[i=1,i<=Length[coupAlphaEWSB],
-WriteString[sphenoSugra,SPhenoForm[SPhenoMass[coupAlphaEWSB[[i,1]]]]];
+WriteString[sphenoSugra,"Abs("<>SPhenoForm[SPhenoMass[coupAlphaEWSB[[i,1]]]]<>")"];
 If[i!= Length[coupAlphaEWSB],
 WriteString[sphenoSugra,","];
 ];
@@ -2056,7 +2056,7 @@ WriteString[sphenoSugra,SPhenoForm[SPhenoMass[TopQuark]]<>" = sqrt("<>SPhenoForm
 WriteString[sphenoSugra,"alpha3 = AlphaSDR(mZ,"];
 
 For[i=1,i<=Length[coupAlphaStrong],
-WriteString[sphenoSugra,SPhenoForm[SPhenoMass[coupAlphaStrong[[i,1]]]]];
+WriteString[sphenoSugra,"Abs("<>SPhenoForm[SPhenoMass[coupAlphaStrong[[i,1]]]]<>")"];
 If[i!= Length[coupAlphaStrong],
 WriteString[sphenoSugra,","];
 ];

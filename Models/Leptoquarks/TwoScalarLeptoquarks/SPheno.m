@@ -51,7 +51,7 @@ BoundaryLowScaleInput={
  {LambdaHP,           LambdaHPinput},
  {LambdaHO,           LambdaHOinput},
  {LambdaTS,           LambdaSTinput},
- {LambdaPS,           LambdaSPinput},
+ {LambdaSP,           LambdaSPinput},
  {LambdaOS,           LambdaSOinput}, 
  {LambdaPT,           LambdaTPinput},
  {LambdaOT,           LambdaTOinput},
@@ -59,7 +59,7 @@ BoundaryLowScaleInput={
  {LambdaHat,           LambdaHATinput},
              
  {muT2,          (2*mTinput^2 - LambdaHT*v^2 - LambdaTS*vS^2)/2},
- {muP2,          (2*mPinput^2 - LambdaHP*v^2 - LambdaPS*vS^2)/2},
+ {muP2,          (2*mPinput^2 - LambdaHP*v^2 - LambdaSP*vS^2)/2},
  {muO2,          (2*mOinput^2 - LambdaHO*v^2 - LambdaOS*vS^2)/2},
              
 

@@ -167,7 +167,7 @@ Sow[Reap[
 Sow[{temp[[mi,1,1]]}]; (* entries start with the particles in the coupling, then a list of group structures*)
 For[mj=1,mj<=Length[dataUnBrokenGaugeGroups],mj++,
 tt=ExtractStructure[temp[[mi,1,2,1]],dataUnBrokenGaugeGroups[[mj,2]]];
-tttt2=Select[tt,#[[2,1]]=!=0&];
+tttt2=Select[tt,#[[2]]=!=0&]; (* changed by FS, 2018/4/9 *)
 POLEstructures=Table[tttt2[[mk,1]],{mk,1,Length[tttt2]}];
 Sow[POLEstructures]
 (*AppendTo[specialPOLEvertices,{{temp[[i,1,1]],POLEstructures}}];*)
@@ -1046,7 +1046,7 @@ vertexval=listCouplings[[n1,1,2,1]];
 colourflag=False;
 multiflag=False;
 repartsincoup=RE/@(listCouplings[[n1,1,1]]/.A_[{b__}]->A);
-If[Length[Intersection[repartsincoup>=3]]||(Mod[Count[repartsincoup,repartsincoup[[1]]],2]==1),
+If[Length[Intersection[repartsincoup]]>=3||(Mod[Count[repartsincoup,repartsincoup[[1]]],2]==1),
 summableflag=False;,(* see whether there are two pairs of particles or all four are equal to sum over *)
 summableflag=True;
 ];

@@ -263,7 +263,7 @@ ParticleDefinitions[EWSB] = {
      Mass -> LesHouches, 
      OutputName -> "cha"   (* auto generated Output name *), 
      PDG -> {3000049, 3000050, 3000051, 3000052}   (* auto generated PDGs  *), 
-     ElectricCharge -> 0 (* this is just a dummy value for the electric charge! 				 => CHECK! *), 
+     ElectricCharge -> 1, 
      Width -> Automatic}} 
 }; 
 

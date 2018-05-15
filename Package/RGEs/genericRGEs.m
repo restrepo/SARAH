@@ -19,11 +19,12 @@
 
 
 
+(* ::Input::Initialization:: *)
 
-Options[CalcRGEs]={TwoLoop->True,ReadLists->False, VariableGenerations->{}, NoMatrixMultiplication->False, SimplifyExpressions->True, ForceMatMul->False, IgnoreAt2Loop->{},WriteFunctionsToRun->True};
+Options[CalcRGEs]={TwoLoop->True,ReadLists->False, VariableGenerations->{}, NoMatrixMultiplication->False, SimplifyExpressions->True, ForceMatMul->False, IgnoreAt2Loop->{},WriteFunctionsToRun->True,ComplexScalarCouplings->True};
 
 CalcRGEs[opt___ ]:=If[SupersymmetricModel=!=False,CalculateRGEs[TwoLoop/.{opt}/.Options[CalcRGEs],ReadLists/.{opt}/.Options[CalcRGEs],VariableGenerations/.{opt}/.Options[CalcRGEs],NoMatrixMultiplication/.{opt}/.Options[CalcRGEs],SimplifyExpressions/.{opt}/.Options[CalcRGEs], ForceMatMul/.{opt}/.Options[CalcRGEs], IgnoreAt2Loop/.{opt}/.Options[CalcRGEs],WriteFunctionsToRun/.{opt}/.Options[CalcRGEs]];,
-CalcRGEsNonSUSY[TwoLoop/.{opt}/.Options[CalcRGEs],ReadLists/.{opt}/.Options[CalcRGEs],VariableGenerations/.{opt}/.Options[CalcRGEs],NoMatrixMultiplication/.{opt}/.Options[CalcRGEs],SimplifyExpressions/.{opt}/.Options[CalcRGEs], ForceMatMul/.{opt}/.Options[CalcRGEs], IgnoreAt2Loop/.{opt}/.Options[CalcRGEs],WriteFunctionsToRun/.{opt}/.Options[CalcRGEs]];
+CalcRGEsNonSUSY[TwoLoop/.{opt}/.Options[CalcRGEs],ReadLists/.{opt}/.Options[CalcRGEs],VariableGenerations/.{opt}/.Options[CalcRGEs],NoMatrixMultiplication/.{opt}/.Options[CalcRGEs],SimplifyExpressions/.{opt}/.Options[CalcRGEs], ForceMatMul/.{opt}/.Options[CalcRGEs], IgnoreAt2Loop/.{opt}/.Options[CalcRGEs],WriteFunctionsToRun/.{opt}/.Options[CalcRGEs],ComplexScalarCouplings/.{opt}/.Options[CalcRGEs]];
 ];
 
 MakeDummyListRGEs:=If[SupersymmetricModel=!=False,MakeDummyListRGEsSUSY,MakeDummyListRGEsNonSUSY];
@@ -156,6 +157,7 @@ BetaMFij3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaMFij3I.m"]];
 ];
 
 
+(* ::Input::Initialization:: *)
 GenerateCouplingList[NoMatMul_,Force_]:=Block[{i,indices,indNr},
 If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
 
@@ -296,6 +298,7 @@ j++;];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 MakeParticleLists :=Block[{i,j},
 
@@ -373,6 +376,7 @@ i++;];
 
 
 
+(* ::Input::Initialization:: *)
 CalcGroupFactors[VarGens_]:=Block[{i,j,k,l,sum,gNr2},
 GaugeInteractionMatrix[#[[1]],#[[2]]]&/@ SA`ListRepresentations;
 
@@ -574,6 +578,7 @@ SA`CasimirDynkinU1Summed[gnr1_,gnr2_]:=Sum[Sum[MulFactor[getBlankSF[LP[[i]]],gnr
 
 
 
+(* ::Input::Initialization:: *)
 CalcGammaij[TwoLoop_,Simp_]:=Block[{i,j,subChargeInd},
 UseSymmASymm=True;
 Gij={};
@@ -623,7 +628,7 @@ If[i===j,
 gammaij2LHat[LP[[i]]/. subGCRule[1],LP[[j]]/. subGCRule[2]]=ExpandTerm[1/2 Sum[Xi Xip ThS[nr,LP[[i]]/.subGC[1],pX] (Conj[Yijk[pY,pZ,pX]] Yijk[pY,pZ,pW]+Yijk[pY,pZ,pX] Conj[Yijk[pY,pZ,pW]]) ThS[nr,pW,LP[[j]]/. subGC[2]],{nr,1,AnzahlGauge}]]  /. SA`SubIgnore2L; *)
 
 gammaij2LHat[LP[[i]]/. subGCRule[1],LP[[j]]/. subGCRule[2]]=
- Xi((1-Xi) SA`CasimirBar[LP[[i]]/.subGC[1]]SA`CasimirBar[LP[[j]]/.subGC[2]]makeDelta[i,1,2,{}]- makeDelta[i,1,2,{}](7-Xi)/2 Sum[gc[n1]^4 *  SA`Casimir[getBlankSF[LP[[i]]],n1] SA`Casimir[n1],{n1,1,AnzahlGauge}]) +ExpandTerm[1/2 Xi SA`CasimirBar[LP[[i]]/.subGC[1]] (Conj[Yijk[pY,pZ,LP[[i]]/.subGC[1]]] Yijk[pY,pZ,LP[[j]]/.subGC[2]]+Yijk[pY,pZ,LP[[i]]/.subGC[1]] Conj[Yijk[pY,pZ,LP[[j]]/.subGC[2]]])]  /. SA`SubIgnore2L;,
+ Xi(2(1-Xi) SA`CasimirBar[LP[[i]]/.subGC[1]]SA`CasimirBar[LP[[j]]/.subGC[2]]makeDelta[i,1,2,{}]- makeDelta[i,1,2,{}](7-Xi)/2 Sum[gc[n1]^4 *  SA`Casimir[getBlankSF[LP[[i]]],n1] SA`Casimir[n1],{n1,1,AnzahlGauge}]) +ExpandTerm[1/2 Xi SA`CasimirBar[LP[[i]]/.subGC[1]] (Conj[Yijk[pY,pZ,LP[[i]]/.subGC[1]]] Yijk[pY,pZ,LP[[j]]/.subGC[2]]+Yijk[pY,pZ,LP[[i]]/.subGC[1]] Conj[Yijk[pY,pZ,LP[[j]]/.subGC[2]]])]  /. SA`SubIgnore2L;,
 gammaij2LHat[LP[[i]]/. subGCRule[1],LP[[j]]/. subGCRule[2]]=0;
 ];
 
@@ -705,6 +710,7 @@ UseSymmASymm=False;
 
 
 
+(* ::Input::Initialization:: *)
 
 InitBetaFunctions:=Block[{},
 betaFuncWijkl[p1_,p2_,p3_,p4_] := ExpandTerm[Wijkl[p1,p2,p3,pZ] gammaij[pZ,p4]];
@@ -1001,6 +1007,7 @@ Return[betaFuncDGi2L[term[[1]] /. subGC[1],term[[2]]]];
 
 
 
+(* ::Input::Initialization:: *)
 CalcBetaFunctions[type_,fields_,filename_,filename3I_,twoloop_,Simp_]:=Block[{i,factor,res,subNonZero,coup,SaveArray={},SaveArray3I={},startedtime},
 startedtime=TimeUsed[];
 Switch[type,

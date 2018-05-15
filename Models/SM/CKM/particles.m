@@ -62,6 +62,7 @@ ParticleDefinitions[GaugeES] = {
                  Mass ->LesHouches,
                  FeynArtsNr -> 3,
                  LaTeX -> "H^+",
+                 ElectricCharge->1,                 
                  OutputName -> "Hp" }},                                                             
       
       {VP,   { Description -> "Photon"}}, 

@@ -192,7 +192,7 @@ WriteString[sphenoSugra,"CalculateOneLoopMasses = .false. \n"];
 WriteString[sphenoSugra,"Do j=1,niter \n"];
 
 WriteString[sphenoSugra,"Write(*,*) \"  \", j,\".-iteration\" \n"];
-WriteString[sphenoSugra,"Write(ErrCan,*) \"sugra \", j,\".-iteration\" \n"];
+WriteString[sphenoSugra,"Write(ErrCan,*) \"RGE Running \", j,\".-iteration\" \n"];
 
 MakeCall["BoundaryEW",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{"j"},{"delta0","gB","kont"},sphenoSugra];
 
@@ -402,7 +402,7 @@ If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoSugra,"If (.Not.UseFixedScale) Then \n"];
 WriteString[sphenoSugra,"mudimNew=Max(mZ**2,Abs("<> SPhenoForm[RenormalizationScale]<>")) \n"];
 If[Head[SetParametersAt]===List && SetParametersAt=!={},
-WriteString[sphenoSugra,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>".lt.1_dp))) Call SetGUTscale(sqrt(mudimNew)) \n "];,
+WriteString[sphenoSugra,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>").lt.1_dp)) Call SetGUTscale(sqrt(mudimNew)) \n "];,
 WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") Call SetGUTscale(sqrt(mudimNew)) \n "];
 ];
 
@@ -616,10 +616,16 @@ WriteString[sphenoSugra,StringDrop[SPhenoForm[lowScaleIn[[i]]],-2] <>" = " <>SPh
 i++;];
 
 For[i=1,i<=Length[BoundaryLowScaleInput],
+If[FreeQ[BoundaryLowScaleInput[[i,2]],DIAGONAL]==True,
 Switch[Head[BoundaryLowScaleInput[[i,1]]],
 re,WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
 im,WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <> ",dp))\n"];,
 _,WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
+];,
+WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = 0._dp \n"];
+WriteString[sphenoSugra,"Do i1=1,"<>ToString[getDimSPheno[BoundaryLowScaleInput[[i,1]]][[1]]]<>"\n"];
+WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"(i1,i1) = " <> SPhenoForm[BoundaryLowScaleInput[[i,2]] /. DIAGONAL->1]<>"\n"];
+WriteString[sphenoSugra,"End Do\n"];
 ];
 i++;];
 WriteString[sphenoSugra,"End if\n \n "];
@@ -1039,7 +1045,7 @@ WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  mudim=GetRenormalizationScale() \n"];
 WriteString[sphenoSugra,"End If \n"];
 If[Head[SetParametersAt]===List && SetParametersAt=!={},
-WriteString[sphenoSugra,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>".lt.1_dp))) Call SetGUTscale(sqrt(mudim)) \n "];,
+WriteString[sphenoSugra,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>").lt.1_dp)) Call SetGUTscale(sqrt(mudim)) \n "];,
 WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") Call SetGUTscale(sqrt(mudim)) \n "];
 ];
 
@@ -1276,10 +1282,16 @@ WriteString[sphenoSugra,StringDrop[SPhenoForm[lowScaleIn[[i]]],-2] <>" = " <>SPh
 i++;];
 
 For[i=1,i<=Length[BoundaryLowScaleInput],
+If[FreeQ[BoundaryLowScaleInput[[i,2]],DIAGONAL]==True,
 Switch[Head[BoundaryLowScaleInput[[i,1]]],
 re,WriteString[file,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<> "))\n"];,
 im,WriteString[file,SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>" = Cmplx(Real(" <>SPhenoForm[BoundaryLowScaleInput[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryLowScaleInput[[i,2]]]  <> ",dp))\n"];,
 _,WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
+];,
+WriteString[file,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = 0._dp \n"];
+WriteString[file,"Do i1=1,"<>ToString[getDimSPheno[BoundaryLowScaleInput[[i,1]]][[1]]]<>"\n"];
+WriteString[file,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"(i1,i1) = " <> SPhenoForm[BoundaryLowScaleInput[[i,2]] /. DIAGONAL->1]<>"\n"];
+WriteString[file,"End Do\n"];
 ];
 i++;];
 WriteString[sphenoSugra,"End if\n \n "];
@@ -1394,7 +1406,7 @@ WriteString[sphenoSugra,"Lambda_MZ = 0.1_dp \n"];
 WriteString[sphenoSugra,"Do j=1,niter \n"];
 
 WriteString[sphenoSugra,"Write(*,*) \"  \", j,\".-iteration\" \n"];
-WriteString[sphenoSugra,"Write(ErrCan,*) \"sugra \", j,\".-iteration\" \n"];
+WriteString[sphenoSugra,"Write(ErrCan,*) \"RGE Running \", j,\".-iteration\" \n"];
 
 
 (* MakeCall["BoundarySM",{},{"j","lambda_SM"},{"delta0","g_SM","kont"},sphenoSugra]; *)
@@ -1636,7 +1648,7 @@ If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoSugra,"If (.Not.UseFixedScale) Then \n"];
 WriteString[sphenoSugra,"mudimNew=Max(mZ**2,Abs("<> SPhenoForm[RenormalizationScale]<>")) \n"];
 If[Head[SetParametersAt]===List && SetParametersAt=!={},
-WriteString[sphenoSugra,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>".lt.1_dp))) Call SetGUTscale(sqrt(mudimNew)) \n "];,
+WriteString[sphenoSugra,"If ((HighScaleModel.eq.\"LOW\").and.(Abs("<>ToString[SetParametersAt[[1]]]<>").lt.1_dp)) Call SetGUTscale(sqrt(mudimNew)) \n "];,
 WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") Call SetGUTscale(sqrt(mudimNew)) \n "];
 ];
 

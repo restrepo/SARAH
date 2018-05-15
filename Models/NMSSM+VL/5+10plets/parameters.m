@@ -886,73 +886,73 @@ ParameterDefinitions = {
 {YEp,{ 
      Real -> False, 
      LesHouches -> {NMSSM15,14}  (* auto generated Les Houches entry *), 
-     LaTeX -> "Y'_E"  (* auto generated LaTeX name *), 
+     LaTeX -> "Y^{\\prime}_E"  (* auto generated LaTeX name *), 
      OutputName -> yep  (* auto generated Output name *)}}, 
 
 {T[YEp],{ 
      Real -> False, 
      LesHouches -> {NMSSM15,16}  (* auto generated Les Houches entry *), 
-     LaTeX -> "T'_{E}"  (* auto generated LaTeX name *), 
+     LaTeX -> "T^{\\prime}_{E}"  (* auto generated LaTeX name *), 
      OutputName -> Tyep  (* auto generated Output name *)}}, 
 
 {YEpp,{ 
      Real -> False, 
      LesHouches -> {NMSSM15,18}  (* auto generated Les Houches entry *), 
-     LaTeX -> "{Y_E}^{\prime\prime}"  (* auto generated LaTeX name *), 
+     LaTeX -> "Y_E^{\\prime\\prime}"  (* auto generated LaTeX name *), 
      OutputName -> yepp  (* auto generated Output name *)}}, 
 
 {T[YEpp],{ 
      Real -> False, 
      LesHouches -> {NMSSM15,20}  (* auto generated Les Houches entry *), 
-     LaTeX -> "T_{{E}^{primeprime}}"  (* auto generated LaTeX name *), 
+     LaTeX -> "T_{E}^{\\prime\\prime}"  (* auto generated LaTeX name *), 
      OutputName -> Tyepp  (* auto generated Output name *)}}, 
 
 {YDp,{ 
      Real -> False, 
      LesHouches -> {NMSSM15,22}  (* auto generated Les Houches entry *), 
-     LaTeX -> "Y'_D"  (* auto generated LaTeX name *), 
+     LaTeX -> "Y^{\\prime}_D"  (* auto generated LaTeX name *), 
      OutputName -> ydp  (* auto generated Output name *)}}, 
 
 {T[YDp],{ 
      Real -> False, 
      LesHouches -> {NMSSM15,24}  (* auto generated Les Houches entry *), 
-     LaTeX -> "T'_{D}"  (* auto generated LaTeX name *), 
+     LaTeX -> "T^{\\prime}_{D}"  (* auto generated LaTeX name *), 
      OutputName -> Tydp  (* auto generated Output name *)}}, 
 
 {YUp,{ 
      Real -> False, 
      LesHouches -> {NMSSM15,26}  (* auto generated Les Houches entry *), 
-     LaTeX -> "Y'_U"  (* auto generated LaTeX name *), 
+     LaTeX -> "Y^{\\prime}_U"  (* auto generated LaTeX name *), 
      OutputName -> yup  (* auto generated Output name *)}}, 
 
 {T[YUp],{ 
      Real -> False, 
      LesHouches -> {NMSSM15,28}  (* auto generated Les Houches entry *), 
-     LaTeX -> "T'_{U}"  (* auto generated LaTeX name *), 
+     LaTeX -> "T^{\\prime}_{U}"  (* auto generated LaTeX name *), 
      OutputName -> Tyup  (* auto generated Output name *)}}, 
 
 {YDpp,{ 
      Real -> False, 
      LesHouches -> {NMSSM15,30}  (* auto generated Les Houches entry *), 
-     LaTeX -> "{Y_D}^{primeprime}"  (* auto generated LaTeX name *), 
+     LaTeX -> "{Y_D}^{\\prime\\prime}"  (* auto generated LaTeX name *), 
      OutputName -> ydpp  (* auto generated Output name *)}}, 
 
 {T[YDpp],{ 
      Real -> False, 
      LesHouches -> {NMSSM15,32}  (* auto generated Les Houches entry *), 
-     LaTeX -> "T_{{D}^{primeprime}}"  (* auto generated LaTeX name *), 
+     LaTeX -> "T_{D}^{\\prime\\prime}"  (* auto generated LaTeX name *), 
      OutputName -> Tydpp  (* auto generated Output name *)}}, 
 
 {YUpp,{ 
      Real -> False, 
      LesHouches -> {NMSSM15,34}  (* auto generated Les Houches entry *), 
-     LaTeX -> "{Y_U}^{primeprime}"  (* auto generated LaTeX name *), 
+     LaTeX -> "Y_U^{\\prime\\prime}"  (* auto generated LaTeX name *), 
      OutputName -> yupp  (* auto generated Output name *)}}, 
 
 {T[YUpp],{ 
      Real -> False, 
      LesHouches -> {NMSSM15,36}  (* auto generated Les Houches entry *), 
-     LaTeX -> "T_{{U}^{primeprime}}"  (* auto generated LaTeX name *), 
+     LaTeX -> "T_{U}^{\\prime\\prime}"  (* auto generated LaTeX name *), 
      OutputName -> Tyupp  (* auto generated Output name *)}}, 
 
 {lE10,{ 

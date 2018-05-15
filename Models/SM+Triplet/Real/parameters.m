@@ -39,7 +39,7 @@ ParameterDefinitions = {
 {vT,  { LaTeX -> "v_T",
         Real -> True,
         OutputName -> vT,
-        LesHouches -> {HMIX,20} }},
+        LesHouches -> {HMIX,21} }},
 
 {MT,  { LaTeX -> "\\mu_T",
         OutputName -> MT,

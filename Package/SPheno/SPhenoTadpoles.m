@@ -306,7 +306,7 @@ WriteCopyRight[sphenoTad];
 WriteString[sphenoTad,"Module Tadpoles_"<>ModelName<>" \n \n"];
 WriteString[sphenoTad,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoTad,"Use TreeLevelMasses_"<>ModelName<>" \n"];
-(* WriteString[sphenoTad,"Use RGEs_"<>ModelName<>" \n"]; *)
+WriteString[sphenoTad,"Use RGEs_"<>ModelName<>" \n"]; 
 WriteString[sphenoTad,"Use Control \n"];
 WriteString[sphenoTad,"Use Settings \n"];
 WriteString[sphenoTad,"Use Mathematics \n\n"];

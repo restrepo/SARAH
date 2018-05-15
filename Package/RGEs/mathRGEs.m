@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 DeltaQ[x_]:=If[x===Delta, DeltaQ[x]=False;Return[False];,DeltaQ[x]=True;Return[True];];
 
 
@@ -99,7 +100,11 @@ Tp[Adj[x_]]:=Conj[x];
 Conj[Tp[x_]]:=Adj[x];
 Conj[Adj[x_]]:=Tp[x];
 Conj[RM]:=RM;
-Conj[InvMat]:=InvMat;
+
+Conj[InvMat[a_][b__]]:=InvMatC[a][b];
+Conj[InvMatC[a_][b__]]:=InvMat[a][b];
+InvMatC[a_][b__Integer]:=Conjugate[InvMat[a][b]];
+
 Tp[x_Tp]:=First[x];
 Tp[Kronecker]:=Kronecker;
 Tp[Delta]:=Delta;
@@ -111,7 +116,7 @@ Tp[MatMul[x__]]:=Apply[MatMul,Map[Tp,Reverse[{x}]]];
 Conj[B_[b__]]:=Conj[B][b] /;(B=!=A &&B=!=DGi && B=!=Yijk && B=!=Aijk && B=!=Bij && B=!=m2ij && B=!=Muij && B=!=Li && B=!=LSi && B=!=Times && B=!=Delta && B=!=Pattern && B=!=Plus && B=!=Power && B=!=Rational && B=!=Conj&& B=!=Tp && B=!=Adj && B=!=YcY && B=!=YcYY && B=!= YcYYcY && B=!=Y6abcd ); 
 *)
 
-Conj[B_[b__]]:=Conj[B][b] /;FreeQ[{A,DGi,Yijk,Aijk,Rijk, MFij,Bij,m2ij,Muij,Li,LSi,Times,Delta,Pattern,Plus,Power,Rational,Conj,Tp,Adj,YcY,YcYY,YcYYcY,Y6abcd,Y4abcd,YcYYcY4,YcY2S},B];
+Conj[B_[b__]]:=Conj[B][b] /;FreeQ[{A,DGi,Yijk,Aijk,Rijk, MFij,Bij,m2ij,Muij,Li,LSi,Times,Delta,InvMat,Pattern,Plus,Power,Rational,Conj,Tp,Adj,YcY,YcYY,YcYYcY,Y6abcd,Y4abcd,YcYYcY4,YcY2S},B];
 
 (*
 Conj[B_[b__]]:=Conj[B][b] /;(B=!=A &&B=!=DGi && B=!=Yijk && B=!=Aijk && B=!=Bij && B=!=m2ij && B=!=Muij && B=!=Times && B=!=Delta && B=!=Pattern && B=!=Plus && B=!=Power && B=!=Rational && B=!=Conj&& B=!=Tp && B=!=Adj &&  B=!=Y2F && B=!= Y2S);
@@ -149,6 +154,7 @@ Return[temp];
 
 
 
+(* ::Input::Initialization:: *)
 CalcRGEValue[x_]:=CalcRGEValue[x,False];
 
 CalcRGEValue[x_,Finish_]:=Block[{temp,i,j},
@@ -249,6 +255,7 @@ Return[temp];
 ];
 
 
+(* ::Input::Initialization:: *)
 Conj[x_Plus] := Conj/@ x;
 Conj[x_Power] := Conj/@ x;
 Conj[x_Times] := Conj/@ x;
@@ -283,9 +290,11 @@ SA`CasimirMMBar[a_]:=SA`CasimirMMBar[getBlankSF[a]] /; FreeQ[a,List]==False
 
 
 
+(* ::Input::Initialization:: *)
 sumRGE[a_,1,1]:=1;
 
 
+(* ::Input::Initialization:: *)
 partRGETensor[particle_,nr_]:=Block[{res,sub,i,temp,ind,sumStates,weight},
 temp=getBlankSF[RE[particle]];
 sumStates=1;
@@ -376,10 +385,12 @@ res=res*sumRGE[genf[nr],1,getGen[particle]] /. subGC[nr] /. subIndFinalX[nr,nr,"
 *)
 
 
+(* ::Input::Initialization:: *)
 
 
 
 
+(* ::Input::Initialization:: *)
 
 makeListInvolved2[l1_,l2_,l3_]:=Block[{i,li1,li2,li3,list1,list2},
 
@@ -440,6 +451,7 @@ Return[listTemp];
 
 
 
+(* ::Input::Initialization:: *)
 
 CalcDeltaRGE[x_]:=x;
 
@@ -575,6 +587,7 @@ Return[temp /. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0, Li
 
 
 
+(* ::Input::Initialization:: *)
 makeListInvolvedNS[l1_,l2_,l3_,l4_]:=Block[{i,li1,li2,li3,li4,list1,list2,list3,list4},
 (*
 li1=Map[getFullNS,Map[getBlankSF,l1]] /. conj[x_]\[Rule]x;

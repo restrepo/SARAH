@@ -41,7 +41,7 @@ Subroutine Switch_from_superCKM(Y_d, Y_u, Ad_in, Au_in, MD_in, MQ_in, MU_in &
   !---------------------------------------------------------
   ! CKM matrix at Q, shifting phases according to PDG form
   !---------------------------------------------------------
-  CKM_Q =  Matmul(uU_L, Transpose(Conjg(ud_L)) )
+  CKM_Q =  Matmul(uU_R, Transpose(Conjg(ud_R)) )
   uD_L(1,:) = uD_L(1,:) / Conjg(CKM_Q(1,1)) * Abs(CKM_Q(1,1))
   uD_L(2,:) = uD_L(2,:) / Conjg(CKM_Q(1,2)) * Abs(CKM_Q(1,2))
   uU_L(2,:) = uU_L(2,:) / CKM_Q(2,3) * Abs(CKM_Q(2,3))

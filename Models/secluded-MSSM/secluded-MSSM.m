@@ -3,11 +3,12 @@ Off[General::spell]
 Model`Name = "sMSSM";
 Model`NameLaTeX ="secluded MSSM";
 Model`Authors = "F.Staub";
-Model`Date = "2015-11-16";
+Model`Date = "2018-04-12";
 
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
 (* 2015-11-16: changed SPheno.m *)
+(* 2018-04-12: modified U(1)' charges; adjustes SPheno *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -29,20 +30,19 @@ Gauge[[4]]={U,   U[1], additional,  gp,False, RpM};
 
 (* Chiral Superfields *)
 
-SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, Qq, RpM};  
-SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, Ql, RpM};
-SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, QHd, RpP};
-SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, QHu, RpP};
+SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, -QH/2, RpM};  
+SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, -QH/2, RpM};
+SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, QH, RpP};
+SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, QH, RpP};
 
-SuperFields[[5]] = {d, 3, conj[dR],   1/3, 1, -3, Qd, RpM};
-SuperFields[[6]] = {u, 3, conj[uR],  -2/3, 1, -3, Qu, RpM};
-SuperFields[[7]] = {e, 3, conj[eR],     1, 1,  1, Qe, RpM};
+SuperFields[[5]] = {d, 3, conj[dR],   1/3, 1, -3, -QH/2, RpM};
+SuperFields[[6]] = {u, 3, conj[uR],  -2/3, 1, -3, -QH/2, RpM};
+SuperFields[[7]] = {e, 3, conj[eR],     1, 1,  1, -QH/2, RpM};
 
-SuperFields[[8]] =  {s, 1, sR,     0, 1,  1, Qs,  RpP};
-SuperFields[[9]] =  {s1,1, S1,     0, 1,  1, Qs1, RpP};
-SuperFields[[10]] = {s2, 1, S2,    0, 1,  1, Qs2, RpP};
-SuperFields[[11]] = {s3, 1, S3,    0, 1,  1, Qs3, RpP};
-
+SuperFields[[8]] =  {s, 1, sR,     0, 1,  1, -2 QH,  RpP};
+SuperFields[[9]] =  {s1,1, S1,     0, 1,  1, -2 QH, RpP};
+SuperFields[[10]] = {s2, 1, S2,    0, 1,  1, -2 QH, RpP};
+SuperFields[[11]] = {s3, 1, S3,    0, 1,  1, 4 QH, RpP};
 
 NoU1Mixing=True;
 

@@ -97,7 +97,7 @@ ListDecayParticles3B = Automatic;
 DEFINITION[MatchingConditions]=Default[THDMII];
 
 
-DefaultInputValues = {m0 -> 3000, MDirac->500,  TanBeta->2.5, MuInput->200, BMuInput->9*10^5, mSingletInput->1000, mAdjointInput->3500, LambdaInput->0.324, MRinput ->1000, BMRinput -> 10^6, MuE[a_,a_]->1500};
+DefaultInputValues = {m0 -> 2000, MDirac->500,  TanBeta->2.5, MuInput->200, BMuInput->9*10^5, mSingletInput->1000, mAdjointInput->3500, LambdaInput->0.324, MRinput ->1000, BMRinput -> 10^6, MuE[a_,a_]->1500};
 
 RenConditionsDecays={
 {dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },

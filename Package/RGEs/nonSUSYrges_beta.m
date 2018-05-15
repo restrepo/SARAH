@@ -90,8 +90,8 @@ betaFuncTijk2Lns[p1_,p2_,p3_]:=Block[{line=Table[0,{9}]},
 line[[1]]=1/2(Lam2S[p1,p1]+Lam2S[p2,p2]+Lam2S[p3,p3]) Aijk[p1,p2,p3] - LamBar3[p1,p2,p3] - 4 kF LamBar2Y[p1,p2,p3];
 line[[2]]=kF ( 8 HbarLamM[p1,p2,p3] + 8 HbarH[p1,p2,p3] );
 line[[3]]=-kF Aijk[p1,p2,p3](3 H2ab[p1,p1]+2 Hbar2[p1,p1]+3 H2ab[p2,p2]+2 Hbar2[p2,p2]+3 H2ab[p3,p3]+2 Hbar2[p3,p3]);
-line[[4]]=4 kF (HY[p1,p2,p3] cHY +2 HYbar[p1,p2,p3] cHYbar+ 2 H3[p1,p2,p3] cH3);
-line[[5]]= (2 LamBar2S[p1,p2,p3] - 6  Lam2g[p1,p2,p3] + 4 kF (cHS HSabc[p1,p2,p3]-cHF HFabc[p1,p2,p3]));
+line[[4]]=4 kF (HY[p1,p2,p3]  +2 HYbar[p1,p2,p3] + 2 H3[p1,p2,p3] );
+line[[5]]= (2 LamBar2S[p1,p2,p3] - 6  Lam2g[p1,p2,p3] + 4 kF ( HSabc[p1,p2,p3]- HFabc[p1,p2,p3]));
 line[[6]]=Sum[ 10 kF (Y2FS[p1,p1,nr]+Y2FS[p2,p2,nr]+Y2FS[p3,p3,nr])Aijk[p1,p2,p3],{nr,1,Length[Gauge]}];
 line[[7]]=-(35/3 LamSC2G[p1,p2,p3]-10/3 kF LamSS2F[p1,p2,p3]-11/12 LamSS2S[p1,p2,p3]);
 line[[8]]=3/2 LamSS[p1,p2,p3] + 5/2 ALabc[p1,p2,p3]+1/2 AbarLabc[p1,p2,p3];
@@ -105,7 +105,7 @@ betaFuncMFij2Lns[p1_,p2_]:=Block[{line=Table[0,{17}]},
 line[[1]] = +2 Yijk[p1,pO,pC] Conj[Yijk[pO,pQ,pB]] Muij[pQ,pR](Conj[Yijk[pR,pX,pC]] Yijk[pX,p2,pB]-Conj[Yijk[pR,pX,pB]] Yijk[pX,p2,pC]) ;
 line[[2]]=-Yijk[p1,pO,pX] (Y2F[pO,pP] Conj[Muij[pP,pQ]]+Conj[Muij[pO,pP]] Y2FC[pP,pQ]) Yijk[pQ,p2,pX] ;
 line[[3]]= -1/8 (Yijk[p1,pO,pX] Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,p2] + Muij[p1,pO] Conj[Yijk[pO,pP,pX]] Y2FC[pP,pR] Yijk[pR,p2,pX]) ;
-line[[4]] =-2 kF Yijk[p1,pO,pB] Conj[Yijk[pO,pP,pC]] Yijk[pP,p2,pB](Conj[Muij[pX,pY]] Yijk[pY,pX,pC]+Muij[pX,pY] Conj[Yijk[pX,pY,pC]]) ;
+line[[4]] =0 (* not correct in paper: -2 kF Yijk[p1,pO,pB] Conj[Yijk[pO,pP,pC]] Yijk[pP,p2,pB](Conj[Muij[pX,pY]] Yijk[pY,pX,pC]+Muij[pX,pY] Conj[Yijk[pX,pY,pC]])*);
 line[[5]]=-3/2 kF Y2S[pX,pY] (Yijk[p1,pO,pX]Conj[Yijk[pO,pP,pY]] Muij[pP,p2]+Muij[p1,pO] Conj[Yijk[pO,pP,pY]] Yijk[pP,p2,pX]) ;
 line[[6]]=0 (* not correct in paper: -3/2 kF Yijk[p1,p2,pX] (Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,pO] + Conj[Muij[pO,pP]] Y2FC[pP,pQ] Yijk[pQ,pO,pX]) *);
 line[[7]] = 0 (*not correct in paper:  - kF Yijk[p1,p2,pB] (Yijk[pO,pP,pC] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pC] Conj[Yijk[pR,pO,pB]] + Conj[Yijk[pO,pP,pC]] Muij[pP,pQ] Conj[Yijk[pQ,pR,pC]] Yijk[pR,pO,pB])*) ;
@@ -132,7 +132,7 @@ betaFuncMSij2Lns[p1_,p2_]:=Block[{line=Table[0,{8}]},
 line[[1]]=1/2(Lam2S[p1,p1]+Lam2S[p2,p2])Bij[p1,p2]  - 1/2 LamBar3[p1,p2] -4 kF LamBar2Y[p1,p2]; 
 line[[2]]= kF (4 HbarLam[p1,p2]-Bij[p1,p2](3 H2ab[p1,p1] + 2 Hbar2[p1,p1]+3 H2ab[p2,p2] + 2 Hbar2[p2,p2]));
 line[[3]]=2 kF (HY[p1,p2] + HY[p2,p1]  + 2 HYbar[p1,p2]  + 2 Conj[HYbar[p2,p1]]  + 2 H3ab[p1,p2] + 2 H3ab[p2,p1] );
-line[[4]]= (  2 LamBar2S[p1,p2] -    6 Lam2g[p1,p2] + 2 kF   (HSab[p1,p2]-HFab[p1,p2]-HFab[p2,p1])); 
+line[[4]]= (  2 LamBar2S[p1,p2] -    6 Lam2g[p1,p2]  + 2 kF   (HSab[p1,p2]-HFab[p1,p2]-HFab[p2,p1])); 
 line[[5]] = Sum[10 kF (Y2FS[p1,p1,nr]+Y2FS[p2,p2,nr]) Bij[p1,p2],{nr,1,Length[Gauge]}];
 line[[6]]=-(35/3 LamSC2G[p1,p2] -10/3 kF LamSS2F[p1,p2] -11/12 LamSS2S[p1,p2] )  ;
 line[[7]]=+3/2 LamSS[p1,p2] +5/2 Alam[p1,p2]   +1/2 AlamBar[p1,p2]; 

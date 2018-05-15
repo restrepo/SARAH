@@ -103,7 +103,9 @@ DEFINITION[MatchingConditions]=Default[THDMII];
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
-DefaultInputValues = {};
+DefaultInputValues = {mSUSY->1000, MV->2000, TanBeta->10, Azero->-2000, Bzero->0, M1input->100, M2input->200, M3input->1500, MuInput->-500, BMuInput->7 10^6,vSInput->150, MSInput->-2500,
+KappaInput->0.2, AKappaInput->1000,ALambdaInput->3000, LambdaInput->0.3,kappa5input->0.01,lDinput->0.4,lLinput->0.4,vLinput->3,vLpinput->3};
+
 
 RenConditionsDecays={
 {dCosTW, 1/2*Cos[ThetaW] * (PiVWm/(MVWM^2) - PiVZ/(mVZ^2)) },

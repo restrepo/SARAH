@@ -681,7 +681,7 @@ MakeDiagonalProcess[particle, {listFinalStatesRep[[1]],n1},{listFinalStatesRep[[
 
 
 (* If[(Final1 /.process1)===(Final3 /.process1) || (Final1 /.process1)===(Final3 /.process1) , *)
-If[FreeQ[Couplings/.process1,Cp[a___,b_,c___,b_]],
+If[FreeQ[Couplings/.process1,C[a___,b_,c___,b_]],
 MakeDiagonalProcess[particle, {listFinalStatesRep[[1]],n1},{listFinalStatesRep[[2]],n2},{listFinalStatesRep[[3]],n3},{FinalListProcess1[[1]] /. {One[x_]->Two[x], Two[x_]->One[x]},FinalListProcess1[[2]] /. {One[x_]->Two[x], Two[x_]->One[x]},FinalListProcess1[[3]] /. {One[x_]->Two[x], Two[x_]->One[x]}},{Propagator /. process1,nr1},{couplings,nrC1},process1,file];
  ]; 
 
@@ -1142,10 +1142,15 @@ listCorrInd=getCorrespondingIndices[{f1,n1}, {f2,n2},{f3,n3},f1a,f2a,f3a];
 temp1a=MakeIndicesCoupling[{AntiField[particle],iIN},{prop1,nProp1},{Final1 /. process1,listCorrInd[[1]]},couplingsAll[[2*(NRC1-1)+1,2]]];
 temp1b=MakeIndicesCoupling[{AntiField[prop1],nProp1},{Final2 /. process1,listCorrInd[[2]]},{Final3 /. process1,listCorrInd[[3]]},couplingsAll[[2*NRC1,2]]];
 
-
 listCorrInd1=getCorrespondingIndices[{f1,n1}, {f2,n2},{f3,n3},f1b,f2b,f3b];
+(*
 temp2a=MakeIndicesCoupling[{particle,iIN},{AntiField[prop2],nProp2},{AntiField[Final1 /. process2],listCorrInd1[[1]]},couplingsAll[[2*(NRC2-1)+1,2]],True];
 temp2b=MakeIndicesCoupling[{prop2,nProp2},{AntiField[Final2 /. process2],listCorrInd1[[2]]},{AntiField[Final3 /. process2],listCorrInd1[[3]]},couplingsAll[[2*NRC2,2]],True];
+*)
+temp2a=MakeIndicesCoupling[{AntiField[particle],iIN},{prop2,nProp2},{Final1 /. process2,listCorrInd1[[1]]},couplingsAll[[2*(NRC2-1)+1,2]],True];
+temp2b=MakeIndicesCoupling[{AntiField[prop2],nProp2},{Final2 /. process2,listCorrInd1[[2]]},{Final3 /. process2,listCorrInd1[[3]]},couplingsAll[[2*NRC2,2]],True];
+
+
 
 
 ind1a=temp1a[[1]];
@@ -1162,10 +1167,17 @@ LRconjugated1={"1","2","5","6"};,
 LRconjugated1={"2","1","6","5"};
 ];
 
+(*
 If[getType[prop2]===S, 
 LRconjugated2={"3","4","7","8"};,
 LRconjugated2={"4","3","8","7"};
 ];
+*)
+If[getType[prop2]===S, 
+LRconjugated2={"4","3","8","7"};,
+LRconjugated2={"3","4","7","8"};
+];
+
 
 
 If[f1a=== f1b,
@@ -1187,11 +1199,20 @@ WriteString[file,"coup2(1) = "<> ToString[couplingsAll[[2*(NRC1-1)+1,1,1]]] <> i
 WriteString[file,"coup2(2) = "<> ToString[couplingsAll[[2*(NRC1-1)+1,1,2]] ]<> ind1a <>" \n"];
 ];
 
-If[check2a==False,
+
+(*
+If[check2a\[Equal]False,
 WriteString[file,"coup2("<>LRconjugated2[[1]] <>") = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>") \n"];
 WriteString[file,"coup2("<>LRconjugated2[[2]] <>") = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>")  \n"];,
 WriteString[file,"coup2(3) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>" \n"];
 WriteString[file,"coup2(4) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>"  \n"];
+];
+*)
+If[check2a==False,
+WriteString[file,"coup2("<>LRconjugated2[[1]] <>") = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>") \n"];
+WriteString[file,"coup2("<>LRconjugated2[[2]] <>") = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>")  \n"];,
+WriteString[file,"coup2(4) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>" \n"];
+WriteString[file,"coup2(3) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>"  \n"];
 ];
 
 If[check1b==True,
@@ -1201,11 +1222,20 @@ WriteString[file,"coup2(5) = "<> ToString[couplingsAll[[2*NRC1,1,1]]] <> ind1b <
 WriteString[file,"coup2(6) = "<> ToString[couplingsAll[[2*NRC1,1,2]]] <> ind1b <>" \n"];
 ];
 
-If[check2b==False,  
+(*
+If[check2b\[Equal]False,  
 WriteString[file,"coup2("<>LRconjugated2[[3]] <>") = Conjg("<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>") \n"];
 WriteString[file,"coup2("<>LRconjugated2[[4]] <>") = Conjg("<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>") \n"];,
 WriteString[file,"coup2(7) = "<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>" \n"];
 WriteString[file,"coup2(8) = "<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>" \n"];
+];
+*)
+
+If[check2b==False,  
+WriteString[file,"coup2("<>LRconjugated2[[3]] <>") = Conjg("<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>") \n"];
+WriteString[file,"coup2("<>LRconjugated2[[4]] <>") = Conjg("<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>") \n"];,
+WriteString[file,"coup2(8) = "<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>" \n"];
+WriteString[file,"coup2(7) = "<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>" \n"];
 ];
 
 

@@ -119,7 +119,7 @@ DEFINITION[EWSB][DiracSpinors]={
  Fd ->{  FDL, conj[FDR]},
  Fe ->{  FEL, conj[FER]},
  Fu ->{  FUL, conj[FUR]},
- Fv -> {FvL, conj[FvL]},
+ Fv -> {FvL, 0},
  Chi ->{ L0, conj[L0]},
  Cha ->{ Lm, conj[Lp]},
  Glu ->{ fG, conj[fG]}

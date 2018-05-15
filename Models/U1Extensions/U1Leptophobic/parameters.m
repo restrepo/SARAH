@@ -236,9 +236,9 @@ ParameterDefinitions = {
 {v,{ 
      Description -> "EW-VEV", 
      Dependence -> None, 
-     DependenceNum -> 2*Sqrt[Mass[VWm]^2/g2^2], 
+     DependenceNum -> 2*Sqrt[Mass[VWp]^2/g2^2], 
      DependenceOptional -> None, 
-     DependenceSPheno -> Sqrt[vd^2 + vu^2], 
+     DependenceSPheno -> Sqrt[v1^2 + v2^2], 
      Real -> True, 
      LesHouches -> {HMIX, 3}, 
      LaTeX -> "v", 

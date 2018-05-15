@@ -203,7 +203,7 @@ WriteString[sphenoInOut,"Use StandardModel \n"];
 WriteString[sphenoInOut,"Use LoopCouplings_"<>ModelName<>" \n \n"];,
 WriteString[sphenoInOut,"Use Boundaries_"<>ModelName<>" \n \n"];
 ];
-If[SupersymmetricModel=!=False,
+If[Include2LoopCorrections=!=False&&SkipEffPot=!=True,
 WriteString[sphenoInOut,"Use EffPotFunctions \n"];
 ];
 
@@ -220,7 +220,7 @@ WriteString[sphenoInOut,"Logical,Save,Private::Use_Flavour_States= .False. \n"];
 WriteString[sphenoInOut,"Real(dp),Save,Private::BrMin=1.e-4_dp \n"];
 WriteString[sphenoInOut,"Real(dp),Save,Private::SigMin=1.e-4_dp \n"];
 
-WriteString[sphenoInOut,"Character(len=60)::inputFileName,outputFileName \n"];
+WriteString[sphenoInOut,"Character(len=120)::inputFileName,outputFileName \n"];
 
 
 WriteString[sphenoInOut,"Contains \n \n"];
@@ -377,6 +377,8 @@ WriteString[sphenoInOut,"    Call Read_EXTPAR(99,1,i_model,set_mod_par,kont)  \n
 
 WriteReadInRoutines[ListAllInputParameters /.{ {1}->{} } ];
 
+WriteReadInRoutines[AdditionalReadBlocks /. x_Symbol[a__Integer]->{x,{a},x,False}];
+
 If[Head[AdditionalParametersLagrange]===List && AdditionalParametersLagrange=!={},
 WriteReadInRoutines[Select[Table[{AdditionalParametersLagrange[[i]],getDimSPheno[AdditionalParametersLagrange[[i]]],AdditionalParametersLagrange[[i]],conj[AdditionalParametersLagrange[[i]]]===AdditionalParametersLagrange[[i]]},{i,1,Length[AdditionalParametersLagrange]}],(#[[2]]=!={} && #[[2]]=!={1})&]];
 ];
@@ -452,7 +454,7 @@ WriteString[sphenoInOut,"Read(io,*,End=200,err=200) read_line \n"];
 WriteString[sphenoInOut,"If (read_line(1:1).Eq.\"#\") Cycle! this loop \n"];
 WriteString[sphenoInOut,"Backspace(io)! resetting to the beginning of the line \n"];
 WriteString[sphenoInOut,"If ((read_line(1:1).Eq.\"B\").Or.(read_line(1:1).Eq.\"b\")) Exit! this loop \n"];
-WriteString[sphenoInOut,"Read(io,*,End=200) i_par,wert,read_line \n"];
+WriteString[sphenoInOut,"Read(io,*,End=200) i_par,wert ,read_line \n"];
 WriteString[sphenoInOut,"Select Case(i_par) \n"];
 For[i=1,i<=Length[ListDecayParticles3B],
 WriteString[sphenoInOut,"Case("<>ToString[i]<>") \n"];
@@ -1024,41 +1026,48 @@ Switch[Length[dimensions],
 ];
 
 
-WriteReadInRoutines[list_]:=Block[{i},
+WriteReadInRoutines[list_]:=Block[{i,suffix,func},
 For[i=1,i<=Length[list],
 If[FreeQ[CombindedBlock,list[[i,1]]],
+If[FreeQ[SA`LHList,list[[i,3]]]==False,
+suffix="IN";,
+suffix="";
+];
 Switch[Length[list[[i,2]]],
 0,
 	If[list[[i,4]]==True,
-	func="ReadScalarR(99,"<>SPhenoForm[list[[i,1]]]<>"IN, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";,
-	func="ReadScalarC(99,"<>SPhenoForm[list[[i,1]]]<>"IN,0, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
-	func2="ReadScalarC(99,"<>SPhenoForm[list[[i,1]]]<>"IN,1, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
+	func="ReadScalarR(99,"<>SPhenoForm[list[[i,1]]]<>suffix<>", \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";,
+	func="ReadScalarC(99,"<>SPhenoForm[list[[i,1]]]<>suffix<>",0, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
+	func2="ReadScalarC(99,"<>SPhenoForm[list[[i,1]]]<>suffix<>",1, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
 	];,
 1,
 	If[list[[i,4]]==True,
-	func="ReadVectorR(99,"<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";,
-	func="ReadVectorC(99,"<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN,0, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
-	func2="ReadVectorC(99,"<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN,1, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
+	func="ReadVectorR(99,"<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>", \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";,
+	func="ReadVectorC(99,"<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>",0, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
+	func2="ReadVectorC(99,"<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>",1, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
 	];,
 
 2,
 	If[list[[i,4]]==True,
-	func="ReadMatrixR(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";,
-	func="ReadMatrixC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN,0, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
-	func2="ReadMatrixC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN,1, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
+	func="ReadMatrixR(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>", \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";,
+	func="ReadMatrixC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>",0, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
+	func2="ReadMatrixC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,1]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>",1, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
 	];,
 
 3,
 	If[list[[i,4]]==True,
-	func="ReadTensorR(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>ToString[list[[i,2,3]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";,
-	func="ReadTensorC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>ToString[list[[i,2,3]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN,0, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
-	func2="ReadTensorC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>ToString[list[[i,2,3]]]<>","<>SPhenoForm[list[[i,1]]]<>"IN,1, \""<>SPhenoForm[list[[i,1]]]<>"IN\",kont)\n";
+	func="ReadTensorR(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>ToString[list[[i,2,3]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>", \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";,
+	func="ReadTensorC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>ToString[list[[i,2,3]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>",0, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
+	func2="ReadTensorC(99,"<>ToString[list[[i,2,1]]]<>","<>ToString[list[[i,2,2]]]<>","<>ToString[list[[i,2,3]]]<>","<>SPhenoForm[list[[i,1]]]<>suffix<>",1, \""<>SPhenoForm[list[[i,1]]]<>suffix<>"\",kont)\n";
 	];
 ];
 
 
+If[FreeQ[SA`LHList,list[[i,3]]]==False,
 WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[8+StringLength[LHBlockName[list[[i,3]]]]]<>").Eq.\""<>ToUpperCase[LHBlockName[list[[i,3]]]]<>"IN\") Then \n"];
-WriteString[sphenoInOut,"InputValuefor"<>SPhenoForm[list[[i,1]]] <> "= .True. \n"];
+WriteString[sphenoInOut,"InputValuefor"<>SPhenoForm[list[[i,1]]] <> "= .True. \n"];,
+WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[6+StringLength[SPhenoForm[list[[i,3]]]]]<>").Eq.\""<>ToUpperCase[SPhenoForm[list[[i,3]]]]<>"\") Then \n"];
+];
 WriteString[sphenoInOut,"    Call "<>func<>"\n \n"];
 
 If[list[[i,4]]==False,
@@ -1627,11 +1636,11 @@ WriteString[sphenoInOut,"Write(io_L,106) \"Block gaugeGUT Q=\",m_GUT,\"# (GUT sc
 
 If[Head[RegimeNr]=!=Integer,
 For[i=1,i<=AnzahlGauge,
-WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[i]<>","<>SPhenoForm[Gauge[[i,4]]]<>"GUT, \"# "<>ToString[Gauge[[i,4]]]<>"(Q)^DRbar\" \n"];
+WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[i]<>","<>SPhenoForm[Gauge[[i,4]]]<>"GUT, \"# "<>ToString[Gauge[[i,4]]]<>"(Q)\" \n"];
 i++;];,
 
 For[i=1,i<=Length[GaugeCouplingsAllRegimes[[1]]],
-WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[i]<>","<>SPhenoForm[GaugeCouplingsAllRegimes[[1,i]]]<>"GUT, \"# "<>ToString[GaugeCouplingsAllRegimes[[1,i]]]<>"(Q)^DRbar\" \n"];
+WriteString[sphenoInOut,"Write(io_L,104) "<>ToString[i]<>","<>SPhenoForm[GaugeCouplingsAllRegimes[[1,i]]]<>"GUT, \"# "<>ToString[GaugeCouplingsAllRegimes[[1,i]]]<>"(Q)\" \n"];
 i++;];
 ];
 
@@ -2653,6 +2662,18 @@ WriteInOutTreeUni:=Block[{i},
 WriteString[sphenoInOut,"Write(io_L,100) \"Block TREELEVELUNITARITY #  \" \n"];
 WriteString[sphenoInOut,"Write(io_L,1010) 0, TreeUnitarity,  \"# Tree-level unitarity limits fulfilled or not \"  \n"];
 WriteString[sphenoInOut,"Write(io_L,1010) 1, max_scattering_eigenvalue,  \"# Maximal scattering eigenvalue \"  \n"];
+
+WriteString[sphenoInOut,"If (TrilinearUnitarity) Then  \n"];
+WriteString[sphenoInOut,"Write(io_L,100) \"Block TREELEVELUNITARITYwTRILINEARS #  \" \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 0, TreeUnitarityTrilinear,  \"# Tree-level unitarity limits fulfilled or not \"  \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 1, max_scattering_eigenvalue_trilinears,  \"# Maximal scattering eigenvalue \"  \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 2, unitarity_s_best,  \"# best scattering energy \"  \n"];
+
+WriteString[sphenoInOut,"Write(io_L,1010) 11, unitarity_s_min,  \"# min scattering energy \"  \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 12, unitarity_s_max,  \"# max scattering energy \"  \n"];
+WriteString[sphenoInOut,"Write(io_L,1010) 13, 1._dp*unitarity_steps,  \"# steps \"  \n"];
+WriteString[sphenoInOut,"End If \n"];
+
 WriteString[sphenoInOut, "\n \n"];
 ];
 

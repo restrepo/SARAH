@@ -260,13 +260,6 @@ numberAll = numberLow;
 
 (* If[Length[NeededAnaDimsForVEVs]>0 ||Length[BetaVEV]>0, *)
 If[Length[BetaVEV]>0,
-(*
-Print["-------------------------------"];
-Print["Write RGEs including VEVs      "];
-Print["-------------------------------"];
-*)
-
-
 
 subSPhenoMatTr={};
 listAllParametersAndVEVs=listAllParameters;
@@ -277,7 +270,7 @@ listBeta2LoopVEVs = listBeta2Loop;
 
 For[i=1,i<=(*Length[NeededAnaDimsForVEVs]*)Length[BetaVEV],
 (* listAllParametersAndVEVs =Join[listAllParametersAndVEVs,{NeededAnaDimsForVEVs[[i,2]]}]; *)
-listAllParametersAndVEVs =Join[listAllParametersAndVEVs,{BetaVEV[[i,1]]}];
+listAllParametersAndVEVs =Join[listAllParametersAndVEVs,{BetaVEV[[i,1]]/.a_[i1]->a}];
 listBeta1LoopVEVs = Join[listBeta1LoopVEVs,{BetaVEV[[i,2]]}];
 listBeta2LoopVEVs = Join[listBeta2LoopVEVs,{BetaVEV[[i,3]]}];
 i++;];

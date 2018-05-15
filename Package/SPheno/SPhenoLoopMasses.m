@@ -1679,6 +1679,7 @@ WriteString[sphenoLoop, "End if \n"];
 
 WriteString[sphenoLoop,MixingName<>"OS_p2(il,:) = "<>MixingName<>"_1L(il,:) \n "];
 
+WriteString[sphenoLoop, "  If ((Abs(Eig(i1)).Le.MaxMassNumericalZero).and.(Eig(i1).lt.0._dp)) Eig(i1) = Abs(Eig(i1))+1.E-10_dp \n"]; 
 WriteString[sphenoLoop, "  If (Eig(i1).Le.0._dp) Then \n"];
 WriteString[sphenoLoop, "    If (ErrorLevel.Ge.0) Then \n"];
 WriteString[sphenoLoop, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];

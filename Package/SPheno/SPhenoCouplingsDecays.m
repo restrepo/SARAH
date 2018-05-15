@@ -418,7 +418,7 @@ If[particle===PseudoScalar && suffix ==="2B",
 WritePseudoScalarCouplingsRatio[sphenoCoup,SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 If[getGenSPheno[PseudoScalar]>1,addgen="(i1)";,addgen="";];
 WriteString[sphenoCoup,"If (HigherOrderDiboson) Then \n"];
-WriteString[sphenoCoup, "  gNLO = g3 \n"];
+WriteString[sphenoCoup, "  gNLO = "<>ToString[strongCoupling]<>" \n"];
 WriteString[sphenoCoup,"Else  \n"];
 WriteString[sphenoCoup, "  gNLO = -1._dp \n"];
 WriteString[sphenoCoup,"End if \n"];

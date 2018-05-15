@@ -18,7 +18,7 @@ FLHA`WilsonCoefficients = {
 {"03051111", "4137",   "00",   "2",  coeffC10ee,        1/2*(-OddllVLL[3,2,1,1]+OddllVLR[3,2,1,1]    )      },
 {"03051111", "4237",   "00",   "2",  coeffC10Pee,       1/2*(-OddllVRR[3,2,1,1]+OddllVRL[3,2,1,1]    )      },
 {"03051111", "4137",   "00",   "1",  coeffC10eeNP,      1/2*(-OddllVLL[3,2,1,1]+OddllVLR[3,2,1,1]-(-OddllVLLSM[3,2,1,1]+OddllVLRSM[3,2,1,1]))},
-{"03051111", "4237",   "00",   "1",  coeffC10PeeNP,     1/2*(-OddllVRR[3,2,1,1]+OddllVRL[3,2,1,1]    )      },
+{"03051111", "4237",   "00",   "1",  coeffC10PeeNP,     1/2*(OddllVRR[3,2,1,1]-OddllVRL[3,2,1,1]    )      },
 {"03051313", "4133",   "00",   "0",  coeffC9mumuSM,     1/2*(OddllVLLSM[3,2,2,2]+OddllVLRSM[3,2,2,2] )      },
 {"03051313", "4133",   "00",   "2",  coeffC9mumu,       1/2*(OddllVLL[3,2,2,2]+OddllVLR[3,2,2,2]     )      },
 {"03051313", "4233",   "00",   "2",  coeffC9Pmumu,      1/2*(OddllVRR[3,2,2,2]+OddllVRL[3,2,2,2]     )      },

@@ -925,7 +925,7 @@ temp=InsFields[{{C[particles1[[i]],AntiField[FieldToInsert[1]],FieldToInsert[2]]
 If[temp=!={},
 temp2={};
 For[k=1,k<=Length[temp],
-temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[2],C[External[1],AntiField[Internal[1]],Internal[2]],C[AntiField[External[2]],AntiField[Internal[2]],Internal[1]],VType[getType[Internal[1]],getType[Internal[2]],getType[External[1]]],CalculateColorFactor[getBlank[External[1]],Internal[1],Internal[2]],CalculateSymmetryFactor[Internal[1],Internal[2]]}]/. temp[[k,2]]] }];
+temp2=Join[temp2,{ReleaseHold[Hold[{AntiField[Internal[1]],Internal[2],C[External[1],AntiField[Internal[1]],Internal[2]],C[AntiField[External[2]],AntiField[Internal[2]],Internal[1]],VType[getType[Internal[1]],getType[Internal[2]],getType[External[1]]],CalculateColorFactor[getBlank[External[1]],AntiField[Internal[1]],Internal[2]],CalculateSymmetryFactor[Internal[1],Internal[2]]}]/. temp[[k,2]]] }];
 k++];
 
 temp=InsFields[{{C[particles1[[i]],AntiField[particles2[[j]]],AntiField[FieldToInsert[1]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],External[1]->particles1[[i]], External[2]->particles2[[j]],Index[1]->gO1,Index[2]->gO2,Index[3]->gI1}}];

@@ -98,6 +98,14 @@ WriteString[file,"Use LoopMasses_SM_HC \n"];
 WriteString[file,"Use LoopFunctions \n"];
 WriteString[file,"Use LoopMasses_"<>ModelName<>" \n"];
 WriteString[file,"Use StandardModel \n"];
+If[i==1,
+WriteString[file,"Use RunSM_"<>ModelName<>"\n"];
+If[SkipFlavorKit=!=True,
+WriteString[file,"Use FlavorKit_LFV_"<>ModelName<>"\n"]; 
+WriteString[file,"Use FlavorKit_QFV_"<>ModelName<>"\n"]; 
+WriteString[file,"Use FlavorKit_Observables_"<>ModelName<>"\n"];
+]; 
+];
 
 If[i>1,
 WriteString[file,"\n \n Contains \n \n"];
@@ -152,7 +160,13 @@ Switch[i,
 4,file=sphenoFlavorKitObs;
       ModuleName="FlavorKit_Observables_";
 ];
+
+If[i==1,
+If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
+GenerateCalcLowEnergy; 
+];,
 AppendSourceCode["IncludeLowEnergy.f90",file];
+];
 
 (* Finish the low energy module and close the file *)
 WriteString[file,"End Module "<>ModuleName<>ModelName<>" \n"];
@@ -2392,12 +2406,12 @@ WriteString[sphenoLow,"Tpar= -Tpar/alpha \n\n\n"];
 WriteString[sphenoLow,"! S-parameter \n"];
 WriteString[sphenoLow,"Spar= (PiZZ_mz2-PiZZ)/mz2 - (cw2-sw2)/(sqrt(cw2*sw2))*PiZg_mz2/mz2 - Pigg_mz2/mz2\n"];
 (* WriteString[sphenoLow,"Spar= DerPiZZ - (cw2-sw2)/(sqrt(cw2*sw2))*DerPiZg - DerPigg\n"]; *)
-WriteString[sphenoLow,"Spar= -4._dp*sw2*cw2/alpha*Spar \n\n\n"];
+WriteString[sphenoLow,"Spar= 4._dp*sw2*cw2/alpha*Spar \n\n\n"];
 
 WriteString[sphenoLow,"! U-parameter \n"];
 WriteString[sphenoLow,"Upar= (PiWW_mw2-PiWW)/mw2 -cw2*(PiZZ_mz2-PiZZ)/mz2 - 2._dp*(sqrt(cw2*sw2))*PiZg_mz2/mz2 - sw2*Pigg_mz2/mz2\n"];
 (* WriteString[sphenoLow,"Upar= DerPiWW -cw2*DerPiZZ - 2._dp*(sqrt(cw2*sw2))*DerPiZg - sw2*DerPigg\n"]; *)
-WriteString[sphenoLow,"Upar= -4._dp*sw2/alpha*Upar \n\n\n"];
+WriteString[sphenoLow,"Upar= 4._dp*sw2/alpha*Upar \n\n\n"];
 
 WriteString[sphenoLow,"End subroutine STUparameter \n \n \n"];
 
@@ -2775,6 +2789,778 @@ WriteString[sphenoLow,"Iname = Iname -1 \n \n"];
 
 WriteString[sphenoLow,"End subroutine BToQgamma \n \n \n\n"];
 
+
+];
+
+
+
+GenerateCalcLowEnergy:=Block[{temp,i,j,ii,iiii,tlist,name,indlist,indvector,dimind,k,mfd,mfu,mfe},
+
+(* tlist=Join[Complement[listAllParameters,ParametersToSolveTadpoles],listVEVs]; *)
+
+(* Generate auxiliary variables 'PARinput' *)
+
+(*
+tlist = NewMassParameters;
+
+For[i=1,i\[LessEqual]Length[tlist],
+name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
+pos=Position[SPhenoParameters,tlist[[i]]][[1,1]];
+SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]\[Rule]name)}];
+If[FreeQ[realVar,tlist[[i]]]\[Equal]False, realVar=Join[realVar,{name}];];
+i++;
+];
+
+tlist = listAllParametersAndVEVs;
+temp={};
+For[i=1,i\[LessEqual]Length[tlist],
+name=ToExpression[SPhenoForm[tlist[[i]]]<>"input"];
+If[FreeQ[SPhenoParameters,name],
+pos=Position[SPhenoParameters,tlist[[i]]][[1,1]];
+SPhenoParameters=Join[SPhenoParameters,{(SPhenoParameters[[pos]] /. tlist[[i]]\[Rule]name)}];
+If[FreeQ[realVar,tlist[[i]]]\[Equal]False,
+realVar=Join[realVar,{name}];
+];
+];
+temp=Join[temp,{name}];
+i++;
+];
+*)
+
+temp=ToExpression[SPhenoForm[#]<>"input"]&/@Join[listAllParameters,listVEVs];
+
+Print["  Write 'CalculateLowEnergy'"];
+
+MakeSubroutineTitle["CalculateLowEnergyConstraints",Join[temp,Transpose[ListOfLowEnergyNames][[1]]],{},{},sphenoLow];
+
+
+
+MakeVariableList[temp,",Intent(inout)",sphenoLow];
+
+MakeVariableList[NewMassParameters,"",sphenoLow];
+(* MakeVariableList[NewParametersFromTadpoles,"",sphenoLow]; *)
+
+MakeVariableList[Join[listAllParameters,listVEVs],"",sphenoLow];
+
+PreSARAHoperatorsQFV=Join[Select[PreSARAHoperatorsQFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=="Tree"&],Select[PreSARAHoperatorsQFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=!="Tree"&]];
+PreSARAHoperatorsLFV=Join[Select[PreSARAHoperatorsLFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=="Tree"&],Select[PreSARAHoperatorsLFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=!="Tree"&]];
+
+
+MakeVariableList[Intersection[Flatten[{namesAll,namesZW}]],"",sphenoLow];
+MakeVariableList[Transpose[ListOfLowEnergyNames][[1]],",Intent(out)",sphenoLow];
+WriteString[sphenoLow,"Complex(dp) :: c7,c7p,c8,c8p \n"];
+WriteString[sphenoLow,"Real(dp) :: ResultMuE(6), ResultTauMeson(3), ResultTemp(99) \n"];
+WriteString[sphenoLow,"Real(dp) :: epsTree=1.0E-20_dp \n"];
+WriteString[sphenoLow,"Complex(dp), Dimension(3,3) :: "<> SPhenoForm[UpYukawa]<>"_save, "<>SPhenoForm[DownYukawa]<>"_save, "<>SPhenoForm[ElectronYukawa]<>"_save, CKMsave \n"];
+WriteString[sphenoLow,"Complex(dp) :: YuSM(3,3),YeSM(3,3),YdSM(3,3) \n"];
+WriteString[sphenoLow,"Real(dp)::g1SM, g2SM, g3SM, vSM \n"];
+If[NewNumericalDependences=!={},
+MakeVariableList[Transpose[NewNumericalDependences ][[1]],"",sphenoLow];
+];
+If[UseStandardLowEnergy==True,
+WriteString[sphenoLow,"Complex(dp) :: cplFdcFdhhLeff(3,3,"<>ToString[getGenSPheno[HiggsBoson]]<>"), cplFdcFdhhReff(3,3,"<>ToString[getGenSPheno[HiggsBoson]]<>") \n"];
+WriteString[sphenoLow,"Complex(dp) ::  cplFdcFdAhLeff(3,3,"<>ToString[getGenSPheno[PseudoScalar]]<>"), cplFdcFdAhReff(3,3,"<>ToString[getGenSPheno[PseudoScalar]]<>"), cpl_CDSu_L(2,3,6), cpl_CDSu_R(2,3,6), mueEff  \n"];
+WriteString[sphenoLow,"Complex(dp) :: cplcHpmcFuFdL("<>ToString[getGenSPheno[ChargedHiggs]]<>",3,3), cplcHpmcFuFdR("<>ToString[getGenSPheno[ChargedHiggs]]<>",3,3),cpl_CNuSl_R(2,3,6),cpl_CNuSl_L(2,3,6) \n"];
+WriteString[sphenoLow,"Real(dp) :: vevSM(2), gauge(3), gD("<>ToString[numberAllwithVEVs]<>"), Qin,vev2,sinw2\n"];
+WriteString[sphenoLow,"Integer :: i1, i2, i3 \n"];
+
+WriteString[sphenoLow,"mueEff="<>SPhenoForm[mueEff]<>" \n\n"];
+];
+
+If[OnlyLowEnergySPheno=!=True,
+WriteString[sphenoLow,"Real(dp) :: g1D("<>ToString[numberAllwithVEVs]<>"), tz, dt \n"];
+]; 
+WriteString[sphenoLow,"Real(dp) ::Qin,vev2,sinw2, mzsave, scalein, scale_save, gSM(11),Qinsave, maxdiff =0._dp \n"];
+WriteString[sphenoLow, "Integer :: i1, i2, i3, gt1, gt2, gt3, gt4,iQTEST, iQFinal \n"];
+WriteString[sphenoLow, "Integer :: IndexArray4(99,4), IndexArray3(99,3), IndexArray2(99,2)   \n"];
+
+
+If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",sphenoLow];];
+If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",sphenoLow];];
+If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",sphenoLow];];
+If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[ToExpression[ToString[#]<>"check"]&/@Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",sphenoLow];];
+If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"check"]&/@Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",sphenoLow];];
+
+
+If[Length[WrappersLFV]>0,MakeVariableList[Flatten[Transpose[WrappersLFV][[3]]],"",sphenoLow];];
+If[Length[WrappersQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[WrappersQFV][[3]]],"",sphenoLow];];
+If[Length[WrappersQFV]>0,MakeVariableList[Flatten[Transpose[WrappersQFV][[3]]],"",sphenoLow];];
+
+
+
+WriteString[sphenoLow,"Write(*,*) \"Calculating low energy constraints\" \n"];
+
+For[i=1,i<=Length[PreSARAHoperatorsLFV],
+For[j=1,j<=Length[PreSARAHoperatorsLFV[[i,3]]],
+WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsLFV[[i,3,j]]] <>" = 0._dp \n"];
+(* WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsLFV[[i,3,j]]] <>"SM = 0._dp \n"]; *)
+j++;];
+i++;];
+
+For[i=1,i<=Length[PreSARAHoperatorsQFV],
+For[j=1,j<=Length[PreSARAHoperatorsQFV[[i,3]]],
+WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsQFV[[i,3,j]]] <>" = 0._dp \n"];
+WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsQFV[[i,3,j]]] <>"SM = 0._dp \n"];
+j++;];
+i++;];
+
+
+WriteString[sphenoLow,"If (MatchingOrder.gt.-1) Then \n"];
+If[OnlyLowEnergySPheno=!=True,
+For[i=1,i<=Length[Gauge],
+If[Gauge[[i,2,1]]==1,
+WriteString[sphenoLow,SPhenoForm[Gauge[[i,4]]]<> "input = "<>SPhenoForm[Simplify[1/GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>"input \n"]; 
+];
+i++;];
+];
+
+For[i=1,i<=Length[SA`ListGaugeMixed2],
+WriteString[sphenoLow,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> "input = "<>SPhenoForm[1/GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>"input \n"];
+i++;];
+WriteString[sphenoLow,"\n\n"];
+WriteString[sphenoLow,"End if \n"];
+
+(* If[OnlyLowEnergySPheno=!=True, *)
+WriteString[sphenoLow,"!-------------------------------------\n"];
+WriteString[sphenoLow,"! running to 160 GeV for b -> so gamma\n"];
+WriteString[sphenoLow,"!-------------------------------------\n\n"];
+
+WriteString[sphenoLow,"Qin=sqrt(getRenormalizationScale()) \n"];
+WriteString[sphenoLow,"scale_save = Qin \n"];
+
+
+MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"160._dp"},{"CKM_160", "sinW2_160", "Alpha_160","AlphaS_160",".false."},sphenoLow];
+WriteString[sphenoLow,"If (MatchingOrder.eq.-1) Then \n"];
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[sphenoLow,SPhenoForm[listAllParametersAndVEVs[[i]]]<>"="<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"input \n"];
+i++;];
+WriteString[sphenoLow,"End if \n"];
+
+For[i=1,i<=Length[NewNumericalDependences],
+WriteString[sphenoLow, SPhenoForm[NewNumericalDependences[[i,1]]] <> " = " <> SPhenoForm[NewNumericalDependences[[i,2]]] <> "\n"];
+i++;];
+For[iQFV=1,iQFV<= 2,
+
+If[iQFV==1,
+WriteString[sphenoLow,"\n! ## All contributions ## \n\n"];,
+WriteString[sphenoLow,"\n! ## SM only ##\n\n"];
+];
+
+
+If[(getGen[BottomQuark]> 3 || getGen[TopQuark]> 3 || getGen[Electron]>3 )&& Length[PreSARAHoperatorsQFV]>0,
+mfu=MassMatrix[TopQuark];
+mfd=MassMatrix[BottomQuark];
+mfe=MassMatrix[Electron];
+mfu[[1;;3,1;;3]]=0;
+mfd[[1;;3,1;;3]]=0;
+mfe[[1;;3,1;;3]]=0;
+mfu[[4;;getGen[TopQuark],4;;getGen[TopQuark]]]=0;
+mfd[[4;;getGen[BottomQuark],4;;getGen[BottomQuark]]]=0;
+mfe[[4;;getGen[Electron],4;;getGen[Electron]]]=0;
+For[j=4,j<=getGen[BottomQuark],mfd[[j,j]]=0;j++;];
+For[j=4,j<=getGen[TopQuark],mfu[[j,j]]=0;j++;];
+For[j=4,j<=getGen[Electron],mfe[[j,j]]=0;j++;];
+MixingQuarkParameters=Select[Select[Transpose[parameters][[1]],FreeQ[Flatten[{mfu,mfd,mfe}],#]==False&],FreeQ[{UpYukawa,DownYukawa,ElectronYukawa,hyperchargeCoupling,leftCoupling,strongCoupling,VEVSM,VEVSM1,VEVSM2},#]==True&];
+If[iQFV==2,
+For[j=1,j<=Length[MixingQuarkParameters],
+If[FreeQ[listVEVs,MixingQuarkParameters[[j]]],
+WriteString[sphenoLow,SPhenoForm[MixingQuarkParameters[[j]]] <>" = 0._dp \n"];  (*,
+WriteString[sphenoLow,SPhenoForm[MixingQuarkParameters[[j]]] <>" = 0.001_dp \n"];
+*)
+];
+j++;];
+];
+];
+
+
+
+If[iQFV==1 || Length[MixingQuarkParameters]>0,
+WriteTadpoleSolution[sphenoLow];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLow];
+WriteString[sphenoLow," mf_d_160 = "<>ToString[SPhenoMass[BottomQuark]] <>"(1:3) \n"];
+WriteString[sphenoLow," mf_d2_160 = "<>ToString[SPhenoMass[BottomQuark]] <>"(1:3)**2 \n"];
+WriteString[sphenoLow," mf_u_160 = "<>ToString[SPhenoMass[TopQuark]] <>"(1:3) \n"];
+WriteString[sphenoLow," mf_u2_160 = "<>ToString[SPhenoMass[TopQuark]] <>"(1:3)**2 \n"];
+WriteString[sphenoLow," mf_l_160 = "<>ToString[SPhenoMass[Electron]] <>"(1:3) \n"];
+WriteString[sphenoLow," mf_l2_160 = "<>ToString[SPhenoMass[Electron]] <>"(1:3)**2 \n"];
+
+WriteString[sphenoLow,"If (WriteParametersAtQ) Then \n"];
+WriteString[sphenoLow,"! Write running parameters at Q=160 GeV in output file \n"];
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[sphenoLow,SPhenoForm[listAllParametersAndVEVs[[i]]] <>"input = "<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"\n"];
+i++;];
+WriteString[sphenoLow,"End If \n \n"];
+
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
+WriteString[sphenoLow,SPhenoForm[SPhenoMass[HiggsBoson]]<>"= MhhL \n"];
+WriteString[sphenoLow,SPhenoForm[SPhenoMassSq[HiggsBoson]]<>" = Mhh2L \n"];
+];
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
+WriteString[sphenoLow,SPhenoForm[SPhenoMass[PseudoScalar]]<>"= MAhL \n"];
+WriteString[sphenoLow,SPhenoForm[SPhenoMassSq[PseudoScalar]]<>" = MAh2L \n"];
+];
+SetGoldstoneMasses[sphenoLow];
+
+MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},sphenoLow];
+];
+
+(*
+If[iQFV\[Equal]1,
+WriteString[sphenoLow,"iQFinal = 1 \n"];
+WriteString[sphenoLow,"If (MakeQtest) iQFinal=10 \n"];
+WriteString[sphenoLow,"Qinsave=GetRenormalizationScale() \n"];
+WriteString[sphenoLow,"Do iQTEST=1,iQFinal \n"];
+WriteString[sphenoLow,"maxdiff=0._dp \n"];
+WriteString[sphenoLow,"If (MakeQtest) Qin=SetRenormalizationScale(10.0_dp**iQTest) \n"];
+];
+*)
+For[i=1,i<=Length[PreSARAHoperatorsQFV],
+If[PreSARAHoperatorsQFV[[i,1]]=!="dummy",
+WriteString[sphenoLow,"\n ! **** "<>ToString[PreSARAHoperatorsQFV[[i,1]]]<>" **** \n \n"];
+
+For[j=1,j<=Length[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]]],
+indlist={};
+indvector="(";
+dimInd=Length[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]][[1]]];
+For[k=1,k<=dimInd,
+indlist=Join[indlist,{ToExpression["gt"<>ToString[k]]}];
+indvector=indvector<>"gt"<>ToString[k];
+If[k<dimInd,
+indvector=indvector<>",";,
+indvector=indvector<>")"
+];
+k++;];
+WriteString[sphenoLow,"IndexArray"<>ToString[dimInd]<>"("<>ToString[j]<>",:) = (/"<>StringReplace[ToString[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]][[j]]],{"{"->"","}"->""," "->"","ALL"->"1"}]<>"/) \n"];
+j++;];
+
+WriteString[sphenoLow,"Do i1=1,"<>ToString[Length[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]]] ]<>" \n"];
+For[j=1,j<=Length[DeleteCases[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]][[1]],ALL]],
+WriteString[sphenoLow,"gt"<>ToString[j] <>" = IndexArray"<>ToString[dimInd]<>"(i1,"<>ToString[j]<>") \n"];
+j++;];
+If[Length[PreSARAHoperatorsQFV[[i,2]]]===3 && FreeQ[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]][[1]],ALL]==False,
+WriteString[sphenoLow," Do i2=1,"<>ToString[getGen[PreSARAHoperatorsQFV[[i,2,3]]]]<>" \n"];
+WriteString[sphenoLow,"  gt3=i2 \n"];,
+If[Length[PreSARAHoperatorsQFV[[i,2]]]===3 ,
+WriteString[sphenoLow,"  gt3= 1 \n"];
+indlist = Join[indlist,{gt3}];
+];
+];
+
+stringReplaceTS={"PengS"->"TreeS","PengV"->"TreeS","Box"->"TreeS"};
+stringReplaceTV={"PengS"->"TreeV","PengV"->"TreeV","Box"->"TreeV"};
+
+If[iQFV==1,
+If[StringTake[ToString[PreSARAHoperatorsQFV[[i,1]]],{1,Min[{4,StringLength[ToString[PreSARAHoperatorsQFV[[i,1]]]]}]}]=!="Tree" && Length[PreSARAHoperatorsQFV[[i,2]]]===4,
+posS=Position[PreSARAHoperatorsQFV,ToExpression[StringReplace[ToString[PreSARAHoperatorsQFV[[i,1]]],stringReplaceTS]]][[1,1]];
+posV=Position[PreSARAHoperatorsQFV,ToExpression[StringReplace[ToString[PreSARAHoperatorsQFV[[i,1]]],stringReplaceTV]]][[1,1]];
+WriteString[sphenoLow,"If ("<>StringReplace[ToString[Flatten[Table[{"(Abs("<>ToString[PreSARAHoperatorsQFV[[posS,3,k]]]<>indvector<>").lt.epsTree)"},{k,1,Length[PreSARAHoperatorsQFV[[posS,3]]]}]]],{"),"->").and. & \n &","{"->"","}"->""}]<>") Then \n"];
+WriteString[sphenoLow,"  If ("<>StringReplace[ToString[Flatten[Table[{"(Abs("<>ToString[PreSARAHoperatorsQFV[[posV,3,k]]]<>indvector<>").lt.epsTree)"},{k,1,Length[PreSARAHoperatorsQFV[[posV,3]]]}]]],{"),"->").and. & \n &","{"->"","}"->""}]<>") Then \n"];
+];
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],sphenoLow];
+If[StringTake[ToString[PreSARAHoperatorsQFV[[i,1]]],{1,Min[{4,StringLength[ToString[PreSARAHoperatorsQFV[[i,1]]]]}]}]=!="Tree" && Length[PreSARAHoperatorsQFV[[i,2]]]===4,
+WriteString[sphenoLow,"  End if \n"];
+WriteString[sphenoLow,"End if \n"];
+];,
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".true."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>"SM"<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],sphenoLow];
+(*
+If[getGen[BottomQuark]\[LessEqual] 3 && getGen[TopQuark]\[LessEqual] 3,
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsQFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsQFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsQFV[[i,1]]]}],Join[ToString/@indlist,{".true."}],Table[{ToString[PreSARAHoperatorsQFV[[i,3,k]]]<>"SM"<>indvector},{k,1,Length[PreSARAHoperatorsQFV[[i,3]]]}],sphenoLow];,
+For[iiii=1,iiii\[LessEqual] Length[PreSARAHoperatorsQFV[[i,3]]],
+WriteString[sphenoLow,ToString[PreSARAHoperatorsQFV[[i,3,iiii]]]<>"SM = 0._dp \n"];
+iiii++;];
+];
+*)
+];
+
+If[Length[PreSARAHoperatorsQFV[[i,2]]]===3 && FreeQ[NeededCombinations[PreSARAHoperatorsQFV[[i,1]]][[1]],ALL]==False,WriteString[sphenoLow," End Do  \n"];];
+WriteString[sphenoLow,"End do \n\n"];
+
+WriteString[sphenoLow,"\n"];
+];
+i++;];
+(*
+If[iQFV\[Equal]1,
+WriteString[sphenoLow,"If (MakeQTEST) Then  \n"];
+For[ii=1,ii\[LessEqual]Length[PreSARAHoperatorsQFV],
+For[k=1,k\[LessEqual]Length[PreSARAHoperatorsQFV[[ii,3]]],
+WriteString[sphenoLow,"where (Abs("<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check).ne.0._dp) "<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check = ("<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check-"<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]] <>")/"<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check\n"];
+WriteString[sphenoLow,"If(MaxVal(Abs("<> ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check)).gt.maxdiff) maxdiff=MaxVal(Abs("<> ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check))\n"];
+WriteString[sphenoLow,ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"check="<>ToString[PreSARAHoperatorsQFV[[ii,3,k]]]<>"\n"];
+k++;];
+ii++;];
+WriteString[sphenoLow,"If (iQTEST.gt.1) Write(*,*) \"Q=\",10.0_dp**iQTest,\" max change=\",maxdiff  \n"];
+WriteString[sphenoLow,"If (iQTEST.eq.10) Qin=SetRenormalizationScale(Qinsave) \n"];
+WriteString[sphenoLow,"End If  \n"];
+WriteString[sphenoLow,"End Do  \n"];
+]; *)
+iQFV++;];
+
+
+For[i=1,i<=Length[WrappersQFV],
+WriteString[sphenoLow,"\n ! ***** Combine operators for "<>ToString[WrappersQFV[[i,1]]]<>"\n"];
+For[j=1,j<=Length[SumContributionsOperators[WrappersQFV[[i,1]]]],
+WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersQFV[[i,1]]][[j,1]]]<>" = "<>ToString[SumContributionsOperators[WrappersQFV[[i,1]]][[j,2]]]<>"\n"];
+If[Head[SumContributionsOperators[WrappersQFV[[i,1]]][[j,2]]]===Plus,
+WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersQFV[[i,1]]][[j,1]]]<>"SM = "<>ToString[Plus@@(ToExpression[ToString[#]<>"SM"]&/@(List@@SumContributionsOperators[WrappersQFV[[i,1]]][[j,2]]))]<>"\n"];,
+WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersQFV[[i,1]]][[j,1]]]<>"SM = "<>ToString[SumContributionsOperators[WrappersQFV[[i,1]]][[j,2]]]<>"SM \n"];
+];
+j++;];
+
+If[Head[NormalizationOperators[WrappersQFV[[i,1]]]]===List,
+For[j=1,j<=Length[NormalizationOperators[WrappersQFV[[i,1]]]],
+WriteString[sphenoLow,NormalizationOperators[WrappersQFV[[i,1]]][[j]]<>"\n"];
+j++;];
+];
+
+i++;];
+
+For[i=1,i<=Length[PreSARAHobservablesQFV],
+WriteString[sphenoLow,"\n ! **** "<>ToString[PreSARAHobservablesQFV[[i,1]]]<>" **** \n \n"];
+MakeCall["Calculate_"<>ToString[PreSARAHobservablesQFV[[i,1]]],{},ToString/@PreSARAHobservablesQFV[[i,4]],ToString/@PreSARAHobservablesQFV[[i,2]],sphenoLow];
+
+For[iiii=1,iiii<=Length[PreSARAHobservablesQFV[[i,2]]],
+WriteString[sphenoLow,"If("<>ToString[PreSARAHobservablesQFV[[i,2,iiii]]]<>".ne."<>ToString[PreSARAHobservablesQFV[[i,2,iiii]]]<>") "<>ToString[PreSARAHobservablesQFV[[i,2,iiii]]] <>" = 0._dp \n"];
+iiii++;];
+i++;];
+
+If[SkipFlavorKit=!=True,
+For[i=1,i<=Length[FLHA`WilsonCoefficients],
+WriteString[sphenoLow,ToString[FLHA`WilsonCoefficients[[i,5]]]<>" = "<>SPhenoForm[FLHA`WilsonCoefficients[[i,6]]]<>"\n"];
+i++;];
+
+(* For[j=1,j<=WCXF`Outputs, *)
+If[SkipFlavorKit=!=True,
+j=1;
+For[i=1,i<=Length[WCXF`Values[j]],
+If[WCXF`Values[j][[i,3]]===Complex,
+WriteString[sphenoLow,ToString[WCXF`Values[j][[i,1]]]<>" = "<>SPhenoForm[WCXF`Values[j][[i,2]]]<>"\n"];,
+WriteString[sphenoLow,ToString[WCXF`Values[j][[i,1]]]<>" = Real("<>SPhenoForm[WCXF`Values[j][[i,2]]]<>",dp) \n"];
+];
+i++;];
+];
+(* j++;]; *)
+
+];
+
+
+If[IncludeOldObservables===True,
+(* q \[Rule]  q' gamma *)
+WriteString[sphenoLow,"\n! *****  b -> s gamma ***** \n\n"];
+
+If[OnlyLowEnergySPheno=!=True,
+WriteString[sphenoLow,ToString[SPhenoMass[BottomQuark]] <>"(1:3) = mf_d_mz \n"];
+WriteString[sphenoLow,ToString[SPhenoMassSq[BottomQuark]] <>"(1:3) = mf_d_mz**2 \n"];
+];
+
+pos=Position[LowEnergyConstraintsParameterList,BToQGamma];
+masses=Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings=Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+MakeCall["BToQGamma",Flatten[{masses,couplings}],{"2",SPhenoForm[leftCoupling],SPhenoForm[DownMatrixL],SPhenoForm[UpMatrixL]},{"BRBtoSGamma","i_scheme=0","NNLO_SM_in=3.15_dp"},sphenoLow];
+WriteString[sphenoLow,"BRBtoSGamma = BRBtoSGamma*1.e-4 \n\n"];
+
+
+If[OnlyLowEnergySPheno=!=True,
+WriteString[sphenoLow,ToString[SPhenoMass[BottomQuark]] <>"(1:3) = mf_d \n"];
+WriteString[sphenoLow,ToString[SPhenoMassSq[BottomQuark]] <>"(1:3) = mf_d**2 \n"];
+];
+
+(* B0s \[Rule] l l *)
+
+WriteString[sphenoLow,"\n! ***** B0s -> l l ***** \n\n"];
+
+(*arguments: inState1(bottom), inState2(strange or down), outState3, outState4 *)
+MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","1","1"},{"GBsEE","BRBsEE","BRBsEESM"},sphenoLow];
+MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","2","2"},{"GBsMuMu","BRBsMuMu","BRBsMuMuSM"},sphenoLow];
+MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","2","1"},{"GBsMuE","BRBsMuE","BRBsMuESM"},sphenoLow];
+(*MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","2","3","3"},{"GBsTauTau","BRBsTauTau"},sphenoLow];*)
+
+MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","1","1","1"},{"GBdEE","BRBdEE","BRBdEESM"},sphenoLow];
+MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","1","2","2"},{"GBdMuMU","BRBdMuMu","BRBdMuMuSM"},sphenoLow];
+MakeCall["BrB0LLp",Flatten[{NeededMassesB0LLp,NeededCouplingsB0LLp}],{"3","1","3","3"},{"GBdTauTau","BRBdTauTau","BRBdTauTauSM"},sphenoLow];
+];
+
+WriteString[sphenoLow, "CKM = CKMsave \n"];
+
+(* If[OnlyLowEnergySPheno=!=True, *)
+WriteString[sphenoLow,"!-------------------------------------\n"];
+WriteString[sphenoLow,"! running to M_Z \n"];
+WriteString[sphenoLow,"!-------------------------------------\n\n"];
+
+(*
+MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],{},{"g1D"},sphenoLow];
+WriteString[sphenoLow,"Qin=scale_save \n"];
+
+For[i=1,i\[LessEqual]Length[Gauge],
+If[Gauge[[i,2,1]]\[Equal]1,
+WriteString[sphenoLow,SPhenoForm[Gauge[[i,4]]]<> "input = "<>SPhenoForm[Simplify[GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>"input \n"]; 
+];
+i++;];
+
+For[i=1,i\[LessEqual]Length[SA`ListGaugeMixed2],
+WriteString[sphenoLow,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> "input = "<>SPhenoForm[GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>"input \n"];
+i++;];
+WriteString[sphenoLow,"\n\n"];
+
+WriteString[sphenoLow,"If (RunningSUSYparametersLowEnergy) Then \n"];
+WriteString[sphenoLow,"tz=Log(mZ/Qin) \n"];
+WriteString[sphenoLow,"dt=tz/100._dp \n"];
+WriteString[sphenoLow,"Call odeint(g1D,"<>ToString[numberAllwithVEVs]<>",0._dp,tz,deltaM,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n\n"];
+WriteString[sphenoLow,"End if  \n\n"];
+MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"g1D"},{},sphenoLow];
+WriteString[sphenoLow,"scalein = SetRenormalizationScale(MZ2) \n"];
+For[i=1,i\[LessEqual]Length[Gauge],
+If[Gauge[[i,2,1]]\[Equal]1,
+WriteString[sphenoLow,SPhenoForm[Gauge[[i,4]]]<> " = "<>SPhenoForm[Simplify[GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>" \n"]; 
+];
+i++;];
+
+For[i=1,i\[LessEqual]Length[SA`ListGaugeMixed2],
+WriteString[sphenoLow,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> " = "<>SPhenoForm[GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>" \n"];
+i++;];
+WriteString[sphenoLow,"\n\n"];
+
+];
+
+For[i=1,i\[LessEqual]Length[NewNumericalDependences],
+WriteString[sphenoLow, SPhenoForm[NewNumericalDependences[[i,1]]] <> " = " <> SPhenoForm[NewNumericalDependences[[i,2]]] <> "\n"];
+i++;];
+
+If[AddSMrunning=!=False, 
+WriteString[sphenoLow, "! Running SM parameters \n"];
+If[AddOHDM=!=True,
+WriteString[sphenoLow,"Call RunSM(sqrt(mz2),deltaM,TanBeta,"<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM1]<>","<>SPhenoForm[VEVSM2]<>") \n"];,
+WriteString[sphenoLow,"Call RunSMohdm(sqrt(mz2),deltaM, "<>SPhenoForm[hyperchargeCoupling]<>","<>SPhenoForm[leftCoupling]<>","<>SPhenoForm[strongCoupling]<>","<>SPhenoForm[UpYukawa]<>","<>SPhenoForm[DownYukawa]<>","<>SPhenoForm[ElectronYukawa]<>","<>SPhenoForm[VEVSM]<>") \n"];
+];
+
+WriteString[sphenoLow, "If (.not.GenerationMixing) Then \n"];
+WriteString[sphenoLow, SPhenoForm[UpYukawa]<> " =Transpose(Matmul(Transpose(CKM),Transpose("<>SPhenoForm[UpYukawa]<>"))) \n"];
+WriteString[sphenoLow, "End If \n"];
+
+*)
+WriteString[sphenoLow, "scalein=SetRenormalizationScale(scale_save**2) \n"];
+WriteString[sphenoLow,"If (MatchingOrder.gt.-1) Then \n"];
+MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"mz"},{"CKM_MZ", "sinW2_MZ", "Alpha_MZ","AlphaS_MZ",".true."},sphenoLow];
+WriteTadpoleSolution[sphenoLow];
+
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLow];
+WriteString[sphenoLow,"End if \n"];
+(* ]; *)
+
+WriteString[sphenoLow, "mzsave  = sqrt(mz2) \n"];
+If[OnlyLowEnergySPheno=!=True,
+If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLow,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge]<>"\n"];];
+If[AddOHDM=!=True,
+If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
+WriteString[sphenoLow,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
+SPhenoForm[VEVSM1]<>"**2 + "<>SPhenoForm[VEVSM2]<>"**2) \n"];
+];,
+WriteString[sphenoLow,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
+SPhenoForm[VEVSM]<>"**2) \n"];
+];
+WriteString[sphenoLow,"mZ = sqrt(mZ2) \n"];
+];
+(* SetPoleMasses[sphenoLow]; *)
+WriteString[sphenoLow," mf_d_mz = "<>ToString[SPhenoMass[BottomQuark]] <>"(1:3) \n"];
+WriteString[sphenoLow," mf_d2_mz = "<>ToString[SPhenoMass[BottomQuark]] <>"(1:3)**2 \n"];
+WriteString[sphenoLow," mf_u_mz = "<>ToString[SPhenoMass[TopQuark]] <>"(1:3) \n"];
+WriteString[sphenoLow," mf_u2_mz = "<>ToString[SPhenoMass[TopQuark]] <>"(1:3)**2 \n"];
+WriteString[sphenoLow," mf_l_MZ = "<>ToString[SPhenoMass[Electron]] <>"(1:3) \n"];
+WriteString[sphenoLow," mf_l2_MZ = "<>ToString[SPhenoMass[Electron]] <>"(1:3)**2 \n"];
+
+MakeCall["AllCouplings" , Join[parametersAll,namesAll],{},{},sphenoLow];
+
+
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
+WriteString[sphenoLow,"Mhh_s = "<>SPhenoForm[SPhenoMass[HiggsBoson]]<>" \n"];
+WriteString[sphenoLow,"Mhh2_s  = "<>SPhenoForm[SPhenoMassSq[HiggsBoson]]<>"   \n"];
+];
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
+WriteString[sphenoLow,"MAh_s = "<>SPhenoForm[SPhenoMass[PseudoScalar]]<>" \n"];
+WriteString[sphenoLow,"MAh2_s  = "<>SPhenoForm[SPhenoMassSq[PseudoScalar]]<>"   \n"];
+];
+
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
+WriteString[sphenoLow,SPhenoForm[SPhenoMass[HiggsBoson]]<>"= MhhL \n"];
+WriteString[sphenoLow,SPhenoForm[SPhenoMassSq[HiggsBoson]]<>" = Mhh2L \n"];
+];
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
+WriteString[sphenoLow,SPhenoForm[SPhenoMass[PseudoScalar]]<>"= MAhL \n"];
+WriteString[sphenoLow,SPhenoForm[SPhenoMassSq[PseudoScalar]]<>" = MAh2L \n"];
+];
+
+If[IncludeOldObservables===True,
+pos=Position[LowEnergyConstraintsParameterList,OneLeptonToThreeLeptons];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["BR1LeptonTo3Leptons",Flatten[{masses,couplings}],{"2","1"},{"BRMu3e"},sphenoLow];
+MakeCall["BR1LeptonTo3Leptons",Flatten[{masses,couplings}],{"3","1"},{"BRTau3e"},sphenoLow];
+MakeCall["BR1LeptonTo3Leptons",Flatten[{masses,couplings}],{"3","2"},{"BRTau3Mu"},sphenoLow];
+
+
+WriteString[sphenoLow,"\n! *****  mu -> e conversion & tau -> mue + meson ***** \n\n"];
+
+pos=Position[LowEnergyConstraintsParameterList,LLpHadron];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["BrLLpHadron",Flatten[{masses,couplings}],{"2","1"},{"ResultMuE"},sphenoLow];
+WriteString[sphenoLow,"MuEAl = ResultMuE(1) \n"];
+WriteString[sphenoLow,"MuETi = ResultMuE(2) \n"];
+WriteString[sphenoLow,"MuESr = ResultMuE(3) \n"];
+WriteString[sphenoLow,"MuESb = ResultMuE(4) \n"];
+WriteString[sphenoLow,"MuEAu = ResultMuE(5) \n"];
+WriteString[sphenoLow,"MuEPb = ResultMuE(6) \n"];
+
+MakeCall["BrLLpHadron",Flatten[{masses,couplings}],{"3","1"},{"ResultTauMeson"},sphenoLow];
+WriteString[sphenoLow,"TauEPi0 = ResultTauMeson(1) \n"];
+WriteString[sphenoLow,"TauEEta = ResultTauMeson(2) \n"];
+WriteString[sphenoLow,"TauEEtap = ResultTauMeson(3) \n"];
+
+MakeCall["BrLLpHadron",Flatten[{masses,couplings}],{"3","2"},{"ResultTauMeson"},sphenoLow];
+WriteString[sphenoLow,"TauMuPi0 = ResultTauMeson(1) \n"];
+WriteString[sphenoLow,"TauMuEta = ResultTauMeson(2) \n"];
+WriteString[sphenoLow,"TauMuEtap = ResultTauMeson(3) \n"];
+];
+
+(*
+WriteString[sphenoLow,"iQFinal = 1 \n"];
+WriteString[sphenoLow,"If (MakeQtest) iQFinal=10 \n"];
+WriteString[sphenoLow,"Qinsave=GetRenormalizationScale() \n"];
+WriteString[sphenoLow,"Do iQTEST=1,iQFinal \n"];
+WriteString[sphenoLow,"maxdiff=0._dp \n"];
+WriteString[sphenoLow,"If (MakeQtest) Qin=SetRenormalizationScale(10.0_dp**iQTest) \n"];
+*)
+For[i=1,i<=Length[PreSARAHoperatorsLFV],
+If[PreSARAHoperatorsLFV[[i,1]]=!="dummy",
+WriteString[sphenoLow,"\n ! **** "<>ToString[PreSARAHoperatorsLFV[[i,1]]]<>" **** \n \n"];
+
+For[j=1,j<=Length[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]]],
+indlist={};
+indvector="(";
+dimInd=Length[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]][[1]]];
+
+For[k=1,k<=dimInd,
+indlist=Join[indlist,{ToExpression["gt"<>ToString[k]]}];
+indvector=indvector<>"gt"<>ToString[k];
+If[k<dimInd,indvector=indvector<>",";,indvector=indvector<>")"];
+k++;];
+
+WriteString[sphenoLow,"IndexArray"<>ToString[dimInd]<>"("<>ToString[j]<>",:) = (/"<>StringReplace[ToString[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]][[j]]],{"{"->"","}"->""," "->"","ALL"->"1"}]<>"/) \n"];
+j++;];
+
+WriteString[sphenoLow,"Do i1=1,"<>ToString[Length[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]]] ]<>" \n"];
+For[j=1,j<=Length[DeleteCases[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]][[1]],ALL]],
+WriteString[sphenoLow,"gt"<>ToString[j] <>" = IndexArray"<>ToString[dimInd]<>"(i1,"<>ToString[j]<>") \n"];
+j++;];
+
+If[Length[PreSARAHoperatorsLFV[[i,2]]]===3 && FreeQ[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]][[1]],ALL]==False,
+WriteString[sphenoLow," Do i2=1,"<>ToString[getGen[PreSARAHoperatorsLFV[[i,2,3]]]]<>" \n"];
+WriteString[sphenoLow,"  gt3=i2 \n"];,
+If[Length[PreSARAHoperatorsLFV[[i,2]]]===3 ,
+WriteString[sphenoLow,"  gt3= 1 \n"];
+indlist = Join[indlist,{gt3}];
+];
+];
+
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsLFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsLFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsLFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsLFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsLFV[[i,3]]]}],sphenoLow];
+
+WriteString[sphenoLow,"End Do \n"];
+If[Length[PreSARAHoperatorsLFV[[i,2]]]===3 && FreeQ[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]][[1]],ALL]==False,
+WriteString[sphenoLow," End Do \n"];
+];
+WriteString[sphenoLow,"\n"];
+];
+i++;];
+
+(*
+WriteString[sphenoLow,"If (MakeQTEST) Then  \n"];
+For[ii=1,ii\[LessEqual]Length[PreSARAHoperatorsLFV],
+For[k=1,k\[LessEqual]Length[PreSARAHoperatorsLFV[[ii,3]]],
+WriteString[sphenoLow,"where (Abs("<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check).ne.0._dp) "<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check = ("<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check-"<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]] <>")/"<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check\n"];
+WriteString[sphenoLow,"If(MaxVal(Abs("<> ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check)).gt.maxdiff) maxdiff=MaxVal(Abs("<> ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check))\n"];
+WriteString[sphenoLow,ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"check="<>ToString[PreSARAHoperatorsLFV[[ii,3,k]]]<>"\n"];
+k++;];
+ii++;];
+WriteString[sphenoLow,"If (iQTEST.gt.1) Write(*,*) \"Q=\",10.0_dp**iQTest,\" max change=\",maxdiff  \n"];
+WriteString[sphenoLow,"If (iQTEST.eq.10) Qin=SetRenormalizationScale(Qinsave) \n"];
+WriteString[sphenoLow,"End If  \n"];
+WriteString[sphenoLow,"End Do  \n"];
+*)
+
+For[i=1,i<=Length[WrappersLFV],
+WriteString[sphenoLow,"\n ! ***** Combine operators for "<>ToString[WrappersLFV[[i,1]]]<>"\n"];
+For[j=1,j<=Length[SumContributionsOperators[WrappersLFV[[i,1]]]],
+WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,1]]]<>" = "<>ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,2]]]<>"\n"];
+j++;];
+
+If[Head[NormalizationOperators[WrappersLFV[[i,1]]]]===List,
+For[j=1,j<=Length[NormalizationOperators[WrappersLFV[[i,1]]]],
+WriteString[sphenoLow,NormalizationOperators[WrappersLFV[[i,1]]][[j]]<>"\n"];
+j++;];
+];
+i++;];
+
+If[SkipFlavorKit=!=True,
+j=2;
+For[i=1,i<=Length[WCXF`Values[j]],
+If[WCXF`Values[j][[i,3]]===Complex,
+WriteString[sphenoLow,ToString[WCXF`Values[j][[i,1]]]<>" = "<>SPhenoForm[WCXF`Values[j][[i,2]]]<>"\n"];,
+WriteString[sphenoLow,ToString[WCXF`Values[j][[i,1]]]<>" = Real("<>SPhenoForm[WCXF`Values[j][[i,2]]]<>",dp) \n"];
+];
+i++;];
+];
+
+For[i=1,i<=Length[PreSARAHobservablesLFV],
+WriteString[sphenoLow,"\n ! **** "<>ToString[PreSARAHobservablesLFV[[i,1]]]<>" **** \n \n"];
+MakeCall["Calculate_"<>ToString[PreSARAHobservablesLFV[[i,1]]],{},ToString/@PreSARAHobservablesLFV[[i,4]],ToString/@PreSARAHobservablesLFV[[i,2]],sphenoLow];
+i++;];
+
+
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
+WriteString[sphenoLow,SPhenoForm[SPhenoMass[HiggsBoson]]<>"= Mhh_s \n"];
+WriteString[sphenoLow,SPhenoForm[SPhenoMassSq[HiggsBoson]]<>" = Mhh2_s \n"];
+];
+If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
+WriteString[sphenoLow,SPhenoForm[SPhenoMass[PseudoScalar]]<>"= MAh_s \n"];
+WriteString[sphenoLow,SPhenoForm[SPhenoMassSq[PseudoScalar]]<>" = MAh2_s \n"];
+];
+
+If[IncludeOldObservables===True,
+(* l \[Rule] l' gamma *)
+WriteString[sphenoLow,"\n! *****  l -> l' gamma ***** \n\n"];
+
+MakeCall["BrLgammaLp",Flatten[{NeededMassesLLp,NeededCouplingsLLp}],{"2","1"},{"GMuEgamma","BRMuEgamma"},sphenoLow];
+MakeCall["BrLgammaLp",Flatten[{NeededMassesLLp,NeededCouplingsLLp}],{"3","1"},{"GTauEgamma","BRTauEgamma"},sphenoLow];
+MakeCall["BrLgammaLp",Flatten[{NeededMassesLLp,NeededCouplingsLLp}],{"3","2"},{"GTauMugamma","BRTauMugamma"},sphenoLow];
+
+(* Z \[Rule] l l' *)
+
+WriteString[sphenoLow,"\n! *****  Z -> l l' ***** \n\n"];
+
+MakeCall["BrZLLp",Flatten[{NeededMassesZLLp,NeededCouplingsZLLp}],{"2","1"},{"GZMuE","BRZMuE"},sphenoLow];
+MakeCall["BrZLLp",Flatten[{NeededMassesZLLp,NeededCouplingsZLLp}],{"3","1"},{"GZTauE","BRZTauE"},sphenoLow];
+MakeCall["BrZLLp",Flatten[{NeededMassesZLLp,NeededCouplingsZLLp}],{"3","2"},{"GZTauMu","BRZTauMu"},sphenoLow];
+];
+
+(* G minus 2 *)
+
+WriteString[sphenoLow,"\n! *****  G minus 2 ***** \n\n"];
+
+pos=Position[LowEnergyConstraintsParameterList,Gminus2];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["Gminus2",Flatten[{masses,couplings}],{"1"},{"ae"},sphenoLow];
+MakeCall["Gminus2",Flatten[{masses,couplings}],{"2"},{"amu"},sphenoLow];
+MakeCall["Gminus2",Flatten[{masses,couplings}],{"3"},{"atau"},sphenoLow];
+
+(* Lepton EDM *)
+
+WriteString[sphenoLow,"\n! *****  Lepton EDM ***** \n\n"];
+
+pos=Position[LowEnergyConstraintsParameterList,LeptonEDM];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"1"},{"EDMe"},sphenoLow];
+MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"2"},{"EDMmu"},sphenoLow];
+MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"3"},{"EDMtau"},sphenoLow];
+
+
+(* Delta Rho *)
+
+WriteString[sphenoLow,"\n! *****  delta Rho ***** \n\n"];
+
+
+If[OnlyLowEnergySPheno=!=True || AddSMrunning=!=False,
+WriteString[sphenoLow,"sinW2=0.22290_dp \n"];
+WriteString[sphenoLow, SPhenoForm[Weinberg]<>" = asin(sqrt(sinW2)) \n"];
+If[AddOHDM=!=True,
+If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
+WriteString[sphenoLow,"mW2=(1._dp-sinW2)*mz2 + "<>SPhenoForm[Simplify[-Vertex[{VectorW,conj[VectorW]}][[2,1]]-(-Vertex[{VectorZ,VectorZ}][[2,1]] )(1-Sin[ThetaW]^2) /. ThetaW->ArcSin[Sqrt[hyperchargeCoupling^2/(hyperchargeCoupling^2+leftCoupling^2)]],{hyperchargeCoupling>0,leftCoupling>0}]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>"\n"];
+];,
+
+WriteString[sphenoLow,"mW2=(1._dp-sinW2)*mz2 + "<>SPhenoForm[Simplify[-Vertex[{VectorW,conj[VectorW]}][[2,1]]-(-Vertex[{VectorZ,VectorZ}][[2,1]] )(1-Sin[ThetaW]^2) /. ThetaW->ArcSin[Sqrt[hyperchargeCoupling^2/(hyperchargeCoupling^2+leftCoupling^2)]],{hyperchargeCoupling>0,leftCoupling>0}]/.sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]]<>"\n"];
+];,
+WriteString[sphenoLow,"sinW2=0.22290_dp \n"];
+WriteString[sphenoLow, SPhenoForm[Weinberg]<>" = asin(sqrt(sinW2)) \n"];
+];
+
+WriteString[sphenoLow,"g2SM=2._dp*Sqrt(alpha*pi/sinW2) \n"];
+WriteString[sphenoLow,"g1SM=g2SM*Sqrt(sinW2/(1._dp-sinW2)) \n"];
+
+WriteString[sphenoLow,"If (MatchingOrder.gt.-1) Then \n"];
+WriteString[sphenoLow,"   vSM = Sqrt(mZ2*(1._dp-sinW2)*SinW2/(pi*alpha)) \n"];
+WriteString[sphenoLow," Else\n"];
+WriteString[sphenoLow,"   vSM=1/Sqrt((G_F*Sqrt(2._dp)))\n"];
+WriteString[sphenoLow,"End if\n"];
+
+WriteString[sphenoLow,"YuSM=0._dp\n"];
+WriteString[sphenoLow,"YdSM=0._dp\n"];
+WriteString[sphenoLow,"YeSM=0._dp\n"];
+WriteString[sphenoLow,"   Do i1=1,3 \n"];
+WriteString[sphenoLow,"      YuSM(i1,i1)=sqrt(2._dp)*mf_u(i1)/vSM \n"];
+WriteString[sphenoLow,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
+WriteString[sphenoLow,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
+WriteString[sphenoLow,"    End Do \n"];
+
+SetMatchingConditions[sphenoLow];
+
+WriteTadpoleSolution[sphenoLow];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLow];
+
+
+(* SetPoleMasses[sphenoLow]; *)
+
+MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoLow];
+
+pos=Position[LowEnergyConstraintsParameterList,DeltaRho];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["DeltaRho",Flatten[{masses,couplings}],{},{"dRho"},sphenoLow];
+
+pos=Position[LowEnergyConstraintsParameterList,STUpar];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["STUparameter",Flatten[{masses,couplings}],{"vSM","g1SM","g2SM","g3SM","YuSM","YdSM","YeSM"},{"Spar","Tpar","Upar"},sphenoLow];
+
+
+(* Neutrino Masses *)
+
+If[FreeQ[massless,Neutrino],
+WriteTadpoleSolution[sphenoLow];
+WriteString[sphenoLow,"CalculateOneLoopMassesSave = CalculateOneLoopMasses \n"];
+WriteString[sphenoLow,"CalculateOneLoopMasses = .true. \n"];
+WriteString[sphenoLow,"If (MatchingOrder.gt.-1) Then \n"];
+MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoLow];
+WriteString[sphenoLow,"CalculateOneLoopMasses = CalculateOneLoopMassesSave \n"];
+WriteString[sphenoLow,"nuMasses = "<>SPhenoForm[SPhenoMass[Neutrino]]<>" \n"];
+If[SPhenoForm[NeutrinoMM]=!="Delta",WriteString[sphenoLow,"nuMixing = "<>SPhenoForm[NeutrinoMM]<>" \n"];];
+WriteString[sphenoLow,"End if \n"];
+SetPoleMasses[sphenoLow];
+];
+
+
+WriteString[sphenoLow,"If (WriteParametersAtQ) Then \n"];
+WriteString[sphenoLow,"scalein = SetRenormalizationScale(160._dp**2) \n"];
+WriteString[sphenoLow,"Else \n"];
+WriteString[sphenoLow,"scalein = SetRenormalizationScale(scale_save**2) \n"];
+WriteString[sphenoLow,"End if \n"];
+WriteString[sphenoLow, "mz2 = mzsave**2 \n"];
+WriteString[sphenoLow, "mz = mzsave \n"];
+
+If[OnlyLowEnergySPheno=!=True,
+For[i=1,i<=Length[Gauge],
+If[Gauge[[i,2,1]]==1,
+WriteString[sphenoLow,SPhenoForm[Gauge[[i,4]]]<> "input = "<>SPhenoForm[Simplify[GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>"input \n"]; 
+];
+i++;];
+];
+
+WriteString[sphenoLow,"End subroutine CalculateLowEnergyConstraints \n \n \n"];
 
 ];
 

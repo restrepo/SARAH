@@ -51,7 +51,6 @@ BoundaryLowScaleInput={
  {muHP2, muHP2INPUT},
  {mXT, mXTINPUT},
  {mXN, mXNINPUT},
- {vH, vSM}, 
  {vS, vSINPUT},
  (*{vHP, vHPINPUT},*)
  {Yv, LHInput[Yv]},
@@ -78,3 +77,5 @@ DefaultInputValues ={LambdaHINPUT -> 0.12,
                      vSINPUT -> 1000
                      };
 
+
+SA`AddOneLoopDecay = False;

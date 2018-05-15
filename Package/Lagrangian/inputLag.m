@@ -30,6 +30,9 @@ TermList={CreateTermList[Expand[terms]]};
 ];
 LagInputIncludeHC = HC;
 
+
+If[SupersymmetricModel=!=True,getGeneratorsBroken;];
+
 lVVV = Select[TermList,(getPartCode[#[[3]]]==30)&];
 lVVVV = Select[TermList,(getPartCode[#[[3]]]==40)&];
 pCodeKin={110,20,2010,210,220,120};
@@ -110,6 +113,7 @@ fields=entry[[3]];
 AdditionalParametersLagrange = Join[AdditionalParametersLagrange,{entry[[2]]}];
 particles=1;
 
+
 For[i=1,i<=Length[fields],
 If[Head[fields[[i]]]===Der,
 headDer=DER;
@@ -164,10 +168,10 @@ temp=entry[[1]]/. subFieldsOne;
 ];
 coup = genTest[entry[[2]],fields/.Der[a_,b_]->a,False]^entry[[4]];
 If[SupersymmetricModel===False && FreeQ[getType/@getBlank/@fields,V],
-GenerateCGCsForBrokenGroups[temp,fields,particles,invFields,withHead]; 
+GenerateCGCsForBrokenGroups[temp/.x_?NumericQ->1,fields,particles,invFields,withHead,coup]; 
 If[Head[ContractionRGE[entry[[2]]]]===ContractionRGE,
-IndStructure=MakeIndexStructureRGEnonSUSY[withHead] /.subCGCBroken;,
-IndStructure=ContractionRGE[coup]
+IndStructure=MakeIndexStructureRGEnonSUSY[withHead,coup] /.subCGCBroken;,
+IndStructure=ContractionRGE[coup];
 ];
 ExtractSymmetryOfParametersNS[entry[[2]],withHead,IndStructure];
 (*

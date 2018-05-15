@@ -96,7 +96,6 @@ ListDecayParticles3B = Automatic;
 
 DefaultInputValues = {mSUSY->1500, TanBeta->10, Azero->-1000, Bzero->20, vSinput ->1, vTinput->1, vRdInput->1, vRuInput->-1, MDBinput->200, MDWinput->500, MDOinput->1400, LSDinput->0.7, LSUinput->-0.7, LTDinput->-0.7, LTUinput->-0.7, MuDinput->400, MuUinput->400,BmuInput->10^5};
 
-BoundaryLowScaleInput={};
 
 (* loop decays are not really necessary  *)                     
 SA`AddOneLoopDecay = False;

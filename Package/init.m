@@ -1145,13 +1145,13 @@ addParticle[ToExpression["g"<>nameBasis<>"C"],indizesT,nGen,G];
 realVar=Join[realVar,{ToExpression["V"<>nameBasis],ToExpression["g"<>nameBasis]}];
 (* Set Group constants *)
 valueDimensions=AuxGaugeBosons[[j,2,2]];
-valueDyn=getDynkinLabels[valueDimensions,AuxGauge[[j,2]]];
+valueDyn=getDynkinLabels[valueDimensions,AuxGauge[[1,2]]];
 valueDimensions=Abs[valueDimensions];
-valueCasimir=If[AuxGaugeBosons[[j,2,2]]==1,0, SA`Casimir[valueDyn,AuxGauge[[j,2]]]];
-valueDynkin= If[AuxGaugeBosons[[j,2,2]]==1,0,SA`Dynkin[valueDyn,AuxGauge[[j,2]]]];
+valueCasimir=If[AuxGaugeBosons[[j,2,2]]==1,0, SA`Casimir[valueDyn,AuxGauge[[1,2]]]];
+valueDynkin= If[AuxGaugeBosons[[j,2,2]]==1,0,SA`Dynkin[valueDyn,AuxGauge[[1,2]]]];
 valueGenerator=0; (* not needed *)
-SetGroupConstants[ToExpression["V"<>nameBasis],AuxGauge[[j,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
-SetGroupConstants[ToExpression["g"<>nameBasis],AuxGauge[[j,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
+SetGroupConstants[ToExpression["V"<>nameBasis],AuxGauge[[1,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
+SetGroupConstants[ToExpression["g"<>nameBasis],AuxGauge[[1,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
 
 j++;];
 ];

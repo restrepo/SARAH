@@ -50,8 +50,8 @@
      Case(7)
        If (wert.eq.1) then
          CalculateTwoLoopHiggsMasses=.False.
-         TwoLoopMatching = .false.
-         OneLoopMatching = .false.         
+!          TwoLoopMatching = .false.
+!          OneLoopMatching = .false.         
        Else
          CalculateTwoLoopHiggsMasses=.True.
        End if
@@ -199,6 +199,9 @@
 !      Case(26) ! minimal value such that a cross section is written out
 !       Call SetWriteMinSig(wert)
 
+     Case(19) ! maximal number of iterations
+      MatchingOrder = Int(wert)
+
      Case(20) 
       If (wert.eq.1._dp) GetMassUncertainty=.True.
 
@@ -295,8 +298,8 @@
        CalculateOneLoopMasses=.True.
       Else
        CalculateOneLoopMasses=.False.
-       TwoLoopMatching = .false.
-       OneLoopMatching = .false.
+!        TwoLoopMatching = .false.
+!        OneLoopMatching = .false.
       End If
 
 !      Case(56)
@@ -332,12 +335,12 @@
        KineticMixing=.False.
       End If
 
-     Case(61)
-      If (wert.Ne.0._dp) Then
-       SMrunningLowScaleInput=.True.
-      Else
-       SMrunningLowScaleInput=.False.
-      End If
+!      Case(61)
+!       If (wert.Ne.0._dp) Then
+!        SMrunningLowScaleInput=.True.
+!       Else
+!        SMrunningLowScaleInput=.False.
+!       End If
 
      Case(62)
       If (wert.Ne.0._dp) Then
@@ -384,12 +387,12 @@
        MatchZWpoleMasses=.True.
       End If      
 
-     Case(70)
-      If (wert.Ne.0._dp) Then
-       SUSYrunningFromMZ=.True.
-      Else
-       SUSYrunningFromMZ=.False.
-      End If
+!      Case(70)
+!       If (wert.Ne.0._dp) Then
+!        SUSYrunningFromMZ=.True.
+!       Else
+!        SUSYrunningFromMZ=.False.
+!       End If
 
      Case(65)
       If (wert.gt.0) SolutionTadpoleNr = wert 
@@ -458,7 +461,42 @@
         else
          NewGBC=.true.
        end if
+       
+     Case(440)
+      If (wert.Ne.1._dp) Then
+       TreeLevelUnitarityLimits=.False.
+      Else
+       TreeLevelUnitarityLimits=.True.
+      End If    
+      
+     Case(441)
+      If (wert.Ne.1._dp) Then
+       TrilinearUnitarity=.False.
+      Else
+       TrilinearUnitarity=.True.
+      End If   
+      
+     Case(442)
+       unitarity_s_min = wert       
 
+     Case(443)
+       unitarity_s_max = wert       
+       
+     Case(444)
+       unitarity_steps = wert           
+       
+     Case(445)
+      If (wert.Ne.1._dp) Then
+       RunRGEs_unitarity=.False.
+      Else
+       RunRGEs_unitarity=.True.
+      End If 
+       
+     Case(446)
+       TUcutLevel = wert          
+       
+       
+       
      Case(510)
       If (wert.Ne.1._dp) Then
        WriteTreeLevelTadpoleSolutions=.False.

@@ -122,6 +122,16 @@ WriteString[ModelData,"Logical :: OneLoopMatching = .True. \n"];
 WriteString[ModelData,"Logical :: TreeLevelUnitarityLimits = .True. \n"];
 WriteString[ModelData,"Real(dp) :: max_scattering_eigenvalue=0._dp\n"];
 WriteString[ModelData,"Real(dp) :: TreeUnitarity=1\n"];
+
+WriteString[ModelData,"Logical :: TrilinearUnitarity = .True. \n"];
+WriteString[ModelData,"Logical :: RunRGEs_unitarity = .false. \n"];
+WriteString[ModelData,"Real(dp) :: max_scattering_eigenvalue_trilinears=0._dp\n"];
+WriteString[ModelData,"Real(dp) :: TreeUnitarityTrilinear=1\n"];
+WriteString[ModelData,"Real(dp) :: unitarity_s_best=0._dp\n"];
+WriteString[ModelData,"Real(dp) :: unitarity_s_min=2000._dp\n"];
+WriteString[ModelData,"Real(dp) :: unitarity_s_max=3000._dp\n"];
+WriteString[ModelData,"Integer :: unitarity_steps=5\n"];
+WriteString[ModelData,"Integer :: TUcutLevel=2\n"];
  
 
 
@@ -385,10 +395,27 @@ dim="";,
 dim=StringReplace[ToString[getDimSPheno[AdditionalVariablesSPheno[[i]]]],{"{"->"(","}"->")"}];
 ];
 WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[AdditionalVariablesSPheno[[i]]]<>dim<>"\n"];
+(*
 If[Depth[AdditionalVariablesSPheno[[i]]]>1,
 WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[ToExpression[ToString[AdditionalVariablesSPheno[[i,0]]]<>"IN"]@@AdditionalVariablesSPheno[[i]]]<>dim<>"\n"];,
 WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[ToExpression[ToString[AdditionalVariablesSPheno[[i]]]<>"IN"]]<>dim<>"\n"];
 ];
+*)
+i++;];
+
+For[i=1,i<=Length[AdditionalReadBlocks],
+If[FreeQ[realVar,AdditionalReadBlocks[[i]]] && FreeQ[realVar,Head[AdditionalReadBlocks[[i]]]], head="Complex";,head="Real"];
+If[getDimSPheno[AdditionalReadBlocks[[i]]]==={} ||getDimSPheno[AdditionalReadBlocks[[i]]]==={1}||getDimSPheno[AdditionalReadBlocks[[i]]]==={0}  ,
+dim="";,
+dim=StringReplace[ToString[getDimSPheno[AdditionalReadBlocks[[i]]]],{"{"->"(","}"->")"}];
+];
+WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[AdditionalReadBlocks[[i]]]<>dim<>"\n"];
+(*
+If[Depth[AdditionalVariablesSPheno[[i]]]>1,
+WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[ToExpression[ToString[AdditionalVariablesSPheno[[i,0]]]<>"IN"]@@AdditionalVariablesSPheno[[i]]]<>dim<>"\n"];,
+WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[ToExpression[ToString[AdditionalVariablesSPheno[[i]]]<>"IN"]]<>dim<>"\n"];
+];
+*)
 i++;];
 
 For[i=1,i<=Length[AdditionalParametersLagrange],
@@ -798,7 +825,7 @@ WriteString[ModelData,"Logical, Save :: MakeQTEST = .False. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMasses = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMassesSave = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateTwoLoopHiggsMasses = .True. \n"];
-WriteString[ModelData,"Logical, Save :: SUSYrunningFromMZ = .True. \n"];
+(* WriteString[ModelData,"Logical, Save :: SUSYrunningFromMZ = .True. \n"]; *)
 WriteString[ModelData,"Logical, Save :: SquareFullAmplitudeDecays = .False. \n"];
 WriteString[ModelData,"Logical :: CalculateTwoLoopHiggsMassesSave = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateLowEnergy = .True. \n"];
@@ -829,10 +856,12 @@ WriteString[ModelData,"Real(dp) :: TwoLoopRegulatorMass = 0._dp \n"];
 WriteString[ModelData,"Logical :: IRdivOnly = .false. \n"];
 WriteString[ModelData,"Character(len=3) :: IRstring=\"000\" \n"];
 
+(*
 If[SupersymmetricModel===True,
 WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.True.\n"];,
 WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.False.\n"];
 ];
+*)
 
 
 If[SupersymmetricModel=!=False,
@@ -857,7 +886,7 @@ WriteString[ModelData,"Logical, Save :: UseP2Matrices=.True.\n"];
 WriteString[ModelData,"Logical, Save :: RunningSUSYparametersLowEnergy=.True.\n"];
 WriteString[ModelData,"Logical, Save :: RunningSMparametersLowEnergy=.True.\n"];
 WriteString[ModelData,"Integer, Save :: MinimalNumberIterations = 5\n"];
-WriteString[ModelData,"Logical :: NonSUSYrunningLowScale = .false.\n"];
+(* WriteString[ModelData,"Logical :: NonSUSYrunningLowScale = .false.\n"]; *)
 WriteString[ModelData,"Logical :: SwitchToSCKM= .False. \n"];
 WriteString[ModelData,"Logical :: CalculateMSSM2Loop= .False. \n"];
 WriteString[ModelData,"Logical :: GaugelessLimit= .True. \n"];
@@ -891,6 +920,7 @@ WriteString[ModelData,"Logical :: PrintDebugInformation = .False. \n"];
 WriteString[ModelData,"Logical ::IncludeThresholdsAtScale \n"];
 WriteString[ModelData,"Logical :: PurelyNumericalEffPot \n"];
 WriteString[ModelData,"Logical :: Write_WCXF = .false. \n"];
+WriteString[ModelData,"Integer :: MatchingOrder = -2 \n"];
 
 
 WriteString[ModelData,"Complex(dp) :: CKMcomplex(3,3) \n"];
@@ -984,6 +1014,13 @@ SPhenoParameters=Join[SPhenoParameters,{{Head[AdditionalVariablesSPheno[[i]]],Li
 SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[Head[AdditionalVariablesSPheno[[i]]]]<>"IN"],List@@AdditionalVariablesSPheno[[i]] /. a_?NumberQ->generation,List@@AdditionalVariablesSPheno[[i]]}}];,
 SPhenoParameters=Join[SPhenoParameters,{{AdditionalVariablesSPheno[[i]],{generation},{1}}}];
 SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[AdditionalVariablesSPheno[[i]]]<>"IN"],{generation},{1}}}];
+];
+i++;];
+
+For[i=1,i<=Length[AdditionalReadBlocks],
+If[Depth[AdditionalReadBlocks[[i]]]>1,
+SPhenoParameters=Join[SPhenoParameters,{{Head[AdditionalReadBlocks[[i]]],List@@AdditionalReadBlocks[[i]] /. a_?NumberQ->generation,List@@AdditionalReadBlocks[[i]]}}];,
+SPhenoParameters=Join[SPhenoParameters,{{AdditionalReadBlocks[[i]],{generation},{1}}}];
 ];
 i++;];
 
@@ -1155,7 +1192,10 @@ WriteString[file,"Else \n"];
 suffix="";
 ];
 For[i=1,i<=Length[DEFINITION[MatchingConditions]],
-WriteString[file,"  "<>AddSuffix[DEFINITION[MatchingConditions][[i,1]],suffix]<>" = " <>SPhenoForm[DEFINITION[MatchingConditions][[i,2]]] <>" \n"];
+If[FreeQ[listAllParametersAndVEVs,DEFINITION[MatchingConditions][[i,1]]]===False,
+WriteString[file,"  "<>AddSuffix[DEFINITION[MatchingConditions][[i,1]],suffix]<>" = " <>SPhenoForm[DEFINITION[MatchingConditions][[i,2]]] <>" \n"];,
+WriteString[file,"  "<>AddSuffix[DEFINITION[MatchingConditions][[i,1]],""]<>" = " <>SPhenoForm[DEFINITION[MatchingConditions][[i,2]]] <>" \n"];
+];
 i++;];
 k++;];
 WriteString[file,"End if \n"];

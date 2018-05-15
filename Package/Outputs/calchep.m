@@ -524,10 +524,10 @@ WriteVerticesCHep4[SA`VertexList[SSVV],CPViolation,FeynmanGauge, SSVV,NoSplitWit
 ];
 
 WriteString[lagrangeFile," "];
-WriteString[lagrangeFile,InsString[CalcHepName[VG,1,1],lP]<>"|"];
-WriteString[lagrangeFile,InsString[CalcHepName[VG,1,1],lP]<>"|"];
-WriteString[lagrangeFile,InsString[CalcHepName[VG,1,1]<>".t",lP]<>"|        |"];
-WriteString[lagrangeFile,InsString["g3/sqrt2",lF]];
+WriteString[lagrangeFile,InsString[CalcHepName[Gluon,1,1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CalcHepName[Gluon,1,1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CalcHepName[Gluon,1,1]<>".t",lP]<>"|        |"];
+WriteString[lagrangeFile,InsString[CHForm[strongCoupling]<>"/sqrt2",lF]];
 WriteString[lagrangeFile,"|m1.M3*m2.m3-m1.m3*m2.M3 \n"];
 
 
@@ -556,7 +556,7 @@ If[c2===1,c2="+";,If[c2<0,c2=CHForm[c2]<>"*";,c2="+"<>CHForm[c2]<>"*"]];
 If[c3===1,c3="+";,If[c3<0,c3=CHForm[c3]<>"*";,c3="+"<>CHForm[c3]<>"*"]];
 
 subVertexGen={"gt1"-> Hold[ToString[iter1]],"gt2"-> Hold[ToString[iter2]],"gt3"-> Hold[ToString[iter3]]};
-If[D[D[value,g3],g3]===0,
+If[D[D[value,strongCoupling],strongCoupling]===0,
 
 particle1=SA`VertexList[VVVV][[i,1,1]] /. A_[{a__}]->A;
 particle2=SA`VertexList[VVVV][[i,1,2]] /. A_[{a__}]->A;
@@ -607,23 +607,23 @@ Print["   ... Generic class: ",StyleForm[SVA,"Section",FontSize->10],". Expandin
 
 For[i=1,i<=Length[PART[S]],
 progressNrCH[SVA]=i;
-progressCoupCH[SVA]={PART[S][[i,1]],VG,conj[partGA[[i,1]]]};
+progressCoupCH[SVA]={PART[S][[i,1]],Gluon,conj[partGA[[i,1]]]};
 
 If[FreeQ[getIndizes[PART[S][[i,1]]],color]==False  && (SA`DynL[PART[S][[i,1]],color] ==={1,1} || SA`DynL[PART[S][[i,1]],color] ==={1,0} || SA`DynL[PART[S][[i,1]],color] ==={0,1} ),
 For[iter1=1,iter1<=getGen[PART[S][[i,1]]],
 For[fiter1=1,fiter1<=getFla[PART[S][[i,1]]],
 WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[PART[S][[i,1]],iter1,fiter1],lP]<>"|"];
-WriteString[lagrangeFile,InsString[CHepName[VG,1,1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CHepName[Gluon,1,1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CalcHepName[conj[partGA[[i,1]]],iter1,fiter1],lP]<>"|        |"];
-WriteString[lagrangeFile,InsString["i*Maux*g3",lF]];
+WriteString[lagrangeFile,InsString["i*Maux*"<>CHForm[strongCoupling],lF]];
 WriteString[lagrangeFile,"| m2.m3 \n"];
 
 WriteString[lagrangeFile," "];
 WriteString[lagrangeFile,InsString[CalcHepName[conj[PART[S][[i,1]]],iter1,fiter1],lP]<>"|"];
-WriteString[lagrangeFile,InsString[CHepName[VG,1,1],lP]<>"|"];
+WriteString[lagrangeFile,InsString[CHepName[Gluon,1,1],lP]<>"|"];
 WriteString[lagrangeFile,InsString[CalcHepName[partGA[[i,1]],iter1,fiter1],lP]<>"|        |"];
-WriteString[lagrangeFile,InsString["i*Maux*g3",lF]];
+WriteString[lagrangeFile,InsString["i*Maux*"<>CHForm[strongCoupling],lF]];
 WriteString[lagrangeFile,"| m2.m3 \n"];
 fiter1++;];
 iter1++;];
@@ -1943,7 +1943,7 @@ WriteString[particlesFile,InsString[CalcHepMass[list[[i,1]],j,k],lM]<>"|"];
 If[getWidthNumerical[list[[i,1]],j,k]===1 ||  getWidthNumerical[list[[i,1]],j,k]===External,
 WriteString[particlesFile,InsString["!"<>CalcHepWidth[list[[i,1]],j,k],lW] <> "|"];,
 WriteString[particlesFile,InsString[CalcHepWidth[list[[i,1]],j,k],lW] <> "|"];
-WriteString[varsFile, InsString[CalcHepWidth[list[[i,1]],j,k],lVN] <>"|" <> InsString[ToString[getWidthNumerical[list[[i,1]],j,k]],lVV]<>"| width \n"];
+WriteString[varsFile, InsString[CalcHepWidth[list[[i,1]],j,k],lVN] <>"|" <> InsString[ToString[FortranForm[getWidthNumerical[list[[i,1]],j,k]]],lVV]<>"| width \n"];
 ];
 
 MassParameterCHep=Join[MassParameterCHep,{ToExpression[CalcHepMass[list[[i,1]],j,k]],ToExpression[CalcHepWidth[list[[i,1]],j,k]]}];
@@ -2053,7 +2053,7 @@ For[i=1,i<=Length[vlist],
 progressNrCH[type]=i;
 progressCoupCH[type]=vlist[[i,1]];
 
-If[D[D[vlist[[i,2,1]],g3],g3]===0,
+If[D[D[vlist[[i,2,1]],strongCoupling],strongCoupling]===0,
 cfsupported=CheckCHsupportedColor[vlist[[i,1]]];,
 cfsupported=True;
 ];
@@ -2081,7 +2081,7 @@ WriteCompleteVertex=True;
 
 If[WriteCompleteVertex==True,
 
-If[D[D[vlist[[i,2,1]],g3],g3]===0,
+If[D[D[vlist[[i,2,1]],strongCoupling],strongCoupling]===0,
 subVertexGen={"gt1"-> Hold[ToString[iter1]],"gt2"-> Hold[ToString[iter2]],"gt3"-> Hold[ToString[iter3]],"gt4"-> Hold[ToString[iter4]],"ft1"-> Hold[ToString[fiter1]],"ft2"-> Hold[ToString[fiter2]],"ft3"-> Hold[ToString[fiter3]],"ft4"-> Hold[ToString[fiter4]]};
 value=CalcHepVertex[vlist[[i,2,1]]];
 
@@ -2355,10 +2355,17 @@ parDepNeeded = Intersection[parDepNeeded] /. subMassTempRe;
 
 WriteCalcOmegaMO[TwoDM_]:=Block[{MOfile},
 Print["Write main file for MicrOmegas"];
-MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega.cpp"]];
+MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_MOv4.X.cpp"]];
 If[TwoDM===True,
 AppendSourceCode["CalcOmega2.cpp",MOfile];,
 AppendSourceCode["CalcOmega.cpp",MOfile];
+];
+Close[MOfile];
+
+MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_MOv5.cpp"]];
+If[TwoDM===True,
+AppendSourceCode["CalcOmega2.cpp",MOfile];,
+AppendSourceCode["CalcOmega5.cpp",MOfile];
 ];
 Close[MOfile];
 
@@ -2385,6 +2392,10 @@ Close[MOfile];
 
 MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection_MOv4.3.cpp"]];
 AppendSourceCode["CalcOmega_with_DDetection_MOv4.3.cpp",MOfile];
+Close[MOfile];
+
+MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection_MOv5.cpp"]];
+AppendSourceCode["CalcOmega_with_DDetection_MOv5.cpp",MOfile];
 Close[MOfile];
 ];
 ];

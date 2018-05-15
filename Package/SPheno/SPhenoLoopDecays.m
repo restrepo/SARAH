@@ -498,17 +498,22 @@ pos2=Position[SPhenoCouplingsAll,name][[1,-1]];
 pos=Position[SPhenoCouplingsAll,SPhenoCouplingsAll[[pos]][[1]] /. sub];
 If[pos=!={},
 Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];,
-Print["getGBCoup ",name];
+(* Print["getGBCoup ",name]; *)
 Return[False];
 ];
 ];
 
-getGBCoup1[name_]:=Block[{pos,sub,coup,pos2},
+getGBCoup1[name_]:=Block[{pos,sub,coup,pos2,posB},
 SA`GBS=Select[Transpose[GoldstoneBosons[EWSB]][[2]] /. A_[{b_Integer}]->A,getElectricCharge[#]=!=0&];
 sub={VectorW->SA`GBS[[1]]};
 pos=Position[SPhenoCouplingsAll,name][[1,1]];
 pos2=Position[SPhenoCouplingsAll,name][[1,-1]];
-pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{2}]];
+(* pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{2}]]; *)
+If[FreeQ[SPhenoCouplingsAll[[pos]][[1]],conj[sub[[1,1]]]]==False,
+pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{3}]];,
+posB=Drop[Position[SPhenoCouplingsAll[[pos]],sub[[1,1]]][[1]],{1}];
+pos=Position[SPhenoCouplingsAll,ReplacePart[SPhenoCouplingsAll[[pos]][[1]] ,{posB->sub[[1,2]]}]];
+];
 If[pos=!={},
 Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];,
 Print["getGBCoup1 ",name];
@@ -516,12 +521,16 @@ Return[False];
 ];
 ];
 
-getGBCoup2[name_]:=Block[{pos,sub,coup,pos2},
+getGBCoup2[name_]:=Block[{pos,sub,coup,pos2,posB},
 SA`GBS=Select[Transpose[GoldstoneBosons[EWSB]][[2]] /. A_[{b_Integer}]->A,getElectricCharge[#]=!=0&];
 sub={VectorW->SA`GBS[[1]]};
 pos=Position[SPhenoCouplingsAll,name][[1,1]];
 pos2=Position[SPhenoCouplingsAll,name][[1,-1]];
-pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{3}]];
+If[FreeQ[SPhenoCouplingsAll[[pos]][[1]],conj[sub[[1,1]]]]==False,
+pos=Position[SPhenoCouplingsAll,Replace[SPhenoCouplingsAll[[pos]][[1]] , sub,{3}]];,
+posB=Drop[Position[SPhenoCouplingsAll[[pos]],sub[[1,1]]][[2]],{1}];
+pos=Position[SPhenoCouplingsAll,ReplacePart[SPhenoCouplingsAll[[pos]][[1]] ,{posB->sub[[1,2]]}]];
+];
 If[pos=!={},
 Return[SPhenoCouplingsAll[[pos[[1,1]],2,pos2]]];,
 Print["getGBCoup2 ",name];
@@ -1194,7 +1203,7 @@ GenerateCalculateOneLoopWidths:=
 		 If[getGen[p1]>1 || getGenSPhenoStart[p1]>1,WriteString[outfile,"  Do gt2="<>ToString[getGenSPhenoStart[p1]]<>","<>ToString[getGen[p1]]<>"\n"];];If[getGen[p1]>1 ,dimIn=Join[dimIn,{gt2}];];
 		 If[getGen[p2]>1 || getGenSPhenoStart[p2]>1,WriteString[outfile,"    Do gt3="<>If[p1===p2,"gt2",ToString[getGenSPhenoStart[p2]]]<>","<>ToString[getGen[p2]]<>"\n"];];If[getGen[p2]>1 ,dimIn=Join[dimIn,{gt3}];];
 		 dimIn=StringReplace[StringReplace[ToString[dimIn],{"{}"->""}],{"{"->"(","}"->")"}];
-		 WriteString[outfile,"If (((OSkinematics).and.("<>SPhenoMassOS[pD,gt1]<>".gt.("<>SPhenoMassOS[p1,gt2]<>"+"<>SPhenoMassOS[p2,gt3]<>"))).or.((.not.OSkinematics).and.("<>SPhenoMass[pD,gt1]<>".gt.("<>SPhenoMass[p1,gt2]<>"+"<>SPhenoMass[p2,gt3]<>")))) Then \n"];
+		 WriteString[outfile,"If (((OSkinematics).and.(Abs("<>SPhenoMassOS[pD,gt1]<>").gt.(Abs("<>SPhenoMassOS[p1,gt2]<>")+Abs("<>SPhenoMassOS[p2,gt3]<>")))).or.((.not.OSkinematics).and.(Abs("<>SPhenoMass[pD,gt1]<>").gt.(Abs("<>SPhenoMass[p1,gt2]<>")+Abs("<>SPhenoMass[p2,gt3]<>"))))) Then \n"];
 
 		 (*
 		    If[getVertexType[{pD,p1,p2}]===SVV,
@@ -1342,7 +1351,7 @@ GenerateCalculateOneLoopWidths:=
 		 If[Head[factor]===Integer,factor=factor*1.0];
 		 If[Head[symfactor]===Integer,symfactor=symfactor*1.0];
 		 
-		 WriteString[outfile,"If (AmpSq"<>name<>dimIn<>".le.0._dp) Then \n"];
+		 WriteString[outfile,"If (AmpSq"<>name<>dimIn<>".eq.0._dp) Then \n"];
 		 WriteString[outfile,"  gP1L"<>SPhenoForm[pD]<>"(gt1,i4) = 0._dp \n"];
 		 WriteString[outfile,"Else \n"];
 
@@ -2562,7 +2571,7 @@ SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformatio
 ];
 ];
 
-If[{OneLtbds[[1]],OneLtbds[[2]]}==={conj[VectorW],VectorW}||{OneLtbds[[1]],OneLtbds[[2]]}==={VectorW,conj[VectorW]},
+If[{OneLtbds[[1]],OneLtbds[[2]]}==={conj[VectorW],VectorW}||{OneLtbds[[1]],OneLtbds[[2]]}==={VectorW,conj[VectorW]} ||{OneLtbds[[1]],OneLtbds[[2]]}==={VectorW,VectorW}||{OneLtbds[[1]],OneLtbds[[2]]}==={conj[VectorW],conj[VectorW]},
 If[getGBCoup2[couplings[[1]]]=!=False,
 SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[{},ToExpression["G"<>ToString[getGBCoup2[#]]]&/@couplings]];
 SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]]=Join[SA`SavedInformationNeededMassesCouplingsParticle[[-1,2]],Join[{},ToExpression["GZ"<>ToString[getGBCoup2[#]]]&/@couplings]];

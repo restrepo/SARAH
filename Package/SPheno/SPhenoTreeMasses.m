@@ -282,7 +282,10 @@ WriteString[sphenoTree, "Use Mathematics \n"];
 WriteString[sphenoTree, "Use MathematicsQP \n"];
 WriteString[sphenoTree, "Use Settings \n"];
 WriteString[sphenoTree, "Use Model_Data_"<>ModelName<>" \n"];
-WriteString[sphenoTree, "!Use StandardModel \n \n \n"];
+If[Length[UseSeesawApproximation]>0,
+WriteString[sphenoTree, "Use StandardModel, only: NeutrinoMasses \n \n \n"];
+];
+WriteString[sphenoTree, "\n \n"];
 
 WriteString[sphenoTree, "Logical :: SignOfMassChanged =.False.  \n"];
 WriteString[sphenoTree, "Logical :: SignOfMuChanged =.False.  \n"];
@@ -560,7 +563,8 @@ MakeCall["SortGoldstones",NewMassParameters,{},{"kont"},sphenoTree];
 If[IntermediateScale =!= True,
 
 If[OnlyLowEnergySPheno=!=True,
-WriteString[sphenoTree,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then \n "];
+(* WriteString[sphenoTree,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then \n "]; *)
+WriteString[sphenoTree,"If (MatchingOrder.eq.-1) Then \n "];
 ];
 WriteString[sphenoTree,"If (SignOfMassChanged) Then  \n"];
 WriteString[sphenoTree," If (.Not.IgnoreNegativeMasses) Then \n"];
@@ -1054,6 +1058,10 @@ WriteString[sphenoTree, "End do \n"];
 
 WriteString[sphenoTree, "\n \n"];
 
+
+If[FreeQ[UseSeesawApproximation,particle]==False,
+WriteString[sphenoTree, "call Seesaw(mat,"<>Name<>", "<>MixingName<>",kont) \n"];
+,
 If[FreeQ[QuadruplePrecision,particle],stringQP="";,stringQP="QP";];
 
 WriteString[sphenoTree, "If (Maxval(Abs(Aimag(mat))).Eq.0._dp) Then \n"];
@@ -1213,7 +1221,7 @@ WriteString[sphenoTree, "  kont = ierr \n"];
 WriteString[sphenoTree, "  Iname = Iname - 1 \n"];
 WriteString[sphenoTree, "  Return \n"];
 WriteString[sphenoTree, "End If \n\n\n"];
-
+];
 If[FreeQ[ConditionForMassOrdering,particle]==False,
 pos =Position[ConditionForMassOrdering,particle][[1,1]];
 WriteString[sphenoTree,ConditionForMassOrdering[[pos,2]]];
