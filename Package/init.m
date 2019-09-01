@@ -1188,7 +1188,7 @@ SA`ChargeGlobal[ToExpression["g"<>ToString[Gauge[[i,1]]]],Global[[j2,2]]] =Gauge
 ];
 j2++;];
 
-
+If[Gauge[[i,2]]=!=U[1],
 SA`Casimir[ToExpression["V"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=SA`Casimir[getDynkinLabelsAdjoint[Gauge[[i,2]]],Gauge[[i,2]]];
 SA`Casimir[ToExpression["g"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=SA`Casimir[getDynkinLabelsAdjoint[Gauge[[i,2]]],Gauge[[i,2]]];
 If[SupersymmetricModel=!=False,
@@ -1209,7 +1209,7 @@ SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsA
 If[SupersymmetricModel=!=False,
 SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsAdjoint[Gauge[[i,2]]];SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],Gauge[[i,3]]]=getDynkinLabelsAdjoint[Gauge[[i,2]]];
 ];
-
+];
 For[j2=1,j2<=Length[Gauge],
 If[i=!=j2,
 SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],Gauge[[j2,3]]]={0};

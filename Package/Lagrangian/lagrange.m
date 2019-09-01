@@ -19,9 +19,11 @@
 
 
 
+(* ::Input::Initialization:: *)
 
 
 
+(* ::Input::Initialization:: *)
 (* Begin["`Lagrange`"] *)
 
 
@@ -50,6 +52,7 @@ listSMadd = {};
 
 
 
+(* ::Input::Initialization:: *)
 (*-------------------------------------------------------------*)
 (* Particles Interactions *)
 (*-------------------------------------------------------------*)
@@ -143,6 +146,7 @@ CheckChargeConservation;
 
 
 
+(* ::Input::Initialization:: *)
 CalcFTerms:=Block[{s,j,i,c},
 
 
@@ -167,6 +171,7 @@ DynamicFTermName="All Done";
 ];
 
 
+(* ::Input::Initialization:: *)
 CalcMatter := Block[{s,t,g,c2,i,c1,h,j,k,l,m,Dim5Lag, Dim5FieldsFermion,Dim5FieldsScalar,posls},
 PrintDebug["Calculate Fermion-Scalar"];
 Print["Calculate Matter interactions: ",Dynamic[DynamicMatterNr],"/",Length[SFieldList]^2," (",Dynamic[DynamicMatterName],")"];
@@ -194,6 +199,7 @@ Matter = FTerms + (Wij +conj[Wij /. {Ferm_[1]->Ferm[2],Ferm_[2]->Ferm[1]} ])+ (W
 
 
 
+(* ::Input::Initialization:: *)
 (*------------------------------------------------------*)
 (* Softbreaking *)
 (*------------------------------------------------------*)
@@ -456,6 +462,7 @@ DynamicSoftTermsCurrent="All Done";
 
 
 
+(* ::Input::Initialization:: *)
 GetDiracGauginos:=Block[{i,j,k,l,res=0,fields,dim,add,indexB,mName,currentDirac},
 PrintDebug["Adding dirac gaugino soft terms"];
 Print["Calculate Dirac Gaugino masses: ", Dynamic[DynamicDGnr],"/",Length[Gauge]," (",Dynamic[DynamicDGname],")"];
@@ -515,11 +522,13 @@ Return[res+conj[res]];
 ];
 
 
+(* ::Input::Initialization:: *)
 (*-----------------------------------------*)
 (* Kinetic Part *)
 (*-----------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 CalcKinetic:=Block[{i,Bg12,gen1,gen2,Bg22,Bg23,a,g, gauge,realF},
 
 PrintAll["Calculate kinetic Terms"];
@@ -688,11 +697,13 @@ LgolFFSV=tempC+conj[tempC] /. conj[gamma[a_]]->gamma[a];
 
 
 
+(* ::Input::Initialization:: *)
 (*-----------------------------------------*)
 (* Gauge Part *)
 (*-----------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 
 (*------------ D-Terms -------------*)
 
@@ -722,13 +733,22 @@ If[Gauge[[gNr,2]]=!=U[1],
 If[Gauge[[gNr,5]]===True,
 tempD= getGenerator[gNr,Fields[[i,3+gNr]],4,1,2] Gauge[[gNr,4]] ((mName /. gen1->gen3) part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3] TA[Gauge[[gNr,2]],ADI[gNr] /. subGC[4],ToExpression[ToString[Gauge[[gNr,3]]]<>"b"]/.subGC[3],Gauge[[gNr,3]]/.subGC[3]] +conj[(mName /. gen1->gen3)] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]] TA[Gauge[[gNr,2]],ADI[gNr] /. subGC[4],Gauge[[gNr,3]]/.subGC[3],ToExpression[ToString[Gauge[[gNr,3]]]<>"b"]/.subGC[3]])  conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}];
 tempD=SumOverExpandedIndizes[tempD,{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+If[StueckelbergDTerms=!=True,
 tempD = 2 Sum[tempD,{gen4,1,Gauge[[gNr,2,1]]^2-1}];,
+tempD =  Sum[tempD,{gen4,1,Gauge[[gNr,2,1]]^2-1}];
+];,
 tempD= getGenerator[gNr,Fields[[i,3+gNr]],3,1,2] Gauge[[gNr,4]] ((mName /. gen1->gen3) part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]  +conj[(mName /. gen1->gen3)] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]])  conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}];
-tempD=SumOverExpandedIndizes[Sqrt[2] tempD,{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+If[StueckelbergDTerms=!=True,
+tempD=SumOverExpandedIndizes[Sqrt[2] tempD,{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];,
+tempD=1/2SumOverExpandedIndizes[Sqrt[2] tempD,{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+];
 (* tempD = Sqrt[2] tempD sum[ADI[gNr] /. subGC[4],1,Gauge[[gNr,2,1]]^2-1]; *)
 ];
 DTermsDirac-=tempD;,
-DTermsDirac -=SumOverExpandedIndizes[Sqrt[2] Gauge[[gNr,4]] insGen1  ((mName /. gen1->gen3) part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]+conj[(mName /. gen1->gen3)] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]]) conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}],{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+If[StueckelbergDTerms=!=True,
+DTermsDirac -=SumOverExpandedIndizes[Sqrt[2] Gauge[[gNr,4]] insGen1  ((mName /. gen1->gen3) part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]+conj[(mName /. gen1->gen3)] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]]) conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}],{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];,
+DTermsDirac -=1/2 SumOverExpandedIndizes[Sqrt[2] Gauge[[gNr,4]] insGen1  ((mName /. gen1->gen3) part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]+conj[(mName /. gen1->gen3)] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]]) conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}],{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+];
 ];
 ig++;]; 
 ]; 
@@ -739,7 +759,10 @@ insGenU1 =  getGenerator[gNr2,Fields[[i,3+gNr2]],3,1,2] /. Lam[a__]->2;
 temp1 += insGenU1 GaugesU1[gNr2,gNr] part[aGauge[[gNr]],3] conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}];
  If[AddDiracGauginos,
 For[ig=1,ig<=Length[SA`DiracGauginos[[gNr]]],
-DTermsDirac -=SumOverExpandedIndizes[Sqrt[2]insGenU1 GaugesU1[gNr2,gNr] ((mName /. gen1->gen3)   part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]+conj[(mName /. gen1->gen3)  ] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]]) conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}],{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+If[StueckelbergDTerms=!=True,
+DTermsDirac -=SumOverExpandedIndizes[Sqrt[2]insGenU1 GaugesU1[gNr2,gNr] ((mName /. gen1->gen3)   part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]+conj[(mName /. gen1->gen3)  ] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]]) conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}],{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];,
+DTermsDirac -=SumOverExpandedIndizes[1/Sqrt[2]insGenU1 GaugesU1[gNr2,gNr] ((mName /. gen1->gen3)   part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]+1/2 conj[(mName /. gen1->gen3)  ] conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],3]]) conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}],{Fields[[i,3]],Fields[[i,3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
+];
 ig++;];
 ];
 ];
@@ -806,6 +829,7 @@ For[ig=1,ig<=Length[SA`DiracGauginos[[gNr]]],
 mName = ToExpression["MD"<>ToString[Gauge[[gNr,1]]]<>ToString[Fields[[SA`DiracGauginos[[gNr,ig]]]][[3]]]];
 mName = genTest[mName,{Fields[[SA`DiracGauginos[[gNr,ig]]]][[3]]},False];
 mName = mName(mName  /. gen1->gen2);
+If[StueckelbergDTerms===True,mName=mName/4];
 DTermsDirac += SumOverExpandedIndizes[-mName  part[SFields[[SA`DiracGauginos[[gNr,ig]]]],1] (part[SFields[[SA`DiracGauginos[[gNr,ig]]]],2])MakeIndexStructure[{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}],{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
  DTermsDirac +=SumOverExpandedIndizes[-mName  part[SFields[[SA`DiracGauginos[[gNr,ig]]]],1] (conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],2]])MakeIndexStructure[{Fields[[SA`DiracGauginos[[gNr,ig]],3]],conj[Fields[[SA`DiracGauginos[[gNr,ig]],3]]]}],{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}]; 
  DTermsDirac +=SumOverExpandedIndizes[-mName  conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],1]] ( conj[part[SFields[[SA`DiracGauginos[[gNr,ig]]]],2]])MakeIndexStructure[{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}],{Fields[[SA`DiracGauginos[[gNr,ig]],3]],Fields[[SA`DiracGauginos[[gNr,ig]],3]]}];
@@ -839,6 +863,7 @@ Return[temp];
 
 
 
+(* ::Input::Initialization:: *)
 CalcGaugino:=Block[{i,j,k,g,c,a,ai},
 
 PrintDebug["Calc Gaugino Interactions"];
@@ -1024,11 +1049,13 @@ Return[{LagRe,LagAddVVV,LagAddVVVV,AddPot,AddKin}];
 
 
 
+(* ::Input::Initialization:: *)
 (*-----------------------------------------*)
 (* Complete Lagrangian  *)
 (*-----------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 CalcLagrangian:=Block[{},
 
 If[AddGravitino=!=True,

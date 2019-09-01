@@ -3,21 +3,16 @@ MINPAR = {{1,m0},
          {3,TanBeta},
          {4,SignumMu},
          {5,Azero},
-         {106,vSInput},
          {107,M1Input},
          {108,M2Input},
          {109,MXInput}};
 
 RealParameters = {TanBeta,vSInput,m0};
 
-ParametersToSolveTadpoles = {\[Mu],B[\[Mu]],mS2};
+ParametersToSolveTadpoles = {\[Mu],B[\[Mu]],vS};
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
-
-BoundarySUSYScale = {
-{vS, vSInput}
-};
 
 ConditionGUTscale = g1 == g2;
 
@@ -44,7 +39,8 @@ BoundaryHighScale={
 {MassG,m12},
 {MassBp,MXInput},
 {MDBS,M2Input},
-{MDBpS,M1Input}
+{MDBpS,M1Input},
+{mS2,0}
 };
 
 
@@ -52,7 +48,7 @@ EXTPAR = {{120,MuInput},
           {130,BMuInput}       
 };
 
-ParametersToSolveTadpolesLowScaleInput = {mHd2,mHu2,mS2}; 
+ParametersToSolveTadpolesLowScaleInput = {mHd2,mHu2,vS}; 
 
 BoundaryLowScaleInput={
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},

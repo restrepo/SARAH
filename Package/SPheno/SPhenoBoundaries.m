@@ -45,17 +45,21 @@ GenerateBoundaryEW;
 GenerateBoundaryEWnonSUSY;
 ]; 
 *)
-
+If[HighscaleMatching=!=True,
 If[OnlyLowEnergySPheno=!=True, 
 If[SupersymmetricModel===True,GenerateSugra;];
 GenerateRunRGE;
 ];
-
+];
 GenerateNewSugra;
 
+
 If[OnlyLowEnergySPheno=!=True, 
+If[HighscaleMatching=!=True,
 GenerateNewRunRGE;
-WriteGUTchecks;
+WriteGUTchecks;,
+GenerateNewRunRGEmatching;
+];
 ];
 
 GenerateFirstGuess;
@@ -70,7 +74,7 @@ Close[sphenoSugra];
 
 
 (* ::Input::Initialization:: *)
-WriteHeadBoundaries:=Block[{i},
+WriteHeadBoundaries:=Block[{i,current},
 
 
 Print[StyleForm["Write 'Boundaries and Running'","Section",FontSize->12]];
@@ -103,8 +107,14 @@ WriteString[sphenoSugra, "Use CouplingsForDecays_"<>ModelName<>" \n"];
 WriteString[sphenoSugra, "Use StandardModel \n \n"];
 
 If[HighscaleMatching===True,
-WriteString[sphenoSugra,"Use Matching_"<>MatchingToModel<>"To"<>ModelName<>", Only:MatchingRoutine_"<>MatchingToModel<>"To"<>ModelName<>" \n"];
+For[i=1,i<=Length[MatchingToModel],
+current=StringReplace[MatchingToModel[[i]],{"-"->"","+"->""}];
+WriteString[sphenoSugra,"Use Matching_"<>current<>"To"<>ModelName<>", Only:MatchingRoutine_"<>current<>"To"<>ModelName<>", & \n & MatchingGaugeYukawa_"<>current<>"To"<>ModelName<>", MatchingGaugeYukawaUp_"<>current<>"To"<>ModelName<>" \n"];
+WriteString[sphenoSugra,"Use RGEs_"<>current<>"To"<>ModelName<>", Only: GToParameters"<>ToString[sizeParsUVall[[i,3]]]<>", ParametersToG"<>ToString[sizeParsUVall[[i,3]]]<>", rge"<>ToString[sizeParsUVall[[i,3]]]<>" \n"];
+i++;];
 ];
+
+WriteString[sphenoSugra, "\n \n"];
 
 WriteString[sphenoSugra, "Integer, save :: YukScen \n"];
 WriteString[sphenoSugra, "Real(dp), save :: Lambda, MlambdaS,F_GMSB \n"];
@@ -113,6 +123,13 @@ WriteString[sphenoSugra, "&, mf_l_Q_SM(3),mf_d_Q_SM(3),mf_u_Q_SM(3) & \n"];
 WriteString[sphenoSugra, "&, mf_l_MS_SM(3),mf_d_MS_SM(3),mf_u_MS_SM(3) \n"];
 WriteString[sphenoSugra, "Complex(dp),save::Yl_mZ(3,3),Yu_mZ(3,3),Yd_mZ(3,3),Yl_Q(3,3),Yu_Q(3,3),Yd_Q(3,3)\n"];
 WriteString[sphenoSugra, "Real(dp),Save::vevs_DR_save(2), vSM_save\n"];
+
+For[i=1,i<=Length[MatchingToModel],
+WriteString[sphenoSugra,"Real(dp),save :: gUpSave"<>ToString[i]<>"("<>ToString[sizeParsUVall[[i,3]]]<>")=0._dp, gDownSave"<>ToString[i]<>"("<>ToString[sizeParsUVall[[i,3]]]<>")=0._dp\n"];
+i++;];
+If[Length[MatchingToModel]>0,
+WriteString[sphenoSugra,"Real(dp),save :: gUpSave0("<>ToString[numberAllwithVEVs]<>")=0._dp\n"];
+];
 
 
 
@@ -512,12 +529,19 @@ WriteString[sphenoSugra,"Real(dp),Intent(in)::gA(:)\n"];
 WriteString[sphenoSugra,"Real(dp),Intent(in)::mGUT\n"];
 WriteString[sphenoSugra,"Real(dp),Intent(out)::gB(:)\n"];
 WriteString[sphenoSugra,"Integer::i1,i2\n"];
+If[HighscaleMatching=!=True,
 MakeVariableList[Transpose[LowScaleList][[1]],"",sphenoSugra];
 If[Length[HighScaleList]>1,
 MakeVariableList[Transpose[HighScaleList][[1]],"",sphenoSugra];
 ];
 If[FreeQ[BoundarySUSYScale,TADPOLES]==False || HighscaleMatching===True,
 MakeVariableList[listVEVs,"",sphenoSugra];
+];,
+realVarSave=realVar;
+SPhenoParametersSave=SPhenoParameters;
+realVar=realVarUVall[[-1]];
+SPhenoParameters=parametersUVall[[-1]];
+MakeVariableList[listAllParametersAndVEVsUVall[[-1]],"",sphenoSugra];
 ];
 CheckSCKM;
 If[WriteCKMBasis===True,
@@ -532,12 +556,16 @@ If[SA`KineticMixingParameters=!={},
 WriteString[sphenoSugra,"KineticMixing = KineticMixingSave \n"];
 ];
 
+If[HighscaleMatching=!=True,
 If[Head[RegimeNr]===Integer,
 MakeCall["GToParameters"<>ToString[NumberLowAllRegimes[[1]]]<>"R1",LowScaleParametersAllRegimes[[1]],{"gA"},{},sphenoSugra];,
 If[FreeQ[BoundarySUSYScale,TADPOLES]&& HighscaleMatching=!=True,
 MakeCall["GToParameters"<>ToString[numberLow],lowScaleNames,{"gA"},{},sphenoSugra];,
 MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"gA"},{},sphenoSugra];
 ];
+];,
+MakeCall["GToParameters"<>ToString[sizeParsUVall[[-1,3]]],listAllParametersAndVEVsUVall[[-1]],{"gA"},{},sphenoSugra];
+BoundaryHighScale=Transpose[{Transpose[BoundaryHighScale][[1]]/.subSPhenoForm,Transpose[BoundaryHighScale][[2]]/. subSPhenoUV[Length[MatchingScale]]}];
 ];
 
 WriteString[sphenoSugra,"If (HighScaleModel.ne.\"LOW\") Then \n "];
@@ -597,6 +625,8 @@ j++;];
 WriteString[sphenoSugra,"End Select \n"];
 ];
 
+
+If[HighscaleMatching=!=True,
 WriteString[sphenoSugra,"else If (HighScaleModel.Eq.\"LOW\") Then \n "];
 WriteString[sphenoSugra,"! Setting values \n "];
 For[i=1,i<=Length[listVEVsIN],
@@ -628,14 +658,26 @@ WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>"(i1,i1) = " <
 WriteString[sphenoSugra,"End Do\n"];
 ];
 i++;];
+];
 WriteString[sphenoSugra,"End if\n \n "];
 
+(*
 If[HighscaleMatching===True,
 WriteRemoveGUTnormalization[sphenoSugra];
-MakeCall["MatchingRoutine_"<>MatchingToModel<>"To"<>ModelName,Flatten[{listAllParametersAndVEVs,SPhenoForm/@InputHighScale}],{"mgut"},{},sphenoSugra];
+MakeCall["MatchingRoutine_"<>MatchingToModel<>"To"<>ModelName,Flatten[{listAllParametersAndVEVs,SPhenoForm/@InputHighScale}],{"mgut","One_Loop_Matching","Offdiaognal_WaveFunction_Matching"},{},sphenoSugra];
+WriteGUTnormalization[sphenoSugra];
+];
+*)
+
+If[Length[BoundaryMatchingUV]>0,
+WriteRemoveGUTnormalization[sphenoSugra];
+For[j=1,j<=Length[BoundaryMatchingUV],
+WriteString[sphenoSugra,SPhenoForm[BoundaryMatchingUV[[j,1]]]<>" = " <> SPhenoForm[BoundaryMatchingUV[[j,2]]]<>"\n"];
+j++;];
 WriteGUTnormalization[sphenoSugra];
 ];
 
+If[HighscaleMatching=!=True,
 If[Head[RegimeNr]=!=Integer,
 For[i=1,i<=Length[highScaleNames],
 WriteString[sphenoSugra, SPhenoForm[highScaleNames[[i]]]<>"GUT =" <> SPhenoForm[highScaleNames[[i]]]<>"\n"];
@@ -648,6 +690,7 @@ i++;];,
 For[i=1,i<=Length[DimensionsOtherRegimes[[1]]],
 WriteString[sphenoSugra,SPhenoForm[DimensionsOtherRegimes[[1,i,1]]]<>"GUT = "<>SPhenoForm[DimensionsOtherRegimes[[1,i,1]]]<>"\n"];
 i++;
+];
 ];
 ];
 
@@ -674,9 +717,10 @@ i++;];
 j++;];
 ];
 
+If[HighscaleMatching=!=True,
 If[Head[RegimeNr]=!=Integer,
 For[i=1,i<=Length[BetaYijk],
-If[Length[getDimSPheno[BetaYijk[[i,1]]]]>0 &&getDimSPheno[BetaYijk[[i,1]]]=!={1},
+If[Length[getDimSPheno[BetaYijk[[i,1]]/.A_[i1,___]->A]]>0 &&getDimSPheno[BetaYijk[[i,1]]/.A_[i1,___]->A]=!={1},
 WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[BetaYijk[[i,1]] /. a_[i1,b___]->a]<>")).gt.3._dp) Then \n"];,
 WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[BetaYijk[[i,1]] /. a_[i1,b___]->a]<>").gt.3._dp) Then \n"];
 ];
@@ -694,6 +738,7 @@ WriteString[sphenoSugra,"Write(*,*) \"Non pertubative coupling at GUT scale appe
 WriteString[sphenoSugra,"If (ErrorLevel.gt.0) Call TerminateProgram \n"];
 WriteString[sphenoSugra,"End if \n"];
 i++;];
+];
 ];
 
 If[WriteCKMBasis===True,
@@ -720,9 +765,17 @@ WriteString[sphenoSugra,"End If \n"];
 WriteString[sphenoSugra,"\n\n\n"];
 ];
 
+If[HighscaleMatching=!=True,
 If[Head[RegimeNr]===Integer,
 MakeCall["ParametersToG"<>ToString[NumberHighAllRegimes[[1]]]<>"R1",HighScaleParametersAllRegimes[[1]],{},{"gB"},sphenoSugra];,
+If[FreeQ[BoundarySUSYScale,TADPOLES]==False || HighscaleMatching===True,
+MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gB"},sphenoSugra];,
 MakeCall["ParametersToG"<>ToString[numberAll],listAllParameters,{},{"gB"},sphenoSugra];
+];
+];,
+MakeCall["ParametersToG"<>ToString[sizeParsUVall[[-1,3]]],listAllParametersAndVEVsUVall[[-1]],{},{"gB"},sphenoSugra];
+realVar=realVarSave;
+SPhenoParameters=SPhenoParametersSave;
 ];
 WriteString[sphenoSugra,"Iname=Iname-1\n"];
 
@@ -836,7 +889,7 @@ WriteString[sphenoSugra,"Real(dp), Parameter :: oo2pi=1._dp/(2._dp*pi),oo6pi=oo2
 
 If[FreeQ[BoundarySUSYScale,TADPOLES]&& HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Real(dp):: gA("<>ToString[numberLow]<>"), gB("<>ToString[numberAll]<>"), Scale_Save \n"];,
-WriteString[sphenoSugra,"Real(dp):: gA("<>ToString[numberAllwithVEVs]<>"), gB("<>ToString[numberAll]<>"), Scale_Save \n"];
+WriteString[sphenoSugra,"Real(dp):: gA("<>ToString[numberAllwithVEVs]<>"), gB("<>ToString[numberAllwithVEVs]<>"), Scale_Save \n"];
 ];
 WriteString[sphenoSugra,"Logical::TwoLoopRGE_save, UseFixedScale_save \n"];
 (* MakeVariableList[NewParametersFromTadpoles,"",sphenoSugra]; *)
@@ -1051,7 +1104,10 @@ WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") Call SetGUTscale(sqrt(mu
 
 WriteString[sphenoSugra,"TwoLoopRGE= .False. \n"];
 WriteString[sphenoSugra,"kont=0 \n"];
-WriteString[sphenoSugra,"Call RunRGE(kont,0.001_dp,gA,gB,mGUT) \n"];
+If[HighscaleMatching=!=True,
+WriteString[sphenoSugra,"Call RunRGE(kont,0.001_dp,gA,gB,mGUT) \n"];,
+WriteString[sphenoSugra,"Call RunRGE_new(kont,0.001_dp,gA,gB,mGUT) \n"];
+];
 
 WriteString[sphenoSugra,"If (kont.Ne.0) Then \n"];
 WriteString[sphenoSugra,"Iname=Iname-1 \n"];
@@ -1166,6 +1222,20 @@ i++;];
 WriteString[file,"! ----------------------- \n \n"];
 ];
 
+WriteRemoveGUTnormalizationSuffix[suffix_,file_]:=Block[{i},
+WriteString[file,"\n \n ! --- Remove GUT-normalization of gauge couplings --- \n"];
+For[i=1,i<=Length[Gauge],
+If[Gauge[[i,2,1]]==1,
+WriteString[file, SPhenoForm[Gauge[[i,4]]]<>suffix<> " = "<>SPhenoForm[GUTren[i]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>suffix<>" \n"]; 
+];
+i++;];
+
+For[i=1,i<=Length[SA`ListGaugeMixed2],
+WriteString[file, SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> suffix<>" = "<>SPhenoForm[GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*"<> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>suffix<>" \n"];
+i++;];
+WriteString[file,"! ----------------------- \n \n"];
+];
+
 
 WriteRemoveGUTnormalization[file_]:=Block[{i},
 WriteString[file,"\n \n ! --- Remove GUT-normalization of gauge couplings --- \n"];
@@ -1191,6 +1261,20 @@ i++;];
 
 For[i=1,i<=Length[SA`ListGaugeMixed2],
 WriteString[file,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<> " = "<>SPhenoForm[1/GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>" \n"];
+i++;];
+WriteString[file,"! ----------------------- \n \n"];
+];
+
+WriteGUTnormalizationSuffix[suffix_,file_]:=Block[{i},
+WriteString[file,"\n \n ! --- GUT normalize gauge couplings --- \n"];
+For[i=1,i<=Length[Gauge],
+If[Gauge[[i,2,1]]==1,
+WriteString[file,SPhenoForm[Gauge[[i,4]]]<>suffix<> " = "<>SPhenoForm[Simplify[1/GUTren[i]]]<>"*" <> SPhenoForm[Gauge[[i,4]]]<>suffix<>" \n"]; 
+];
+i++;];
+
+For[i=1,i<=Length[SA`ListGaugeMixed2],
+WriteString[file,SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>suffix<> " = "<>SPhenoForm[1/GUTren[SA`ListGaugeMixed2[[i,1,1]],SA`ListGaugeMixed2[[i,1,2]]]]<>"*" <> SPhenoForm[SA`ListGaugeMixed2[[i,2,2]]]<>suffix<>" \n"];
 i++;];
 WriteString[file,"! ----------------------- \n \n"];
 ];
@@ -1352,6 +1436,9 @@ If[FreeQ[BoundarySUSYScale,TADPOLES]&& HighscaleMatching=!=True,
 WriteString[sphenoSugra,"Real(dp) :: delta0,deltaG0, gA("<>ToString[numberAll]<>"), gB("<>ToString[numberLow] <>")\n"];,
 WriteString[sphenoSugra,"Real(dp) :: delta0,deltaG0, gA("<>ToString[numberAllwithVEVs]<>"), gB("<>ToString[numberAllwithVEVs]<>")\n"];
 ];
+
+
+
 WriteString[sphenoSugra,"Real(dp) :: gC("<>ToString[numberAllwithVEVs]<>"),  gD("<>ToString[numberAllwithVEVs]<>") \n"];
 WriteString[sphenoSugra,"Real(dp),Intent(out) :: mGUT\n"];
 (* MakeVariableList[NewParametersFromTadpoles,"",sphenoSugra]; *)

@@ -1026,7 +1026,7 @@ Switch[Length[dimensions],
 ];
 
 
-WriteReadInRoutines[list_]:=Block[{i,suffix,func},
+WriteReadInRoutines[list_]:=Block[{i,suffix,func,func2},
 For[i=1,i<=Length[list],
 If[FreeQ[CombindedBlock,list[[i,1]]],
 If[FreeQ[SA`LHList,list[[i,3]]]==False,
@@ -1071,7 +1071,10 @@ WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[6+StringLength[SPhe
 WriteString[sphenoInOut,"    Call "<>func<>"\n \n"];
 
 If[list[[i,4]]==False,
+If[FreeQ[SA`LHList,list[[i,3]]]==False,
+WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[10+StringLength[LHBlockName[list[[i,3]]]]]<>").Eq.\"IM"<>ToUpperCase[LHBlockName[list[[i,3]]]]<>"IN\") Then \n"];,
 WriteString[sphenoInOut,"   Else If (read_line(7:"<>ToString[10+StringLength[SPhenoForm[list[[i,3]]]]]<>").Eq.\"IM"<>ToUpperCase[SPhenoForm[list[[i,3]]]]<>"IN\") Then \n"];
+];
 WriteString[sphenoInOut,"     If (i_cpv.Lt.2) Then  \n"];
 WriteString[sphenoInOut,"       Call Warn_CPV(i_cpv,\"IM"<>SPhenoForm[list[[i,3]]]<>"\") \n"];
 WriteString[sphenoInOut,"       Cycle \n"];
@@ -1520,11 +1523,13 @@ WriteString[sphenoInOut,"Write(io_L,100) \"Block SPINFO         # Program inform
 WriteString[sphenoInOut,"Write(io_L,100) \"     1   SPhenoSARAH      # spectrum calculator\"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"     2   \"//version//\"    # version number of SPheno\"\n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"     9   \"//versionSARAH//\"    # version number of SARAH\"\n"];
+(*
 WriteString[sphenoInOut,"Call GetError(i_errors)\n"];
 WriteString[sphenoInOut,"If ((i_errors(1)+i_errors(3)+i_errors(5)+i_errors(7)+i_errors(8)& \n"];
 WriteString[sphenoInOut,"&+i_errors(10)+i_errors(12)+Sum(i_errors(14:19))).Gt.0)&\n"];
 WriteString[sphenoInOut,"& Write(io_L,100)&\n"];
 WriteString[sphenoInOut,"& \"     3               # potential numerical problem, check file Messages.out\"\n"];
+*)
 WriteString[sphenoInOut,"Write(io_L,100) \"Block MODSEL  # Input parameters\"\n"];
 If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoInOut,"If (HighScaleModel.Eq.\"LOW\") Then \n "];
@@ -1926,6 +1931,7 @@ WriteString[sphenoInOut,"End if \n"];
 ];
 
 
+If[HighscaleMatching=!=True,
 If[Length[AdditionalVariablesSPheno]>0,
 WriteString[sphenoInOut,"Write(io_L,106) \"Block AddPars Q=1.0000E00 # Additional parameters not appearing elsewhere; scale Q just a dummy\" \n"];
 For[j=1,j<=Length[AdditionalVariablesSPheno],
@@ -1936,12 +1942,14 @@ j++;];
 ]; 
 
 
+
 If[Length[AdditionalVariablesSPheno]>0,
 For[j=1,j<=Length[AdditionalVariablesSPheno],
 If[Depth[AdditionalVariablesSPheno[[j]]]>1,
 WriteOutputBlock[AdditionalVariablesSPheno[[j,0]],List@@AdditionalVariablesSPheno[[j]],0,"  "];
 ];
 j++;];
+];
 ];
 ];
 

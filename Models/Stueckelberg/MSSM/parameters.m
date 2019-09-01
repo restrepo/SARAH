@@ -113,7 +113,7 @@ ParameterDefinitions = {
           Real -> True,
           LesHouches->None,
           OutputName ->  M1a,
-          Dependence->MDBpS}},
+          Dependence-> MDBpS}},
          
 {M2a2, {LaTeX -> "m^{2}_{2} ",
            Real -> True,

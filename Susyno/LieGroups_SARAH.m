@@ -1068,8 +1068,10 @@ expr[i0]+=aux4[[1,cont]]a[b1[aux1[[i,1]]]+j1] b[b2[aux1[[i,2]]]+j2];
 
 result=Table[expr[i0],{i0,Length[aux4]}];
 
-(* Normalize the invariants *)
-coefs=result /. {Plus ->List,a[__]->1,b[__]->1,c[__]->1};
+   (* Normalize the invariants *)
+   coefs=Expand[Simplify[result]] /. {Plus ->List,a[__]->1,b[__]->1,c[__]->1};
+   (* MARK'S CHANGE *)
+(**** coefs=result /. {Plus ->List,a[__]->1,b[__]->1,c[__]->1};*****)
 Do[
 If[Length[coefs[[i]]]==0,coefs[[i]]={coefs[[i]]}];
 result[[i]]=Expand[Sqrt[Sqrt[DimR[cm,rep1] DimR[cm,rep2]]/coefs[[i]].Conjugate[coefs[[i]]]] result[[i]]];
@@ -1246,8 +1248,10 @@ If[(rep1==rep3!=rep2)&&!conj,result=SymmetrizeInvariants[result,{DimR[cm,rep1],D
 If[(rep3==rep2!=rep1)&&!conj,result=SymmetrizeInvariants[result,{DimR[cm,rep1],DimR[cm,rep2],DimR[cm,rep3]},{{2,3}}];];
 ];
 
-(* Normalize the invariants *)
-coefs=result /. {Plus ->List,a[__]->1,b[__]->1,c[__]->1};
+   (* Normalize the invariants *)
+      coefs=Expand[Simplify[result]] /. {Plus ->List,a[__]->1,b[__]->1,c[__]->1};
+   (* MARK'S CHANGE *)
+(*coefs=result /. {Plus ->List,a[__]->1,b[__]->1,c[__]->1};*)
 Do[
 If[Length[coefs[[i]]]==0,coefs[[i]]={coefs[[i]]}];
 result[[i]]=Expand[Sqrt[Sqrt[DimR[cm,rep1] DimR[cm,rep2]DimR[cm,rep3]] /coefs[[i]].Conjugate[coefs[[i]]]] result[[i]]];

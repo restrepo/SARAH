@@ -806,7 +806,7 @@ Return[fac];
 
 
 ExtractStructure[vertex_,charge_]:=Block[{i,j,temp={},temp2,res,CS,diffCol,coeff,current,CSsum ,unbrokenInd},
-diffCol={fSU3,Delta,Lam, LamHlf,sum,epsTensor,CG,Generator}; (* Possible Headers *)
+diffCol={fSU3,dSU3,Delta,Lam, LamHlf,sum,epsTensor,CG,Generator}; (* Possible Headers *)
 (* diffColQT=Table[charge /. subGC[i] /. subIndFinal[i,i],{i,1,Length[vertex]}]; *)
 diffColQT=Table[charge /. subGC[i] /. subIndFinal[i,i],{i,1,4}]; (* check! *)
 CSsum=Select[Cases[vertex,x_sum,6],(FreeQ[#,ct1]==False || FreeQ[#,ct2]==False || FreeQ[#,ct3]==False || FreeQ[#,ct4]==False)&];
@@ -816,7 +816,7 @@ For[i=1,i<=Length[unbrokenInd],
 CSsum=Join[CSsum,Select[Cases[vertex,x_sum,6],(FreeQ[#,unbrokenInd[[i]]]==False)&]];
 i++;];
 CSsum=Intersection[CSsum];
-CS = Intersection[Cases[vertex /. sum[a_,b_,c_,d_]:>sum[a,b,c,Random[]],x_?(((FreeQ[diffCol,Head[#]]==False || FreeQ[diffCol,Head[Head[#]]]==False) && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={} || Head[#]===fSU3))&),10]];
+CS = Intersection[Cases[vertex /. sum[a_,b_,c_,d_]:>sum[a,b,c,Random[]],x_?(((FreeQ[diffCol,Head[#]]==False || FreeQ[diffCol,Head[Head[#]]]==False) && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={} || Head[#]===fSU3 || Head[#]===dSU3))&),10]];
 
 CS=Join[CS,CSsum];
 If[CS=={}, (* only color singlets *)
@@ -828,7 +828,7 @@ SA`NrD=1;
 
 coeff= ExtractColorCoeff[vertex /. conj[CG[a___][b__]]->CG[a][b],current]; (* get the coefficients *)
 (* check, if there is no color structure left in the coefficient *)
-If[coeff=!= 0 &&  Intersection[Cases[coeff,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={}||Head[#]===fSU3))&),10]]=={},
+If[coeff=!= 0 &&  Intersection[Cases[coeff,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={}||Head[#]===fSU3 || Head[#]===dSU3))&),10]]=={},
 temp=Join[temp,{{current,coeff}}];
 ];
 j++;];

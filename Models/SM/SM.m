@@ -54,7 +54,6 @@ LagNoHC = -mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu u.q.H);
 
 
-
 			  		  
 
 (* Gauge Sector *)

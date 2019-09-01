@@ -2798,6 +2798,7 @@ Real(dp) :: g1,g2,g3,v
 Complex(dp) :: Lam,Yu(3,3),Yd(3,3),Ye(3,3),Mu
 Real(dp), Intent(out) ::  mh_SM
 Real(dp) :: tz, dt, q2, mh_SM_old, pi_SM, pi2_SM, rMS_save, mh2_tree
+Logical :: CalculateTwoLoopHiggsMasses_save
 
 Call GToParameters62_SM(g_SM,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v)
 
@@ -2832,6 +2833,9 @@ Call GToParameters62_SM(g_SM,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v)
 
 Yu = - Yu
 
+CalculateTwoLoopHiggsMasses_save=CalculateTwoLoopHiggsMasses
+CalculateTwoLoopHiggsMasses=.true.
+
 
 q2 = SetRenormalizationScale(mf_u2(3))
 
@@ -2865,6 +2869,8 @@ Else
 End if
 
 End do
+
+CalculateTwoLoopHiggsMasses=CalculateTwoLoopHiggsMasses_save
 
 rMS = rMS_save
 

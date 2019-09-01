@@ -515,6 +515,7 @@ SA`Casimir[conj[a_],b_Integer]:=SA`Casimir[a,Gauge[[b,3]]];
 SA`Dynkin[conj[a_],b_Integer]:=SA`Dynkin[a,Gauge[[b,3]]];
 SA`MulFactor[conj[a_],b_Integer]:=SA`MulFactor[a,Gauge[[b,3]]];
 Generator[conj[a_],b_Integer]:=Generator[a,Gauge[[b,3]]];
+SA`DimensionGG[conj[a_],b_]:=SA`DimensionGG[a,b];
 
 CleanUpGaugeConstants:=Block[{i,j,k},
 SA`ClebschGordon=Intersection[SA`ClebschGordon];

@@ -203,6 +203,7 @@ i++;];
 
 ListTree = DeleteCases[ListTree,{}];
 
+
 For[i=1,i<=Length[listNotMixedMasses],
 If[listNotMixedMasses[[i,4]]=!=0 && (getType[listNotMixedMasses[[i,1]]]=!=V || SA`NewGaugeSector ==False),
 CurrentMass= SPhenoMass[listNotMixedMasses[[i,1]]];
@@ -253,6 +254,19 @@ SPhenoParameters = Join[SPhenoParameters,{{SPhenoMass[getBlank[mixVB[[i,2,j]]]],
 j++;];
 
 i++;];
+
+If[AddMatchingRoutines===True,
+(* ListTreeVB=Limit[ListTreeVB/.SubSolutionsTadpolesTree//.subEpsUV,epsUV\[Rule]0]; *)
+For[i=1,i<=Length[ListTree],
+ListTree[[i,3]]=Limit[Expand[ListTree[[i,3]]/.SubSolutionsTadpolesTree//.subEpsUV],epsUV->0];
+ListTree[[i,-3]]=Join[ListTree[[i,-3]],Select[Transpose[MINPAR][[2]],FreeQ[ListTree[[i,3]],#]==False&]];
+i++;];
+For[i=1,i<=Length[listNotMixedMasses],
+listNotMixedMasses[[i,4]]=Limit[listNotMixedMasses[[i,4]]/.SubSolutionsTadpolesTree//.subEpsUV,epsUV->0];
+listNotMixedMasses[[i,3]]=Join[listNotMixedMasses[[i,3]],Select[Transpose[MINPAR][[2]],FreeQ[listNotMixedMasses[[i,3]],#]==False&]];
+i++;];
+];
+
 
 
 For[i=1,i<=Length[subDependencesSPheno],
@@ -354,7 +368,10 @@ i2++;];
 
 If[IntermediateScale === True,
 MakeSubroutineTitle["TreeMassesRegime"<>ToString[RegimeNr],Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoTree];,
+If[AddMatchingRoutines===True,
+MakeSubroutineTitle["TreeMasses"<>suffix,Join[NewMassParameters,listVEVs,listAllParameters,Transpose[MINPAR][[2]]],{},{"GenerationMixing","kont"},sphenoTree];,
 MakeSubroutineTitle["TreeMasses"<>suffix,Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoTree];
+];
 ];
 
 WriteString[sphenoTree, "Implicit None \n \n"];
@@ -362,6 +379,14 @@ WriteString[sphenoTree, "Implicit None \n \n"];
 
 MakeVariableList[listAllParameters,",Intent(in)",sphenoTree];
 MakeVariableList[NewMassParameters,",Intent(out)",sphenoTree];
+If[AddMatchingRoutines===True,
+For[i=1,i<=Length[MINPAR],
+If[FreeQ[realVar,MINPAR[[i,2]]] && FreeQ[RealParameters,MINPAR[[i,2]]],
+WriteString[sphenoTree,"Complex(dp), Intent(in) :: "<>ToString[MINPAR[[i,2]]]<>" \n"];,
+WriteString[sphenoTree,"Real(dp), Intent(in) :: "<>ToString[MINPAR[[i,2]]]<>" \n"];
+];
+i++;];
+];
 MakeVariableList[listVEVs,",Intent(in)",sphenoTree];
 If[NewNumericalDependences=!={},
 MakeVariableList[Transpose[NewNumericalDependences ][[1]],"",sphenoTree];
@@ -743,7 +768,7 @@ WriteString[sphenoTree,"  "<>Name<>"2 = "<>Name<>"2temp\n"];
 WriteString[sphenoTree,"  "<>MixingName<>" = "<>MixingName<>"temp\n"];
 ];
 
-If[MassesForEffpot===True,
+If[MassesForEffpot===True || AddMatchingRoutines===True,
 WriteString[sphenoTree,"! Fix phases\n"];
 WriteString[sphenoTree,"Do i1=1,"<>dimMatrix<>"\n"];
 WriteString[sphenoTree,"  pos=Maxloc(Abs("<>MixingName<>"(i1,:)),1)\n"];
@@ -923,7 +948,7 @@ i2++;];
  WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(mat,"<> Name <>"2,"<>  MixingName <>",ierr,test) \n \n \n"];
 
 (* WriteString[sphenoTree,MixingName <>"= MatMul("<>MixingName<>","<>MixingName<>"Fix) \n"]; *)
-If[MassesForEffpot===True,
+If[MassesForEffpot===True|| AddMatchingRoutines===True,
 WriteString[sphenoTree,"! Fix phases\n"];
 WriteString[sphenoTree,"Do i1=1,"<>dimMatrix<>"\n"];
 WriteString[sphenoTree,"  pos=Maxloc(Abs("<>MixingName<>"(i1,:)),1)\n"];
@@ -1089,6 +1114,24 @@ WriteString[sphenoTree, "    Else \n"];
 WriteString[sphenoTree, "      If (Aimag("<>MixingName<>"(i1,pos)).lt.0._dp) Then \n"];
 WriteString[sphenoTree, "        "<>MixingName<>"(i1,:)=-"<>MixingName<>"(i1,:) \n"];
 WriteString[sphenoTree, "      End If \n"];
+WriteString[sphenoTree, "    End If \n"];
+WriteString[sphenoTree, " End Do \n \n"];
+];
+
+If[AddMatchingRoutines===True,
+WriteString[sphenoTree, "  Do i1=1,"<>dimMatrix <>"\n"];
+WriteString[sphenoTree, "   pos=Maxloc(Abs("<>MixingName<>"(i1,:)),1) \n"];
+WriteString[sphenoTree, "   If (Abs(Real("<>MixingName<>"(i1,pos),dp)).gt.Abs(Aimag("<>MixingName<>"(i1,pos)))) Then \n"];
+WriteString[sphenoTree, "      If (Real("<>MixingName<>"(i1,pos),dp).lt.0._dp) Then \n"];
+WriteString[sphenoTree, "        "<>MixingName<>"(i1,:)=-"<>MixingName<>"(i1,:) \n"];
+WriteString[sphenoTree, "       End If \n"];
+WriteString[sphenoTree, "    Else \n"];
+WriteString[sphenoTree, "      If (Aimag("<>MixingName<>"(i1,pos)).lt.0._dp) Then \n"];
+WriteString[sphenoTree, "        "<>MixingName<>"(i1,:)=(0._dp,1._dp)*"<>MixingName<>"(i1,:) \n"];
+WriteString[sphenoTree, "      Else \n"];
+WriteString[sphenoTree, "        "<>MixingName<>"(i1,:)=-(0._dp,1._dp)*"<>MixingName<>"(i1,:) \n"];
+WriteString[sphenoTree, "      End If \n"];
+WriteString[sphenoTree, "      "<>Name<>"(i1) = - "<>Name<>"(i1)  \n"];
 WriteString[sphenoTree, "    End If \n"];
 WriteString[sphenoTree, " End Do \n \n"];
 ];

@@ -272,7 +272,7 @@ LamYfunc[a_,b_]:=Y2S[a,a]Bij[a,b]+Y2S[b,b] Bij[a,b];
 
 
 (* for 2-loop scalar mass, eq. (91) -  (105) *)
-LamBar3func[a_,b_]:=Lijkl[a,b,pE,pF] Aijk[pE,pG,pL] Aijk[pF,pG,pL] + 2 Bij[pE,pF] Lijkl[a,pE,pG,pL] Lijkl[b,pF,pG,pL] + 2 Aijk[a,pE,pF] Aijk[pF,pG,pL] Lijkl[b,pE,pG,pL] + 2 Aijk[b,pE,pF] Aijk[pF,pG,pL] Lijkl[a,pE,pG,pL];
+LamBar3func[a_,b_]:=Lijkl[a,b,pE,pF] Aijk[pE,pG,pL] Aijk[pF,pG,pL] +2 Bij[pE,pF] Lijkl[a,pE,pG,pL] Lijkl[b,pF,pG,pL] + 2 Aijk[a,pE,pF] Aijk[pF,pG,pL] Lijkl[b,pE,pG,pL] + 2 Aijk[b,pE,pF] Aijk[pF,pG,pL] Lijkl[a,pE,pG,pL];
 LamBar2Yfunc[a_,b_]:=Y2S[pF,pG](Bij[pE,pG] Lijkl[a,b,pE,pF]+ Aijk[a,pE,pF] Aijk[b,pE,pG]);
 
 HbarLamfunc[a_,b_]:=1/2 Lijkl[a,b,pE,pF] (Muij[pO,pX]Conj[Yijk[pX,pQ,pE]] Muij[pQ,pY] Conj[Yijk[pY,pO,pF]]+Conj[Muij[pO,pX]]Yijk[pX,pQ,pE] Conj[Muij[pQ,pY]] Yijk[pY,pO,pF])+(* Bij[pE,pF](YcYYcY4[a,pE,b,pF]+cYYcYY4[a,pE,b,pF])+ *)

@@ -288,7 +288,7 @@ Table[{"DSRR_"<>ToString[3]<>ToString[1]<>ToString[i]<>ToString[i],O4dSRR[3,1,i,
 {{"DSRR_2132",O4dSRR[2,1,3,2]-O4dSRRSM[2,1,3,2], Complex}},
 {{"DSRR_2312",O4dSRR[2,3,1,2]-O4dSRRSM[2,3,1,2], Complex}},
 (* 2D2L *)
-Table[{"EVLL_"<>ToString[1]<>ToString[3]<>ToString[i]<>ToString[i],OddllVLL[1,3,i,i]-OddllVLLSM[1,3,i,i], Complex},{i,1,3}],
+Table[{"EVLL_"<>ToString[1]<>ToString[3]<>ToString[i]<>ToString[i],conj[OddllVLL[3,1,i,i]-OddllVLLSM[3,1,i,i]], Complex},{i,1,3}],
 Table[{"EVRR_"<>ToString[1]<>ToString[3]<>ToString[i]<>ToString[i],OddllVRR[1,3,i,i]-OddllVRRSM[1,3,i,i], Complex},{i,1,3}],
 Table[{"EVLR_"<>ToString[1]<>ToString[3]<>ToString[i]<>ToString[i],OddllVLR[1,3,i,i]-OddllVLRSM[1,3,i,i], Complex},{i,1,3}],
 Table[{"EVRL_"<>ToString[1]<>ToString[3]<>ToString[i]<>ToString[i],OddllVRL[1,3,i,i]-OddllVRLSM[1,3,i,i], Complex},{i,1,3}],

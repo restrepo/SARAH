@@ -19,7 +19,7 @@ Model`Date = "2016-01-17";
 Gauge[[1]]={B,   U[1], hypercharge,       g1,False,0};
 Gauge[[2]]={WL, SU[2], left,        g2,True,0};
 Gauge[[3]]={G,  SU[3], color,       g3,False,0};
-Gauge[[4]]={EH, SU[2], higgs,       gH,True,0};
+Gauge[[4]]={EH, SU[2], uhiggs,       gH,True,0};
 
 (* For gauged U(1)_X *)
 (* Gauge[[5]]={EX,  U[1], extra,       gX,True,0}; *)
@@ -32,7 +32,7 @@ FermionFields[[1]] = {QL, 3, {uL, dL},     1/6, 2,  3, 1, 0};
 FermionFields[[2]] = {LL, 3, {vL, eL},    -1/2, 2,  1, 1, 0};
 FermionFields[[3]] = {DR,  3, {conj[dRH],  conj[dR]},    1/3, 1,  -3, 2, 1};
 FermionFields[[4]] = {UR,  3, {conj[uR],  conj[uRH]},    -2/3, 1,  -3, 2, -1};
-FermionFields[[5]] = {NR,  3, {conj[vR], conj[vRH]},     0, 1,  1, 2, -1};
+FermionFields[[5]] = {NuR,  3, {conj[vR], conj[vRH]},     0, 1,  1, 2, -1};
 FermionFields[[6]] = {ER,  3, {conj[eRH], conj[eR]},     1, 1,  1, 2, 1};
 
 
@@ -72,7 +72,7 @@ VPH= muP2 Phi.conj[Phi] + LambdaP conj[Phi].Phi.conj[Phi].Phi;
 VDH=-muD2 DeltaH.conj[DeltaH] + LambdaD Delta[hig1,hig2] Delta[hig1b,hig2b] Delta[hig3,hig4] Delta[hig3b,hig4b] conj[DeltaH].DeltaH.conj[DeltaH].DeltaH;
 VMIX=MHD conj[H].DeltaH.H - MPD conj[Phi]. DeltaH.Phi + LambdaHD conj[H].H.DeltaH.conj[DeltaH] + LambdaHP conj[H].H.conj[Phi].Phi + LambdaPD conj[Phi].Phi.conj[DeltaH].DeltaH;
 
-LagHC=Yd QL.DR.conj[H] +  Yu QL.UR.H - Ydp XD.DR.Phi - Yup XU.UR.conj[Phi] + Ye LL.ER.conj[H] + Yv LL.NR.H - Yep XE.ER.Phi - Yvp XN.NR.conj[Phi];
+LagHC=Yd QL.DR.conj[H] +  Yu QL.UR.H - Ydp XD.DR.Phi - Yup XU.UR.conj[Phi] + Ye LL.ER.conj[H] + Yv LL.NuR.H - Yep XE.ER.Phi - Yvp XN.NuR.conj[Phi];
 
 
 (* Gauge Sector *)

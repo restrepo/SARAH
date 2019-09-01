@@ -1155,6 +1155,11 @@ Return[ToExpression["A"<>StringDrop[ToString[vector],1]]];
 ];
 ]; 
 
+getColorDim[field_]:=Block[{temp},
+temp=Select[getIndizesWI[field],FreeQ[#,color]==False&];
+If[temp==={},Return[1];,Return[temp[[1,2]]];];
+]
+
 
 (* ::Input::Initialization:: *)
 UseSymmASymm=False;
@@ -2251,6 +2256,7 @@ i++;];
 IndexTypes=Intersection[Table[IndexTypes[[i,3]],{i,1,Length[IndexTypes]}]];
 structure=1;
 
+
 (* For[i=1,i\[LessEqual]Length[IndexTypes],
 pos=Position[Gauge,IndexTypes[[i]]][[1,1]];
 If[Gauge[[pos,5]]===True, *)
@@ -2444,7 +2450,7 @@ Print["sub2", subs]; *)
 (* Print[contraction*particles /. sum[a__]\[Rule]1 /.A_[{b__}][c_Integer]\[Rule]A[{b}] /.A_[{b__}][{d__}][c_Integer]\[Rule]A[{b}][{d}]];  *)
 temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}]    /. subInv  ,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A (*/.conj[x_]\[Rule]x*) /.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c] /.(a_?NumericQ conj[b_Symbol])[c_Symbol]->a conj[b[c]] /.subC/.conj[x_]->x ;
 (* Print["TEMP",temp]; *)
-temp = temp /. conj[x_[y_]]:>ToExpression[ToString[x]<>"c"][y] //. Flatten[subs] /. Delta[a__]->1 /. epsTensor[a__]->1 /. CG[a__][b__]->1 (*/. conj[x_]\[Rule]x*);
+temp = temp /. conj[x_[y_]]:>ToExpression[ToString[x]<>"c"][y] //. Flatten[subs] /. Delta[a__]->1 /. epsTensor[a__]->1 /.Lam[__]->1 /. CG[a__][b__]->1 (*/. conj[x_]\[Rule]x*);
 temp=temp/.sub2;
 (*
 Print["subs",subs];

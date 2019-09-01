@@ -58,7 +58,8 @@ MakeCall[name_,possibleParameters_, additionalParameters1_,additionalParameters2
 
 
 (* ::Input::Initialization:: *)
-MakeVariableList[PossibleParameters_,string_,file_]:=Block[{i,j, NewString},
+MakeVariableList[PossibleParameters_,string_,file_]:=MakeVariableList[PossibleParameters,string,file,""];
+MakeVariableList[PossibleParameters_,string_,file_,suffix_]:=Block[{i,j, NewString},
 (* Write the varaible declaration to the Fortran file: *)
 (* Takes a list of parameters and checks if they are Real or Complex and adds the dimension *)
 (* "string" can be used to give the scope like Intent(in), Intent(out) or Intent(inout) *)
@@ -69,9 +70,9 @@ StringComplex="";
 
 For[i=1,i<=Length[PossibleParameters],
 NewString = "";
-NewString=NewString <> SPhenoForm[PossibleParameters[[i]]];
+NewString=NewString <> SPhenoForm[PossibleParameters[[i]]]<>suffix;
 dimP=getDimSPheno[PossibleParameters[[i]]];
-If[dimP=!={1} && dimP=!={},
+If[dimP=!={1} && dimP=!={}&& dimP=!={0},
 NewString = NewString <>"(";
 For[j=1,j<= Length[dimP],
 NewString = NewString <>ToString[dimP[[j]]] <>",";
@@ -544,6 +545,45 @@ ind="";
 Return[{ind,HC,procTemp}];
 ];
 
+MakeIndicesCoupling4color[{p1_,in1_},{p2_,in2_},{p3_,in3_},{p4_,in4_},proc_]:=Block[{pListTemp={},indexListTemp={},n2,i,HC,indRange={},ind},
+
+pListTemp = Join[pListTemp,{p1}];
+indexListTemp = Join[indexListTemp,{in1}];
+
+pListTemp = Join[pListTemp,{p2}];
+indexListTemp = Join[indexListTemp,{in2}];
+
+pListTemp = Join[pListTemp,{p3}];
+indexListTemp = Join[indexListTemp,{in3}];
+
+pListTemp = Join[pListTemp,{p4}];
+indexListTemp = Join[indexListTemp,{in4}];
+
+indRange={};
+
+procTemp=proc /. a_[{x__}]->a;
+
+If[C@@procTemp=!=C@@{p1,p2,p3,p4},
+procTemp=getConjugatedVertex[procTemp];
+HC=True;,
+HC=False;
+]; 
+
+
+
+For[n2=1,n2<=4,
+pos= Position[pListTemp,procTemp[[n2]],1];
+If[pos=!={},
+indRange = Join[indRange,{Extract[indexListTemp,pos[[1,1]]]}];
+pListTemp = Delete[pListTemp,pos[[1,1]]];
+indexListTemp = Delete[indexListTemp,pos[[1,1]]];
+];
+n2++;];
+
+
+Return[indRange];
+];
+
 MakeIndicesCoupling4[{p1_,in1_},{p2_,in2_},{p3_,in3_},{p4_,in4_},proc_]:=Block[{pListTemp={},indexListTemp={},n2,i,HC,indRange={}},
 
 (* Takes 3 external fields (p1,p2,p3) and the supposed generation indices (in1,in2, in3) and maps the generation indices in the correct order of 
@@ -778,7 +818,10 @@ SPhenoMass[x_,nr_]:=Block[{},
 If[getType[x]===G,Return[SPhenoMass[getVectorBoson[x],nr]];];
 If[getGenSPheno[x]>1 && FreeQ[massless,getBlank[x]]==True,
 Return[ToString[SPhenoMass[x]]<>"("<>ToString[nr]<>")" ];,
-Return[ToString[SPhenoMass[x]]];
+If[FreeQ[massless,getBlank[x]]==True,
+Return[ToString[SPhenoMass[x]]];,
+Return["0._dp"];
+];
 ];
 ];
 
@@ -1065,7 +1108,7 @@ pos=Position[SPhenoParameters,x[[1]]];,
 pos=Position[SPhenoParameters,x]
 ];
 If[pos=!={}, Return[Extract[SPhenoParameters,pos[[1,1]]][[3]]];,
-Return[{0}];
+Return[{}];
 ];
 ];
 

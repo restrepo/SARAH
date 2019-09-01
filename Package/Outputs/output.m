@@ -294,7 +294,7 @@ Format[ct3,TeXForm]=Format["\\gamma",OutputForm];
 Format[ct4,TeXForm]=Format["\\delta",OutputForm];
 Format[ct5,TeXForm]=Format["\\epsilon",OutputForm];
 
-
+Format[epsUV,TeXForm]=Format["\\epsilon",OutputForm];
 
  For[i=1,i<=Length[parameters],
 Format[parameters[[i,1]],TeXForm]=Format[TeXNameP[parameters[[i,1]]],OutputForm];
@@ -335,6 +335,10 @@ i++;];
 
  For[i=1,i<=Length[TeXParameters],
 Format[TeXParameters[[i,1]],TeXForm]=Format[TeXParameters[[i,2]],OutputForm];
+i++;];
+
+ For[i=1,i<=Length[$AdditionalTeXsymbols],
+Format[$AdditionalTeXsymbols[[i,1]],TeXForm]=Format[$AdditionalTeXsymbols[[i,2]],OutputForm];
 i++;];
 
 
@@ -710,16 +714,21 @@ i++;];
 ];
 
 MakeSPhenoFortran:=Block[{i,j,pos,temp,nr,POS},
+If[Head[subSPhenoForm]=!=List,
 subSPhenoForm={};
+subSPhenoFormUV={};
+];
 For[i=1,i<=Length[parameters],
+If[Head[parameters[[i,1]]]=!=Mass,
 If[FreeQ[RenameParameters,parameters[[i,1]]],
 temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]],FortranForm],Format[CHName[parameters[[nr,1]],99],OutputForm]]/;SARAHFortran==True], {nr->i,maxLength->(6-Length[parameters[[i,2]]])}];
 ReleaseHold[temp];
-If[FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False,subSPhenoForm=Join[subSPhenoForm,{parameters[[i,1]]->CHName[parameters[[i,1]]]}];];,
+If[FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False,subSPhenoForm=Join[subSPhenoForm,{parameters[[i,1]]->CHName[parameters[[i,1]]]}];subSPhenoFormUV=Join[subSPhenoFormUV,{parameters[[i,1]]->CHName[parameters[[i,1]]]}];];,
 pos=Position[RenameParameters,parameters[[i,1]]][[1,1]];
 temp=ReplaceAll[Hold[SetDelayed[Format[parameters[[i,1]],FortranForm],Format[Extract[RenameParameters,POS][[2]],OutputForm]]/;SARAHFortran==True], {nr->i,POS->pos,maxLength->(6-Length[parameters[[i,2]]])}];
 ReleaseHold[temp];
-If[FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False,subSPhenoForm=Join[subSPhenoForm,{parameters[[i,1]]->Extract[RenameParameters,pos][[2]]}];];
+If[FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False,subSPhenoForm=Join[subSPhenoForm,{parameters[[i,1]]->Extract[RenameParameters,pos][[2]]}];subSPhenoFormUV=Join[subSPhenoFormUV,{parameters[[i,1]]->Extract[RenameParameters,pos][[2]]}];];
+];
 ];
 i++;];
 

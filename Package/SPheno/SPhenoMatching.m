@@ -23,6 +23,14 @@
 GenerateMatching:=Block[{i,temp,file,ModuleName},
 Print[StyleForm["Write routine for matching couplings","Section",FontSize->12]];
 
+file=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"InfoParameters.m"]];
+WriteString[file,"parametersUV ="<>ToString[parameters/. {a_,b_,c_}:>{SPhenoForm[a],b,c}] <>"\n"];
+WriteString[file,"realVarUV ="<>ToString[realVar] <>"\n"];
+WriteString[file,"sizeParsUV ={"<>ToString[numberLow] <>","<>ToString[numberAll]<>","<>ToString[numberAllwithVEVs] <>"}\n"];
+WriteString[file,"listAllParametersAndVEVsUV ="<>ToString[SPhenoForm/@listAllParametersAndVEVs] <>";\n"];
+WriteString[file,"subSPhenoFormUV ="<>ToString[subSPhenoFormUV] <>";\n"];
+Close[file];
+
 file=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Matching_"<>ModelName<>".f90"]];
 (* function to write references for SARAH as well as date and time to the beginning of the file *)
 WriteCopyRight[file];
@@ -34,16 +42,31 @@ WriteString[file,"Use Settings \n"];
 WriteString[file,"Use LoopFunctions \n"];
 WriteString[file,"Use Couplings_"<>ModelName<>" \n"];
 WriteString[file,"Use TreeLevelMasses_"<>ModelName<>" \n"];
+If[ParametersToSolveTadpoles=!={},
 WriteString[file,"Use Tadpoles_"<>ModelName<>" \n \n"];
+];
 
 WriteString[file,"Real(dp) :: MatchingThreshold = 1000._dp ! need to put reasonable value \n \n"];
+WriteString[file,"Logical :: Debug_Matching = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_ScalarD0 = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_ScalarC0 = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_ScalarB0 = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_Fermion = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_ScalarC0wProp = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_ScalarB0wProp = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_FermionC0wProp = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_PropagatorSA = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_PropagatorSB = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_PropagatorF = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_Yukawa_SSF = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_Yukawa_FFS = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_Wave = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_WaveOffDiagonal = .False. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_MSDR = .True. \n"];
+WriteString[file,"Logical :: Include_in_Thresholds_ShiftGauge = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_TreeProp = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_Tree = .True. \n\n"];
+WriteString[file,"Logical :: OneLoopYukawas = .true. \n\n"];
 
 WriteString[file,"Contains \n \n"];
 
@@ -61,9 +84,11 @@ AppendSourceCode["MatchingFunctions.f90",file];
 
 (* MISSING *)
 (* MS/DR shifts *)
+(* Generalise color factor for quartic couplings *)
 
 (* Comparison THDM:
-C0, wave: overall factor of 2 *)
+ wave: overall factor of 2? *)
+(* SM: factor 2 in fermion? *)
 (* check sign propagtor diagrams *)
 
 
@@ -75,19 +100,52 @@ Close[file];
 
 
 (* ::Input::Initialization:: *)
-GenerateMatchingAll[file_]:=Block[{i,j,temp,AllInfo,diffExternal},
+GenerateMatchingAll[file_]:=Block[{i,j,temp,AllInfo,diffExternal,diffExternalF,pos},
+HighscaleMatchingConditionsFup=Select[HighscaleMatchingConditionsFup,(FreeQ[#[[2]],PL] ==False || FreeQ[#[[1]],PR]==False)&];
+HighscaleMatchingConditionsF=Select[HighscaleMatchingConditions,(FreeQ[#[[2]],PL] ==False || FreeQ[#[[1]],PR]==False)&];
+HighscaleMatchingConditions=Select[HighscaleMatchingConditions,(FreeQ[#[[2]],PL] ==True && FreeQ[#[[1]],PR]==True)&];
 
-Print["Matching for quartic couplings"];
 
-MatchedCouplings=Table[HighscaleMatchingConditions[[i,2]],{i,1,Length[HighscaleMatchingConditions]}];
+
+MatchedCouplings=Table[HighscaleMatchingConditions[[i,2]] /. Abs[x_]->x,{i,1,Length[HighscaleMatchingConditions]}];
+MatchedParameters=Table[HighscaleMatchingConditions[[i,1]]/. Abs[x_]->x,{i,1,Length[HighscaleMatchingConditions]}];
+
+MatchedCouplingsF=Table[HighscaleMatchingConditionsF[[i,2]]/.PL[x__]->x /. PR[x__]->x,{i,1,Length[HighscaleMatchingConditionsF]}];
+MatchedParametersF=Table[HighscaleMatchingConditionsF[[i,1]],{i,1,Length[HighscaleMatchingConditionsF]}];
+MatchedCouplingsFup=Table[HighscaleMatchingConditionsFup[[i,2]]/.PL[x__]->x /. PR[x__]->x,{i,1,Length[HighscaleMatchingConditionsFup]}];
+MatchedParametersFup=Table[HighscaleMatchingConditionsFup[[i,1]],{i,1,Length[HighscaleMatchingConditionsFup]}];
 
 diffExternal =Intersection[Flatten[MatchedCouplings/.a_ + b_ ->a //. a_ b_Dot ->b /.A_[b_Integer]->A/. Plus->List /. Dot->List /. conj[x_]->x]];
+diffExternal=Select[diffExternal,getType[#]===S|| getType[Head[#]]===S&];
+
+diffExternalF=Intersection[Flatten[MatchedCouplingsF/.a_ + b_ ->a //. a_ b_Dot ->b /.A_[b_Integer]->A/. Plus->List /. Dot->List /. conj[x_]->x/. bar[x_]->x]];
+diffExternalF=Join[diffExternalF,Intersection[Flatten[MatchedCouplingsFup/.a_ + b_ ->a //. a_ b_Dot ->b /.A_[b_Integer]->A/. Plus->List /. Dot->List /. conj[x_]->x/. bar[x_]->x]]];
+diffExternalF=Select[Intersection[diffExternalF],getType[#]===F || getType[Head[#]]===F&];
 
 match4=Select[MatchedCouplings,Length[# /. a_ + b_ ->a //. a_ b_Dot ->b]==4&];
 match3=Select[MatchedCouplings,Length[# /. a_ + b_ ->a //. a_ b_Dot ->b]==3&];
 
 match4diffFields=Intersection[Flatten[match4 /. A_[b_Integer]->A/. Plus->List//. a_ b_Dot ->b]];
 match3diffFields=Intersection[Flatten[match3 /. A_[b_Integer]->A/. Plus->List//. a_ b_Dot ->b]];
+
+matchYukawas=Intersection[Flatten[MatchedCouplingsF /. A_[b_Integer]->A/. Plus->List//. a_ b_Dot ->b]];
+matchYukawasUp=Intersection[Flatten[MatchedCouplingsFup /. A_[b_Integer]->A/. Plus->List//. a_ b_Dot ->b]];
+
+temp=Intersection[Select[Flatten[Join[match4diffFields,match3diffFields,matchYukawasUp,matchYukawas] /. Dot->List]/. conj[x_]->x /. bar[x_]->x,AtomQ[#]==False&]];
+ExtraGenIndizes={};
+ExtraGenIndizesCondition={};
+For[i=1,i<=Length[temp],
+ExtraGenIndizes=Join[ExtraGenIndizes,{temp[[i,1]]}];
+pos=Position[DEFINITION[EWSB][MatterSector],temp[[i,1]]];
+ExtraGenIndizesCondition=Join[ExtraGenIndizesCondition,{{temp[[i,1]],DEFINITION[EWSB][MatterSector][[pos[[1,1]]]][[2,2]],pos[[1,-1]]}}];
+i++;];
+
+match4diffFields=Intersection[match4diffFields/. A_[b_?(MemberQ[ExtraGenIndizes,#]&)]->A];
+match3diffFields=Intersection[match3diffFields/. A_[b_?(MemberQ[ExtraGenIndizes,#]&)]->A];
+matchYukawas=Intersection[matchYukawas/. A_[b_?(MemberQ[ExtraGenIndizes,#]&)]->A];
+matchYukawasUp=Intersection[matchYukawasUp/. A_[b_?(MemberQ[ExtraGenIndizes,#]&)]->A];
+diffExternal=Intersection[diffExternal/. A_[b_?(MemberQ[ExtraGenIndizes,#]&)]->A];
+diffExternalF=Intersection[diffExternalF/. A_[b_?(MemberQ[ExtraGenIndizes,#]&)]->A];
 
 listMatchingWave={};
 For[i=1,i<=Length[diffExternal],
@@ -96,47 +154,393 @@ SPhenoParameters=Join[SPhenoParameters,{{"PiForMatching"<>ToString[diffExternal[
 WriteMatchingWaveContributions[diffExternal[[i]],SPhenoForm[diffExternal[[i]]],file];
 i++;];
 
+listMatchingWaveF={};
+For[i=1,i<=Length[diffExternalF],
+listMatchingWaveF=Join[listMatchingWaveF,{"SigLforMatching"<>ToString[diffExternalF[[i]]],"SigRforMatching"<>ToString[diffExternalF[[i]]]}];
+SPhenoParameters=Join[SPhenoParameters,{{"SigLforMatching"<>ToString[diffExternalF[[i]]],{generation,generation},{getGen[diffExternalF[[i]]],getGen[diffExternalF[[i]]]}}}];
+SPhenoParameters=Join[SPhenoParameters,{{"SigRforMatching"<>ToString[diffExternalF[[i]]],{generation,generation},{getGen[diffExternalF[[i]]],getGen[diffExternalF[[i]]]}}}];
+WriteMatchingWaveContributionsFermion[diffExternalF[[i]],SPhenoForm[diffExternalF[[i]]],file];
+i++;];
+
+MyComplement[a_,b_]:=Select[a,FreeQ[b,#]==False&];
+If[Select[Select[SA`VertexList[SSS],Length[MyComplement[#[[1]] /. A_[{b__}]->A /.conj[x_]->x,diffExternal]]>=2&], Limit[#[[2,1]] //.subEpsUV,epsUV->0]&]==={},
+ScalarCubicCouplingsNeeded=True;,
+ScalarCubicCouplingsNeeded=False;
+];
+
+
+
+Print["Matching for quartic  Scalar couplings"];
 For[i=1,i<=Length[match4diffFields],
 WriteString[file,"\n\n"];
 WriteMatchingQuartic[match4diffFields[[i]],file];
 i++;];
 
+Print["Matching for cubic Scalar couplings"];
 For[i=1,i<=Length[match3diffFields],
 WriteString[file,"\n\n"];
 WriteMatchingCubic[match3diffFields[[i]],file];
 i++;];
 
+Print["Matching for Yukawa couplings"];
+For[i=1,i<=Length[matchYukawas],
+WriteString[file,"\n\n"];
+WriteMatchingYukawas[matchYukawas[[i]],file];
+i++;];
+
+Print["Matching for Yukawa couplings running Up"];
+For[i=1,i<=Length[matchYukawasUp],
+WriteString[file,"\n\n"];
+WriteMatchingYukawas[matchYukawasUp[[i]],file];
+i++;];
+
+
+
+Print["Wrapper for all scalar couplings"];
 WriteMainFunctionMatching[diffExternal,file];
 
+Print["Wrapper for all gauge and Yukawas couplings"];
+WritMatchingGaugeYukawa[diffExternal,diffExternalF,file];
+
+Print["Wrapper for all gauge and Yukawas couplings"];
+WritMatchingGaugeYukawaUp[diffExternal,diffExternalF,file];
+
 
 ];
 
-WriteMainFunctionMatching[diffex_,file_]:=Block[{i,ii,j,k,j1,j2,name,nameT},
+WritMatchingGaugeYukawa[diffexS_,diffexF_,file_]:=Block[{i,ii,j,jj,k,j1,j2,name,nameT,mixbasis,rot,rot1,rot2,mixbasis1,mixbasis2,factor},
 subMatching={};
-For[i=1,i<=Length[ParametersEffModel],
-If[FreeQ[parameters,ParametersEffModel[[i,1]]],
-If[FreeQ[RealParametersEffModel,ParametersEffModel[[i,1]]]==False,realVar=Join[realVar,{ParametersEffModel[[i,1]]}];];
-SPhenoParameters=Join[SPhenoParameters,{ParametersEffModel[[i]]}];
-];
-i++;];
-ParameterNamesEffModel=Transpose[ParametersEffModel][[1]];
-
-
-MakeSubroutineTitle["MatchingRoutine_"<>ModelName,Flatten[{ParameterNamesEffModel,SPhenoForm/@Transpose[MINPAR][[2]]}],{"scale"},{},file];
+MakeSubroutineTitle["MatchingGaugeYukawa_"<>ModelName,Join[ToExpression[SPhenoForm[#]<>"in"]&/@listAllParametersAndVEVs,SPhenoForm/@Transpose[MINPAR][[2]],listAllParametersAndVEVsEFT],{"scale_in","loop_level","Wave_offdiagonal"},{},file];
 WriteString[file,"Implicit None \n"];
 MakeVariableList[NewMassParameters,"",file];
 MakeVariableList[namesAllreallyAll,"",file];
-MakeVariableList[ParameterNamesEffModel,", Intent(inout)",file];
+MakeVariableList[namesQGS,"",file];
+MakeVariableList[listAllParametersAndVEVs,", Intent(in)",file,"in"];
+MakeVariableList[listAllParametersAndVEVs,"",file];
+
+SPhenoParametersSave=SPhenoParameters;
+realVarSave=realVar;
+SPhenoParameters=parametersEFT;
+realVar=realVarEFT;
+MakeVariableList[listAllParametersAndVEVsEFT,", Intent(inout)",file];
+SPhenoParameters=SPhenoParametersSave;
+realVar=realVarSave;
+
+
+For[i=1,i<=Length[matchYukawas],
+WriteString[file,"Complex(dp) :: resL"<>StringReplace[SPhenoForm/@(matchYukawas[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"("<>StringReplace[ToString[getGen/@matchYukawas[[i]]],{"("->"",")"->"","."->","}]<>") \n"];
+WriteString[file,"Complex(dp) :: resR"<>StringReplace[SPhenoForm/@(matchYukawas[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"("<>StringReplace[ToString[getGen/@matchYukawas[[i]]],{"("->"",")"->"","."->","}]<>") \n"];
+i++;];
+
 For[i=1,i<=Length[MINPAR],
-If[FreeQ[realVar,MINPAR[[i,2]]],
+If[FreeQ[realVar,MINPAR[[i,2]]] && FreeQ[RealParameters,MINPAR[[i,2]]],
 WriteString[file,"Complex(dp), Intent(in) ::  "<>ToString[MINPAR[[i,2]]]<>"\n"];,
 WriteString[file,"Real(dp), Intent(in) ::  "<>ToString[MINPAR[[i,2]]]<>"\n"];
 ];
 i++;];
+For[i=1,i<=Length[Gauge],
+WriteString[file,"Real(dp) :: "<>SPhenoForm[Gauge[[i,4]]]<>"input, d"<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+i++;];
+
 WriteString[file,"Integer :: i1,i2,i3,i4, kont \n"];
-WriteString[file,"Real(dp), Intent(in) :: scale \n"];
-WriteString[file,"Real(dp) :: scale_save, setscale \n"];
+WriteString[file,"Real(dp), Intent(in) :: scale_in \n"];
+WriteString[file,"Real(dp) :: scale_save, setscale, MaxMassNumericalZero_save \n"];
 WriteString[file,"Logical :: GenerationMixing \n"];
+WriteString[file,"Logical, Intent(in) :: loop_level, Wave_offdiagonal  \n"];
+
+If[Length[ExtraGenIndizes]>0,
+WriteString[file,"Integer :: "<>StringReplace[ToString[ExtraGenIndizes],{"{"->"","}"->""}]<>" \n"];
+];
+
+
+For[i=1,i<=Length[diffexS],
+WriteString[file,"Complex(dp) ::  PiForMatching"<>ToString[diffexS[[i]]]<>"("<>ToString[getGen[diffexS[[i]]]]<>","<>ToString[getGen[diffexS[[i]]]]<>")\n"];
+i++;];
+
+For[i=1,i<=Length[diffexF],
+WriteString[file,"Complex(dp) ::  SigLforMatching"<>ToString[diffexF[[i]]]<>"("<>ToString[getGen[diffexF[[i]]]]<>","<>ToString[getGen[diffexF[[i]]]]<>")\n"];
+WriteString[file,"Complex(dp) ::  SigRforMatching"<>ToString[diffexF[[i]]]<>"("<>ToString[getGen[diffexF[[i]]]]<>","<>ToString[getGen[diffexF[[i]]]]<>")\n"];
+i++;];
+
+WriteString[file,"scale_save = GetRenormalizationScale() \n"];
+WriteString[file,"UVscaleQ = scale_in**2 \n"]; 
+WriteString[file,"MatchingThreshold = 100._dp*UVscaleQ*IRmass \n"]; 
+WriteString[file,"epsUV = 0.1_dp  \n"]; 
+WriteString[file,"MaxMassNumericalZero_save = MaxMassNumericalZero  \n"]; 
+WriteString[file,"MaxMassNumericalZero = UVscaleQ*IRmass  \n"]; 
+
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[file,SPhenoForm[listAllParametersAndVEVs[[i]]]<>" = "<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"in \n"];
+i++];
+
+
+For[i=1,i<=Length[Gauge],
+WriteString[file,SPhenoForm[Gauge[[i,4]]]<>"input =  "<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+WriteString[file,"d"<>SPhenoForm[Gauge[[i,4]]]<>"=0._dp \n"];
+i++;];
+
+WriteString[file,"! Assumptions \n"];
+For[i=1,i<=Length[AssumptionsMatchingScale],
+WriteString[file,SPhenoForm[AssumptionsMatchingScale[[i,1]]]<>" = " <> SPhenoForm[AssumptionsMatchingScale[[i,2]]]<>"\n"];
+i++;];
+
+WriteString[file,"If (Debug_Matching) Write(*,*) \"g_i\",g1,g2,g3 \n"];
+WriteString[file,"If (Debug_Matching) Write(*,*) \"Y_i\",Yu(3,3),Yd(3,3),Ye(3,3) \n"];
+
+(*
+If[ParametersToSolveTadpoles=!={},
+WriteString[file,"\n\n! Tadpoles \n"];
+WriteTadpoleSolutionOnlyHigh[file];
+];
+*)
+WriteString[file,"\n\n! Masses \n"];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters,Transpose[MINPAR][[2]]]],{},{"GenerationMixing","kont"},file];
+
+If[Length[ExtraGenIndizes]>0,
+For[i=1,i<=Length[ExtraGenIndizes],
+WriteString[file,ToString[ExtraGenIndizesCondition[[i,1]]]<>"="<>"MaxLoc(Abs("<>SPhenoForm[ExtraGenIndizesCondition[[i,2]]]<>"(:,"<>ToString[ExtraGenIndizesCondition[[i,3]]]<>")),1) \n"];
+i++;];
+];
+
+WriteString[file,"! Assumption; setting epsUV to exactly 0 \n"];
+For[i=1,i<=Length[AssumptionsMatchingScale],
+If[FreeQ[AssumptionsMatchingScale[[i,2]],epsUV]==False,
+WriteString[file,SPhenoForm[AssumptionsMatchingScale[[i,1]]]<>" = 0._dp \n"];
+];
+i++;];
+
+
+MakeCall["AllCouplingsReallyAll" , Join[parametersAllreallyAll,namesAllreallyAll],{},{},file];
+MakeCall["CouplingsShiftGauge" , Join[parametersQGS,namesQGS],{},{},file];
+
+WriteString[file,"\n\n! Wave-Functions \n"];
+For[i=1,i<=Length[diffexS],
+MakeCall["MatchingFor"<>SPhenoForm[diffexS[[i]]]<>"_Wave",Flatten[{NewMassParameters,namesAllreallyAll}],{},{"PiForMatching"<>ToString[diffexS[[i]]]},file];
+i++;];
+
+For[i=1,i<=Length[diffexF],
+MakeCall["MatchingFor"<>SPhenoForm[diffexF[[i]]]<>"_Wave",Flatten[{NewMassParameters,namesAllreallyAll}],{},{"SigLforMatching"<>ToString[diffexF[[i]]],"SigRforMatching"<>ToString[diffexF[[i]]]},file];
+i++;];
+
+
+For[i=1,i<=Length[matchYukawas],
+subMatching=Join[subMatching,{((PL[matchYukawas[[i]]/. Dot->List/. {f1_,f2_,f3_}->f1[a_].f2[b_].f3[c_]]):>"resL"<>NAME<>"("<>ToString[a]<>","<>ToString[b]<>","<>ToString[c]<>")")/.NAME->StringReplace[SPhenoForm/@(matchYukawas[[i]] /. conj[x_]->C.x/.bar[x_]->B.x)//. Dot->StringJoin,{"("->"",")"->""}],((PR[matchYukawas[[i]]/. Dot->List/. {f1_,f2_,f3_}->f1[a_].f2[b_].f3[c_]]):>"resR"<>NAME<>"("<>ToString[a]<>","<>ToString[b]<>","<>ToString[c]<>")")/.NAME->StringReplace[SPhenoForm/@(matchYukawas[[i]] /. conj[x_]->C.x/.bar[x_]->B.x)//. Dot->StringJoin,{"("->"",")"->""}]}];
+WriteString[file,"Do i1=1,"<>ToString[getGen[(matchYukawas[[i]]/. Dot->List)[[1]]]]<>"\n"];
+WriteString[file," Do i2=1,"<>ToString[getGen[(matchYukawas[[i]]/. Dot->List)[[2]]]]<>"\n"];
+WriteString[file,"  Do i3=1,"<>ToString[getGen[(matchYukawas[[i]]/. Dot->List)[[3]]]]<>"\n"];
+MakeCall["      MatchingFor"<>(SPhenoForm/@(matchYukawas[[i]] /. conj[x_]->C.x/. bar[x_]->B.x)/. Dot->StringJoin),Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave,listMatchingWaveF}],{".false.","i1","i2","i3"},{"resL"<>StringReplace[SPhenoForm/@(matchYukawas[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3)","resR"<>StringReplace[SPhenoForm/@(matchYukawas[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3)"},file];
+WriteString[file,"  End Do\n"];
+WriteString[file," End Do\n"];
+WriteString[file,"End Do\n\n"];
+i++;];
+
+For[i=1,i<=Length[HighscaleMatchingConditionsF],
+WriteString[file,SPhenoForm[HighscaleMatchingConditionsF[[i,1]]]<>" = "<>StringReplace[ToString[FortranForm[(HighscaleMatchingConditionsF[[i,2]]/. (a__Dot:>Dot@@(If[AtomQ[RE[#]],#[ALL],#]&/@List@@a))/. subMatching)]],{"\""->"","ALL"->":"}]<>"\n"];
+WriteString[file,"If (Debug_Matching) Write(*,*) \""<>SPhenoForm[HighscaleMatchingConditionsF[[i,1]]]<>"\","<>SPhenoForm[HighscaleMatchingConditionsF[[i,1]]]<>" \n"];
+i++;];
+
+WriteString[file,"MaxMassNumericalZero = MaxMassNumericalZero_save \n"]; 
+
+WriteString[file,"End Subroutine MatchingGaugeYukawa_"<>ModelName <>"\n\n"];
+];
+
+
+WritMatchingGaugeYukawaUp[diffexS_,diffexF_,file_]:=Block[{i,ii,j,jj,k,j1,j2,name,nameT,mixbasis,rot,rot1,rot2,mixbasis1,mixbasis2,factor},
+subMatching={};
+MakeSubroutineTitle["MatchingGaugeYukawaUp_"<>ModelName,Join[ToExpression[SPhenoForm[#]<>"in"]&/@listAllParametersAndVEVs,SPhenoForm/@Transpose[MINPAR][[2]]],{"scale_in","loop_level","Wave_offdiagonal"},{},file];
+WriteString[file,"Implicit None \n"];
+MakeVariableList[NewMassParameters,"",file];
+MakeVariableList[namesAllreallyAll,"",file];
+MakeVariableList[namesQGS,"",file];
+MakeVariableList[listAllParametersAndVEVs,", Intent(inout)",file,"in"];
+MakeVariableList[listAllParametersAndVEVs,"",file];
+
+For[i=1,i<=Length[matchYukawasUp],
+WriteString[file,"Complex(dp) :: resL"<>StringReplace[SPhenoForm/@(matchYukawasUp[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"("<>StringReplace[ToString[getGen/@matchYukawasUp[[i]]],{"("->"",")"->"","."->","}]<>") \n"];
+WriteString[file,"Complex(dp) :: resR"<>StringReplace[SPhenoForm/@(matchYukawasUp[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"("<>StringReplace[ToString[getGen/@matchYukawasUp[[i]]],{"("->"",")"->"","."->","}]<>") \n"];
+i++;];
+
+
+For[i=1,i<=Length[MINPAR],
+If[FreeQ[realVar,MINPAR[[i,2]]] && FreeQ[RealParameters,MINPAR[[i,2]]],
+WriteString[file,"Complex(dp), Intent(in) ::  "<>ToString[MINPAR[[i,2]]]<>"\n"];,
+WriteString[file,"Real(dp), Intent(in) ::  "<>ToString[MINPAR[[i,2]]]<>"\n"];
+];
+i++;];
+For[i=1,i<=Length[Gauge],
+WriteString[file,"Real(dp) :: "<>SPhenoForm[Gauge[[i,4]]]<>"input, d"<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+i++;];
+
+WriteString[file,"Integer :: i1,i2,i3,i4, kont \n"];
+WriteString[file,"Real(dp), Intent(in) :: scale_in \n"];
+WriteString[file,"Real(dp) :: scale_save, setscale, MaxMassNumericalZero_save \n"];
+WriteString[file,"Logical :: GenerationMixing \n"];
+WriteString[file,"Logical, Intent(in) :: loop_level, Wave_offdiagonal  \n"];
+
+If[Length[ExtraGenIndizes]>0,
+WriteString[file,"Integer :: "<>StringReplace[ToString[ExtraGenIndizes],{"{"->"","}"->""}]<>" \n"];
+];
+
+
+For[i=1,i<=Length[diffexS],
+WriteString[file,"Complex(dp) ::  PiForMatching"<>ToString[diffexS[[i]]]<>"("<>ToString[getGen[diffexS[[i]]]]<>","<>ToString[getGen[diffexS[[i]]]]<>")\n"];
+i++;];
+
+For[i=1,i<=Length[diffexF],
+WriteString[file,"Complex(dp) ::  SigLforMatching"<>ToString[diffexF[[i]]]<>"("<>ToString[getGen[diffexF[[i]]]]<>","<>ToString[getGen[diffexF[[i]]]]<>")\n"];
+WriteString[file,"Complex(dp) ::  SigRforMatching"<>ToString[diffexF[[i]]]<>"("<>ToString[getGen[diffexF[[i]]]]<>","<>ToString[getGen[diffexF[[i]]]]<>")\n"];
+i++;];
+
+WriteString[file,"scale_save = GetRenormalizationScale() \n"];
+WriteString[file,"UVscaleQ = scale_in**2 \n"]; 
+WriteString[file,"MatchingThreshold = 100._dp*UVscaleQ*IRmass \n"]; 
+WriteString[file,"epsUV = 0.1_dp  \n"]; 
+WriteString[file,"MaxMassNumericalZero_save = MaxMassNumericalZero  \n"]; 
+WriteString[file,"MaxMassNumericalZero = UVscaleQ*IRmass  \n"]; 
+
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[file,SPhenoForm[listAllParametersAndVEVs[[i]]]<>" = "<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"in \n"];
+i++];
+
+
+For[i=1,i<=Length[Gauge],
+WriteString[file,SPhenoForm[Gauge[[i,4]]]<>"input =  "<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+WriteString[file,"d"<>SPhenoForm[Gauge[[i,4]]]<>"=0._dp \n"];
+i++;];
+
+WriteString[file,"! Assumptions \n"];
+For[i=1,i<=Length[AssumptionsMatchingScale],
+WriteString[file,SPhenoForm[AssumptionsMatchingScale[[i,1]]]<>" = " <> SPhenoForm[AssumptionsMatchingScale[[i,2]]]<>"\n"];
+i++;];
+
+WriteString[file,"If (Debug_Matching) Write(*,*) \"g_i\",g1,g2,g3 \n"];
+WriteString[file,"If (Debug_Matching) Write(*,*) \"Y_i\",Yu(3,3),Yd(3,3),Ye(3,3) \n"];
+
+(*
+If[ParametersToSolveTadpoles=!={},
+WriteString[file,"\n\n! Tadpoles \n"];
+WriteTadpoleSolutionOnlyHigh[file];
+];
+*)
+WriteString[file,"\n\n! Masses \n"];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters,Transpose[MINPAR][[2]]]],{},{"GenerationMixing","kont"},file];
+
+If[Length[ExtraGenIndizes]>0,
+For[i=1,i<=Length[ExtraGenIndizes],
+WriteString[file,ToString[ExtraGenIndizesCondition[[i,1]]]<>"="<>"MaxLoc(Abs("<>SPhenoForm[ExtraGenIndizesCondition[[i,2]]]<>"(:,"<>ToString[ExtraGenIndizesCondition[[i,3]]]<>")),1) \n"];
+i++;];
+];
+
+WriteString[file,"! Assumption; setting epsUV to exactly 0 \n"];
+For[i=1,i<=Length[AssumptionsMatchingScale],
+If[FreeQ[AssumptionsMatchingScale[[i,2]],epsUV]==False,
+WriteString[file,SPhenoForm[AssumptionsMatchingScale[[i,1]]]<>" = 0._dp \n"];
+];
+i++;];
+
+WriteOneLoopShiftGauge[file];
+
+
+For[i=1,i<=Length[Gauge],
+WriteString[file,"d"<>SPhenoForm[Gauge[[i,4]]]<>"=  -d"<>SPhenoForm[Gauge[[i,4]]]<>"  \n"];
+i++;];
+
+MakeCall["AllCouplingsReallyAll" , Join[parametersAllreallyAll,namesAllreallyAll],{},{},file];
+MakeCall["CouplingsShiftGauge" , Join[parametersQGS,namesQGS],{},{},file];
+
+WriteString[file,"\n\n! Wave-Functions \n"];
+For[i=1,i<=Length[diffexS],
+MakeCall["MatchingFor"<>SPhenoForm[diffexS[[i]]]<>"_Wave",Flatten[{NewMassParameters,namesAllreallyAll}],{},{"PiForMatching"<>ToString[diffexS[[i]]]},file];
+i++;];
+
+For[i=1,i<=Length[diffexF],
+MakeCall["MatchingFor"<>SPhenoForm[diffexF[[i]]]<>"_Wave",Flatten[{NewMassParameters,namesAllreallyAll}],{},{"SigLforMatching"<>ToString[diffexF[[i]]],"SigRforMatching"<>ToString[diffexF[[i]]]},file];
+i++;];
+
+
+For[i=1,i<=Length[matchYukawasUp],
+subMatching=Join[subMatching,{((PL[matchYukawasUp[[i]]/. Dot->List/. {f1_,f2_,f3_}->f1[a_].f2[b_].f3[c_]]):>"resL"<>NAME<>"("<>ToString[a]<>","<>ToString[b]<>","<>ToString[c]<>")")/.NAME->StringReplace[SPhenoForm/@(matchYukawasUp[[i]] /. conj[x_]->C.x/.bar[x_]->B.x)//. Dot->StringJoin,{"("->"",")"->""}],((PR[matchYukawasUp[[i]]/. Dot->List/. {f1_,f2_,f3_}->f1[a_].f2[b_].f3[c_]]):>"resR"<>NAME<>"("<>ToString[a]<>","<>ToString[b]<>","<>ToString[c]<>")")/.NAME->StringReplace[SPhenoForm/@(matchYukawasUp[[i]] /. conj[x_]->C.x/.bar[x_]->B.x)//. Dot->StringJoin,{"("->"",")"->""}]}];
+WriteString[file,"Do i1=1,"<>ToString[getGen[(matchYukawasUp[[i]]/. Dot->List)[[1]]]]<>"\n"];
+WriteString[file," Do i2=1,"<>ToString[getGen[(matchYukawasUp[[i]]/. Dot->List)[[2]]]]<>"\n"];
+WriteString[file,"  Do i3=1,"<>ToString[getGen[(matchYukawasUp[[i]]/. Dot->List)[[3]]]]<>"\n"];
+MakeCall["      MatchingFor"<>(SPhenoForm/@(matchYukawasUp[[i]] /. conj[x_]->C.x/. bar[x_]->B.x)/. Dot->StringJoin),Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave,listMatchingWaveF}],{".true.","i1","i2","i3"},{"resL"<>StringReplace[SPhenoForm/@(matchYukawasUp[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3)","resR"<>StringReplace[SPhenoForm/@(matchYukawasUp[[i]]/. conj[x_]->C.x/. bar[x_]->B.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3)"},file];
+WriteString[file,"  End Do\n"];
+WriteString[file," End Do\n"];
+WriteString[file,"End Do\n\n"];
+i++;];
+
+WriteString[file,"! Shift gauge couplings \n"];
+For[i=1,i<=Length[Gauge],
+WriteString[file,SPhenoForm[Gauge[[i,4]]]<>"in =  "<>SPhenoForm[Gauge[[i,4]]]<>"input + d"<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+i++;];
+
+For[i=1,i<=Length[HighscaleMatchingConditionsFup],
+WriteString[file,SPhenoForm[HighscaleMatchingConditionsFup[[i,1]]]<>"in = "<>StringReplace[ToString[FortranForm[(HighscaleMatchingConditionsFup[[i,2]]/. (a__Dot:>Dot@@(If[AtomQ[RE[#]],#[ALL],#]&/@List@@a))/. subMatching)]],{"\""->"","ALL"->":"}]<>"\n"];
+WriteString[file,"If (Debug_Matching) Write(*,*) \""<>SPhenoForm[HighscaleMatchingConditionsFup[[i,1]]]<>"\","<>SPhenoForm[HighscaleMatchingConditionsFup[[i,1]]]<>"in \n"];
+i++;];
+
+WriteString[file,"MaxMassNumericalZero = MaxMassNumericalZero_save \n"]; 
+
+WriteString[file,"End Subroutine MatchingGaugeYukawaUp_"<>ModelName <>"\n\n"];
+];
+
+WriteMainFunctionMatching[diffex_,file_]:=Block[{i,ii,j,jj,k,j1,j2,name,nameT,mixbasis,rot,rot1,rot2,mixbasis1,mixbasis2,factor},
+subMatching={};
+(*
+For[i=1,i\[LessEqual]Length[ParametersEffModel],
+If[FreeQ[parameters,ParametersEffModel[[i,1]]],
+If[FreeQ[RealParametersEffModel,ParametersEffModel[[i,1]]]\[Equal]False,realVar=Join[realVar,{ParametersEffModel[[i,1]]}];];
+SPhenoParameters=Join[SPhenoParameters,{ParametersEffModel[[i]]}];
+];
+i++;];
+ParameterNamesEffModel=Transpose[ParametersEffModel][[1]];
+*)
+
+(* MakeSubroutineTitle["MatchingRoutine_"<>ModelName,Flatten[{ParameterNamesEffModel,SPhenoForm/@Transpose[MINPAR][[2]]}],{"scale_in","loop_level","Wave_offdiagonal"},{},file]; *)
+MakeSubroutineTitle["MatchingRoutine_"<>ModelName,Join[ToExpression[SPhenoForm[#]<>"in"]&/@listAllParametersAndVEVs,SPhenoForm/@Transpose[MINPAR][[2]],listAllParametersAndVEVsEFT],{"scale_in","loop_level","Wave_offdiagonal"},(*ToString/@MatchedParameters*){},file];
+WriteString[file,"Implicit None \n"];
+MakeVariableList[NewMassParameters,"",file];
+MakeVariableList[namesAllreallyAll,"",file];
+MakeVariableList[namesQGS,"",file];
+MakeVariableList[listAllParametersAndVEVs,", Intent(in)",file,"in"];
+MakeVariableList[listAllParametersAndVEVs,"",file];
+(*
+For[i=1,i\[LessEqual]Length[MatchedParameters],
+WriteString[file,"Complex(dp), Intent(out) :: "<>ToString[MatchedParameters[[i]]]<>"\n"];
+i++;];
+*)
+
+SPhenoParametersSave=SPhenoParameters;
+realVarSave=realVar;
+SPhenoParameters=parametersEFT;
+realVar=realVarEFT;
+MakeVariableList[listAllParametersAndVEVsEFT,", Intent(inout)",file];
+SPhenoParameters=SPhenoParametersSave;
+realVar=realVarSave;
+
+(*
+MakeVariableList[ParameterNamesEffModel,", Intent(inout)",file];
+*)
+
+For[i=1,i<=Length[MINPAR],
+If[FreeQ[realVar,MINPAR[[i,2]]] && FreeQ[RealParameters,MINPAR[[i,2]]],
+WriteString[file,"Complex(dp), Intent(in) ::  "<>ToString[MINPAR[[i,2]]]<>"\n"];,
+WriteString[file,"Real(dp), Intent(in) ::  "<>ToString[MINPAR[[i,2]]]<>"\n"];
+];
+i++;];
+For[i=1,i<=Length[Gauge],
+WriteString[file,"Real(dp) :: "<>SPhenoForm[Gauge[[i,4]]]<>"input, d"<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+i++;];
+
+If[Length[ExtraGenIndizes]>0,
+WriteString[file,"Integer :: "<>StringReplace[ToString[ExtraGenIndizes],{"{"->"","}"->""}]<>" \n"];
+];
+
+WriteString[file,"Integer :: i1,i2,i3,i4, kont \n"];
+WriteString[file,"Real(dp), Intent(in) :: scale_in \n"];
+WriteString[file,"Real(dp) :: scale_save, setscale, MaxMassNumericalZero_save \n"];
+WriteString[file,"Logical :: GenerationMixing \n"];
+WriteString[file,"Logical, Intent(in) :: loop_level, Wave_offdiagonal  \n"];
 
 
 For[i=1,i<=Length[diffex],
@@ -157,12 +561,43 @@ i++;];
 
 
 WriteString[file,"scale_save = GetRenormalizationScale() \n"];
-WriteString[file,"setscale = SetRenormalizationScale(scale**2) \n"];
+(* WriteString[file,"setscale = SetRenormalizationScale(scale**2) \n"]; *)
+WriteString[file,"UVscaleQ = scale_in**2 \n"]; 
+WriteString[file,"MatchingThreshold = 100._dp*UVscaleQ*IRmass \n"]; 
+WriteString[file,"epsUV = 0.1_dp  \n"]; 
+WriteString[file,"MaxMassNumericalZero_save = MaxMassNumericalZero  \n"]; 
+WriteString[file,"MaxMassNumericalZero = UVscaleQ*IRmass  \n"]; 
+
+WriteString[file,"If (.not.Loop_Level) Then  \n"]; 
+WriteString[file," Include_in_Thresholds_ScalarD0 = .False. \n"];
+WriteString[file," Include_in_Thresholds_ScalarC0 = .False. \n"];
+WriteString[file," Include_in_Thresholds_ScalarB0 = .False. \n"];
+WriteString[file," Include_in_Thresholds_Fermion = .False. \n"];
+WriteString[file," Include_in_Thresholds_ScalarC0wProp = .False. \n"];
+WriteString[file," Include_in_Thresholds_ScalarB0wProp = .False. \n"];
+WriteString[file," Include_in_Thresholds_FermionC0wProp = .False. \n"];
+WriteString[file," Include_in_Thresholds_PropagatorSA = .False. \n"];
+WriteString[file," Include_in_Thresholds_PropagatorSB = .False. \n"];
+WriteString[file," Include_in_Thresholds_PropagatorF = .False. \n"];
+WriteString[file," Include_in_Thresholds_Wave = .False. \n"];
+WriteString[file," Include_in_Thresholds_WaveOffDiagonal = .False. \n"];
+WriteString[file," Include_in_Thresholds_MSDR = .False. \n"];
+WriteString[file," Include_in_Thresholds_ShiftGauge = .False. \n"];
+WriteString[file,"Else  \n"];
+WriteString[file," If (Wave_offdiagonal) Then  \n"];
+WriteString[file,"   Include_in_Thresholds_WaveOffDiagonal = .True. \n"];
+WriteString[file," End if  \n"];
+WriteString[file,"End if  \n"];
+
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[file,SPhenoForm[listAllParametersAndVEVs[[i]]]<>" = "<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"in \n"];
+i++];
 
 
+(*
 WriteString[file,"! Boundary Conditions \n"];
-For[i=1,i<=Length[BoundaryMatchingScale],
-If[FreeQ[BoundaryMatchingScale[[i,2]],DIAGONAL]==True,
+For[i=1,i\[LessEqual]Length[BoundaryMatchingScale],
+If[FreeQ[BoundaryMatchingScale[[i,2]],DIAGONAL]\[Equal]True,
 Switch[Head[BoundaryMatchingScale[[i,1]]],
 re,WriteString[file,SPhenoForm[BoundaryMatchingScale[[i,1,1]]]<>" = Cmplx(Real(" <> SPhenoForm[BoundaryMatchingScale[[i,2]]]  <>",dp),Aimag("<>SPhenoForm[BoundaryMatchingScale[[i,1,1]]]<> "))\n"];,
 im,WriteString[file,SPhenoForm[BoundaryMatchingScale[[i,1,1]]]<>" = Cmplx(Real(" <>SPhenoForm[BoundaryMatchingScale[[i,1,1]]]<>",dp),Real("<> SPhenoForm[BoundaryMatchingScale[[i,2]]]  <> ",dp))\n"];,
@@ -170,26 +605,69 @@ _,WriteString[file,SPhenoForm[BoundaryMatchingScale[[i,1]]]<>" = " <> SPhenoForm
 ];,
 WriteString[file,SPhenoForm[BoundaryMatchingScale[[i,1]]]<>" = 0._dp \n"];
 WriteString[file,"Do i1=1,"<>ToString[getDimSPheno[BoundaryMatchingScale[[i,1]]][[1]]]<>"\n"];
-WriteString[file,SPhenoForm[BoundaryMatchingScale[[i,1]]]<>"(i1,i1) = " <> SPhenoForm[BoundaryMatchingScale[[i,2]] /. DIAGONAL->1]<>"\n"];
+WriteString[file,SPhenoForm[BoundaryMatchingScale[[i,1]]]<>"(i1,i1) = " <> SPhenoForm[BoundaryMatchingScale[[i,2]] /. DIAGONAL\[Rule]1]<>"\n"];
 WriteString[file,"End Do\n"];
 ];
 i++;];
+*)
 
-WriteString[file,"Write(*,*) g1,g2,g3,Yu(3,3),Yd(3,3),Ye(3,3) \n"];
+For[i=1,i<=Length[Gauge],
+WriteString[file,SPhenoForm[Gauge[[i,4]]]<>"input =  "<>SPhenoForm[Gauge[[i,4]]]<>" \n"];
+WriteString[file,"d"<>SPhenoForm[Gauge[[i,4]]]<>"=0._dp \n"];
+i++;];
 
+WriteString[file,"! Assumptions \n"];
+For[i=1,i<=Length[AssumptionsMatchingScale],
+WriteString[file,SPhenoForm[AssumptionsMatchingScale[[i,1]]]<>" = " <> SPhenoForm[AssumptionsMatchingScale[[i,2]]]<>"\n"];
+i++;];
+
+WriteString[file,"If (Debug_Matching) Write(*,*) \"g_i\",g1,g2,g3 \n"];
+WriteString[file,"If (Debug_Matching) Write(*,*) \"Y_i\",Yu(3,3),Yd(3,3),Ye(3,3) \n"];
+
+(*
+If[ParametersToSolveTadpoles=!={},
 WriteString[file,"\n\n! Tadpoles \n"];
 WriteTadpoleSolutionOnlyHigh[file];
-
+];
+*)
 WriteString[file,"\n\n! Masses \n"];
-MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},file];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters,Transpose[MINPAR][[2]]]],{},{"GenerationMixing","kont"},file];
 
-For[i=1,i<=Length[ParametrisationExternalStates],
-For[j1=1,j1<=Length[ParametrisationExternalStates[[i,2]]],
-For[j2=1,j2<=Length[ParametrisationExternalStates[[i,2]]],
+
+If[Length[ExtraGenIndizes]>0,
+For[i=1,i<=Length[ExtraGenIndizes],
+WriteString[file,ToString[ExtraGenIndizesCondition[[i,1]]]<>"="<>"MaxLoc(Abs("<>SPhenoForm[ExtraGenIndizesCondition[[i,2]]]<>"(:,"<>ToString[ExtraGenIndizesCondition[[i,3]]]<>")),1) \n"];
+i++;];
+];
+
+
+WriteString[file,"! Assumption; setting epsUV to exactly 0 \n"];
+For[i=1,i<=Length[AssumptionsMatchingScale],
+If[FreeQ[AssumptionsMatchingScale[[i,2]],epsUV]==False,
+WriteString[file,SPhenoForm[AssumptionsMatchingScale[[i,1]]]<>" = 0._dp \n"];
+];
+i++;];
+
+WriteOneLoopShiftGauge[file];
+
+
+For[i=1,i<=Length[Gauge],
+WriteString[file,"d"<>SPhenoForm[Gauge[[i,4]]]<>"=  -d"<>SPhenoForm[Gauge[[i,4]]]<>"  \n"];
+i++;];
+
+
+
+
+
+(*
+For[i=1,i\[LessEqual]Length[ParametrisationExternalStates],
+For[j1=1,j1\[LessEqual]Length[ParametrisationExternalStates[[i,2]]],
+For[j2=1,j2\[LessEqual]Length[ParametrisationExternalStates[[i,2]]],
 WriteString[file,SPhenoForm[ParametrisationExternalStates[[i,1]]]<>"("<>ToString[j1]<>","<>ToString[j2]<>")="<>SPhenoForm[ParametrisationExternalStates[[i,2,j1,j2]]]<>"\n"];
 j2++;];
 j1++;];
 i++;];
+*)
 
 WriteString[file,"!! Only for comparison with literature \n"];
 WriteString[file,"!Yu(1,1) = 0._dp \n"];
@@ -208,6 +686,7 @@ WriteString[file,"!Te(1,1) = 0._dp \n\n"];
 
 WriteString[file,"\n\n! Couplings \n"];
 MakeCall["AllCouplingsReallyAll" , Join[parametersAllreallyAll,namesAllreallyAll],{},{},file];
+MakeCall["CouplingsShiftGauge" , Join[parametersQGS,namesQGS],{},{},file];
 
 WriteString[file,"\n\n! Wave-Functions \n"];
 For[i=1,i<=Length[diffex],
@@ -220,7 +699,7 @@ WriteString[file,"Do i1=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)
 WriteString[file," Do i2=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)[[2]]]]<>"\n"];
 WriteString[file,"  Do i3=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)[[3]]]]<>"\n"];
 WriteString[file,"   Do i4=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)[[4]]]]<>"\n"];
-MakeCall["      MatchingFor"<>(SPhenoForm/@(match4diffFields[[i]] /. conj[x_]->C.x)/. Dot->StringJoin),Flatten[{NewMassParameters,namesAllreallyAll,listMatchingWave}],{"i1","i2","i3","i4"},{"res"<>StringReplace[SPhenoForm/@(match4diffFields[[i]]/. conj[x_]->C.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3,i4)"},file];
+MakeCall["      MatchingFor"<>(SPhenoForm/@(match4diffFields[[i]] /. conj[x_]->C.x)/. Dot->StringJoin),Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave}],{"i1","i2","i3","i4"},{"res"<>StringReplace[SPhenoForm/@(match4diffFields[[i]]/. conj[x_]->C.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3,i4)"},file];
 WriteString[file,"   End Do\n"];
 WriteString[file,"  End Do\n"];
 WriteString[file," End Do\n"];
@@ -228,37 +707,51 @@ WriteString[file,"End Do\n\n"];
 i++;];
 
 For[i=1,i<=Length[match3diffFields],
-subMatching=Join[subMatching,{((match3diffFields[[i]]/. Dot->List/. {f1_,f2_,f3_}->f1[a_].f2[b_].f3[c_]):>"res"<>NAME<>"("<>ToString[a]<>","<>ToString[b]<>","<>ToString[c]<>")")/.NAME->StringReplace[SPhenoForm/@(match4diffFields[[i]] /. conj[x_]->C.x)//. Dot->StringJoin,{"("->"",")"->""}]}];
-WriteString[file,"Do i1=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)[[1]]]]<>"\n"];
-WriteString[file," Do i2=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)[[2]]]]<>"\n"];
-WriteString[file,"  Do i3=1,"<>ToString[getGen[(match4diffFields[[i]]/. Dot->List)[[3]]]]<>"\n"];
-MakeCall["      MatchingFor"<>(SPhenoForm/@(match4diffFields[[i]] /. conj[x_]->C.x)/. Dot->StringJoin),Flatten[{NewMassParameters,namesAllreallyAll,listMatchingWave}],{"i1","i2","i3"},{"res"<>StringReplace[SPhenoForm/@(match4diffFields[[i]]/. conj[x_]->C.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3)"},file];
+subMatching=Join[subMatching,{((match3diffFields[[i]]/. Dot->List/. {f1_,f2_,f3_}->f1[a_].f2[b_].f3[c_]):>"res"<>NAME<>"("<>ToString[a]<>","<>ToString[b]<>","<>ToString[c]<>")")/.NAME->StringReplace[SPhenoForm/@(match3diffFields[[i]] /. conj[x_]->C.x)//. Dot->StringJoin,{"("->"",")"->""}]}];
+WriteString[file,"Do i1=1,"<>ToString[getGen[(match3diffFields[[i]]/. Dot->List)[[1]]]]<>"\n"];
+WriteString[file," Do i2=1,"<>ToString[getGen[(match3diffFields[[i]]/. Dot->List)[[2]]]]<>"\n"];
+WriteString[file,"  Do i3=1,"<>ToString[getGen[(match3diffFields[[i]]/. Dot->List)[[3]]]]<>"\n"];
+MakeCall["      MatchingFor"<>(SPhenoForm/@(match3diffFields[[i]] /. conj[x_]->C.x)/. Dot->StringJoin),Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave}],{"i1","i2","i3"},{"res"<>StringReplace[SPhenoForm/@(match3diffFields[[i]]/. conj[x_]->C.x) //. Dot->StringJoin,{"("->"",")"->""}]<>"(i1,i2,i3)"},file];
 WriteString[file,"  End Do\n"];
 WriteString[file," End Do\n"];
 WriteString[file,"End Do\n\n"];
 i++;];
 
 
+(*
+For[i=1,i\[LessEqual]Length[HighscaleMatchingConditions],
+WriteString[file,SPhenoForm[HighscaleMatchingConditions[[i,1]]]<>" = "<>SPhenoForm[HighscaleMatchingConditions[[i,3]]]<>"* ("<>StringReplace[ToString[FortranForm[(HighscaleMatchingConditions[[i,2]]/. subMatching)]],"\""\[Rule]""]<>")\n"]
+i++;];
+*)
+
 For[i=1,i<=Length[HighscaleMatchingConditions],
-WriteString[file,SPhenoForm[HighscaleMatchingConditions[[i,1]]]<>" = "<>SPhenoForm[HighscaleMatchingConditions[[i,3]]]<>"*("<>StringReplace[ToString[FortranForm[(HighscaleMatchingConditions[[i,2]]/. subMatching)]],"\""->""]<>")\n"]
+WriteString[file,SPhenoForm[HighscaleMatchingConditions[[i,1]]]<>" = "<>StringReplace[ToString[FortranForm[(HighscaleMatchingConditions[[i,2]]/. subMatching)]],"\""->""]<>"\n"];
+WriteString[file,"If (Debug_Matching) Write(*,*) \""<>SPhenoForm[HighscaleMatchingConditions[[i,1]]]<>"\","<>SPhenoForm[HighscaleMatchingConditions[[i,1]]]<>" \n"];
 i++;];
 
-WriteString[file,"setscale = SetRenormalizationScale(scale_save) \n"];
+WriteString[file,"MaxMassNumericalZero = MaxMassNumericalZero_save \n"]; 
+(*
+For[i=1,i\[LessEqual]Length[Gauge],
+WriteString[file,SPhenoForm[Gauge[[i,4]]]<>"=  "<>SPhenoForm[Gauge[[i,4]]]<>"input  \n"];
+i++;];
+*)
+(* WriteString[file,"setscale = SetRenormalizationScale(scale_save) \n"]; *)
 
 WriteString[file,"End Subroutine MatchingRoutine_"<>ModelName <>"\n\n"];
 ];
 
-WriteMatchingQuartic[fields_,file_]:=Block[{i,j,k,temp,res,nameRoutine,ctree,indtree,waveadded={},perfields,topology,diagrams,exf1,exf2,exf3,exf4,c1,c2,ind1,ind2,p1},
+WriteMatchingQuartic[fields_,file_]:=Block[{i,j,k,temp,res,nameRoutine,ctree,indtree,waveadded={},perfields,topology,diagrams,exf1,exf2,exf3,exf4,c1,c2,ind1,ind2,p1,jj},
 nameRoutine=SPhenoForm/@(fields/. A_[b_Integer]->A /. conj[x_]->C.x) /. Dot->StringJoin;
-MakeSubroutineTitle["MatchingFor"<>nameRoutine,Flatten[{NewMassParameters,namesAllreallyAll,listMatchingWave}],{"gt1","gt2","gt3","gt4"},{"res"},file];
+MakeSubroutineTitle["MatchingFor"<>nameRoutine,Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave}],{"gt1","gt2","gt3","gt4"},{"res"},file];
 WriteString[file,"Implicit None \n"];
 MakeVariableList[NewMassParameters,",Intent(in)",file];
 MakeVariableList[namesAllreallyAll,",Intent(in)",file];
+MakeVariableList[namesQGS,",Intent(in)",file];
 MakeVariableList[listMatchingWave,",Intent(in)",file];
 WriteString[file,"Integer,Intent(in) :: gt1,gt2,gt3,gt4 \n"]; 
-WriteString[file,"Integer :: i1 \n"]; 
+WriteString[file,"Integer :: i1, i2, ex1, ex2, ex3, ex4 \n"]; 
 WriteString[file,"Complex(dp), Intent(out) ::  res \n"];
-WriteString[file,"Complex(dp) ::  temp \n"];
+WriteString[file,"Complex(dp) ::  temp, coup1, coup2 \n"];
 
 WriteString[file,"res=0._dp \n"];
 
@@ -271,8 +764,10 @@ indtree =MakeIndicesCoupling[{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],gt
 
 WriteString[file,"If(Include_in_Thresholds_Tree) Then \n"];
 WriteString[file," res="<>ToString[ctree[[1,1]]]<>indtree<>"! Check symmetry  \n"];
+WriteString[file," res=res + d"<>ToString[ctree[[1,1]]]<>indtree<>"! Check symmetry  \n"];
 WriteString[file,"End if \n"];
 
+If[ScalarCubicCouplingsNeeded,
 WriteString[file,"If(Include_in_Thresholds_TreeProp) Then \n"];
 perfields={fields,{fields[[1]],fields[[2]],fields[[4]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
 For[i=1,i<=Length[perfields],
@@ -318,6 +813,7 @@ If[getGenSPheno[p1]>1,WriteString[file,"End Do \n"];];
 j++;];
 i++;];
 WriteString[file,"End if \n"];
+];
 
 WriteString[file,"\n\n! -----------------------------------------\n"];
 WriteString[file,"! Wave Function                           \n"];
@@ -342,6 +838,64 @@ indtree =MakeIndicesCoupling[{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],gt
 WriteString[file,"res= res -0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*PiForMatching"<>SPhenoForm[RE[fields[[4]]]]<>"(i1,gt4) \n"];
 WriteString[file,"End Do\n"];
 waveadded=Join[waveadded,{fields[[4]]}];
+
+
+If[ScalarCubicCouplingsNeeded,
+WriteString[file,"If(Include_in_Thresholds_TreeProp) Then \n"];
+perfields={fields,{fields[[1]],fields[[2]],fields[[4]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
+For[i=1,i<=Length[perfields],
+exf1=perfields[[i,1]];
+exf2=perfields[[i,2]];
+exf3=perfields[[i,3]];
+exf4=perfields[[i,4]];
+topology={C[External[1],External[2],FieldToInsert[1]] ,C[External[3],External[4],FieldToInsert[1]]};
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2], Internal[3]->FieldToInsert[3],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
+{{{exf1,ex1},{exf2,ex2},{Internal[1],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[1]],i1}}}}];
+diagrams=Select[diagrams,FreeQ[IncludeParticlesInThresholds,RE[Internal[1]/.#[[2]]]]==False&];
+If[Length[diagrams]>0,
+WriteString[file,"\n! "<>ToString[i]<>".th Topology \n"];
+Switch[i,
+1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
+2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt4 \n"];WriteString[file,"ex4=gt3 \n"];,
+3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];
+];
+];
+For[j=1,j<=Length[diagrams],
+
+(* get more handy names for the particles in the loop *)
+p1=(Internal[1] /.diagrams[[j,2]]); 
+WriteString[file,"! "<>ToString[p1] <>"\n"];
+
+(* Extract the vertices *)
+c1=getSPhenoCoupling2[diagrams[[j,1,1]],SPhenoCouplingsAllreallyAll];
+c2=getSPhenoCoupling2[diagrams[[j,1,2]],SPhenoCouplingsAllreallyAll];
+If[getGenSPheno[p1]>1,WriteString[file,"Do i1=1,"<> ToString[GetGenerationFlag[p1]]<>"\n"];];
+WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold)) Then\n"];
+
+For[jj=1,jj<=4,
+(* Generate the index structure *)
+WriteString[file,"Do i2=1,"<>ToString[getGen[perfields[[1,jj]]]]<>"\n"];
+ind1 =MakeIndicesCouplingWrapper[diagrams[[j,3,1]]/.diagrams[[j,2]]/.ToExpression["ex"<>ToString[jj]]->i2,c1[[2]]];
+ind2 =MakeIndicesCouplingWrapper[diagrams[[j,3,2]]/.diagrams[[j,2]]/.ToExpression["ex"<>ToString[jj]]->i2,c2[[2]]];
+
+(* loop over generations of particles in the loop *)
+
+
+WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[j,1,1]]],file];
+WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[j,1,2]]],file];
+WriteString[file,"res = res -0.5_dp*coup1*coup2/"<>SPhenoMassSq[p1,i1]<>"*PiForMatching"<>SPhenoForm[RE[perfields[[i,jj]]]]<>"(i2,ex"<>ToString[jj]<>")\n"];
+WriteString[file,"End do\n"];
+jj++;];
+WriteString[file, "End if \n"];
+
+
+If[getGenSPheno[p1]>1,WriteString[file,"End Do \n"];];
+j++;];
+i++;];
+WriteString[file,"End if \n"];
+];
+
+
 WriteString[file,"End if \n"];
 
 WriteString[file,"\n\n! -----------------------------------------\n"];
@@ -360,12 +914,26 @@ MakeCall["MatchingFor"<>nameRoutine<>"_ScalarC",Flatten[{NewMassParameters,names
 WriteString[file,"  res=res+temp  \n"];
 WriteString[file,"End if \n\n"];
 
+If[ScalarCubicCouplingsNeeded,
+WriteString[file,"  If( Include_in_Thresholds_ScalarC0wProp) Then \n"];
+MakeCall["MatchingFor"<>nameRoutine<>"_ScalarCP",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+];
+
 WriteString[file,"! B-Contributions \n"];
 WriteString[file,"  If(Include_in_Thresholds_ScalarB0) Then \n"];
 MakeCall["MatchingFor"<>nameRoutine<>"_ScalarB",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
 WriteString[file,"  res=res+temp  \n"];
 WriteString[file,"End if \n\n"];
-
+If[ScalarCubicCouplingsNeeded,
+WriteString[file,"  If( Include_in_Thresholds_ScalarB0wProp) Then \n"];
+MakeCall["MatchingFor"<>nameRoutine<>"_ScalarBP",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+MakeCall["MatchingFor"<>nameRoutine<>"_ScalarBP2",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+];
 
 
 WriteString[file,"! -----------------------------------------\n"];
@@ -378,6 +946,49 @@ MakeCall["  MatchingFor"<>nameRoutine<>"_FermionD",Flatten[{NewMassParameters,na
 WriteString[file,"  res=res+temp  \n"];
 WriteString[file,"End if \n\n"];
 
+If[ScalarCubicCouplingsNeeded,
+WriteString[file,"  If( Include_in_Thresholds_FermionC0wProp) Then \n"];
+MakeCall["  MatchingFor"<>nameRoutine<>"_FermionCP",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+];
+
+If[ScalarCubicCouplingsNeeded,
+WriteString[file,"! -----------------------------------------\n"];
+WriteString[file,"! Propagator Corrections                   \n"];
+WriteString[file,"! -----------------------------------------\n"];
+
+WriteString[file,"! Scalar B0  \n"];
+WriteString[file,"If(Include_in_Thresholds_PropagatorSB) Then \n"];
+MakeCall["  MatchingFor"<>nameRoutine<>"_ScalarBPP",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+
+WriteString[file,"! Scalar A0  \n"];
+WriteString[file,"If(Include_in_Thresholds_PropagatorSA) Then \n"];
+MakeCall["  MatchingFor"<>nameRoutine<>"_ScalarAPP",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+
+WriteString[file,"! Fermion B0  \n"];
+WriteString[file,"If(Include_in_Thresholds_PropagatorF) Then \n"];
+MakeCall["  MatchingFor"<>nameRoutine<>"_FermionBPP",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+];
+
+If[SupersymmetricModel,
+WriteString[file,"! -----------------------------------------\n"];
+WriteString[file,"! MS/DR                                  \n"];
+WriteString[file,"! -----------------------------------------\n"];
+
+WriteString[file,"! B-Contributions \n"];
+WriteString[file,"  If(Include_in_Thresholds_MSDR) Then \n"];
+MakeCall["MatchingFor"<>nameRoutine<>"_ScalarMSDR",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3","gt4"},{"temp"},file];
+WriteString[file,"  res=res+temp  \n"];
+WriteString[file,"End if \n\n"];
+];
+
 
 
 WriteString[file,"End Subroutine MatchingFor"<>nameRoutine <>"\n\n"];
@@ -387,17 +998,114 @@ WriteMatchingContributions[fields,nameRoutine,"Scalar","C",file];
 WriteMatchingContributions[fields,nameRoutine,"Scalar","B",file];
 WriteMatchingContributions[fields,nameRoutine,"Fermion","D",file];
 
+If[ScalarCubicCouplingsNeeded,
+WriteMatchingContributions[fields,nameRoutine,"Scalar","CP",file];
+WriteMatchingContributions[fields,nameRoutine,"Scalar","BP",file];
+WriteMatchingContributions[fields,nameRoutine,"Scalar","BP2",file];
+WriteMatchingContributions[fields,nameRoutine,"Fermion","CP",file];
+
+WriteMatchingContributions[fields,nameRoutine,"Scalar","BPP",file];
+WriteMatchingContributions[fields,nameRoutine,"Scalar","APP",file];
+WriteMatchingContributions[fields,nameRoutine,"Fermion","BPP",file];
+];
+
+If[SupersymmetricModel,
+WriteMatchingContributions[fields,nameRoutine,"Scalar","MSDR",file];
+];
+
+];
+
+WriteOneLoopShiftGauge[file_]:=Block[{i,j},
+
+WriteString[file,"If (Include_in_Thresholds_ShiftGauge) Then \n"];
+WriteString[file,"! Shift in Gauge Couplings \n"];
+For[i=1,i<=Length[PART[S]],
+If[FreeQ[IncludeParticlesInThresholds,PART[S][[i,1]]]==False,
+rot=getMixingMatrix[PART[S][[i,1]]];
+WriteString[file,"Do i1=1,"<>ToString[getGen[PART[S][[i,1]]]]<>"\n"];
+WriteString[file,"If ("<>SPhenoMassSq[PART[S][[i,1]],i1]<>".gt.MatchingThreshold) Then \n"];
+For[j=1,j<=Length[Gauge],
+If[FreeQ[rot,NoMatrix]===False,
+If[SA`Dynkin[PART[S][[i,1]],j]=!=0,
+factor=1/12If[conj[PART[S][[i,1]]]===PART[S][[i,1]],1,2]If[Gauge[[j,3]]=!=color,getColorDim[PART[S][[i,1]]],1] If[Gauge[[j,2]]===U[1],1/GUTren[j]^2,1];
+If[Gauge[[j,5]]===True && Gauge[[j,2]]=!=U[1],factor=factor/ SA`DimensionGG[PART[S][[i,1]],j];];
+WriteString[file,"d"<>SPhenoForm[Gauge[[j,4]]]<>" =d"<>SPhenoForm[Gauge[[j,4]]]<>"+ oo16pi2*"<>SPhenoForm[factor SA`Dynkin[PART[S][[i,1]],j]]<>"*"<> SPhenoForm[Gauge[[j,4]]]<>"input**3*log("<>SPhenoMassSq[PART[S][[i,1]],i1]<>"/UVscaleQ) \n"];
+];,
+mixbasis=Select[MixES[EWSB],FreeQ[#,PART[S][[i,1]]]==False&][[1,1]];
+mixbasis=Flatten[Table[Table[mixbasis[[i]],{getGenALL[mixbasis[[i]]]}],{i,1,Length[mixbasis]}]];
+For[jj=1,jj<=Length[mixbasis],
+If[SA`Dynkin[mixbasis[[jj]],j]=!=0,
+factor=1/12If[conj[PART[S][[i,1]]]===PART[S][[i,1]],1,2]If[Gauge[[j,3]]=!=color,getColorDim[PART[S][[i,1]]],1] If[Gauge[[j,2]]===U[1],1/GUTren[j]^2,1];
+If[Gauge[[j,5]]===True && Gauge[[j,2]]=!=U[1],factor=factor/ SA`DimensionGG[mixbasis[[jj]],j];];
+WriteString[file,"d"<>SPhenoForm[Gauge[[j,4]]]<>" =d"<>SPhenoForm[Gauge[[j,4]]]<>"+ oo16pi2*"<>SPhenoForm[factor SA`Dynkin[mixbasis[[jj]],j]]<>"*Abs("<>SPhenoForm[rot]<>"("<>ToString[jj]<>",i1))**2*"<> SPhenoForm[Gauge[[j,4]]]<>"input**3*log("<>SPhenoMassSq[PART[S][[i,1]],i1]<>"/UVscaleQ) \n"];
+];
+jj++;];
+];
+j++;];
+WriteString[file,"End If\n"];
+WriteString[file,"End Do \n"];
+];
+i++;];
+
+For[i=1,i<=Length[PART[F]],
+If[FreeQ[IncludeParticlesInThresholds,PART[F][[i,1]]]==False,
+rot=getMixingMatrix[PART[F][[i,1]]];
+WriteString[file,"Do i1=1,"<>ToString[getGen[PART[F][[i,1]]]]<>"\n"];
+WriteString[file,"If ("<>SPhenoMassSq[PART[F][[i,1]],i1]<>".gt.MatchingThreshold) Then \n"];
+For[j=1,j<=Length[Gauge],
+If[FreeQ[rot,NoMatrix]===False,
+If[SA`Dynkin[PART[F][[i,1]],j]=!=0,
+factor=1/3If[Gauge[[j,3]]=!=color,getColorDim[PART[F][[i,1]]],1] If[Gauge[[j,2]]===U[1],1/GUTren[j]^2,1];
+If[Gauge[[j,5]]===True && Gauge[[j,2]]=!=U[1],factor=factor/ SA`DimensionGG[PART[F][[i,1]],j];];
+WriteString[file,"d"<>SPhenoForm[Gauge[[j,4]]]<>" =d"<>SPhenoForm[Gauge[[j,4]]]<>"+  oo16pi2*"<>SPhenoForm[factor SA`Dynkin[PART[F][[i,1]],j]]<>"*"<> SPhenoForm[Gauge[[j,4]]]<>"input**3*log("<>SPhenoMassSq[PART[F][[i,1]],i1]<>"/UVscaleQ) \n"];
+];,
+mixbasis1=Select[MixES[EWSB],FreeQ[#,RE[(PART[F][[i,1]] /.diracSub[ALL])[[1]]]]==False&][[1,1]];
+mixbasis2=Select[MixES[EWSB],FreeQ[#,RE[(PART[F][[i,1]] /.diracSub[ALL])[[2]]]]==False&][[1,1]];
+mixbasis1=Flatten[Table[Table[mixbasis1[[i]],{getGenALL[mixbasis1[[i]]]}],{i,1,Length[mixbasis1]}]];
+mixbasis2=Flatten[Table[Table[mixbasis2[[i]],{getGenALL[mixbasis2[[i]]]}],{i,1,Length[mixbasis2]}]];
+For[jj=1,jj<=Length[mixbasis1],
+If[SA`Dynkin[mixbasis1[[jj]],j]=!=0,
+factor=1/3If[Gauge[[j,3]]=!=color,getColorDim[PART[F][[i,1]]],1] If[Gauge[[j,2]]===U[1],1/GUTren[j]^2,1];
+If[Gauge[[j,5]]===True && Gauge[[j,2]]=!=U[1],factor=factor/ SA`DimensionGG[mixbasis1[[jj]],j];];
+WriteString[file,"d"<>SPhenoForm[Gauge[[j,4]]]<>" =d"<>SPhenoForm[Gauge[[j,4]]]<>"+ oo16pi2*"<>SPhenoForm[factor SA`Dynkin[mixbasis1[[jj]],j]]<>"*Abs("<>SPhenoForm[rot[[1]]]<>"("<>ToString[jj]<>",i1))**2*"<> SPhenoForm[Gauge[[j,4]]]<>"input**3*log("<>SPhenoMassSq[PART[F][[i,1]],i1]<>"/UVscaleQ) \n"];
+];
+If[Length[Intersection[rot]]==2,
+If[SA`Dynkin[mixbasis2[[jj]],j]=!=0,
+factor=1/3If[Gauge[[j,3]]=!=color,getColorDim[PART[F][[i,1]]],1] If[Gauge[[j,2]]===U[1],1/GUTren[j]^2,1];
+If[Gauge[[j,5]]===True && Gauge[[j,2]]=!=U[1],factor=factor/ SA`DimensionGG[mixbasis1[[jj]],j];];
+WriteString[file,"d"<>SPhenoForm[Gauge[[j,4]]]<>" =d"<>SPhenoForm[Gauge[[j,4]]]<>"+ oo16pi2*"<>SPhenoForm[factor SA`Dynkin[mixbasis2[[jj]],j]]<>"*Abs("<>SPhenoForm[rot[[2]]]<>"("<>ToString[jj]<>",i1))**2*"<> SPhenoForm[Gauge[[j,4]]]<>"input**3*log("<>SPhenoMassSq[PART[F][[i,1]],i1]<>"/UVscaleQ) \n"];
+];
+];
+jj++;];
+];
+j++;];
+WriteString[file,"End If\n"];
+WriteString[file,"End Do \n"];
+];
+i++;];
+WriteString[file,"End If \n"];
+
+WriteString[file,"If (Include_in_Thresholds_MSDR) Then \n"];
+If[SupersymmetricModel,
+For[j=1,j<=Length[Gauge],
+If[Gauge[[j,2]]=!=U[1],
+WriteString[file,"d"<>SPhenoForm[Gauge[[j,4]]]<>" = d"<>SPhenoForm[Gauge[[j,4]]]<>" -  oo16pi2*"<> SPhenoForm[Gauge[[j,4]]]<>"input**3*"<>SPhenoForm[Gauge[[j,2,1]]/6]<>" \n"];
+];
+j++;];
+];
+WriteString[file,"End If \n"];
 ];
 
 WriteMatchingCubic[fields_,file_]:=Block[{i,j,k,temp,res,nameRoutine,ctree,indtree,waveadded={}},
 nameRoutine=SPhenoForm/@(fields/. A_[b_Integer]->A /. conj[x_]->C.x) /. Dot->StringJoin;
-MakeSubroutineTitle["MatchingFor"<>nameRoutine,Flatten[{NewMassParameters,namesAllreallyAll,listMatchingWave}],{"gt1","gt2","gt3"},{"res"},file];
+MakeSubroutineTitle["MatchingFor"<>nameRoutine,Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave}],{"gt1","gt2","gt3"},{"res"},file];
 WriteString[file,"Implicit None \n"];
 MakeVariableList[NewMassParameters,",Intent(in)",file];
 MakeVariableList[namesAllreallyAll,",Intent(in)",file];
+MakeVariableList[namesQGS,",Intent(in)",file];
 MakeVariableList[listMatchingWave,",Intent(in)",file];
 WriteString[file,"Integer,Intent(in) :: gt1,gt2,gt3 \n"]; 
-WriteString[file,"Integer :: i1 \n"]; 
+WriteString[file,"Integer :: i1, ex1, ex2, ex3 \n"]; 
 WriteString[file,"Complex(dp), Intent(out) ::  res \n"];
 WriteString[file,"Complex(dp) ::  temp \n"];
 
@@ -408,7 +1116,7 @@ WriteString[file,"! -----------------------------------------\n"];
 WriteString[file,"! Tree-Level                           \n"];
 WriteString[file,"! -----------------------------------------\n"];
 ctree=getSPhenoCoupling2[C[fields[[1]],fields[[2]],fields[[3]]],SPhenoCouplingsAllreallyAll];
-indtree =MakeIndicesCoupling[{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],gt3},ctree[[2]]];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],gt3}},ctree[[2]]][[1]];
 
 WriteString[file,"If(Include_in_Thresholds_Tree) Then \n"];
 (* WriteString[file," res="<>SPhenoForm[Length[Permutations[fields]]/Factorial[4]]<>"*"<>ToString[ctree[[1,1]]]<>indtree<>"! Check symmetry  \n"]; *)
@@ -420,19 +1128,19 @@ WriteString[file,"! Wave Function                           \n"];
 WriteString[file,"! -----------------------------------------\n"];
 WriteString[file,"If(Include_in_Thresholds_Wave) Then \n"];
 WriteString[file,"Do i1=1,"<>ToString[getGen[fields[[1]]]]<>"\n"];
-indtree =MakeIndicesCoupling[{fields[[1]],i1},{fields[[2]],gt2},{fields[[3]],gt3},ctree[[2]]];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],i1},{fields[[2]],gt2},{fields[[3]],gt3}},ctree[[2]]][[1]];
 WriteString[file,"res= res -0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*PiForMatching"<>SPhenoForm[RE[fields[[1]]]]<>"(i1,gt1) \n"];
 WriteString[file,"End Do\n"];
 WriteString[file,"Do i1=1,"<>ToString[getGen[fields[[2]]]]<>"\n"];
-indtree =MakeIndicesCoupling[{fields[[1]],gt1},{fields[[2]],i1},{fields[[3]],gt3},ctree[[2]]];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],gt1},{fields[[2]],i1},{fields[[3]],gt3}},ctree[[2]]][[1]];
 WriteString[file,"res= res -0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*PiForMatching"<>SPhenoForm[RE[fields[[2]]]]<>"(i1,gt2) \n"];
 WriteString[file,"End Do\n"];
 
 WriteString[file,"Do i1=1,"<>ToString[getGen[fields[[3]]]]<>"\n"];
-indtree =MakeIndicesCoupling[{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],i1},ctree[[2]]];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],i1}},ctree[[2]]][[1]];
 WriteString[file,"res= res -0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*PiForMatching"<>SPhenoForm[RE[fields[[3]]]]<>"(i1,gt3) \n"];
 WriteString[file,"End Do\n"];
-
+WriteString[file,"End if \n"];
 
 WriteString[file,"\n\n! -----------------------------------------\n"];
 WriteString[file,"! Scalar Contributions                    \n"];
@@ -470,6 +1178,208 @@ WriteMatchingContributions[fields,nameRoutine,"Scalar","B",file];
 WriteMatchingContributions[fields,nameRoutine,"Fermion","C",file];
 ];
 
+WriteMatchingYukawas[fields_,file_]:=Block[{i,j,k,temp,res,nameRoutine,ctree,indtree,waveadded={}},
+nameRoutine=SPhenoForm/@(fields/. A_[b_Integer]->A /. conj[x_]->C.x/. bar[x_]->B.x) /. Dot->StringJoin;
+MakeSubroutineTitle["MatchingFor"<>nameRoutine,Flatten[{NewMassParameters,namesAllreallyAll,namesQGS,listMatchingWave,listMatchingWaveF}],{"running_up","gt1","gt2","gt3"},{"resL","resR"},file];
+WriteString[file,"Implicit None \n"];
+MakeVariableList[NewMassParameters,",Intent(in)",file];
+MakeVariableList[namesAllreallyAll,",Intent(in)",file];
+MakeVariableList[namesQGS,",Intent(in)",file];
+MakeVariableList[listMatchingWave,",Intent(in)",file];
+MakeVariableList[listMatchingWaveF,",Intent(in)",file];
+WriteString[file,"Integer,Intent(in) :: gt1,gt2,gt3 \n"]; 
+WriteString[file,"Logical,Intent(in) :: running_up \n"];
+WriteString[file,"Integer :: i1, ex1, ex2, ex3 \n"]; 
+WriteString[file,"Complex(dp), Intent(out) ::  resL, resR \n"];
+WriteString[file,"Complex(dp) ::  tempL, tempR \n"];
+WriteString[file,"Real(dp) ::  SignLoop \n"];
+
+WriteString[file,"\n\n If(running_up) Then \n"];
+WriteString[file," SignLoop=-1._dp \n"];
+WriteString[file,"Else \n"];
+WriteString[file," SignLoop=1._dp \n"];
+WriteString[file,"End if \n"];
+
+WriteString[file,"resL=0._dp \n"];
+WriteString[file,"resR=0._dp \n"];
+
+WriteString[file,"! -----------------------------------------\n"];
+WriteString[file,"! Tree-Level                           \n"];
+WriteString[file,"! -----------------------------------------\n"];
+ctree=getSPhenoCoupling2[C[fields[[1]],fields[[2]],fields[[3]]],SPhenoCouplingsAllreallyAll];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],gt3}},ctree[[2]]][[1]];
+
+WriteString[file,"If(Include_in_Thresholds_Tree) Then \n"];
+WriteString[file," resL="<>ToString[ctree[[1,1]]]<>indtree<>"! Check symmetry  \n"];
+WriteString[file," resR="<>ToString[ctree[[1,2]]]<>indtree<>"! Check symmetry  \n"];
+WriteString[file,"End if \n"];
+
+WriteString[file,"\n\n If(OneLoopYukawas) Then \n\n"];
+
+
+WriteString[file,"\n\n! -----------------------------------------\n"];
+WriteString[file,"! Wave Function                           \n"];
+WriteString[file,"! -----------------------------------------\n"];
+WriteString[file,"If(Include_in_Thresholds_Wave) Then \n"];
+WriteString[file,"Do i1=1,"<>ToString[getGen[fields[[1]]]]<>"\n"];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],i1},{fields[[2]],gt2},{fields[[3]],gt3}},ctree[[2]]][[1]];
+WriteString[file,"resL= resL + SignLoop*0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*SigLforMatching"<>SPhenoForm[RE[fields[[1]]]]<>"(i1,gt1) \n"];
+WriteString[file,"resR= resR + SignLoop*0.5_dp*"<>ToString[ctree[[1,2]]]<>indtree<>"*SigRforMatching"<>SPhenoForm[RE[fields[[1]]]]<>"(i1,gt1) \n"];
+WriteString[file,"End Do\n"];
+WriteString[file,"Do i1=1,"<>ToString[getGen[fields[[2]]]]<>"\n"];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],gt1},{fields[[2]],i1},{fields[[3]],gt3}},ctree[[2]]][[1]];
+WriteString[file,"resL= resL + SignLoop*0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*SigRForMatching"<>SPhenoForm[RE[fields[[2]]]]<>"(i1,gt2) \n"];
+WriteString[file,"resR= resR + SignLoop*0.5_dp*"<>ToString[ctree[[1,2]]]<>indtree<>"*SigLForMatching"<>SPhenoForm[RE[fields[[2]]]]<>"(i1,gt2) \n"];
+WriteString[file,"End Do\n"];
+
+WriteString[file,"Do i1=1,"<>ToString[getGen[fields[[3]]]]<>"\n"];
+indtree =MakeIndicesCouplingWrapper[{{fields[[1]],gt1},{fields[[2]],gt2},{fields[[3]],i1}},ctree[[2]]][[1]];
+WriteString[file,"resL= resL + SignLoop*0.5_dp*"<>ToString[ctree[[1,1]]]<>indtree<>"*PiForMatching"<>SPhenoForm[RE[fields[[3]]]]<>"(i1,gt3) \n"];
+WriteString[file,"resR= resR + SignLoop*0.5_dp*"<>ToString[ctree[[1,2]]]<>indtree<>"*PiForMatching"<>SPhenoForm[RE[fields[[3]]]]<>"(i1,gt3) \n"];
+WriteString[file,"End Do\n"];
+WriteString[file,"End if \n"];
+
+WriteString[file,"\n\n! -----------------------------------------\n"];
+WriteString[file,"! SSF Contributions                    \n"];
+WriteString[file,"! -----------------------------------------\n"];
+
+WriteString[file,"! C-Contributions \n"];
+WriteString[file,"  If(Include_in_Thresholds_Yukawa_SSF) Then \n"];
+MakeCall["MatchingFor"<>nameRoutine<>"_Yukawa_SSF",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3"},{"tempL","tempR"},file];
+WriteString[file,"  resL=resL+SignLoop*tempL  \n"];
+WriteString[file,"  resR=resR+SignLoop*tempR  \n"];
+WriteString[file,"End if \n\n"];
+
+
+WriteString[file,"! -----------------------------------------\n"];
+WriteString[file,"! FFS Contributions                   \n"];
+WriteString[file,"! -----------------------------------------\n"];
+
+WriteString[file,"If(Include_in_Thresholds_Yukawa_FFS) Then \n"];
+MakeCall["  MatchingFor"<>nameRoutine<>"_Yukawa_FFS",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3"},{"tempL","tempR"},file];
+WriteString[file,"  resL=resL+SignLoop*tempL  \n"];
+WriteString[file,"  resR=resR+SignLoop*tempR  \n"];
+WriteString[file,"End if \n\n"];
+
+If[SupersymmetricModel===True,
+WriteString[file,"\n\n! -----------------------------------------\n"];
+WriteString[file,"! MS-DR Conversion                   \n"];
+WriteString[file,"! -----------------------------------------\n"];
+WriteString[file,"If(Include_in_Thresholds_MSDR) Then \n"];
+MakeCall["  MatchingFor"<>nameRoutine<>"_Yukawa_MSDR",Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3"},{"tempL","tempR"},file];
+WriteString[file,"  resL=resL+SignLoop*tempL  \n"];
+WriteString[file,"  resR=resR+SignLoop*tempR  \n"];
+WriteString[file,"End if \n\n"];
+];
+
+WriteString[file,"\n\n End if \n\n"];
+
+
+
+WriteString[file,"End Subroutine MatchingFor"<>nameRoutine <>"\n\n"];
+
+WriteMatchingContributionsYukawa[fields,nameRoutine,"SSF",file];
+WriteMatchingContributionsYukawa[fields,nameRoutine,"FFS",file];
+If[SupersymmetricModel===True,WriteMatchingContributionsYukawa[fields,nameRoutine,"MSDR",file];];
+];
+
+WriteMatchingContributionsYukawa[fields_,nameRoutine_,top_,file_]:=Block[{i,j,k,perfields,topologyD0,exf1,exf2,exf3,exf4,p1,p2,p3,p4,c1,c2,c3,c4,ind1,ind2,ind3,ind4,nrint,diagrams},
+
+
+MakeSubroutineTitle["MatchingFor"<>nameRoutine<>"_Yukawa_"<>top,Flatten[{NewMassParameters,namesAllreallyAll}],{"gt1","gt2","gt3"},{"resL","resR"},file];
+WriteString[file,"Implicit None \n"];
+MakeVariableList[NewMassParameters,",Intent(in)",file];
+MakeVariableList[namesAllreallyAll,",Intent(in)",file];
+WriteString[file,"Integer,Intent(in) :: gt1,gt2,gt3 \n"]; 
+WriteString[file,"Integer :: i1,i2,i3 \n"];
+WriteString[file,"Integer :: ex1,ex2,ex3 \n"];
+(* If[type==="Fermion", *)
+WriteString[file,"Complex(dp) ::  coup1L, coup2L, coup3L, coup4L \n"];
+WriteString[file,"Complex(dp) ::  coup1R, coup2R, coup3R, coup4R \n"];
+WriteString[file,"Complex(dp) ::  coup1, coup2, coup3, coup4 \n"];
+
+WriteString[file,"Complex(dp), Intent(out) ::  resL, resR \n\n"];
+
+WriteString[file,"resL = 0._dp \n"];
+WriteString[file,"resR = 0._dp \n"];
+
+
+
+exf1=fields[[1]];
+exf2=fields[[2]];
+exf3=fields[[3]];
+WriteString[file,"ex1=gt1 \n"];
+WriteString[file,"ex2=gt2 \n"];
+WriteString[file,"ex3=gt3 \n"];
+
+diagrams=GenerateMatchingDiagrams[{exf1,exf2,exf3},top];
+
+
+For[j=1,j<=Length[diagrams],
+
+(* get more handy names for the particles in the loop *)
+p1=(Internal[1] /.diagrams[[j,2]]); p2 =(Internal[2] /. diagrams[[j,2]]);p3 =(Internal[3] /. diagrams[[j,2]]);
+WriteString[file,"! "<>ToString[p1] <>","<>ToString[p2] <>","<>ToString[p3] <>"\n"];
+
+
+
+(* Extract the vertices *)
+c1=getSPhenoCoupling2[diagrams[[j,1,1]],SPhenoCouplingsAllreallyAll];
+c2=getSPhenoCoupling2[diagrams[[j,1,2]],SPhenoCouplingsAllreallyAll];
+c3=getSPhenoCoupling2[diagrams[[j,1,3]],SPhenoCouplingsAllreallyAll];
+
+(* Generate the index structure *)
+ind1 =MakeIndicesCouplingWrapper[diagrams[[j,3,1]]/.diagrams[[j,2]],c1[[2]]];
+ind2 =MakeIndicesCouplingWrapper[diagrams[[j,3,2]]/.diagrams[[j,2]],c2[[2]]];
+ind3 =MakeIndicesCouplingWrapper[diagrams[[j,3,3]]/.diagrams[[j,2]],c3[[2]]];
+
+(* loop over generations of particles in the loop *)
+If[getGenSPheno[p1]>1,WriteString[file,"Do i1=1,"<> ToString[GetGenerationFlag[p1]]<>"\n"];];
+If[getGenSPheno[p2]>1,WriteString[file,"  Do i2=1,"<> ToString[GetGenerationFlag[p2]]<>"\n"];];
+If[getGenSPheno[p3]>1,WriteString[file,"    Do i3=1,"<> ToString[GetGenerationFlag[p3]]<>"\n"];];
+
+If[top=!="MSDR",
+(* Check if any mass is heavier than the thresholds *)
+WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold)) Then\n"];
+];
+(* Write the vertices to Fortran code *)
+WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[j,1,1]]],file];
+WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[j,1,2]]],file];
+WriteVertexToFile[3,c3,ind3,getVertexType[diagrams[[j,1,3]]],file];
+
+
+(* Calculate the color factor *)
+cfactor = getChargeFactor[diagrams[[j]],diagrams[[j,3]] /. diagrams[[j,2]] /. {i1->in1,i2->in2,i3->in3,i4->in4}];
+
+
+Switch[top,
+"FFS",
+WriteString[file,StringReplace["resL = resL + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsFFSL(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n","0.,"->"0._dp,"]];
+WriteString[file,StringReplace["resR = resR + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsFFSR(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n","0.,"->"0._dp,"]];,
+"SSF",
+WriteString[file,StringReplace["resL = resL + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsSFFL(coup1L,coup1R,coup2L,coup2R,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n","0.,"->"0._dp,"]];
+WriteString[file,StringReplace["resR = resR + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsSFFR(coup1L,coup1R,coup2L,coup2R,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n","0.,"->"0._dp,"]];,
+"MSDR",
+If[Head[p2]===conj,
+WriteString[file,"resL = resL + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsMSDRL(coup1L,coup1R,coup2R,coup2L,coup3L,coup3R) \n"];
+WriteString[file,"resR = resR + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsMSDRR(coup1L,coup1R,coup2R,coup2L,coup3L,coup3R) \n"];,
+WriteString[file,"resL = resL + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsMSDRL(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R) \n"];
+WriteString[file,"resR = resR + "<>SPhenoForm[cfactor]<>"*YukawaDiagramsMSDRR(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R) \n"];
+];
+];
+If[top=!="MSDR",
+WriteString[file, "End if \n"];
+];
+If[getGenSPheno[p3]>1,WriteString[file,"   End Do \n"];];
+If[getGenSPheno[p2]>1,WriteString[file,"  End Do \n"];];
+If[getGenSPheno[p1]>1,WriteString[file,"End Do \n"];];
+j++;];
+
+WriteString[file, "resL=oo16pi2*resL \n"];
+WriteString[file, "resR=oo16pi2*resR \n"];
+WriteString[file,"End Subroutine MatchingFor"<>nameRoutine <>"_Yukawa_"<>top<>" \n\n"];
+];
+
 WriteMatchingContributions[fields_,nameRoutine_,type_,top_,file_]:=Block[{i,j,k,perfields,topologyD0,exf1,exf2,exf3,exf4,p1,p2,p3,p4,c1,c2,c3,c4,ind1,ind2,ind3,ind4,nrint,diagrams},
 
 
@@ -483,11 +1393,11 @@ WriteString[file,"Integer,Intent(in) :: gt1,gt2,gt3 \n"];
 ]; 
 WriteString[file,"Integer :: i1,i2,i3,i4 \n"];
 WriteString[file,"Integer :: ex1,ex2,ex3,ex4 \n"];
-If[type==="Fermion",
+(* If[type==="Fermion", *)
 WriteString[file,"Complex(dp) ::  coup1L, coup2L, coup3L, coup4L \n"];
-WriteString[file,"Complex(dp) ::  coup1R, coup2R, coup3R, coup4R \n"];,
+WriteString[file,"Complex(dp) ::  coup1R, coup2R, coup3R, coup4R \n"];
 WriteString[file,"Complex(dp) ::  coup1, coup2, coup3, coup4 \n"];
-];
+
 WriteString[file,"Complex(dp), Intent(out) ::  res \n\n"];
 
 WriteString[file,"res = 0._dp \n"];
@@ -499,13 +1409,19 @@ Switch[top,
 "D",
 perfields={fields,{fields[[1]],fields[[2]],fields[[4]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
 nrint=4;,
-"C" | "CP",
+"C" | "CP"|"BP2",
 perfields={fields,{fields[[1]],fields[[3]],fields[[2]],fields[[4]]},{fields[[1]],fields[[4]],fields[[3]],fields[[2]]},
 {fields[[3]],fields[[4]],fields[[1]],fields[[2]]},{fields[[2]],fields[[4]],fields[[1]],fields[[3]]},{fields[[3]],fields[[2]],fields[[1]],fields[[4]]}};
-If[top==="C",nrint=3;,nrint=4;];,
-"B" | "BP",
+If[top==="CP",nrint=4;,nrint=3;];,
+"B" | "BP"|"BPP",
 perfields={fields,{fields[[1]],fields[[4]],fields[[2]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
-If[top==="B",nrint=2;,nrint=3;];
+If[top==="B",nrint=2;,If[top==="BP",nrint=3;,nrint=4;]];,
+"APP",
+perfields={fields,{fields[[1]],fields[[4]],fields[[2]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
+nrint=3;,
+"MSDR",
+perfields={fields,{fields[[1]],fields[[4]],fields[[2]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
+If[top==="MSDR",nrint=2;,nrint=3;];
 ];,
 3,
 Switch[top,
@@ -536,7 +1452,7 @@ Switch[i,
 2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt4 \n"];WriteString[file,"ex4=gt3 \n"];,
 3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];
 ];,
-{4,"C"} |  {4,"CP"} ,
+{4,"C"} |  {4,"CP"}| {4,"BP2"} ,
 Switch[i,
 1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
 2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];,
@@ -545,10 +1461,10 @@ Switch[i,
 5,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt3 \n"];WriteString[file,"ex1=gt2 \n"];WriteString[file,"ex2=gt4 \n"];,
 6,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt4 \n"];WriteString[file,"ex1=gt3 \n"];WriteString[file,"ex2=gt2 \n"];
 ];,
-{4,"B"} | {4,"BP"},
+{4,"B"} | {4,"BP"}| {4,"BPP"}| {4,"MSDR"}|{4,"APP"},
 Switch[i,
 1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
-2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt4 \n"];WriteString[file,"ex4=gt3 \n"];,
+2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt4 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt3 \n"];,
 3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];
 ];,
 {3,"C"},WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];,
@@ -598,13 +1514,29 @@ If[nrint>2,If[getGenSPheno[p3]>1,WriteString[file,"    Do i3=1,"<> ToString[GetG
 If[nrint>3,If[getGenSPheno[p4]>1,WriteString[file,"      Do i4=1,"<> ToString[GetGenerationFlag[p4]]<>"\n"];];];
 
 (* Check if any mass is heavier than the thresholds *)
+If[top=!="MSDR",
 Switch[nrint,
 4,
-WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p4,i4]<>".gt.MatchingThreshold)) Then\n"];,
+Switch[top,
+"CP",
+WriteString[file, "If ((("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold)).And.("<>SPhenoMassSq[p4,i4]<>".gt.MatchingThreshold)) Then\n"];,
+"BPP"  ,
+WriteString[file, "If ((("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold)).And.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold).And.("<>SPhenoMassSq[p4,i4]<>".gt.MatchingThreshold)) Then\n"];,
+_,
+WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p4,i4]<>".gt.MatchingThreshold)) Then\n"];
+];,
 3,
-WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold)) Then\n"];,
+Switch[top,
+"BP"|"BP2",
+WriteString[file, "If ((("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold)).And.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold)) Then\n"];,
+"APP",
+WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).And.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).And.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold)) Then\n"];,
+_,
+WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p3,i3]<>".gt.MatchingThreshold)) Then\n"];
+];,
 2,
 WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold)) Then\n"];
+];
 ];
 
 (* Write the vertices to Fortran code *)
@@ -614,35 +1546,52 @@ If[nrint>2,WriteVertexToFile[3,c3,ind3,getVertexType[diagrams[[j,1,3]]],file];];
 If[nrint>3,WriteVertexToFile[4,c4,ind4,getVertexType[diagrams[[j,1,4]]],file];];
 
 (* Calculate the color factor *)
+If[top==="APP",
+cfactor = getColorDim[p1];,
 cfactor = getChargeFactor[diagrams[[j]],diagrams[[j,3]] /. diagrams[[j,2]] /. {i1->in1,i2->in2,i3->in3,i4->in4}];
+];
 
 Switch[type,
 "Fermion",
-Switch[Length[fields],
-4,
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticFermionDiagram(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,coup4L,coup4R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>SPhenoMassSq[p3,i3]<>","<>SPhenoMassSq[p4,i4]<>") \n"];,
-3,
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarCubicFermionDiagram(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>SPhenoMassSq[p3,i3]<>") \n"];
+Switch[{Length[fields],top},
+{4,"D"},
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticFermionDiagram(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,coup4L,coup4R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>","<>SPhenoMass[p4,i4]<>") \n"];,
+{4,"CP"},
+WriteString[file,"res = res +"<>SPhenoForm[cfactor]<>"*ScalarCubicFermionC0PDiagram(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,coup4,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>","<>SPhenoMass[p4,i4]<>") \n"];,
+{4,"BPP"},
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticFermionBPPdiagram(coup1,coup2L,coup2R,coup3L,coup3R,coup4,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>","<>SPhenoMass[p4,i4]<>") \n"];,
+{3,"C"},
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarCubicFermionDiagram(coup1L,coup1R,coup2L,coup2R,coup3L,coup3R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n"];
 ];,
 "Scalar",
 Switch[{Length[fields],top},
 {4,"D"},
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarD0diagram(coup1,coup2,coup3,coup4,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>SPhenoMassSq[p3,i3]<>","<>SPhenoMassSq[p4,i4]<>") \n"];,
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarD0diagram(coup1,coup2,coup3,coup4,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>","<>SPhenoMass[p4,i4]<>") \n"];,
 {4,"C"},
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarC0diagram(coup1,coup2,coup3,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>SPhenoMassSq[p3,i3]<>") \n"];,
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarC0diagram(coup1,coup2,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n"];,
 {4,"CP"},
-WriteString[file,"res = res + coup4/"<>SPhenoMassSq[p4,i4]<>"*"<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarC0diagram(coup1,coup2,coup3,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>SPhenoMassSq[p3,i3]<>") \n"];,
+WriteString[file,"res = res +"<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarC0Pdiagram(coup1,coup2,coup3,coup4,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>","<>SPhenoMass[p4,i4]<>") \n"];,
 {4,"B"},
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarB0diagram(coup1,coup2,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];,
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarB0diagram(coup1,coup2,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];,
 {4,"BP"},
-WriteString[file,"res = res + coup3/"<>SPhenoMassSq[p3,i3]<>"*"<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarB0diagram(coup1,coup2,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];,
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarB0Pdiagram(coup1,coup2,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n"];,
+{4,"BP2"},
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarB0P2diagram(coup1,coup2,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n"];,
+{4,"BPP"},
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarB0PPdiagram(coup1,coup2,coup3,coup4,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>","<>SPhenoMass[p4,i4]<>") \n"];,
+{4,"APP"},
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarQuarticScalarA0PPdiagram(coup1,coup2,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n"];,
+{4,"MSDR"},
+WriteString[file,"res = res + ScalarQuarticScalarMSDR(coup1,coup2) \n"];,
 {3,"C"},
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarCubicScalarC0diagram(coup1,coup2,coup3,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>SPhenoMassSq[p3,i3]<>") \n"];,
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarCubicScalarC0diagram(coup1,coup2,coup3,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>","<>SPhenoMass[p3,i3]<>") \n"];,
 {3,"B"},
-WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarCubicScalarB0diagram(coup1,coup2,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>","<>") \n"];
+WriteString[file,"res = res + "<>SPhenoForm[cfactor]<>"*ScalarCubicScalarB0diagram(coup1,coup2,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
 ];
 ];
+If[top=!="MSDR",
 WriteString[file, "End if \n"];
+];
 
 If[nrint>3,If[getGenSPheno[p4]>1,WriteString[file,"    End Do \n"];];];
 If[nrint>2,If[getGenSPheno[p3]>1,WriteString[file,"   End Do \n"];];];
@@ -672,12 +1621,14 @@ WriteString[file,"Complex(dp), Intent(out) ::  res("<>ToString[getGen[field]]<>"
 WriteString[file,"res = 0._dp \n"];
 
 
-If[getGenSPheno[field]>1,WriteString[file,"Do ex1=1,"<> ToString[GetGenerationFlag[field]]<>"\n"];];
-If[getGenSPheno[field]>1,WriteString[file,"  Do ex2=1,"<> ToString[GetGenerationFlag[field]]<>"\n"];];
+If[getGenSPheno[field]>1,WriteString[file,"Do ex1=1,"<> ToString[GetGenerationFlag[field]]<>"\n"];,WriteString[file,"ex1=1 \n"];];
+If[getGenSPheno[field]>1,WriteString[file,"  Do ex2=1,"<> ToString[GetGenerationFlag[field]]<>"\n"];,WriteString[file,"ex2=1 \n"];];
 topologyB0={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[2],AntiField[FieldToInsert[1]]]};
 
 (* insert all fields in the given model *)
+If[AntiField[field]===field && getType[field]===S,SA`CheckSameVertices=False;,SA`CheckSameVertices=True;];
 diagramsAll=InsFields[{topologyB0/.{External[1]->field,External[2]->AntiField[field]},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],External[1]->field,External[2]->AntiField[field],IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexInternal[1]->i1,IndexInternal[2]->i2}}];
+SA`CheckSameVertices=False;
 
 For[i=1,i<=2,
 If[i==1,
@@ -718,20 +1669,30 @@ WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[j,1,2]]],file];
 (* Calculate the color factor *)
 cfactor = getChargeFactor[diagrams[[j]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
 {{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[2],in2}}} /. diagrams[[j,2]]];
-
 If[i==1,
-WriteString[file,"If ((ex1.eq.ex2).or.("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )) Then \n"];
-WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*ScalarWaveScalardiagram(coup1,coup2,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+WriteString[file,"If (ex1.eq.ex2) Then \n"];
+WriteString[file," res(ex1,ex2) = res(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*ScalarWaveScalardiagram(coup1,coup2,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
 WriteString[file,"Else \n"];
-WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*ScalarWaveOffScalardiagram(coup1,coup2,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+WriteString[file," If(Include_in_Thresholds_WaveOffDiagonal) Then \n "];
+WriteString[file,"   If ("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" ) Then \n"]; 
+WriteString[file,"     res(ex1,ex2) = res(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*ScalarWaveScalardiagram(coup1,coup2,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file,"   Else \n"]; 
+WriteString[file,"    res(ex1,ex2) = res(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*ScalarWaveOffScalardiagram(coup1,coup2,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file,"    End if \n"];
+WriteString[file,"  End if \n"];
 WriteString[file,"End if \n"];,
-WriteString[file,"If (ex1.eq.ex2).or.("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )) Then \n"];
-WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*ScalarWaveFermiondiagram(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+WriteString[file,"If (ex1.eq.ex2) Then \n"];
+WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*ScalarWaveFermiondiagram(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
 WriteString[file,"Else \n"];
-WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*ScalarWaveOffFermiondiagram(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+WriteString[file," If(Include_in_Thresholds_WaveOffDiagonal) Then \n "];
+WriteString[file,"   If ("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" ) Then \n"]; 
+WriteString[file,"     res(ex1,ex2) = res(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*ScalarWaveFermiondiagram(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file,"   Else \n"]; 
+WriteString[file,"    res(ex1,ex2) = res(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*ScalarWaveOffFermiondiagram(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file,"    End if \n"];
+WriteString[file,"  End if \n"];
 WriteString[file,"End if \n"];
 ];
-
 WriteString[file, "End if \n"];
 
 If[getGenSPheno[p1]>1,WriteString[file,"    End Do \n"];];
@@ -742,6 +1703,7 @@ i++;];
 topology={C[External[1],External[2],FieldToInsert[1],AntiField[FieldToInsert[1]]] };
 
 (* insert all fields in the given model *)
+
 diagramsAll=InsFields[{topology/.{External[1]->field,External[2]->AntiField[field]},{Internal[1]->FieldToInsert[1],External[1]->field,External[2]->AntiField[field],IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexInternal[1]->i1}}];
 
 diagrams=Select[diagramsAll,Intersection[getType/@({Internal[1]}/.#[[2]])] == {S}&];
@@ -774,14 +1736,16 @@ WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold)) Then\n"
 WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[j,1,1]]],file];
 
 (* Calculate the color factor *)
-cfactor = getChargeFactor[diagrams[[j]],{{{External[1],ex1},{External[2],ex2},{Internal[1],in1},{AntiField[Internal[1]],in1}}} /. diagrams[[j,2]]];
+(* cfactor = getChargeFactor[diagrams[[j]],{{{External[1],ex1},{External[2],ex2},{Internal[1],in1},{AntiField[Internal[1]],in1}}} /. diagrams[[j,2]]]; *)
+cfactor=getColorDim[Internal[1]/.diagrams[[1,2]]];
 
-WriteString[file,"If (ex1.eq.ex2).or.("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )) Then \n"];
-WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + 0._dp \n"];
-WriteString[file,"Else \n"];
-WriteString[file,"  res(ex1,ex2) = res(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*ScalarWaveOffScalardiagramA0(coup1,"<>SPhenoMassSq[p1,i1]<>") \n"];
-WriteString[file,"End if \n"];
-
+WriteString[file,"If(Include_in_Thresholds_WaveOffDiagonal) Then \n"]; 
+WriteString[file,"  If ("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" ) Then \n"];
+WriteString[file,"    res(ex1,ex2) = res(ex1,ex2) + 0._dp \n"];
+WriteString[file,"  Else \n"];
+WriteString[file,"    res(ex1,ex2) = res(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*ScalarWaveOffScalardiagramA0(coup1,"<>SPhenoMass[p1,i1]<>") \n"];
+WriteString[file,"  End if \n"];
+WriteString[file," End if \n"];
 WriteString[file, "End if \n"];
 
 If[getGenSPheno[p2]>1,WriteString[file,"   End Do \n"];];
@@ -795,6 +1759,128 @@ If[getGenSPheno[field]>1,WriteString[file,"End Do\n"];];
 WriteString[file, "res=oo16pi2*res \n"];
 WriteString[file,"End Subroutine MatchingFor"<>nameRoutine <>"_Wave \n\n"];
 ];
+
+
+WriteMatchingWaveContributionsFermion[field_,nameRoutine_,file_]:=Block[{i,j,k,perfields,topologyD0,exf1,exf2,exf3,exf4,p1,p2,p3,p4,c1,c2,c3,c4,ind1,ind2,ind3,ind4,diagramsAll,diagrams},
+
+
+MakeSubroutineTitle["MatchingFor"<>nameRoutine<>"_Wave",Flatten[{NewMassParameters,namesAllreallyAll}],{},{"resL","resR"},file];
+WriteString[file,"Implicit None \n"];
+MakeVariableList[NewMassParameters,",Intent(in)",file];
+MakeVariableList[namesAllreallyAll,",Intent(in)",file];
+WriteString[file,"Integer :: i1,i2 \n"];
+WriteString[file,"Integer :: ex1,ex2 \n"];
+WriteString[file,"Complex(dp) ::  coup1, coup2, coup1L, coup1R, coup2L, coup2R \n"];
+WriteString[file,"Complex(dp), Intent(out) ::  resL("<>ToString[getGen[field]]<>","<>ToString[getGen[field]]<>"), resR("<>ToString[getGen[field]]<>","<>ToString[getGen[field]]<>") \n"];
+
+WriteString[file,"resL = 0._dp \n"];
+WriteString[file,"resR = 0._dp \n"];
+
+
+If[getGenSPheno[field]>1,WriteString[file,"Do ex1=1,"<> ToString[GetGenerationFlag[field]]<>"\n"];,WriteString[file,"ex1=1 \n"];];
+If[getGenSPheno[field]>1,WriteString[file,"  Do ex2=1,"<> ToString[GetGenerationFlag[field]]<>"\n"];,WriteString[file,"ex2=1 \n"];];
+topologyB0={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[2],AntiField[FieldToInsert[1]]]};
+
+(* insert all fields in the given model *)
+If[AntiField[field]===field,SA`CheckSameVertices=False;,SA`CheckSameVertices=True;];
+diagramsAll=InsFields[{topologyB0/.{External[1]->field,External[2]->AntiField[field]},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],External[1]->field,External[2]->AntiField[field],IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexInternal[1]->i1,IndexInternal[2]->i2}}];
+SA`CheckSameVertices=False;
+
+If[SupersymmetricModel===False,diagrams=Select[diagramsAll,FreeQ[getType/@({Internal[1],Internal[2]}/.#[[2]]),V]&];,diagrams=diagramsAll];
+diagrams=Select[diagrams,(Intersection[RE/@({Internal[1],Internal[2],Internal[3],Internal[4]}/.#[[2]]),IncludeParticlesInThresholds]=!={} || FreeQ[getType/@({Internal[1],Internal[2]}/.#[[2]]),V]==False)&];
+
+For[j=1,j<=Length[diagrams],
+
+(* get more handy names for the particles in the loop *)
+If[getType[(Internal[1] /.diagrams[[j,2]])]===F,
+p1=(Internal[1] /.diagrams[[j,2]]); p2 =(Internal[2] /. diagrams[[j,2]]);,
+p2=(Internal[1] /.diagrams[[j,2]]); p1 =(Internal[2] /. diagrams[[j,2]]);
+];
+
+(* write a comment to the Fortran code what particles are in the loop *)
+WriteString[file,"! "<>ToString[p1] <>","<>ToString[p2] <>"\n"]; 
+
+
+(* Extract the vertices *)
+c1=getSPhenoCoupling2[diagrams[[j,1,1]],SPhenoCouplingsAllreallyAll];
+c2=getSPhenoCoupling2[diagrams[[j,1,2]],SPhenoCouplingsAllreallyAll];
+
+(* Generate the index structure *)
+ind1 =MakeIndicesCoupling[{External[1],IndexExternal[1]}/.diagrams[[j,2]],{Internal[1],i1}/.diagrams[[j,2]],{AntiField[Internal[2]],i2}/.diagrams[[j,2]],c1[[2]]];
+ind2 =MakeIndicesCoupling[{External[2],IndexExternal[2]}/.diagrams[[j,2]],{Internal[2],i2}/.diagrams[[j,2]],{AntiField[Internal[1]],i1}/.diagrams[[j,2]],c2[[2]]]; 
+
+
+(* loop over generations of particles in the loop *)
+If[getGenSPheno[p1]>1,WriteString[file,"Do i1=1,"<> ToString[GetGenerationFlag[p1]]<>"\n"];];
+If[getGenSPheno[p2]>1,WriteString[file,"  Do i2=1,"<> ToString[GetGenerationFlag[p2]]<>"\n"];];
+
+If[getType[p2]=!=V,
+(* Check if any mass is heavier than the thresholds *)
+WriteString[file, "If (("<>SPhenoMassSq[p1,i1]<>".gt.MatchingThreshold).Or.("<>SPhenoMassSq[p2,i2]<>".gt.MatchingThreshold)) Then\n"];
+];
+(* Write the vertices to Fortran code *)
+WriteVertexToFile[1,c1,ind1,getVertexType[diagrams[[j,1,1]]],file];
+WriteVertexToFile[2,c2,ind2,getVertexType[diagrams[[j,1,2]]],file];
+
+(* Calculate the color factor *)
+cfactor = getChargeFactor[diagrams[[j]],{{{External[1],ex1},{Internal[1],in1},{AntiField[Internal[2]],in2}},
+{{External[2],ex2},{AntiField[Internal[1]],in1},{Internal[2],in2}}} /. diagrams[[j,2]]];
+WriteString[file,"If (ex1.eq.ex2) Then \n"];
+If[getType[p2]===S,
+WriteString[file," resL(ex1,ex2) = resL(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveFSdiagramL(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file," resR(ex1,ex2) = resR(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveFSdiagramR(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];,
+If[AntiField[field]===field && Head[p1]===bar && Head[p2]===conj,
+WriteString[file," resL(ex1,ex2) = resL(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_L(coup1R,coup1L,coup2R,coup2L,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file," resR(ex1,ex2) = resR(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_R(coup1R,coup1L,coup2R,coup2L,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];,
+WriteString[file," resL(ex1,ex2) = resL(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_L(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file," resR(ex1,ex2) = resR(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_R(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+];
+];
+WriteString[file,"Else \n"];
+WriteString[file," If(Include_in_Thresholds_WaveOffDiagonal) Then \n "];
+WriteString[file,"   If ("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>".eq."<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" ) Then \n"]; 
+If[getType[p2]===S,
+WriteString[file," resL(ex1,ex2) = resL(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveFSdiagramL(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file," resR(ex1,ex2) = resR(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveFSdiagramR(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];,
+If[AntiField[field]===field && Head[p1]===bar && Head[p2]===conj,
+WriteString[file," resL(ex1,ex2) = resL(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_L(coup1R,coup1L,coup2R,coup2L,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file," resR(ex1,ex2) = resR(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_R(coup1R,coup1L,coup2R,coup2L,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];,
+WriteString[file," resL(ex1,ex2) = resL(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_L(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+WriteString[file," resR(ex1,ex2) = resR(ex1,ex2) + "<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_R(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMass[p1,i1]<>","<>SPhenoMass[p2,i2]<>") \n"];
+];
+];
+WriteString[file,"   Else \n"]; 
+(*
+If[getType[p2]===S,
+WriteString[file,"    resL(ex1,ex2) = resL(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*FermionWaveOffFSdiagramL(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+WriteString[file,"    resR(ex1,ex2) = resR(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*FermionWaveOffFSdiagramL(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];,
+WriteString[file,"    resL(ex1,ex2) = resL(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_L(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+WriteString[file,"    resR(ex1,ex2) = resR(ex1,ex2) + 2._dp/("<>SPhenoMassSq[External[1]/.diagrams[[j,2]],ex1]<>"-"<>SPhenoMassSq[External[2]/.diagrams[[j,2]],ex2]<>" )*"<>SPhenoForm[cfactor]<>"*FermionWaveMSDR_R(coup1L,coup1R,coup2L,coup2R,"<>SPhenoMassSq[p1,i1]<>","<>SPhenoMassSq[p2,i2]<>") \n"];
+];
+*)
+WriteString[file,"    resL(ex1,ex2) =0._dp ! Might be added later if necessary \n"];
+WriteString[file,"    resR(ex1,ex2) =0._dp ! Might be added later if necessary \n"];
+WriteString[file,"    End if \n"];
+WriteString[file,"  End if \n"];
+WriteString[file,"End if \n"];
+If[getType[p2]=!=V,
+WriteString[file, "End if \n"];
+];
+
+If[getGenSPheno[p1]>1,WriteString[file,"    End Do \n"];];
+If[getGenSPheno[p2]>1,WriteString[file,"   End Do \n"];];
+j++;];
+
+
+
+If[getGenSPheno[field]>1,WriteString[file,"  End Do\n"];];
+If[getGenSPheno[field]>1,WriteString[file,"End Do\n"];];
+
+WriteString[file, "resL=oo16pi2*resL \n"];
+WriteString[file, "resR=oo16pi2*resR \n"];
+WriteString[file,"End Subroutine MatchingFor"<>nameRoutine <>"_Wave \n\n"];
+];
+
 
 
 (* ::Input::Initialization:: *)
@@ -811,16 +1897,88 @@ diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2]}/.#[[2]]),In
 Return[diagrams];
 ];
 
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Scalar","MSDR"]:=Block[{topology,diagrams},
+topology={C[External[1],External[2],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[3],External[4],FieldToInsert[2],AntiField[FieldToInsert[1]]]};
+
+(* insert all fields in the given model *)
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2},
+{{{exf1,ex1},{exf2,ex2},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{exf3,ex3},{exf4,ex4},{Internal[2],i2},{AntiField[Internal[1]],i1}}}}];
+
+(* only diagrams with two vectors are needed *)
+diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2]}/.#[[2]])] == {V}&];
+Return[diagrams];
+];
+
 GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Scalar","BP"]:=Block[{topology,diagrams},
 topology={C[External[1],External[2],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[FieldToInsert[3],FieldToInsert[2],AntiField[FieldToInsert[1]]],C[External[3],External[4],AntiField[FieldToInsert[3]]]};
 
 (* insert all fields in the given model *)
 diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2], Internal[3]->FieldToInsert[3],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
-{{{exf1,ex1},{exf2,ex2},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{Internal[3],in3},{Internal[2],i2},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[3]],i3}}}}];
+{{{exf1,ex1},{exf2,ex2},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{Internal[3],i3},{Internal[2],i2},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[3]],i3}}}}];
 
 (* drop diagrams with vector bosons and fermions *)
 diagrams=Select[diagrams,Intersection[{RE[Internal[3]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
 diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2]}/.#[[2]])] == {S}&];
+diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
+Return[diagrams];
+];
+
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Scalar","BP2"]:=Block[{topology,diagrams},
+topology={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[3],FieldToInsert[2],AntiField[FieldToInsert[1]]],C[External[3],External[4],AntiField[FieldToInsert[3]]]};
+
+(* insert all fields in the given model *)
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2], Internal[3]->FieldToInsert[3],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
+{{{exf1,ex1},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{exf2,ex2},{Internal[3],i3},{Internal[2],i2},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[3]],i3}}}}];
+
+(* drop diagrams with vector bosons and fermions *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[3]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2]}/.#[[2]])] == {S}&];
+diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
+Return[diagrams];
+];
+
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Scalar","APP"]:=Block[{topology,diagrams},
+topology={C[External[1],External[2],FieldToInsert[3]] ,C[AntiField[FieldToInsert[3]],FieldToInsert[1],AntiField[FieldToInsert[1]],FieldToInsert[2]],C[External[3],External[4],AntiField[FieldToInsert[2]]]};
+
+(* insert all fields in the given model *)
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2], Internal[3]->FieldToInsert[3],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
+{{{exf1,ex1},{exf2,ex2},{Internal[3],i3}},{{AntiField[Internal[3]],i3},{Internal[1],i1},{Internal[2],i2},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[2]],i2}}}}];
+
+(* drop diagrams with vector bosons and fermions *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[3]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[2]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2]}/.#[[2]])] == {S}&];
+diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
+Return[diagrams];
+];
+
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Scalar","BPP"]:=Block[{topology,diagrams},
+topology={C[External[1],External[2],FieldToInsert[4]] ,C[AntiField[FieldToInsert[4]],FieldToInsert[2],AntiField[FieldToInsert[1]]],C[FieldToInsert[3],FieldToInsert[1],AntiField[FieldToInsert[2]]],C[External[3],External[4],AntiField[FieldToInsert[3]]]};
+
+(* insert all fields in the given model *)
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2], Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3,IndexInternal[4]->i4},
+{{{exf1,ex1},{exf2,ex2},{Internal[4],i4}},{{AntiField[Internal[4]],i4},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{Internal[3],i3},{Internal[2],i2},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[3]],i3}}}}];
+
+(* drop diagrams with vector bosons and fermions *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[3]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[4]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2]}/.#[[2]])] == {S}&];
+diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
+Return[diagrams];
+];
+
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Fermion","BPP"]:=Block[{topology,diagrams},
+topology={C[External[1],External[2],FieldToInsert[4]] ,C[AntiField[FieldToInsert[4]],FieldToInsert[2],AntiField[FieldToInsert[1]]],C[FieldToInsert[3],FieldToInsert[1],AntiField[FieldToInsert[2]]],C[External[3],External[4],AntiField[FieldToInsert[3]]]};
+
+
+(* insert all fields in the given model *)
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2], Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3,IndexInternal[4]->i4},
+{{{exf1,ex1},{exf2,ex2},{Internal[4],i4}},{{AntiField[Internal[4]],i4},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{Internal[3],i3},{Internal[2],i2},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[3]],i3}}}}];
+
+(* drop diagrams with vector bosons and fermions *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[3]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[{RE[Internal[4]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2]}/.#[[2]])] == {F}&];
 diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
 Return[diagrams];
 ];
@@ -844,6 +2002,18 @@ diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->
 
 diagrams=Select[diagrams,Intersection[{RE[Internal[4]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
 diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2],Internal[3]}/.#[[2]])] == {S}&];
+diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2],Internal[3]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
+Return[diagrams];
+];
+
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_,exf4_},"Fermion","CP"]:=Block[{topology,diagrams},
+topology={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[2],AntiField[FieldToInsert[3]]],C[FieldToInsert[4],FieldToInsert[3],AntiField[FieldToInsert[1]]],C[External[3],External[4],AntiField[FieldToInsert[4]]]};
+
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->exf1,External[2]->exf2,External[3]->exf3,External[4]->exf4,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexExternal[4]->ex4,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3,IndexInternal[4]->i4},
+{{{exf1,ex1},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{exf2,ex2},{Internal[2],i2},{AntiField[Internal[3]],i3}},{{Internal[4],i4},{Internal[3],i3},{AntiField[Internal[1]],i1}},{{exf3,ex3},{exf4,ex4},{AntiField[Internal[4]],i4}}}}];
+
+diagrams=Select[diagrams,Intersection[{RE[Internal[4]/.#[[2]]]},IncludeParticlesInThresholds]=!={}&]; (* propgator always needs to be heavy *)
+diagrams=Select[diagrams,Intersection[getType/@({Internal[1],Internal[2],Internal[3]}/.#[[2]])] == {F}&];
 diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2],Internal[3]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
 Return[diagrams];
 ];
@@ -876,7 +2046,7 @@ Return[diagrams];
 GenerateMatchingDiagrams[{exf1_,exf2_,exf3_},type_,"C"]:=Block[{topology,diagrams},
 topology={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[2],AntiField[FieldToInsert[3]]],C[External[3],FieldToInsert[3],AntiField[FieldToInsert[1]]]};
 
-diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3], IExternal[1]->exf1,External[2]->exf2,External[3]->exf3,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3], External[1]->exf1,External[2]->exf2,External[3]->exf3,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
 {{{exf1,ex1},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{exf2,ex2},{Internal[2],i2},{AntiField[Internal[3]],i3}},{{exf3,ex3},{Internal[3],i3},{AntiField[Internal[1]],i1}}}}];
 
 If[type==="Fermion",
@@ -887,38 +2057,100 @@ diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2],Internal[3]}
 Return[diagrams];
 ];
 
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_},"MSDR"]:=Block[{topology,diagrams},
+topology={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[2],AntiField[FieldToInsert[3]]],C[External[3],FieldToInsert[3],AntiField[FieldToInsert[1]]]};
+
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3], External[1]->exf1,External[2]->exf2,External[3]->exf3,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
+{{{exf1,ex1},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{exf2,ex2},{Internal[2],i2},{AntiField[Internal[3]],i3}},{{exf3,ex3},{Internal[3],i3},{AntiField[Internal[1]],i1}}}}];
+
+diagrams=Select[diagrams,(getType[Internal[2]/.#[[2]]])==V&];
+
+Return[diagrams];
+];
+
+GenerateMatchingDiagrams[{exf1_,exf2_,exf3_},type_]:=Block[{topology,diagrams},
+topology={C[External[1],FieldToInsert[1],AntiField[FieldToInsert[2]]] ,C[External[2],FieldToInsert[2],AntiField[FieldToInsert[3]]],C[External[3],FieldToInsert[3],AntiField[FieldToInsert[1]]]};
+
+diagrams=InsFields[{topology/.{External[1]->exf1,External[2]->exf2,External[3]->exf3},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3], External[1]->exf1,External[2]->exf2,External[3]->exf3,IndexExternal[1]->ex1,IndexExternal[2]->ex2,IndexExternal[3]->ex3,IndexInternal[1]->i1,IndexInternal[2]->i2,IndexInternal[3]->i3},
+{{{exf1,ex1},{Internal[1],i1},{AntiField[Internal[2]],i2}},{{exf2,ex2},{Internal[2],i2},{AntiField[Internal[3]],i3}},{{exf3,ex3},{Internal[3],i3},{AntiField[Internal[1]],i1}}}}];
+
+diagrams=Select[diagrams,FreeQ[getType/@({Internal[1],Internal[2],Internal[3]}/.#[[2]]),V]&];
+
+If[type==="SSF",
+diagrams=Select[diagrams,getType[Internal[2]/.#[[2]]] == F&];,
+diagrams=Select[diagrams,getType[Internal[2]/.#[[2]]] == S&];
+];
+diagrams=Select[diagrams,Intersection[RE/@({Internal[1],Internal[2],Internal[3]}/.#[[2]]),IncludeParticlesInThresholds]=!={}&];
+Return[diagrams];
+];
+
 
 (* ::Input::Initialization:: *)
 RunHighScaleModel[readL_]:=Block[{i,sphenofile},
 (* Wrapper routine to run high scale model *)
 Print[StyleForm["Run high scale model and generate matching","Section",FontSize->12]];
-WriteSPhenoFile[readL];
-RunModel[readL];
-IncludeFiles;
+parametersUVall={};
+realVarUVall={};
+sizeParsUVall={};
+listAllParametersAndVEVsUVall={};
+subSPhenoEFT[0]=subSPhenoForm;
+
+subSPhenoUV[0]=subSPhenoForm;
+For[i=1,i<=Length[MatchingToModel],
+Print["  Running ",MatchingToModel[[i]]];
+WriteSPhenoFile[readL,i];
+RunModel[readL,i];
+IncludeFiles[i];
+Get[ToFileName[{$sarahOutputDir,MatchingToModel[[i]],"EWSB","SPheno"<>StringReplace[MatchingToModel[[i]],{"+"->"","-"->""}]<>"To"<>ModelName},"InfoParameters.m"]];
+parametersUVall=Join[parametersUVall,{{ToExpression[ToString[#[[1]]]<>"uv"<>ToString[i]],#[[2]],#[[3]]}&/@parametersUV}];
+realVarUVall=Join[realVarUVall,{ToExpression[ToString[#]<>"uv"<>ToString[i]]&/@realVarUV}];
+sizeParsUVall=Join[sizeParsUVall,{sizeParsUV}];
+listAllParametersAndVEVsUVall=Join[listAllParametersAndVEVsUVall,{ToExpression[ToString[#]<>"uv"<>ToString[i]]&/@listAllParametersAndVEVsUV}];
+subSPhenoForm=Join[subSPhenoForm,(#[[1]]->ToExpression[ToString[#[[2]]]<>"uv"<>ToString[i]])&/@subSPhenoFormUV];
+subSPhenoEFT[i]=subSPhenoFormUV;
+subSPhenoUV[i]=(#[[1]]->ToExpression[ToString[#[[2]]]<>"uv"<>ToString[i]])&/@subSPhenoFormUV;
+i++;];
+For[i=1,i<=Length[MatchingToModel],
+If[Length[BoundaryMatchingScaleDown[[i]]]>0,
+BoundaryMatchingScaleDown[[i]]=Transpose[{Transpose[BoundaryMatchingScaleDown[[i]]][[1]]/.(subSPhenoUV[i-1]/.a_String:>ToExpression[a]),Transpose[BoundaryMatchingScaleDown[[i]]][[2]]/.(subSPhenoUV[i]/.a_String:>ToExpression[a])}];
 ];
 
-IncludeFiles:=Block[{i,files},
+If[FreeQ[BoundaryMatchingScaleUp[[i]],DownYukawa],BoundaryMatchingScaleUp[[i]]=Join[BoundaryMatchingScaleUp[[i]],{{DownYukawa,DownYukawa}}]];
+If[FreeQ[BoundaryMatchingScaleUp[[i]],UpYukawa],BoundaryMatchingScaleUp[[i]]=Join[BoundaryMatchingScaleUp[[i]],{{UpYukawa,UpYukawa}}]];
+If[FreeQ[BoundaryMatchingScaleUp[[i]],ElectronYukawa],BoundaryMatchingScaleUp[[i]]=Join[BoundaryMatchingScaleUp[[i]],{{ElectronYukawa,ElectronYukawa}}]];
+
+If[Length[BoundaryMatchingScaleUp[[i]]]>0,
+BoundaryMatchingScaleUp[[i]]=Transpose[{Transpose[BoundaryMatchingScaleUp[[i]]][[1]]/.(subSPhenoUV[i]/.a_String:>ToExpression[a]),Transpose[BoundaryMatchingScaleUp[[i]]][[2]]/.(subSPhenoUV[i-1]/.a_String:>ToExpression[a])}];
+];
+i++;];
+];
+
+IncludeFiles[nr_]:=Block[{i,files,currentModel},
 (* copy files from the high scale model to the current model *)
-$sarahSPhenoMatchDir=ToFileName[{$sarahCurrentSPhenoDir,MatchingToModel<>"To"<>ModelName}];
+currentModel=StringReplace[MatchingToModel[[nr]],{"-"->"","+"->""}];
+$sarahSPhenoMatchDir=ToFileName[{$sarahCurrentSPhenoDir,currentModel<>"To"<>ModelName}];
 If[FileExistsQ[$sarahSPhenoMatchDir]=!=True,
 CreateDirectory[$sarahSPhenoMatchDir];
 ];
 
-files={"Model_Data_"<>MatchingToModel<>"To"<>ModelName<>".f90","Couplings_"<>MatchingToModel<>"To"<>ModelName<>".f90","TreeLevelMasses_"<>MatchingToModel<>"To"<>ModelName<>".f90","TadpoleEquations_"<>MatchingToModel<>"To"<>ModelName<>".f90","Matching_"<>MatchingToModel<>"To"<>ModelName<>".f90"};
+If[ParametersToSolveTadpoleMatchingScale=!={},
+files={"Model_Data_"<>currentModel<>"To"<>ModelName<>".f90","Couplings_"<>currentModel<>"To"<>ModelName<>".f90","TreeLevelMasses_"<>currentModel<>"To"<>ModelName<>".f90","TadpoleEquations_"<>currentModel<>"To"<>ModelName<>".f90","Matching_"<>currentModel<>"To"<>ModelName<>".f90","RGEs_"<>currentModel<>"To"<>ModelName<>".f90"};,
+files={"Model_Data_"<>currentModel<>"To"<>ModelName<>".f90","Couplings_"<>currentModel<>"To"<>ModelName<>".f90","TreeLevelMasses_"<>currentModel<>"To"<>ModelName<>".f90","Matching_"<>currentModel<>"To"<>ModelName<>".f90"};
+];
 For[i=1,i<=Length[files],
 If[FileExistsQ[ToFileName[$sarahSPhenoMatchDir,files[[i]]]],DeleteFile[ToFileName[$sarahSPhenoMatchDir,files[[i]]]]];
-CopyFile[ToFileName[ToFileName[{$sarahOutputDir,MatchingToModel,"EWSB","SPheno"<>MatchingToModel<>"To"<>ModelName}],files[[i]]],ToFileName[$sarahSPhenoMatchDir,files[[i]]]];
+CopyFile[ToFileName[ToFileName[{$sarahOutputDir,MatchingToModel[[nr]],"EWSB","SPheno"<>currentModel<>"To"<>ModelName}],files[[i]]],ToFileName[$sarahSPhenoMatchDir,files[[i]]]];
 i++;];
 
 
 ];
 
-RunModel[readL_]:=Block[{},
+RunModel[readL_,nr_]:=Block[{},
 (* run high scale model in new mathematica session *)
 
 inputfile=OpenWrite["SARAH-Intermediate.m"];
 WriteString[inputfile,"<<"<>$sarahDir<>"/SARAH.m \n"];
-WriteString[inputfile,"Start[\""<>MatchingToModel<>"\"] \n"];
+WriteString[inputfile,"Start[\""<>MatchingToModel[[nr]]<>"\"] \n"];
 
 WriteString[inputfile,"MakeSPheno[InputFile->\"SPheno.m.MatchTo"<>ModelName<>"\",ReadLists->"<>ToString[readL]<>"] \n"];
 WriteString[inputfile,"Exit \n"];
@@ -940,45 +2172,68 @@ _,
 Run["rm SARAH-Intermediate.m"];
 ];
 
-WriteSPhenoFile[readL_]:=Block[{i,sphenofile},
+WriteSPhenoFile[readL_,nr_]:=Block[{i,sphenofile},
 
 (* write SPheno.m to run high scale model with given boundary conditions and to generate matching routines  *)
 
 MakeSPhenoFortran;
-sphenofile=ToFileName[{$sarahDir,"Models","MSSM"},"SPheno.m.MatchTo"<>ModelName];
-WriteString[sphenofile,"ModelName = \""<>MatchingToModel<>"To"<>ModelName<>"\"\n"];
+sphenofile=ToFileName[{$sarahDir,"Models",MatchingToModel[[nr]]},"SPheno.m.MatchTo"<>ModelName];
+WriteString[sphenofile,"ModelName = \""<>StringReplace[MatchingToModel[[nr]],{"-"->"","+"->""}]<>"To"<>ModelName<>"\"\n"];
 
 
 WriteString[sphenofile,"SA`AddOneLoopDecay=False;\n"];
 WriteString[sphenofile,"SA`Add2LoopCorrections=False;\n"];
 WriteString[sphenofile,"SkipFlavorKit=True;\n"];
 WriteString[sphenofile,"AddMatchingRoutines=True;\n"];
-WriteString[sphenofile,"OnlyLowEnergySPheno=True;\n"];
+WriteString[sphenofile,"OnlyLowEnergySPheno=False;\n"];
 WriteString[sphenofile,"OutputSeparateSPhenoDir=True;\n"];
+
+HighscaleMatchingConditions=(Select[BoundaryMatchingScaleDown[[nr]],FreeQ[#,EFTcoupNLO]==False&] /. EFTcoupNLO[x_]->x/.A_Dot[PL]->PL[A] /. A_Dot[PR]->PR[A]);
+HighscaleMatchingConditionsFup=Select[BoundaryMatchingScaleUp[[nr]],FreeQ[#,ShiftCoupNLO]==False&]/.{a__+ ShiftCoupNLO[x_][b_]-> b[x],a___+ ShiftCoupNLO[x_]->x,a___+y___ ShiftCoupNLO[x_][b_]->y b[x],a___+y___ ShiftCoupNLO[x_]->y x};
+If[nr==1,
+HighscaleMatchingConditions=HighscaleMatchingConditions/. {A_Symbol,B_}:>{SPhenoForm[A/.subSPhenoEFT[nr-1]]<>"low0",B};,
+HighscaleMatchingConditions=HighscaleMatchingConditions/. {A_Symbol,B_}:>{SPhenoForm[A/.subSPhenoEFT[nr-1]]<>"low"<>ToString[nr],B};
+];
+
+BoundaryHighScale=Select[BoundaryHighScale,FreeQ[#,EFTcoupNLO]&] ;
 
 WriteString[sphenofile,"MatchingToGaugeES="<>ToString[InputForm[MatchingToGaugeES]]<>";\n"];
 WriteString[sphenofile,"HighscaleMatchingConditions = "<>ToString[InputForm[HighscaleMatchingConditions/.subSPhenoForm]]<>";\n"];
-WriteString[sphenofile,"ParametrisationExternalStates = "<>ToString[InputForm[ParametrisationExternalStates]]<>";\n"];
-WriteString[sphenofile,"IncludeParticlesInThresholds = "<>ToString[InputForm[IncludeParticlesInThresholds]]<>";\n"];
- 
+WriteString[sphenofile,"HighscaleMatchingConditionsFup = "<>ToString[InputForm[HighscaleMatchingConditionsFup/.subSPhenoForm]]<>";\n"];
+(* WriteString[sphenofile,"ParametrisationExternalStates = "<>ToString[InputForm[ParametrisationExternalStates]]<>";\n"]; *)
+WriteString[sphenofile,"IncludeParticlesInThresholds = "<>ToString[InputForm[IncludeParticlesInThresholds[[nr]]]]<>";\n"];
+WriteString[sphenofile,"AssumptionsMatchingScale = "<>ToString[InputForm[AssumptionsMatchingScale[[nr]]]]<>";\n"];
+WriteString[sphenofile,"MINPAR = "<>ToString[MINPAR]<>"\n"]; 
+WriteString[sphenofile,"RealParameters = "<>ToString[RealParameters]<>"\n"]; 
+(*
 WriteString[sphenofile,"MINPAR = {\n"];
-For[i=1,i<=Length[InputHighScale],
+For[i=1,i\[LessEqual]Length[InputHighScale],
 WriteString[sphenofile,"{"<>ToString[i]<>","<>ToString[InputHighScale[[i]]]<>"}"];
 If[i<Length[InputHighScale],WriteString[sphenofile,",\n"];];
 i++;];
 WriteString[sphenofile,"};\n"];
+*)
 
-
-WriteString[sphenofile,"ParametersToSolveTadpoles="<>ToString[InputForm[ParametersToSolveTadpoleMatchingScale]]<>";\n"];
-WriteString[sphenofile,"BoundaryMatchingScale="<>ToString[InputForm[BoundaryMatchingScale]]<>";\n"];
+WriteString[sphenofile,"ParametersToSolveTadpoles="<>ToString[InputForm[ParametersToSolveTadpoleMatchingScale[[nr]]]]<>";\n"];
+WriteString[sphenofile,"BoundaryMatchingScaleDown="<>ToString[InputForm[BoundaryMatchingScaleDown[[nr]]]]<>";\n"];
 WriteString[sphenofile,"BoundaryLowScaleInput=BoundaryMatchingScale;\n"];
 
 WriteString[sphenofile,"ListDecayParticles={};\n"];
 WriteString[sphenofile,"ListDecayParticles3B={};\n"];
 
-WriteString[sphenofile,"ParametersEffModel="<>ToString[InputForm[Sort[Select[parameters,FreeQ[listAllParametersAndVEVs,#[[1]]]==False&],Position[listAllParametersAndVEVs,#1[[1]]][[1,1]]<Position[listAllParametersAndVEVs,#2[[1]]][[1,1]]&]/.subSPhenoForm]]<>";\n"];
-WriteString[sphenofile,"RealParametersEffModel="<>ToString[InputForm[Select[listAllParametersAndVEVs,FreeQ[realVar,#]==False&]/.subSPhenoForm]]<>";\n"];
+If[nr==1,
+WriteString[sphenofile,"parametersEFT ="<>ToString[parameters/. {a_,b_,c_}:>{SPhenoForm[a]<>"low"<>ToString[0],b,c}] <>"\n"];
+WriteString[sphenofile,"realVarEFT ="<>ToString[ToExpression[ToString[#]<>"low"<>ToString[0]]&/@realVar] <>"\n"];
+WriteString[sphenofile,"listAllParametersAndVEVsEFT ="<>ToString[ToExpression[ToString[#]<>"low"<>ToString[0]]&/@(SPhenoForm/@listAllParametersAndVEVs)] <>";\n"];,
+WriteString[sphenofile,"parametersEFT ="<>ToString[parametersUV/. {a_,b_,c_}:>{ToString[a]<>"low"<>ToString[nr],b,c}] <>"\n"];
+WriteString[sphenofile,"realVarEFT ="<>ToString[ToExpression[ToString[#]<>"low"<>ToString[nr]]&/@realVarUV] <>"\n"];
+WriteString[sphenofile,"listAllParametersAndVEVsEFT ="<>ToString[ToExpression[ToString[#]<>"low"<>ToString[nr]]&/@(listAllParametersAndVEVsUV)] <>";\n"];
+];
 
+(*
+WriteString[sphenofile,"ParametersEffModel="<>ToString[InputForm[Sort[Select[parameters,FreeQ[listAllParametersAndVEVs,#[[1]]]\[Equal]False&],Position[listAllParametersAndVEVs,#1[[1]]][[1,1]]<Position[listAllParametersAndVEVs,#2[[1]]][[1,1]]&]/.subSPhenoForm]/.{a_,b_List,c_List}\[RuleDelayed]{ToExpression[SPhenoForm[a]<>"Q"],b,c}]<>";\n"];
+WriteString[sphenofile,"RealParametersEffModel="<>ToString[ToExpression[SPhenoForm[#]<>"Q"]&/@Select[listAllParametersAndVEVs,FreeQ[realVar,#]\[Equal]False&]/.subSPhenoForm]<>";\n"];
+*)
 Close[sphenofile];
 ];
 

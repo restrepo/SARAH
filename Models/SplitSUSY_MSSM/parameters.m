@@ -83,7 +83,7 @@ ParameterDefinitions = {
      DependenceNum -> e*Sec[ThetaW], 
      DependenceOptional -> e*Sec[ThetaW], 
      DependenceSPheno -> None, 
-     GUTnormalization -> 1, 
+     GUTnormalization -> Sqrt[3/5], 
      Real -> True, 
      LesHouches -> {gauge, 1}, 
      LaTeX -> "g_1", 
@@ -174,7 +174,7 @@ ParameterDefinitions = {
      Real -> True, 
      LesHouches -> {HMIX, 3}, 
      LaTeX -> "v", 
-     OutputName -> v}}, 
+     OutputName -> vSplit}}, 
 
 {Vd,{ 
      Description -> "Left-Down-Mixing-Matrix", 
@@ -306,11 +306,11 @@ ParameterDefinitions = {
      LaTeX -> "MW"  (* auto generated LaTeX name *), 
      OutputName -> mwino  (* auto generated Output name *)}}, 
 
-{\[Mu],{ 
+{MuSplit,{ 
      Real -> False, 
      LesHouches -> {SPLITMSSM,8}  (* auto generated Les Houches entry *), 
      LaTeX -> "\\mu"  (* auto generated LaTeX name *), 
-     OutputName -> mu  (* auto generated Output name *)}}, 
+     OutputName -> musplit (* auto generated Output name *)}}, 
 
 {g1d,{ 
      Real -> False, 

@@ -462,6 +462,20 @@
          NewGBC=.true.
        end if
        
+      case(201)
+        if (wert.ne.1._dp) Then
+         One_Loop_Matching =.false.
+        else
+         One_Loop_Matching =.true.
+       end if       
+       
+      case(202)
+        if (wert.ne.1._dp) Then
+         Offdiaognal_WaveFunction_Matching =.false.
+        else
+         Offdiaognal_WaveFunction_Matching  =.true.
+       end if        
+       
      Case(440)
       If (wert.Ne.1._dp) Then
        TreeLevelUnitarityLimits=.False.
@@ -495,6 +509,8 @@
      Case(446)
        TUcutLevel = wert          
        
+     Case(447)
+       CutSpole = wert              
        
        
      Case(510)

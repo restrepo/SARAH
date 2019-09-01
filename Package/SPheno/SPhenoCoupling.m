@@ -270,7 +270,7 @@ WriteSPhenoAllCouplings[SPhenoCouplingsTadpoles,parametersTadpoles,namesTadpoles
 WriteThetaDelta;
 *)
 ];
-If[SA`AddOneLoopDecay===True,
+If[SA`AddOneLoopDecay===True (*|| AddTreeLevelUnitarityLimits===True*),
 Print["Creating special quartic functions"];
 test=Select[VertexListNonCC,(#[[-1]]===SSSS) || (#[[-1]]===SSVV)|| (#[[-1]]===VVVV)&];
 temp =SPhenoCouplingListQuartics[test];
@@ -282,6 +282,75 @@ WriteSPhenoAllCouplings[SPhenoCouplingsColoredQuartics,parametersColoredQuartics
 WriteSPhenoCouplings[SPhenoCouplingsColoredQuartics,False,"Q"];
 ];
 
+
+If[AddMatchingRoutines===True,
+GenerateQuarticsGaugeShift;
+WriteSPhenoAllCouplings[SPhenoCoupQGS,parametersQGS,namesQGS,"CouplingsShiftGauge","QGS"];  
+WriteSPhenoCouplings[SPhenoCoupQGS,False,"QGS"];
+];
+
+(* Mark's New bit *)
+
+If[AddTreeLevelUnitarityLimits===True,
+Print["Creating unitarity couplings"];
+(* get data about relevant unbroken groups*)
+unitarityIndices=Intersection[Join[{color},DeleteCases[DeleteCases[DeleteCases[Union[Flatten[Transpose[Select[Particles[EWSB],#[[4]]==S&]][[5]]]],_Integer],lorentz],generation]]];
+unitarityGroupData={};
+
+Block[{orderedd,nonzerovals,ii,j,perms},
+orderedd=Array[0&,{8,8,8}];
+nonzerovals=
+{{1,1,7,1/(2 Sqrt[3])},{1,1,8,1/2},{1,2,6,-(1/2)},{1,3,5,-(1/2)},{2,2,7,-(1/Sqrt[3])},{2,3,4,-(1/2)},{3,3,7,1/(2 Sqrt[3])},{3,3,8,-(1/2)},{4,4,7,1/(2 Sqrt[3])},{4,4,8,1/2},{4,5,6,1/2},{5,5,7,-(1/Sqrt[3])},{6,6,7,1/(2 Sqrt[3])},{6,6,8,-(1/2)},{7,7,7,1/Sqrt[3]},{7,8,8,-(1/Sqrt[3])}};
+For[ii=1,ii<=Length[nonzerovals],ii++,
+perms=Permutations[{nonzerovals[[ii,1]],nonzerovals[[ii,2]],nonzerovals[[ii,3]]}];
+For[j=1,j<=Length[perms],j++,
+orderedd[[perms[[j]]/.List->Sequence]]=nonzerovals[[ii,4]]]];
+dmatrix=orderedd;
+];
+(*
+SetAttributes[dSU3,Orderless];
+dSU3[a_Integer,b_Integer,c_Integer]:=dmatrix[[a,b,c]];
+*)
+
+Block[{ii,pos,group},
+For[ii=1,ii<=Length[unitarityIndices],ii++,
+pos=Position[Gauge,unitarityIndices[[ii]]];
+If[pos=!={},
+group=Gauge[[pos[[1,1]],2]];
+,
+pos=Position[Global,unitarityIndices[[ii]]];
+If[pos=={},
+(* If we don't find it in global just igore it*)
+unitarityIndices=Delete[unitarityIndices,ii];
+group=0;
+,
+group=Gauge[pos[[1,1]]][[1]];
+];
+];
+If[group=!=0,
+AppendTo[unitarityGroupData,{unitarityIndices[[ii]],group,SusynoForm[group],getDimFundamental[group],getDimAdjoint[group]}];
+];
+];
+];(* end block*)
+
+(* UNCOMMENT THIS WHEN THIS PART IS FINISHED! *)
+test=Select[VertexListNonCC,(#[[-1]]===SSSS) || (#[[-1]]===SSS)&];
+If[Length[UnitarityApprox]>0,
+test=Select[test/.UnitarityApprox,#[[1,2,1]]=!=0&];
+];
+
+
+temp =SPhenoCouplingListColstruc[test];
+SPhenoCouplingsstructures=temp[[1]];
+parametersstructures=temp[[2]];
+namesstructures=temp[[3]];
+DynamicCouplingsTad="writing couplings";
+WriteSPhenoAllCouplings[SPhenoCouplingsstructures,parametersstructures,namesstructures,"CouplingsColourStructures","CS"];  
+WriteSPhenoCouplings[SPhenoCouplingsstructures,False,"CS"];
+
+
+
+];(* end If[AddTreeLevelUnitarityLimits===True *)
 
 If[IntermediateScale =!= True,
 WriteString[sphenoCoup,"End Module Couplings_"<>ModelName<>" \n"];
@@ -503,6 +572,7 @@ For[n1=1,n1<=Length[listCouplings],
 If[listCouplings[[n1,-1]]=!=VVVV,
 For[mj=1,mj<=Length[dataUnBrokenGaugeGroups],
 temp=ExtractStructure[listCouplings[[n1,1,2,1]],dataUnBrokenGaugeGroups[[mj,2]]];
+ColorStructuresQuartics[Apply[C,listCouplings[[n1,1,1]] /. A_[{a__}]-> A]]=Table[temp[[i2,1]],{i2,1,Length[temp]}];
 SPhenoCouplings= Join[SPhenoCouplings,{Join[{{Apply[C,listCouplings[[n1,1,1]] /. A_[{a__}]-> A]},Flatten[{CouplingName[listCouplings[[n1,1,1]]],Table[ SPhenoCouplingColor[listCouplings[[n1,1,1]],temp[[i2,1]]],{i2,1,Length[temp]}]}],{},{}},{Flatten[Table[If[FreeQ[temp[[i2,1]],Lam],1,If[FreeQ[temp[[i2,1]],Lam[a__]Lam[b__]],2,4]]temp[[i2,2]] /. subCouplingsSPheno,{i2,1,Length[temp]}]],listCouplings[[n1,1,1]]}]}];
 couplingNames = Join[couplingNames,Table[ SPhenoCouplingColor[listCouplings[[n1,1,1]],temp[[i2,1]]],{i2,1,Length[temp]}]];
 newcouplings=Table[ SPhenoCouplingColor[listCouplings[[n1,1,1]],temp[[i2,1]]],{i2,1,Length[temp]}];
@@ -570,10 +640,6 @@ Return[{SPhenoCouplings,parameterNames,couplingNames}];
 
 
 (* ::Input::Initialization:: *)
-
-
-
-(* ::Input::Initialization:: *)
 WriteSPhenoCouplings[SPhenoCouplings_, Check_,end_]:=Block[{i,i2,InvPart},
 
 Print["  writing routine for each coupling: ",Dynamic[DynamicCurrentCouplingNr[end]],"/",Length[SPhenoCouplings]," (",Dynamic[DynamicCurrentCouplingName[end]],")"];
@@ -595,7 +661,7 @@ WriteCouplings=True;
 If[WriteCouplings==True,
 
 (* If[Length[SPhenoCouplings[[i,2]]]\[Equal]2, *)
-If[end==="Q",
+If[end==="Q"||end==="CS",
 MakeSubroutineTitle[SPhenoCouplings[[i,2,1]]<>end, Join[SPhenoCouplings[[i,3]],SPhenoCouplings[[i,4]]],{},Table["res"<>ToString[i2],{i2,1,Length[SPhenoCouplings[[i,2]]]-1}],sphenoCoup];,
 Switch[Length[SPhenoCouplings[[i,2]]],
 2, MakeSubroutineTitle[SPhenoCouplings[[i,2,1]]<>end, Join[SPhenoCouplings[[i,3]],SPhenoCouplings[[i,4]]],{},{"res"},sphenoCoup];,
@@ -621,7 +687,7 @@ i2++;];
 MakeVariableList[SPhenoCouplings[[i,4]],", Intent(in)",sphenoCoup];
 
 (* If[Length[SPhenoCouplings[[i,2]]]\[Equal]2, *)
-If[end==="Q",
+If[end==="Q"||end==="CS",
 For[i2=1,i2<=Length[SPhenoCouplings[[i,2]]]-1,
 WriteString[sphenoCoup, "Complex(dp), Intent(out) :: res"<>ToString[i2]<>" \n"];
 i2++;];,
@@ -658,7 +724,7 @@ i2++;];
 
 (* If[Length[SPhenoCouplings[[i,2]]]\[Equal]2, *)
 
-If[end==="Q",
+If[end==="Q"||end==="CS",
 For[i2=1,i2<=Length[SPhenoCouplings[[i,5]]],
 If[FreeQ[SPhenoCouplings[[i,5,i2]],Complex]==False, 
 valueCurrent=SPhenoCouplings[[i,5,i2]]/I;
@@ -810,7 +876,7 @@ WriteString[sphenoCoup, "Contains \n \n "];
 
 ];
 
-WriteSPhenoAllCouplings[SPhenoCouplings_,parameterNames_,couplingNames_,RoutineName_,end_] :=Block[{i1,i2,i},
+WriteSPhenoAllCouplings[SPhenoCouplings_,parameterNames_,couplingNames_,RoutineName_,end_] :=Block[{i1,i2,i,j},
 
 (* Print["   Writing Function for all Couplings"]; *)
 
@@ -838,6 +904,11 @@ Switch[Length[SPhenoCouplings[[i,2]]],
 4, WriteString[sphenoCoup, ToString[SPhenoCouplings[[i,2,2]]] <> " = 0._dp \n"];
        WriteString[sphenoCoup, ToString[SPhenoCouplings[[i,2,3]]] <> " = 0._dp \n"];
        WriteString[sphenoCoup, ToString[SPhenoCouplings[[i,2,4]]] <> " = 0._dp \n"];
+,
+_,
+For[j=2,j<=Length[SPhenoCouplings[[i,2]]],j++,
+WriteString[sphenoCoup, ToString[SPhenoCouplings[[i,2,j]]] <> " = 0._dp \n"];
+];
 ];
 
 OpenDoes[{getIndexRangeSPheno[SPhenoCouplings[[i,2,2]]]},sphenoCoup];
@@ -1021,6 +1092,257 @@ WriteString[file, "  e=0.\n"];
 WriteString[file, "End If\n"];
 WriteString[file, "End Function epsTensor\n"];
 ];
+
+(*-----------------------------------*)
+(*----- Couplings with colour structures -------*)
+(* Code provided by M.D. Goodsell    *)
+(*-----------------------------------*) 
+
+SPhenoCouplingListColstruc[listCouplings_]:=Block[{n1,i2,i,mj,SPhenoCouplings,parameterNames,couplingNames,factor,tempname1,tempname2,mytempstringname1,mytempstringname2,POLEstructures,manycolourstructures,numberofcouplings,colourflag,multiflag,summableflag,repartsincoup,tempval,nps,ngroup,group,tt,ttcs,tttt2,value,mytempstringnames,tempnames,snamestub},
+colourcouplingstatus="";
+Print["Building Coupling List with colour structures: ",Dynamic[colourcouplingstatus]];
+UNITARITYvertices={};
+UNITARITYverticesorg={};
+coupNr=1;
+couplingNames={};
+parameterNames={};
+numberofcouplings=Length[listCouplings];
+SPhenoCouplings={};
+
+(* STICK MAIN BIT OF CODE HERE ...*)
+For[n1=1,n1<=numberofcouplings,n1++,
+
+(* gives {{structure, val} ...} *)
+(*ttcs=Select[ExtractStructure[listCouplings[[n1,1,2,1]],color],#[[2,1]]=!=0&];*)
+
+ttcs=Select[ExtractStructure[listCouplings[[n1,1,2,1]],color],#[[2,1]]=!=0&]/.{CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2};
+(* want {{vals},{structs}} *)
+tt={Transpose[ttcs][[2]],Transpose[ttcs][[1]]};
+
+(*
+tt=splitvert[listCouplings[[n1]]];
+*)
+UNITARITYColourStructures[C@@(listCouplings[[n1,1,1]]/.{A_[{a__}]->A})]=tt[[2]];
+AppendTo[UNITARITYvertices,{listCouplings[[n1,1,1]],tt[[2]]}];
+AppendTo[UNITARITYverticesorg,C@@(listCouplings[[n1,1,1]]/.{A_[{a__}]->A})];
+
+If[Length[tt[[2]]]==1,
+
+value=tt[[1,1]];
+SPhenoCouplings=Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]]/.A_[{a__}]->A]},{CouplingName[listCouplings[[n1,1,1]]],SPhenoCoupling[listCouplings[[n1,1,1]]]},{},{},{value/.subCouplingsSPheno},listCouplings[[n1,1,1]]}}];
+couplingNames=Join[couplingNames,{SPhenoCoupling[listCouplings[[n1,1,1]]]}];
+(*
+SPhenoCouplings=Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]]/.A_[{a__}]\[Rule]A]},{CouplingName[listCouplings[[n1,1,1]]],SPhenoCoupling[listCouplings[[n1,1,1]]]},{},{},value/.subCouplingsSPheno,listCouplings[[n1,1,1]]}}];
+couplingNames=Join[couplingNames,{SPhenoCoupling[listCouplings[[n1,1,1]]]}];
+*)
+
+,
+(* Multiple structures *)
+value=tt[[1]];
+snamestub=StringJoin[CouplingName[listCouplings[[n1,1,1]]],"CS"];
+mytempstringnames=Table[snamestub<>ToString[i],{i,1,Length[tt[[2]]]}];
+snamestub=StringJoin[ToString[SPhenoCoupling[listCouplings[[n1,1,1]]]],"CS"];
+tempnames=Table[ToExpression[snamestub<>ToString[i]],{i,1,Length[tt[[2]]]}];
+SPhenoCouplings=Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]]/.A_[{a__}]->A]},{CouplingName[listCouplings[[n1,1,1]]],Sequence@@tempnames},{},{},value/.subCouplingsSPheno,listCouplings[[n1,1,1]]}}];
+
+couplingNames=Join[couplingNames,tempnames];
+
+];
+
+
+
+NewParameters={};
+NewParametersSplit={};
+For[i2=1,i2<=Length[listCouplings[[n1,1,1]]],
+If[getGenSPheno[listCouplings[[n1,1,1,i2]]]==1,
+indRange={};,
+(* Gives {gt<n2>, RANGE}*)
+indRange={{generation,getGenSPheno[listCouplings[[n1,1,1,i2]]]}}/.subGC[i2]/.subIndFinal[i2,i2];
+];
+If[indRange=!={},
+SPhenoCouplings[[coupNr,3]]=Join[SPhenoCouplings[[coupNr,3]],Transpose[indRange][[1]]];
+];
+NewParameters=Join[NewParameters,indRange];
+NewParametersSplit=Join[NewParametersSplit,indRange];
+i2++;];
+If[NewParameters==={},
+NewP1={};
+NewP2={};,
+NewP1=Transpose[NewParameters][[1]];
+NewP2=Transpose[NewParameters][[2]];
+];
+If[Length[tt[[2]]]==1,
+SPhenoParameters=Join[SPhenoParameters,{{SPhenoCoupling[listCouplings[[n1,1,1]]],NewP1,NewP2,NewParametersSplit}}];
+,
+SPhenoParameters=Join[SPhenoParameters,Array[{tempnames[[#]],NewP1,NewP2,NewParametersSplit}&,{Length[tempnames]}]];
+];
+(*Add couplings to the list of parameters*)
+For[i2=1,i2<=Length[parameters],
+If[FreeQ[listCouplings[[n1]],
+parameters[[i2,1]]]==False&&FreeQ[UnfixedCharges,parameters[[i2,1]]]==True&&Head[parameters[[i2,1]]]=!=Mass&&NumericQ[parameters[[i2,1]]]==False&&parameters[[i2,1]]=!=0.,SPhenoCouplings[[coupNr,4]]=Join[SPhenoCouplings[[coupNr,4]],{parameters[[i2,1]]}];
+If[FreeQ[parameterNames,parameters[[i2,1]]]==True&&FreeQ[UnfixedCharges,parameters[[i2,1]]]==True,parameterNames=Join[parameterNames,{parameters[[i2,1]]}]];];
+i2++;];
+
+
+coupNr++;
+
+];(* end For[n1=1,n1\[LessEqual]numberofcouplings *)
+colourcouplingstatus="Complete ("<>ToString[numberofcouplings]<>"/"<>ToString[numberofcouplings]<>") processed, "<>ToString[coupNr-1]<>" unique couplings found";
+Return[{SPhenoCouplings,parameterNames,couplingNames}];
+];
+(*
+splitvert[vert_]:=Block[{ps,nps,inds,rel,dyns,cdyns,invos,sumline,ls,singlet,matij,deltsub,deltsub2,coeffs,mij,mii,i,j,k,count,cstub,group,snogroup,simple,pos,indos,vals,newvals,structs,newstructs,pinds,sumsub,tind,tpos,norma,pref,tval,cinds,numsings,grinds,allsums,tosum,suminds,okheads,tempsums,gaugeinds,pos2,pos3,pos4,posdyn,grdims,extsumline,matr},
+okheads={fSU3,Delta,Lam,LamHlf,sum,epsTensor,CG,Generator};
+ps=vert[[1,1]]/.{A_[{x__}]\[Rule]A};
+coeffs=ToString/@{a,b,c,d,e,f,g};
+Print[ps];
+nps=Length[ps];
+inds=DeleteCases[DeleteCases[getIndizesWI/@ps,{generation,_Integer},Infinity],{lorentz,_Integer},Infinity];
+Print[inds];
+rel=Union[DeleteCases[Flatten[inds],_Integer]];
+If[Length[rel]\[Equal]0,Return[{{vert[[1,2,1]]},{1}}]];
+(* otherwise have some indices to deal with *)
+structs={1};
+grinds={};
+tosum={};
+suminds={};
+sumsub={};
+vals={vert[[1,2,1]]};
+allsums=Cases[vals[[1]],x_sum,All];
+If[Length[rel]\[Equal]Length[unitarityGroupData],simple=True,simple=False];
+For[mii=1,mii\[LessEqual]Length[rel],mii++,
+If[simple,
+group=unitarityGroupData[[mii,1]];
+snogroup=unitarityGroupData[[mii,3]];
+,
+group=rel[[mii]];
+pos=Position[unitarityGroupData,group][[1,1]];
+snogroup=unitarityGroupData[[pos,3]];
+];
+Print[group];
+(* NB we only consider groups that are relevant, so length of pos > 0*)
+pos=Transpose[Position[inds,group]][[1]];
+cstub=StringTake[ToString[group],1]<>"t";
+cinds=Table[Symbol[cstub<>ToString[pos[[mij]]]],{mij,1,Length[pos]}];
+grinds=Join[grinds,cinds];
+
+For[i=1,i\[LessEqual]Length[cinds],i++,
+tempsums={};
+tempsums=Join[tempsums,Select[allsums,(FreeQ[#,cinds[[i]]]\[Equal]False)&]];
+];
+(* Now to pick out the indices to actually sum over *)
+(*
+gaugeops=Cases[tempsums,x_?(FreeQ[okheads,Head[#]]===False)&];
+*)
+gaugeinds=Cases[tempsums,A_[xx__]?((FreeQ[okheads,Head[#]]\[Equal]False)&&(Intersection[List@@#,cinds]=!={})&)\[Rule]{xx},All];
+gaugeinds=Intersection[Flatten[gaugeinds]];
+gaugeinds=Complement[gaugeinds,cinds];
+For[i=1,i\[LessEqual]Length[gaugeinds],i++,
+AppendTo[sumsub,mysum[gaugeinds[[i]],b_,c_,d_]\[RuleDelayed]Sum[d,{x123,b,c}]/.{x123\[Rule]gaugeinds[[i]]}];
+];
+
+If[Length[pos]<3,(* Only 0 or 2 particles charged under group*)
+If[Length[pos]\[Equal]0,
+(* This shouldn't be possible! *)
+Continue[];
+,
+(* Two options: delta function or epsilon for SU(2) case*)
+(* Must just be a delta function in the indices unless something has gone wrong! *)
+(*pinds=ps/.{A_[{x__}]\[Rule]{x}};*)
+(*pos=Position[inds,group];*)
+If[(snogroup===SU2)&&(!(FreeQ[vals,epsTensor[cinds[[1]],__]]&&FreeQ[vals,epsTensor[cinds[[2]],__]])),
+newstructs={epsTensor[cinds[[1]],cinds[[2]]]};
+vals=vals/.{cinds[[1]]\[Rule]1,cinds[[2]]\[Rule]2};
+,
+newstructs={Delta[cinds[[1]],cinds[[2]]]};
+(*vals=vals/.{newstructs[[1]]\[Rule]1};*)
+vals=vals/.{cinds[[1]]\[Rule]1,cinds[[2]]\[Rule]1};
+];
+
+structs=Flatten[Outer[Times,structs,newstructs]];
+Continue[];
+]
+];
+(* now to the harder cases with three or more particles charged under the group *)
+
+dyns=(SA`DynL[ps[[#]],group]&/@pos);
+(* First check to see whethere there is a single structure *)
+
+ls=Length[Adjoint[snogroup]];
+singlet=Array[0&,{ls}];
+
+(* First check if it's one of the simple cases ... otherwise we have the issue that Susyno invariants aren't in the same basis as SARAH! *)
+If[snogroup===SU3,
+vals=vals/.{CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]\[Rule]Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]\[Rule]Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]\[Rule]Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]\[Rule]Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]\[Rule]Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]\[Rule]Lam[a,b,c]/2};
+];
+
+Switch[Sort[dyns],
+{{0,1},{1,0},{1,1}},
+pos2=Position[dyns,{0,1}][[1,1]];
+pos3=Position[dyns,{1,0}][[1,1]];
+pos4=Position[dyns,{1,1}][[1,1]];
+newstructs={Lam[cinds[[pos4]],cinds[[pos2]],cinds[[pos3]]]/2};
+structs=Flatten[Outer[Times,structs,newstructs]];
+vals=(vals/(1/2))/.{cinds[[pos4]]\[Rule]1,cinds[[pos2]]\[Rule]1,cinds[[pos3]]\[Rule]2};
+,
+{{0,1},{0,1},{1,0},{1,0}},
+pos2=Position[dyns,{0,1}];
+pos3=Position[dyns,{1,0}];
+(*
+(* Project onto Delta[ij]Delta[kl] and T^a_{ij} T^a_{kl} *)
+newstructs={Delta[cinds[[pos2[[1,1]]]],cinds[[pos3[[1,1]]]]]*Delta[cinds[[pos2[[2,1]]]],cinds[[pos3[[2,1]]]]],Delta[cinds[[pos2[[1,1]]]],cinds[[pos3[[2,1]]]]]*Delta[cinds[[pos2[[2,1]]]],cinds[[pos3[[1,1]]]]]/2-Delta[cinds[[pos2[[1,1]]]],cinds[[pos3[[1,1]]]]]*Delta[cinds[[pos2[[2,1]]]],cinds[[pos3[[2,1]]]]]/6};
+*)
+(* Project onto Delta[ij]Delta[kl] and Delta[il]Delta[jk] *)
+newstructs={Delta[cinds[[pos2[[1,1]]]],cinds[[pos3[[1,1]]]]]*Delta[cinds[[pos2[[2,1]]]],cinds[[pos3[[2,1]]]]],Delta[cinds[[pos2[[1,1]]]],cinds[[pos3[[2,1]]]]]*Delta[cinds[[pos2[[2,1]]]],cinds[[pos3[[1,1]]]]]};
+structs=Flatten[Outer[Times,newstructs,structs]]; (* {new1 * structs, new2*structs } *)
+vals=Join[(vals/.{cinds[[pos2[[1,1]]]]\[Rule]1,cinds[[pos3[[1,1]]]]\[Rule]1,cinds[[pos2[[2,1]]]]\[Rule]2,cinds[[pos3[[2,1]]]]\[Rule]2}),(vals/.{cinds[[pos2[[1,1]]]]\[Rule]1,cinds[[pos3[[2,1]]]]\[Rule]1,cinds[[pos2[[2,1]]]]\[Rule]2,cinds[[pos3[[1,1]]]]\[Rule]2})];
+,
+{{1,1},{1,1},{1,1}},
+(* f and d *)
+newstructs={fSU3[cinds/.List\[Rule]Sequence],dSU3[cinds/.List\[Rule]Sequence]};
+structs=Flatten[Outer[Times,newstructs,structs]]; (* {new1 * structs, new2*structs } *)
+vals=Join[(-2*vals/.{cinds[[1]]\[Rule]1,cinds[[2]]\[Rule]2,cinds[[3]]\[Rule]3}),(2*vals/.{cinds[[1]]\[Rule]1,cinds[[2]]\[Rule]1,cinds[[3]]\[Rule]8})];
+,
+_,
+Print["Unknown structure -> using Susyno"];
+invos=Invariants[snogroup,dyns];
+
+
+deltsub={};
+(*delt2sub={a[j_]\[Rule]1,b[j_]\[Rule]1,c[j_]\[Rule]1,d[j_]\[Rule]1,e[j_]\[Rule]1,f[j_]\[Rule]1};*)
+For[mij=1,mij\[LessEqual]Length[pos],mij++,
+AppendTo[deltsub,ToExpression[coeffs[[mij]]<>"[mx_]"]\[Rule]Delta[mx,cinds[[mij]]]];
+];
+newstructs=invos/.deltsub;
+
+grdims=Cases[DeleteCases[inds,{}],x_?(#[[1]]\[Equal]group&),2];
+extsumline=Table[{cinds[[i]],1,grdims[[i,2]]},{i,1,Length[grdims]}];
+
+
+(*norma=Array[Sum[newstructs[[#1]]*newstructs[[#2]],Evaluate[Sequence@@extsumline]]&,{Length[invos],Length[invos]}];*)
+norma=Array[(Expand[invos[[#1]]*invos[[#2]]]/. {a[_]^2\[Rule]1,b[_]^2\[Rule]1,c[_]^2\[Rule]1,d[_]^2\[Rule]1,e[_]^2\[Rule]1,f[_]^2\[Rule]1} /.a[_]\[Rule]0/. b[_]\[Rule]0/.c[_]\[Rule]0/.d[_]\[Rule]0/.e[_]\[Rule]0/.f[_]\[Rule]0)&,{Length[invos],Length[invos]}];
+(*************)
+matr=Array[Sum[newstructs[[#1]]*((vals[[#2]]/.{sum\[Rule]mysum}/.sumsub)/.{mysum\[Rule]sum}),Evaluate[Sequence@@extsumline]]&,{Length[invos],Length[vals]}];
+Print[MatrixForm[norma]];
+Print[MatrixForm[matr]];
+newvals=Inverse[norma].matr;(* RH index is over other colour structures, LH over new*)
+vals=Flatten[newvals];
+structs=Outer[Times,newstructs,structs];
+];
+
+
+
+
+];
+
+If[Length[sumsub]>0,
+vals=vals/.sum\[Rule]mysum/.sumsub/.mysum\[Rule]sum;
+];
+
+Return[{vals,structs}];
+]; (* end splitvert*)
+*)
+
 
 
 (*-----------------------------------*)

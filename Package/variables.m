@@ -179,7 +179,7 @@ i++;];
 
 (* Set Real Parameters *)
 
-realVar={Mass};
+realVar={Mass,epsUV};
 realHeads={Mass,repl,Sin,Cos,Sec,Tan,Csc,Cot,Delta,Kronecker,epsTensor, g,sum};
 Particles[Current] = {};
 Particles[ALL] = {};

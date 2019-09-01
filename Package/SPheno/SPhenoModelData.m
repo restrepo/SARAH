@@ -122,6 +122,7 @@ WriteString[ModelData,"Logical :: OneLoopMatching = .True. \n"];
 WriteString[ModelData,"Logical :: TreeLevelUnitarityLimits = .True. \n"];
 WriteString[ModelData,"Real(dp) :: max_scattering_eigenvalue=0._dp\n"];
 WriteString[ModelData,"Real(dp) :: TreeUnitarity=1\n"];
+WriteString[ModelData,"Real(dp) :: CutSpole=0.25_dp \n"];
 
 WriteString[ModelData,"Logical :: TrilinearUnitarity = .True. \n"];
 WriteString[ModelData,"Logical :: RunRGEs_unitarity = .false. \n"];
@@ -193,7 +194,7 @@ WriteString[ModelData,"Real(dp) :: mass_uncertainty_Q("<>NumberNewMassesTotal<>"
 WriteString[ModelData,"Logical :: GetMassUncertainty = .false. \n"];
 WriteString[ModelData,"Integer :: SolutionTadpoleNr = 1 \n"];
 
-WriteString[ModelData,"Character(len=15)::HighScaleModel\n"];
+
 
 WriteInitClebschGordan[ModelData];
 
@@ -386,7 +387,9 @@ MakeVariableList[Flatten[listsaveMasses],"",ModelData];
 MakeVariableList[listParametersOtherRegimesGUT,"",ModelData];
 ];
 
+If[AddMatchingRoutines=!=True,
 LookForAdditionalParameter;
+];
 
 For[i=1,i<=Length[AdditionalVariablesSPheno],
 If[FreeQ[realVar,AdditionalVariablesSPheno[[i]]] && FreeQ[realVar,Head[AdditionalVariablesSPheno[[i]]]], head="Complex";,head="Real"];
@@ -394,7 +397,7 @@ If[getDimSPheno[AdditionalVariablesSPheno[[i]]]==={} ||getDimSPheno[AdditionalVa
 dim="";,
 dim=StringReplace[ToString[getDimSPheno[AdditionalVariablesSPheno[[i]]]],{"{"->"(","}"->")"}];
 ];
-WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[AdditionalVariablesSPheno[[i]]]<>dim<>"\n"];
+WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[AdditionalVariablesSPheno[[i]]/.subSPhenoForm]<>dim<>"\n"];
 (*
 If[Depth[AdditionalVariablesSPheno[[i]]]>1,
 WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[ToExpression[ToString[AdditionalVariablesSPheno[[i,0]]]<>"IN"]@@AdditionalVariablesSPheno[[i]]]<>dim<>"\n"];,
@@ -431,6 +434,7 @@ WriteString[ModelData,head<>"(dp) :: " <> SPhenoForm[ToExpression[ToString[Addit
 ];
 i++;];
 
+If[AddMatchingRoutines=!=True,
 If[Head[MINPAR[[1,1]]]=!=List,
 For[i=1,i<=Length[MINPAR],
 If[FreeQ[realVar,MINPAR[[i,2]]],
@@ -458,7 +462,7 @@ WriteString[ModelData,"Real(dp) :: " <> SPhenoForm[EXTPAR[[i,2]]]<>"\n"];
 ];
  ];
 i++;];
-
+];
 
 For[i=1,i<=Length[listVEVs],
 If[getDimSPheno[listVEVs[[i]]]==={1},
@@ -735,6 +739,7 @@ For[i=1,i<=Length[ThresholdCouplings],
 WriteString[ModelData,SPhenoForm[ThresholdCouplings[[i]]]<>"_save = 0._dp \n"];
 i++;];
 
+If[AddMatchingRoutines=!=True,
 If[Head[MINPAR[[1,1]]]=!=List,
 For[i=1,i<=Length[MINPAR],
 If[FreeQ[realVar,MINPAR[[i,2]]],
@@ -762,6 +767,7 @@ WriteString[ModelData, SPhenoForm[EXTPAR[[i,2]]]<>"= 0._dp \n"];
 ];
  ];
 i++;];
+];
 
 If[IncludeFineTuning===True,
 For[k=1, k<= Length[Thresholds],
@@ -824,6 +830,7 @@ WriteString[ModelData,"Logical, Save :: WriteSLHA1 = .False. \n"];
 WriteString[ModelData,"Logical, Save :: MakeQTEST = .False. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMasses = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateOneLoopMassesSave = .True. \n"];
+WriteString[ModelData,"Logical, Save :: Kin_Threshold_Scan = .True. \n"];
 WriteString[ModelData,"Logical, Save :: CalculateTwoLoopHiggsMasses = .True. \n"];
 (* WriteString[ModelData,"Logical, Save :: SUSYrunningFromMZ = .True. \n"]; *)
 WriteString[ModelData,"Logical, Save :: SquareFullAmplitudeDecays = .False. \n"];
@@ -856,6 +863,8 @@ WriteString[ModelData,"Real(dp) :: TwoLoopRegulatorMass = 0._dp \n"];
 WriteString[ModelData,"Logical :: IRdivOnly = .false. \n"];
 WriteString[ModelData,"Character(len=3) :: IRstring=\"000\" \n"];
 
+WriteString[ModelData,"Character(len=15)::HighScaleModel\n"];
+
 (*
 If[SupersymmetricModel===True,
 WriteString[ModelData,"Logical, Save :: SMrunningLowScaleInput=.True.\n"];,
@@ -879,6 +888,9 @@ WriteString[ModelData,"Logical, Save :: DebugLoopDecays=.False.\n"];
 WriteString[ModelData,"Logical, Save :: OnlyTreeLevelContributions= .false. \n"];
 WriteString[ModelData,"Logical, Save :: ExternalZfactors=.True.\n"];
 WriteString[ModelData,"Logical, Save :: OSkinematics=.True.\n"];
+
+WriteString[ModelData,"Logical, Save :: One_Loop_Matching =.True.\n"];
+WriteString[ModelData,"Logical, Save :: Offdiaognal_WaveFunction_Matching=.False.\n"];
 
 WriteString[ModelData,"Logical, Save :: UseZeroRotationMatrices=.False.\n"];
 WriteString[ModelData,"Logical, Save :: UseP2Matrices=.True.\n"];
@@ -910,6 +922,7 @@ WriteString[ModelData,"Logical :: HigherOrderDiboson = .True. \n"];
 WriteString[ModelData,"Real(dp) :: nLep = 3._dp, mf_u_mz_running \n"];
 WriteString[ModelData,"Real(dp) :: nUp = 2._dp \n"];
 WriteString[ModelData,"Real(dp) :: err2L = 0._dp \n"];
+WriteString[ModelData,"Real(dp) :: UVscaleQ, IRmass=1.0E-6_dp,  epsUV=1.0E-6_dp \n"];
 WriteString[ModelData,"Real(dp) :: nDown = 3._dp \n"];
 WriteString[ModelData,"Real(dp) :: MaxMassLoop = 1.0E16_dp \n"];
 WriteString[ModelData,"Real(dp) :: MinWidth = 1.0E-30_dp \n"];

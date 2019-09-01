@@ -256,7 +256,7 @@ CalcBetaFunctionsNonSUSY[VEVI,SA`ListVEVi  /.subGC[1]/.subindnames,"BetaVEV","Be
 
 
 (* ::Input::Initialization:: *)
-GenerateCouplingVariables[NoMatMul_,Force_,ComplexScalarCouplings_]:=Block[{i,j,k,subrule,per,free,added={},res,temp,tempS,indNr,indices,deltaInd,deltaInd2},
+GenerateCouplingVariables[NoMatMul_,Force_,ComplexScalarCouplings_]:=Block[{pos,i,j,k,subrule,per,free,added={},res,temp,tempS,indNr,indices,deltaInd,deltaInd2},
 If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
 
 res=SplitScalarCouplings[SA`SSlist,ComplexScalarCouplings]; lA2=res[[1]];lA2one=res[[2]];
@@ -342,6 +342,16 @@ Aijk[lA3[[i,1,per[[j,1]]]]/.subRule,lA3[[i,1,per[[j,2]]]]/.subRule,lA3[[i,1,per[
 i++;];
 j++;];*)
 
+temp={};
+For[i=1,i<=Length[lA3],
+If[FreeQ[temp,lA3[[i,1]]],
+temp=Join[temp,{lA3[[i]]}];,
+pos=Position[temp,lA3[[i,1]]][[1,1]];
+temp[[pos,2]]=temp[[pos,2]]+lA3[[i,2]];
+];
+i++;];
+lA3=temp;
+
 SetAttributes[Aijk,Orderless];
 For[i=1,i<=Length[lA3],
 Aijk[lA3[[i,1,1]]/.subRule,lA3[[i,1,2]]/.subRule,lA3[[i,1,3]]/.subRule]= lA3[[i,2,1]] /.Select[subAlways,FreeQ[#1,sum]&] /. conj[x_]->Conj[x] /. subForce ;
@@ -402,6 +412,16 @@ Bij[lA2[[i,1,per[[j,1]]]]/.subRule,lA2[[i,1,per[[j,2]]]]/.subRule]=1/2 lA2[[i,2,
 i++;];
 j++;];
 *)
+
+temp={};
+For[i=1,i<=Length[lA2],
+If[FreeQ[temp,lA2[[i,1]]],
+temp=Join[temp,{lA2[[i]]}];,
+pos=Position[temp,lA2[[i,1]]][[1,1]];
+temp[[pos,2]]=temp[[pos,2]]+lA2[[i,2]];
+];
+i++;];
+lA2=temp;
 
 SetAttributes[Bij,Orderless];
 For[i=1,i<=Length[lA2],
@@ -951,12 +971,12 @@ LIJKL,
 	For[ii=1,ii<=Length[fields[[i,1]]],
 	If[FreeQ[bfcalculated,getBlank/@fields[[i,1,ii,2,2]]],
 	bF1L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionLijkl1LnonSUSY[fields[[i,1,ii,2,2]]];
-	bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionLijkl2LnonSUSY[fields[[i,1,ii,2,2]]];
+	If[twoloop,bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionLijkl2LnonSUSY[fields[[i,1,ii,2,2]]];,bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=0;];
 	bfcalculated=Join[bfcalculated,{getBlank/@fields[[i,1,ii,2,2]]}];
 	];
-	betaFunction+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF1L[fields[[i,1,ii,2,2]]]/. SA`gCoup[a__]->0 )]/.fields[[i,1,ii,2,1]],False]];
+	betaFunction+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF1L[fields[[i,1,ii,2,2]]]/. SA`gCoup[a__]->0 )/.fields[[i,1,ii,2,1]]],False]];
 If[twoloop,
-betaFunction2L+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF2L[fields[[i,1,ii,2,2]]]/. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[a__]->ExpandTermNS[YcYYcY4func[a]])]/.fields[[i,1,ii,2,1]] ,False]];
+betaFunction2L+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF2L[fields[[i,1,ii,2,2]]]/. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[a__]->ExpandTermNS[YcYYcY4func[a]])/.fields[[i,1,ii,2,1]]] ,False]];
 ];
 	factor=1;
 	ii++;];,
@@ -980,12 +1000,12 @@ SuperpositionNeeded=True;
 	For[ii=1,ii<=Length[fields[[i,1]]],
 	If[FreeQ[bfcalculated,getBlank/@fields[[i,1,ii,2,2]]],
 	bF1L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionTijk1LnonSUSY[fields[[i,1,ii,2,2]]];
-	bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionTijk2LnonSUSY[fields[[i,1,ii,2,2]]];
+		If[twoloop,bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionTijk2LnonSUSY[fields[[i,1,ii,2,2]]];,bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=0;];
 	bfcalculated=Join[bfcalculated,{getBlank/@fields[[i,1,ii,2,2]]}];
 	];
-	betaFunction+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF1L[fields[[i,1,ii,2,2]]]/. SA`gCoup[a__]->0 )]/.fields[[i,1,ii,2,1]],False]];
+	betaFunction+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF1L[fields[[i,1,ii,2,2]]]/. SA`gCoup[a__]->0 )/.fields[[i,1,ii,2,1]]],False]];
 If[twoloop,
-betaFunction2L+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF2L[fields[[i,1,ii,2,2]]]/. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[__]->0)]/.fields[[i,1,ii,2,1]] ,False]];
+betaFunction2L+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF2L[fields[[i,1,ii,2,2]]]/. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[__]->0)/.fields[[i,1,ii,2,1]]] ,False]];
 ];
 	factor=1;
 	ii++;];,
@@ -1002,12 +1022,12 @@ SuperpositionNeeded=True;
 	For[ii=1,ii<=Length[fields[[i,1]]],
 	If[FreeQ[bfcalculated,getBlank/@fields[[i,1,ii,2,2]]],
 	bF1L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionMSij1LnonSUSY[fields[[i,1,ii,2,2]]];
-	bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionMSij2LnonSUSY[fields[[i,1,ii,2,2]]];
+	If[twoloop,bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=BetaFunctionMSij2LnonSUSY[fields[[i,1,ii,2,2]]];,bF2L[fields[[i,1,ii,2,2]]/.Flatten[Table[subGCRule[iii]/.subGC[iii] ,{iii,1,4}]]]=0;];
 	bfcalculated=Join[bfcalculated,{getBlank/@fields[[i,1,ii,2,2]]}];
 	];
-	betaFunction+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF1L[fields[[i,1,ii,2,2]]]/. SA`gCoup[a__]->0 )]/.fields[[i,1,ii,2,1]],False]];
+	betaFunction+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF1L[fields[[i,1,ii,2,2]]]/. SA`gCoup[a__]->0 )/.fields[[i,1,ii,2,1]]],False]];
 If[twoloop,
-betaFunction2L+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF2L[fields[[i,1,ii,2,2]]]/. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[__]->0)]/.fields[[i,1,ii,2,1]] ,False]];
+betaFunction2L+=Expand[1/factor* CalcRGEValue[CalcDelta[fields[[i,1,ii,1]](bF2L[fields[[i,1,ii,2,2]]]/. SA`SubIgnore2L /. 0[a__]->0/. YcYYcY4[__]->0)/.fields[[i,1,ii,2,1]] ],False]];
 ];
 	factor=1;
 	ii++;];,

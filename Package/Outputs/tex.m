@@ -1250,6 +1250,7 @@ If[j!= Length[mixings[[i,1]]],WriteString[outputfile,", "];];
 j++;];
 WriteString[outputfile,"\\right) \\) \n \n"];
 
+
 WriteMatrixToTeX[mixings[[i]],mixedNames[[i]],MMatrizen[[i]],False];
 
 
@@ -1447,9 +1448,8 @@ a_ A_ *Tp[B_]+a_ conj[A_] Adj[B_] -> 2 a  Re[A Tp[B]]
 
 };
 
-
 For[j=1,j<= Length[mixIN[[1]]],
-For[k=1,k<= Length[mixIN[[1,j]]],
+For[k=1,k<= Length[mixIN[[2]]],
 value = TeXSimplify[matIN[[j,k]] /. ThetaStep[a___]->1] //. subTeXMM //. Delta[ToExpression["gm"<>ToString[k]],ToExpression["gn"<>ToString[j]]]->UnitM //. A_[ToExpression["gm"<>ToString[j]],ToExpression["gn"<>ToString[k]]]-> A //. A_[ToExpression["gn"<>ToString[k]],ToExpression["gm"<>ToString[j]]]->Tp[A] //. Conj->conj //. a_ conj[x_] + a_ x_ ->2 a Re[x] //. a_ x_ + a_ conj[x_] ->2 a Re[x] //. conj[x_] +  x_ ->2 Re[x]//. x_ + conj[x_]-> 2 Re[x] //. conj[x_]x_ -> abs[x]//. conj[x_]^2x_^2 -> abs2[x] //. x_ conj[x_]->abs[x] //. conj[Tp[x_]]->Adj[x] //. Tp[conj[x_]]->Adj[x] //. conj[Adj[x_]]->Tp[x] //. Adj[conj[x_]]->Tp[x] //.(a_-b_)(a_+b_)->(a^2-b^2) //. subRealSum //.RXi[_]->0 ;
  If[getLaTeXlength[value]*Length[mixIN[[1]]] < 100, 
 WriteString[outputfile,TeXOutput[value]];,

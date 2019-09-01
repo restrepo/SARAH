@@ -36,7 +36,7 @@ If[SupersymmetricModel=!=True,getGeneratorsBroken;];
 lVVV = Select[TermList,(getPartCode[#[[3]]]==30)&];
 lVVVV = Select[TermList,(getPartCode[#[[3]]]==40)&];
 pCodeKin={110,20,2010,210,220,120};
-pCodePot={2000,100,200,300,400,2100};
+pCodePot={2000,100,200,300,400,2100,2200};
 lKin = Select[TermList,(FreeQ[pCodeKin,getPartCode[#[[3]]/.Der[a_,b_]->a]]==False)&];
 lPot = Select[TermList,(FreeQ[pCodePot,getPartCode[#[[3]]/.Der[a_,b_]->a]]==False)&];
 DynamicStatusAddTerms[terms]="checking charge conservation";
@@ -140,6 +140,7 @@ invFields = Join[invFields,{Fields[[pos,3]]}];
 withHead = Join[withHead,{head2[head[Fields[[pos,3]]]]}];
 ];
 
+
 If[getTypeOld[newParticle]===F,
 Fincluded=True;
 particles*=((head[RE[getFull2[newParticle][fermNr]/.subGC[particleNr]]]) sum[genf[particleNr],getGenStart[newParticle],GetGen[newParticle]] /. DER[a_]->Der[a,lorIndex]);
@@ -149,6 +150,7 @@ particles*=((headDer[head[RE[getFull2[newParticle]/.subGC[particleNr]]]]) sum[ge
 particleNr++;
 ];
 i++;];
+
 
 PrintDebug["Checking charge Conservation of ", Dot@@entry[[3]]];
 
@@ -167,6 +169,7 @@ temp=MakeIndexStructure[withHead] /. subFieldsOne;,
 temp=entry[[1]]/. subFieldsOne;
 ];
 coup = genTest[entry[[2]],fields/.Der[a_,b_]->a,False]^entry[[4]];
+
 If[SupersymmetricModel===False && FreeQ[getType/@getBlank/@fields,V],
 GenerateCGCsForBrokenGroups[temp/.x_?NumericQ->1,fields,particles,invFields,withHead,coup]; 
 If[Head[ContractionRGE[entry[[2]]]]===ContractionRGE,
@@ -202,6 +205,8 @@ AdditionalParametersLagrange = DeleteCases[AdditionalParametersLagrange,entry[[2
 ];
 ];
 ];
+
+
 If[FreeQ[entry[[1]],Delta] && FreeQ[entry[[1]],epsTensor] && FreeQ[entry[[1]],CG],
 temp=entry[[1]]*coup*particles*MakeIndexStructure[withHead] /. subFieldsOne;,
 temp=entry[[1]]*coup*particles /. subFieldsOne;
@@ -211,7 +216,6 @@ SA`LagrangianContractions=Join[SA`LagrangianContractions,{{Dot@@withHead,temp /.
 If[invFields=!={},
 temp = SumOverExpandedIndizes[temp,invFields];
 ];
-
 
 If[Fincluded==True,
 temp = temp + (temp /. { A_?(#=!=SU&)[1]->A[2],A_?(#=!=SU&)[2]->A[1]});

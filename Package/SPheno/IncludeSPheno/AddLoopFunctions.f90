@@ -1822,5 +1822,334 @@ End Function fVVF
 End Function gVVF
 
 
+!-----------------------------------
+! IR Save Loop Functions
+!-----------------------------------
+
+
+Complex(dp) Function A0_IR(m1)
+Implicit None
+Real(dp), Intent(in) :: m1
+
+If (divonly.Eq.1) Then
+    A0_IR = m1*divergence
+    Return
+End if
+
+If ((m1/UVscaleQ).le.IRmass) Then
+ A0_IR = 0._dp
+Else 
+ A0_IR = m1*(1+Log(UVscaleQ/m1))
+End If
+
+End Function A0_IR
+
+
+Complex(dp) Function B0_IR(m1,m2)
+Implicit None
+Real(dp), Intent(in) :: m1,m2
+Real(dp) :: m1s, m2s
+
+
+If (divonly.Eq.1) Then
+    B0_IR = divergence
+    Return
+End if    
+
+! Sort masses
+If (m1.ge.m2) Then 
+ m1s=m2
+ m2s=m1
+Else 
+ m1s=m1
+ m2s=m2
+End if
+
+If  ((m2s/UVscaleQ).le.IRmass) Then ! B0(0,0)
+ B0_IR=0._dp
+Else if ((m1s/UVscaleQ).le.IRmass) Then ! B0(0,m2)
+ B0_IR=1._dp + Log(UVscaleQ/m2s)
+Else if (Abs((m1s-m2s)/UVscaleQ).le.IRmass) Then ! B0(m1,m1) 
+ B0_IR=log(UVscaleQ/m1s)
+Else 
+ B0_IR=1._dp + log(UVscaleQ/m2s) + m1s/(m1s-m2s)*log(m2s/m1s)
+End if
+
+End Function B0_IR
+
+Complex(dp) Function B1_IR(m1,m2)
+Implicit None
+Real(dp), Intent(in) :: m1,m2
+Real(dp) :: t0
+
+
+If (divonly.Eq.1) Then
+    B1_IR = -0.5_dp*divergence
+    Return
+End if 
+
+If  (((m2/UVscaleQ).le.IRmass).and.((m1/UVscaleQ).le.IRmass)) Then ! B1(0,0)
+ B1_IR=0._dp
+Else if ((m1/UVscaleQ).le.IRmass) Then ! B1(0,m2)
+ B1_IR=-0.25_dp + 0.5_dp*Log(m2/UVscaleQ)
+Else if ((m2/UVscaleQ).le.IRmass) Then ! B1(m1,0)
+ B1_IR=0.25_dp*(-3._dp + 2._dp*Log(m1/UVscaleQ)) 
+Else if (Abs((m1-m2)/UVscaleQ).le.IRmass) Then ! B1(m1,m1) 
+ B1_IR=0.5_dp*log(m1/UVscaleQ)
+Else 
+ t0 = m2/m1
+ B1_IR=0.5_dp*Log(m1/UVscaleQ)+ (-3._dp+4._dp*t0 - t0**2 - 4._dp*t0*Log(t0)+2._dp*t0**2*Log(t0))/(4._dp*(-1._dp+t0)**2)
+End if
+
+End Function B1_IR
+
+
+Complex(dp) Function C0eft_IR(m1,m2,m3)
+Implicit None
+Real(dp), Intent(in) :: m1,m2,m3
+Real(dp) :: xpi1,xpi2,xpi3, m_j, t1, t2
+
+If (divonly.Eq.1) Then
+    C0eft_IR = 0._dp
+    Return
+End if 
+
+! Sort masses
+xpi1 = m1
+xpi2 = m2
+xpi3 = m3
+
+ If (xpi1 .Lt. xpi2) Then
+    m_j = xpi2
+    xpi2 = xpi1
+    xpi1 = m_j
+Endif
+If (xpi2 .Lt. xpi3) Then
+    m_j = xpi3
+    xpi3 = xpi2
+    xpi2 = m_j
+Endif
+If (xpi1 .Lt. xpi2) Then
+    m_j = xpi2
+    xpi2 = xpi1
+    xpi1 = m_j
+Endif
+
+If  ((xpi1/UVscaleQ).le.IRmass) Then ! C0(0,0,0)
+ C0eft_IR=0._dp
+Else if ((xpi2/UVscaleQ).le.IRmass) Then ! C0(m1,0,0)
+ C0eft_IR=1/xpi1 - log(xpi1/UVscaleQ)/xpi1 
+Else if ((xpi3/UVscaleQ).le.IRmass) Then ! C0(m1,m2,0) 
+   If (Abs((xpi1-xpi2)/UVscaleQ).le.IRmass) Then ! C0(m1,m1,0)
+     C0eft_IR = -1/xpi1 
+   Else ! C0(m1,m2,0)
+     C0eft_IR = -(log(xpi1/xpi2)/(xpi1-xpi2))
+   End if
+Else if ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass).and.(Abs((xpi1-xpi3)/UVscaleQ).le.IRmass)) Then ! C0(m1,m1,m1) 
+ C0eft_IR=-1._dp/(2._dp*xpi1)
+Else if ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass)) Then ! C0(m1,m1,m3) 
+ C0eft_IR = (-xpi1 + xpi3 + xpi3*log(xpi1/xpi3))/(xpi1-xpi3)**2
+Else if ((Abs((xpi2-xpi3)/UVscaleQ).le.IRmass)) Then ! C0(m1,m2,m2) 
+ C0eft_IR = (-xpi3 + xpi1 + xpi1*log(xpi3/xpi1))/(xpi3-xpi1)**2 
+Else 
+t1 = xpi2/xpi1
+t2 = xpi3/xpi1
+ C0eft_IR=(-1._dp/xpi1)*(-t1*Log(t1)+t1*t2*Log(t1)+t2*Log(t2)-t1*t2*Log(t2))/((-1._dp+t1)*(t1-t2)*(-1._dp+t2))
+End if
+
+End Function C0eft_IR
+
+
+Complex(dp) Function D0_IR(m1,m2,m3,m4)
+Implicit None
+Real(dp), Intent(in) :: m1,m2,m3,m4
+Real(dp) :: xpi1,xpi2,xpi3,xpi4, m_j, t1, t2, t3
+
+Integer :: slot
+
+
+If (divonly.Eq.1) Then
+    D0_IR = 0._dp
+    Return
+End if
+
+! Sort masses
+xpi1 = m1
+xpi2 = m2
+xpi3 = m3
+xpi4 = m4
+
+! enforece m4 to be the smallest
+If (xpi1 .Lt. xpi2) Then
+    m_j = xpi2
+    xpi2 = xpi1
+    xpi1 = m_j
+Endif
+If (xpi2 .Lt. xpi3) Then
+    m_j = xpi3
+    xpi3 = xpi2
+    xpi2 = m_j
+Endif
+If (xpi3 .Lt. xpi4) Then
+    m_j = xpi4
+    xpi4 = xpi3
+    xpi3 = m_j
+Endif
+
+! sort the first three again
+If (xpi1 .Lt. xpi2) Then
+    m_j = xpi2
+    xpi2 = xpi1
+    xpi1 = m_j
+Endif
+If (xpi2 .Lt. xpi3) Then
+    m_j = xpi3
+    xpi3 = xpi2
+    xpi2 = m_j
+Endif
+If (xpi1 .Lt. xpi2) Then
+    m_j = xpi2
+    xpi2 = xpi1
+    xpi1 = m_j
+Endif
+
+If  ((xpi1/UVscaleQ).le.IRmass) Then ! D0(0,0,0,0)
+ D0_IR=0._dp
+ slot=1
+Else if ((xpi2/UVscaleQ).le.IRmass) Then ! D0(m1,0,0,0)
+ D0_IR= -Log(xpi1/UVscaleQ)/xpi1**2 + 1._dp/xpi1**2 
+ slot=2
+Else if ((xpi3/UVscaleQ).le.IRmass) Then ! D0(m1,m2,0,0) 
+   If (Abs((xpi1-xpi2)/UVscaleQ).le.IRmass) Then ! D0(m1,m1,0,0)
+     D0_IR = -2._dp/xpi1**2 + Log(xpi1/UvscaleQ)/xpi1**2 
+     slot=3
+   Else ! D0(m1,m2,0,0)
+     D0_IR = Log(xpi2/xpi1)/(xpi1*(xpi1 - xpi2)) +  Log(xpi2/UVscaleQ)/(xpi1*xpi2)
+     slot=4
+   End if
+Else if ((xpi4/UVscaleQ).le.IRmass) Then ! D0(m1,m2,m3,0) 
+   If ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass).and.(Abs((xpi1-xpi3)/UVscaleQ).le.IRmass)) Then ! D0(m1,m1,m1,0)
+     D0_IR = 1._dp/(2._dp*xpi1**2)
+     slot=5
+   Else if (Abs((xpi1-xpi2)/UVscaleQ).le.IRmass) Then ! D0(m1,m1,m3,0)
+    D0_IR = (xpi3-xpi1+xpi1*Log(xpi1/xpi3))/((xpi3-xpi1)**2*xpi1)
+    slot=6
+   Else if (Abs((xpi2-xpi3)/UVscaleQ).le.IRmass) Then ! D0(m1,m1,m3,0)
+     D0_IR = (xpi1-xpi3+xpi3*Log(xpi3/xpi1))/((xpi1-xpi3)**2*xpi3)
+     slot=7
+   Else ! D0(m1,m2,m3,0) 
+     D0_IR = ((xpi2-xpi3)*Log(xpi3/xpi1)+(-xpi1+xpi3)*Log(xpi3/xpi2))/((xpi1-xpi2)*(xpi1-xpi3)*(xpi2-xpi3))
+     slot=8
+   End if     
+Else if ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass).and.(Abs((xpi2-xpi3)/UVscaleQ).le.IRmass).and.(Abs((xpi3-xpi4)/UVscaleQ).le.IRmass)) Then ! D0(m1,m1,m1,m1) 
+     D0_IR=1._dp/(6._dp*xpi1**2)
+     slot=9
+Else if ((Abs((xpi2-xpi3)/UVscaleQ).le.IRmass).and.(Abs((xpi3-xpi4)/UVscaleQ).le.IRmass)) Then ! D0(m1,m2,m2,m2)
+     D0_IR = (xpi1**2-xpi2**2+2._dp*xpi1*xpi2*Log(xpi2/xpi1))/(2._dp*(xpi1-xpi2)**3*xpi2)
+     slot=10
+Else if ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass).and.(Abs((xpi1-xpi3)/UVscaleQ).le.IRmass)) Then ! D0(m1,m1,m1,m4)
+      xpi2=xpi1
+      xpi1=xpi4
+      D0_IR = (xpi1**2-xpi2**2+2._dp*xpi1*xpi2*Log(xpi2/xpi1))/(2._dp*(xpi1-xpi2)**3*xpi2)     
+      slot=11
+Else if ((Abs((xpi2-xpi3)/UVscaleQ).le.IRmass).and.(Abs((xpi3-xpi4)/UVscaleQ).le.IRmass)) Then ! D0(m1,m2,m2,m2)     
+     D0_IR = (xpi1**2-xpi2**2+2._dp*xpi1*xpi2*Log(xpi2/xpi1))/(2._dp*(xpi1-xpi2)**2*xpi2)
+     slot=12
+Else if ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass).and.(Abs((xpi3-xpi4)/UVscaleQ).le.IRmass)) Then ! D0(m1,m1,m3,m3)          
+     D0_IR = (-2._dp*xpi1+2._dp*xpi3 + (xpi1+xpi3)*Log(xpi1/xpi3))/(xpi1-xpi3)**3
+     slot=13
+Else if ((Abs((xpi1-xpi2)/UVscaleQ).le.IRmass)) Then ! D0(m1,m1,m3,m4)     
+     xpi1=xpi3
+     xpi3=xpi2     
+     xpi2=xpi4
+     D0_IR = ((xpi1-xpi3+xpi2*Log(xpi3/xpi1))/(xpi1-xpi3)**2+(-xpi2+xpi3-xpi2*Log(xpi3/xpi2))/(xpi2-xpi3)**2)/(xpi1-xpi2)    
+     slot=14
+Else if ((Abs((xpi2-xpi3)/UVscaleQ).le.IRmass)) Then ! D0(m1,m2,m2,m4)
+     xpi2=xpi4
+     xpi4=xpi3  
+     D0_IR = ((xpi1-xpi3+xpi2*Log(xpi3/xpi1))/(xpi1-xpi3)**2+(-xpi2+xpi3-xpi2*Log(xpi3/xpi2))/(xpi2-xpi3)**2)/(xpi1-xpi2)
+     slot=15
+Else if ((Abs((xpi3-xpi4)/UVscaleQ).le.IRmass)) Then ! D0(m1,m2,m3,m3)     
+     D0_IR = ((xpi1-xpi3+xpi2*Log(xpi3/xpi1))/(xpi1-xpi3)**2+(-xpi2+xpi3-xpi2*Log(xpi3/xpi2))/(xpi2-xpi3)**2)/(xpi1-xpi2) 
+     slot=16
+! Else 
+!  D0_IR=1._dp*(xpi1-xpi2)*(C0eft_IR(xpi1,xpi3,xpi4)-C0eft_IR(xpi2,xpi3,xpi4))
+Else 
+D0_IR=D0_bagger(m1,m2,m3,m4)
+slot=17
+End if
+
+If (Abs(D0_IR).ne.Abs(D0_IR)) Then
+Write(*,*) "NaN",m1,m2,m3,m4, slot, xpi1,xpi2,xpi3,xpi4
+End if
+
+
+
+! If (Abs(D0_IR).gt.1.0E-10) Then 
+!  Write(*,*) xpi1,xpi2,xpi3,xpi4,D0_IR
+!  Write(*,*) "D0B", D0_bagger(m1,m2,m3,m4)
+!  D0_IR=0.
+! Else  
+! Write(*,*) "save", D0_bagger(m1,m2,m3,m4), D0_IR
+! End if
+
+End Function D0_IR
+
+
+Complex(dp) Function DB0_IR(m1,m2)
+Implicit None
+Real(dp), Intent(in) :: m1,m2
+Real(dp) :: m1s, m2s
+
+If (divonly.Eq.1) Then
+    DB0_IR = 0._dp
+    Return
+End if 
+
+! Sort masses
+If (m1.ge.m2) Then 
+ m1s=m2
+ m2s=m1
+Else 
+ m1s=m1
+ m2s=m2
+End if
+
+If  ((m2s/UVscaleQ).le.IRmass) Then ! B0(0,0)
+ DB0_IR=0._dp
+Else if ((m1s/UVscaleQ).le.IRmass) Then ! B0(0,m2)
+ DB0_IR=1._dp/(2._dp*m2s)
+Else if (Abs((m1s-m2s)/UVscaleQ).le.IRmass) Then ! B0(m1,m1) 
+ DB0_IR=1._dp/(6._dp*m1s)
+Else 
+ DB0_IR=1._dp/(2._dp*(m1s-m2s)**2)*(m1s+m2s+2._dp*m1s*m2s/(m1s-m2s)*Log(m2s/m1s))
+End if
+End Function DB0_IR
+
+
+Complex(dp) Function DB1_IR(m1,m2)
+Implicit None
+Real(dp), Intent(in) :: m1,m2
+Real(dp) :: t0
+
+If (divonly.Eq.1) Then
+    DB1_IR = 0._dp
+    Return
+End if 
+
+If  (((m2/UVscaleQ).le.IRmass).and.((m1/UVscaleQ).le.IRmass)) Then ! B1(0,0)
+ DB1_IR=0._dp
+Else if ((m1/UVscaleQ).le.IRmass) Then ! B1(0,m2)
+ DB1_IR=-1._dp/(6._dp*m2)
+Else if ((m2/UVscaleQ).le.IRmass) Then ! B1(m1,0)
+ DB1_IR=1._dp/(3._dp*m1)
+Else if (Abs((m1-m2)/UVscaleQ).le.IRmass) Then ! B1(m1,m1) 
+ DB1_IR=-1._dp/(12._dp*m1)
+Else 
+ DB1_IR=1._dp/(6._dp*(m1-m2)**4)*(-3._dp*m1**2*m2*(2._dp*Log(m2/m1)+1._dp)-2._dp*m1**3+6._dp*m1*m2**2-m2**3)
+End if
+End Function DB1_IR
+
+
  
 End Module AddLoopFunctions

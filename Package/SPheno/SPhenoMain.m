@@ -275,6 +275,15 @@ WriteString[spheno,"      YeSM(i1,i1)=sqrt(2._dp)*mf_l(i1)/vSM \n"];
 WriteString[spheno,"      YdSM(i1,i1)=sqrt(2._dp)*mf_d(i1)/vSM \n"];
 WriteString[spheno,"    End Do \n"];
 WriteString[spheno,"    If (GenerationMixing) YuSM = Matmul(Transpose(CKM),YuSM) \n"];
+
+
+If[TransposedYukawaScheme===False,
+WriteString[spheno,"\n\n! Transpose Yukawas to fit SPheno conventions \n"];
+WriteString[spheno,"YuSM= Transpose(YuSM) \n"];
+WriteString[spheno,"YdSM= Transpose(YdSM)\n"];
+WriteString[spheno,"YeSM= Transpose(YeSM)\n"];
+];
+
 (*
 WriteString[spheno,"End if \n"];
 *)
@@ -510,10 +519,13 @@ MakeCall["RunningFermionMasses",Join[Join[listVEVs,listAllParameters]],SPhenoFor
 WriteString[spheno,"End if \n"];
 
 If[AddTreeLevelUnitarityLimits===True,
+WriteString[spheno,"If (TreeLevelUnitarityLimits) Then \n"];
 WriteString[spheno,"Write(*,*) \"Calculating unitarity constraints \" \n"];
 MakeCall["ScatteringEigenvalues",Join[listVEVs,listAllParameters],{} ,{"deltaM","kont"},spheno];
+WriteString[spheno,"End if \n"];
 WriteString[spheno,"If (TrilinearUnitarity) Then \n"];
-MakeCall["ScatteringEigenvaluesWithTrilinears",Join[listVEVs,listAllParameters],{} ,{"deltaM","kont"},spheno];
+WriteString[spheno,"If (.not.TreeLevelUnitarityLimits) Write(*,*) \"Calculating unitarity constraints \" \n"];
+MakeCall["ScatteringEigenvaluesWithTrilinears",Join[NewMassParameters,listVEVs,listAllParameters],{} ,{"deltaM","kont"},spheno];
 WriteString[spheno,"End if \n"];
 ];
 

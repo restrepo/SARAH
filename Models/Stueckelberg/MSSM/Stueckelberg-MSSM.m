@@ -41,6 +41,7 @@ SuperFields[[8]] =  {S,  1, s, 0, 1, 1, 0, RpP};
 
 
 AddDiracGauginos = True;
+StueckelbergDTerms = True;
 NoU1Mixing = True;
 
 (*------------------------------------------------------*)

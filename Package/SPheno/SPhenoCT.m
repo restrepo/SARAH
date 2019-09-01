@@ -68,7 +68,6 @@ SPhenoCoupCT=Join[SPhenoCoupCT,{{SPhenoCouplingsAll[[i,1]],SPhenoCouplingsAll[[i
 ];
 i++;];
 
-
 ];
 
 ExpandCT[vert_]:=Block[{temp},
@@ -76,5 +75,45 @@ temp=Expand[Expand[TrigExpand[vert] /. subListCounter]-TrigExpand[vert]]/. conj[
 temp=Expand[temp]//. dd[a__] dd[b__]->0 //.dd[a__]^b__->0//. dd[a_] SUM[___,y___ dd[b_]]->0 //. dd[a_] SUM[__,SUM[___,y___ dd[b_]]]->0//. SUM[__, y___ dd[a_]] SUM[___,w___ dd[b_]]->0 //. SUM[__, dd[a_]] SUM[___,  dd[b_]]->0 //. SUM[__,SUM[__, x_ dd[a_]]] SUM[__,SUM[___,y_  dd[b_]]]->0/. SUM->sum;
 If[Head[temp]===Plus,temp=Plus@@(Select[(List@@temp),Count[#,dd[x_],99]<2 &]);];
 Return[temp /.dd[conj[a_]]->conj[dd[a]]/. subListCounterNames];
+];
+
+
+
+GenerateQuarticsGaugeShift:=Block[{i,j,temp,cnames,pos,ctname,ctsub,neededc,allg},
+allg=Transpose[BetaGauge][[1]];
+subListCounter=Table[allg[[i]]->allg[[i]]+dd[allg[[i]]],{i,1,Length[allg]}];
+subListCounterNames={dd[x_]:>ToExpression["d"<>ToString[x]]};
+subListCounterNamesSingle=Table[allg[[i]]->(ToExpression["d"<>ToString[allg[[i]]]]),{i,1,Length[allg]}];
+
+SPhenoParameters=Join[SPhenoParameters,Table[{(ToExpression["d"<>ToString[allg[[i]]]]),{},{}},{i,1,Length[allg]}]];
+realVar=Join[realVar,Table[(ToExpression["d"<>ToString[allg[[i]]]]),{i,1,Length[allg]}]];
+
+namesQGS={};
+parametersQGS=Flatten[Join[parametersAll,Transpose[BetaGauge][[1]]/.subListCounterNamesSingle]];
+SPhenoCoupQGS={};
+
+neededc=Intersection[Select[Flatten[Transpose[HighscaleMatchingConditions][[2]]/.Times->List/.Plus->List] ,Head[#]==Dot&]/.Dot->C /.A_[b_]:>A /;(FreeQ[PART[S],A]==False  && A=!=List)];
+neededc=Select[SPhenoCouplingsAllreallyAll,FreeQ[neededc,#[[1,1]]]==False&];
+
+
+For[i=1,i<=Length[neededc],
+cnames=Drop[neededc[[i,2]],1];
+ctsub={neededc[[i,2,1]]->"MSDR_"<>neededc[[i,2,1]]};
+For[j=1,j<=Length[cnames],
+pos=Position[SPhenoParameters,cnames[[j]]][[1,1]];
+ctname=ToExpression["d"<>ToString[cnames[[j]]]];
+SPhenoParameters=Join[SPhenoParameters,{SPhenoParameters[[pos]] /. cnames[[j]]->ctname}];
+namesQGS=Join[namesQGS,{ctname}];
+ctsub=Join[ctsub,{cnames[[j]]->ctname}];
+j++;];
+Switch[Length[neededc[[i]]],
+6,
+SPhenoCoupQGS=Join[SPhenoCoupQGS,{{neededc[[i,1]],neededc[[i,2]]/.ctsub,neededc[[i,3]],Intersection[Flatten[Join[neededc[[i,4]],neededc[[i,4]] /.subListCounterNamesSingle]]],ExpandCT[neededc[[i,5]]],neededc[[i,6]]}}];,
+7,
+SPhenoCoupQGS=Join[SPhenoCoupQGS,{{neededc[[i,1]],neededc[[i,2]]/.ctsub,neededc[[i,3]],Intersection[Flatten[Join[neededc[[i,4]],neededc[[i,4]] /.subListCounterNamesSingle]]],ExpandCT[neededc[[i,5]]],ExpandCT[neededc[[i,6]]],neededc[[i,7]]}}];
+];
+i++;];
+
+
 ];
 

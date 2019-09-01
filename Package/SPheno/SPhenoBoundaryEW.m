@@ -663,7 +663,7 @@ WriteString[sphenoSugra,"sigSR_u = 0._dp \n"];
 WriteString[sphenoSugra,"sigSL_u = 0._dp \n"];
 WriteString[sphenoSugra,"End if\n"];
 
-If[getGen[Gluino]===1,
+If[getGen[Gluino]===1 && SupersymmetricModel===True,
 WriteString[sphenoSugra, "If (GuessTwoLoopMatchingBSM) Then \n"];
 WriteString[sphenoSugra,"   Q2=GetRenormalizationScale() \n"];
 WriteString[sphenoSugra,"    mf_u_Q_SM(3)=mf_u_MS(3)*(1._dp-alpha3/(3._dp*pi)&\n"];
@@ -1559,11 +1559,12 @@ WriteString[sphenoSugra,"    Write(*,*) \" Fit of Yukawa couplings at EW scale f
 WriteString[sphenoSugra,"    Call TerminateProgram\n"];
 WriteString[sphenoSugra,"End If\n"];
 
+If[TransposedYukawaScheme===False,
 WriteString[sphenoSugra,"\n\n! Transpose Yukawas to fit conventions \n"];
-WriteString[sphenoSugra,"YuSM = Transpose(YuSM) \n"];
+WriteString[sphenoSugra,"YuSM= Transpose(YuSM) \n"];
 WriteString[sphenoSugra,"YdSM= Transpose(YdSM)\n"];
 WriteString[sphenoSugra,"YeSM= Transpose(YeSM)\n"];
-
+];
 
 (*
 WriteString[sphenoSugra,"\n\n! Re-calculate quarks with new Yukawas\n"];
@@ -1591,7 +1592,6 @@ WriteString[sphenoSugra,"mf_u_Q  = " <>SPhenoForm[SPhenoMass[TopQuark]] <> "(1:3
 WriteString[sphenoSugra,"Call FermionMass(YdSM,vSM,mf_d_Q,uD_L_T,uD_R_T,kont) \n"];
 WriteString[sphenoSugra,"Call FermionMass(YeSM,vSM,mf_l_Q,uL_L_T,uL_R_T,kont)\n"];
 WriteString[sphenoSugra,"Call FermionMass(YuSM,vSM,mf_u_Q,uU_L_T,uU_R_T,kont)\n"];
-
 
 
 WriteString[sphenoSugra,"\n\n! Check convergence \n"];
@@ -1767,6 +1767,7 @@ SetMatchingConditionsMZ[file_]:=MakeCall["SetMatchingConditions",Join[listVEVs,l
 (* ::Input::Initialization:: *)
 
 CheckYukawaScheme:=Block[{pos,i,j,temp,qn={},strongI},
+If[SupersymmetricModel===True,
 pos=Position[SuperPotential,UpYukawa];
 If[pos=!={},
 strongI=Position[Gauge,color][[1,1]];
@@ -1780,6 +1781,21 @@ TransposedYukawaScheme=False;,
 TransposedYukawaScheme=True;
 ];,
 TransposedYukawaScheme=False;
+];,
+pos=Position[DEFINITION[GaugeES][LagrangianInput],UpYukawa];
+If[pos=!={},
+strongI=Position[Gauge,color][[1,1]];
+temp=Select[Extract[DEFINITION[GaugeES][LagrangianInput],Drop[pos[[1]],{-1}]],Head[#]==Dot&];
+For[i=1,i<=3,
+pos=Position[Fields,temp[[i]]][[1,1]];
+qn=Join[qn,{Fields[[pos]][[3+strongI]]}];
+i++;];
+If[Position[qn,-3][[1,1]]<Position[qn,3][[1,1]],
+TransposedYukawaScheme=False;,
+TransposedYukawaScheme=True;
+];,
+TransposedYukawaScheme=False;
+];
 ];
 ];
 

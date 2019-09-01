@@ -146,9 +146,9 @@ WriteString[filenames[[l]]," 38 2               # 1- or 2-Loop RGEs \n"];
 WriteString[filenames[[l]]," 50 1               # Majorana phases: use only positive masses (put 0 to use file with CalcHep/Micromegas!) \n"];
 WriteString[filenames[[l]]," 51 0               # Write Output in CKM basis \n"];
 WriteString[filenames[[l]]," 52 0               # Write spectrum in case of tachyonic states \n"];
-If[SupersymmetricModel=!=False,
-WriteString[filenames[[l]]," 55 1               # Calculate loop corrected masses \n"];,
-WriteString[filenames[[l]]," 55 0               # Calculate loop corrected masses \n"];
+If[SupersymmetricModel===False && OnlyLowEnergySPheno===True,
+WriteString[filenames[[l]]," 55 0               # Calculate loop corrected masses \n"];,
+WriteString[filenames[[l]]," 55 1               # Calculate loop corrected masses \n"];
 (* WriteString[filenames[[l]]," 61 0               # Running SM parameters\n"]; *)
 ];
 WriteString[filenames[[l]]," 57 1               # Calculate low energy constraints \n"];
@@ -321,7 +321,7 @@ GenerateSSPtemplate;
 
 (* ::Input::Initialization:: *)
 
-GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i,matchname},
+GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i,matchname,string},
 Print["  Writing Makefile"];
 
 sphenoMake=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Makefile"]];
@@ -337,8 +337,12 @@ WriteString[sphenoMake,"# setting various paths  \n"];
 WriteString[sphenoMake,"InDir = ../include\n"];
 WriteString[sphenoMake,"Mdir = ${InDir}\n"];
 If[HighscaleMatching===True,
-matchname=MatchingToModel<>"To"<>ModelName;
-WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables:SM:"<>matchname<>" \n"];,
+string="VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables:SM";
+For[i=1,i<=Length[MatchingToModel],
+matchname=StringReplace[MatchingToModel[[i]],{"+"->"","-"->""}]<>"To"<>ModelName;
+string=string<>":"<>matchname;
+i++;];
+WriteString[sphenoMake,string<>" \n"];,
 WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables:SM \n"];
 ];
 WriteString[sphenoMake,"name = ../lib/libSPheno"<>NameForModel<>".a\n \n"];
@@ -476,7 +480,14 @@ WriteString[sphenoMake," ${name}(LowEnergy_"<>ModelName<>".o) \\\n"];
 ];
 
 If[HighscaleMatching===True,
-WriteString[sphenoMake," ${name}(Model_Data_"<>matchname<>".o) ${name}(Couplings_"<>matchname<>".o) ${name}(TreeLevelMasses_"<>matchname<>".o) ${name}(TadpoleEquations_"<>matchname<>".o) ${name}(Matching_"<>matchname<>".o)\\\n"];
+For[i=1,i<=Length[MatchingToModel],
+matchname=StringReplace[MatchingToModel[[i]],{"-"->"","+"->""}]<>"To"<>ModelName;
+WriteString[sphenoMake," ${name}(Model_Data_"<>matchname<>".o) ${name}(Couplings_"<>matchname<>".o) ${name}(TreeLevelMasses_"<>matchname<>".o)\\\n"];
+If[ParametersToSolveTadpoleMatchingScale=!={},
+WriteString[sphenoMake,"${name}(RGEs_"<>matchname<>".o) ${name}(TadpoleEquations_"<>matchname<>".o) \\\n"];
+];
+WriteString[sphenoMake,"${name}(Matching_"<>matchname<>".o)\\\n"];
+i++;];
 ];
 
 (* If[OnlyLowEnergySPheno=!=True, *)

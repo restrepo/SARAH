@@ -56,7 +56,7 @@ Options[WO`WriteOutput] = {
    WO`WOMaxNcf -> 4,
    WO`WOGauge -> WO`WOUnitarity,
    WO`WOGaugeParameter -> "Rxi",
-   WO`WOWhizardVersion -> "2.2.0",
+   WO`WOWhizardVersion -> "2.4.0",
    WO`WOVerbose -> False,
    WO`WOAutoGauge -> True,
    WO`WOMaxCouplingsPerFile -> 150,
@@ -74,7 +74,7 @@ Options[WO`WriteOutput] = {
 };
 
 Options[WO`WriteExtParams] = {
-   WO`WOWhizardVersion -> "2.2.0",
+   WO`WOWhizardVersion -> "2.4.0",
    WO`WOEParamList -> {},
    WO`WOModelName -> "unknown",
    WO`WOMassList -> {},
@@ -108,7 +108,8 @@ WO`WOWhizardVersion::usage = (""
    <> "   \"2.0.3\"  : 2.0.3 - 2.1.7\n"
    <> "   \"2.2.0\": 2.2.0 - 2.2.2\n"
    <> "   \"2.2.3\": 2.2.3 - 2.2.3\n"
-   <> "   \"2.3.0\": 2.3.0 - 2.3.0 ");   
+   <> "   \"2.3.0\": 2.3.0 - 2.3.0\n"
+   <> "   \"2.4.0\": 2.4.0 - 2.4.0");   
 WO`WOVerbose::usage = (""
    <> "Verbose output. At the moment, this enables more detailed information "
    <> "on skipped vertices. Default: False");
@@ -456,7 +457,7 @@ WO`GaugeName[] := WO`GaugeName[WO`gauge];
 WO`whizvn[v_] := Switch[v, "1.93", 193, "1.95", 195, "1.96", 196, 
 "2.0", 200, "2.0.3", 203, "2.0.4", 204, "2.0.5", 205, "2.0.6", 206, "2.0.7", 207, 
 "2.1.0", 210, "2.1.1", 211, 
-"2.2.0", 220, "2.2.1", 221, "2.2.2", 222, "2.2.3", 223, "2.3.0", 230,  _,
+"2.2.0", 220, "2.2.1", 221, "2.2.2", 222, "2.2.3", 223, "2.3.0", 230, "2.4.0", 240, _,
    Throw["BUG: invalid version in WO`whizvn, please report", WO`EAbort]];
 WO`whizvn[] := WO`whizvn[WO`whizv];
 WO`whizv2x[] := WO`whizvn[] >= WO`whizvn["2.0"];
@@ -2154,13 +2155,16 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
       <> "      | Feynman -> \"one\"\n"
       <> "      | Rxi -> \"" <> ToString[WO`gsym] <> "\")\n";
    options = "let options = Options.empty\n";
+   If[WO`whizvn[]<240,
    rcs = ""
       <> "let rcs = RCS.parse \"" <> WO`omeganame <> "\" [\"automatically generated model\"] {\n"
       <> "   RCS.revision = \"Revision: Noop\";\n"
       <> "   RCS.date = \"Date: Noop\";\n"
       <> "   RCS.author = \"Author: Mathematica automaton\";\n"
       <> "   RCS.source = \"Source: Noop\"\n"
-      <> "}\n";
+      <> "}\n";,
+   rcs = "";
+   ];
    goldstone = "let goldstone _ = None\n";
    sanscolorstubs = ""
       <> "type flavor_sans_color = flavor\n"

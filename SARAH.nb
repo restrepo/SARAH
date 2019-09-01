@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[     42265,        928]
-NotebookOptionsPosition[     41874,        911]
-NotebookOutlinePosition[     42324,        929]
-CellTagsIndexPosition[     42281,        926]
+NotebookDataLength[     43212,        948]
+NotebookOptionsPosition[     42820,        931]
+NotebookOutlinePosition[     43271,        949]
+CellTagsIndexPosition[     43228,        946]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -27,24 +27,25 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"{", 
    RowBox[{
-   "name", ",", "result", ",", "i", ",", "E6", ",", "g2", ",", "f4", ",", "n",
-     ",", "j", ",", "k", ",", "weight", ",", "index", ",", "w", ",", "x", ",",
-     "Adjoint", ",", "input", ",", "w", ",", "x", ",", "x$", ",", "ex", ",", 
-    "el", ",", "DimR", ",", "delta", ",", "dim", ",", "m", ",", "matrix", ",",
-     "up", ",", "down", ",", "dim1", ",", "dim2", ",", "col", ",", "begin", 
-    ",", "b1", ",", "b2", ",", "b3", ",", "Casimir", ",", "b", ",", "e", ",", 
-    "b$", ",", "res", ",", "n2", ",", "v", ",", "RepMatrices", ",", "rep", 
-    ",", "Invariants", ",", "a", ",", "x1", ",", "x2", ",", "c", ",", "x3", 
-    ",", "y1", ",", "x1$", ",", "x2$", ",", "y1$", ",", "conj", ",", "expr", 
-    ",", "j1", ",", "j2", ",", "j3", ",", "res1", ",", "res2", ",", "var1", 
-    ",", "var2", ",", "var3", ",", "weights", ",", "\[NoBreak]", "l1", ",", 
-    "end", ",", "groups", ",", "group", ",", "max", ",", "adjoint", ",", 
-    "cas", ",", "ConjugateIrrep", ",", "DynkinIndex", ",", "repsWithSizeN", 
-    ",", "CongruencyClass", ",", " ", "sR", ",", "TriangularAnomalyValue", 
-    ",", "InvariantsBaseMethod", ",", "reps", ",", "vector", ",", "i1", ",", 
-    "pos", ",", "dims", ",", "r", ",", " ", "v1", ",", " ", "v2", ",", 
-    "Conjugations", ",", "r1", ",", "r2", ",", "SU3", ",", " ", "dt"}], "}"}],
-   ";"}], "\[IndentingNewLine]", 
+   "M", ",", "f", ",", "m2", ",", "y", ",", "s", ",", "name", ",", "result", 
+    ",", "i", ",", "E6", ",", "g2", ",", "f4", ",", "n", ",", "j", ",", "k", 
+    ",", "weight", ",", "index", ",", "w", ",", "x", ",", "Adjoint", ",", 
+    "input", ",", "w", ",", "x", ",", "x$", ",", "ex", ",", "el", ",", "DimR",
+     ",", "delta", ",", "dim", ",", "m", ",", "matrix", ",", "up", ",", 
+    "down", ",", "dim1", ",", "dim2", ",", "col", ",", "begin", ",", "b1", 
+    ",", "b2", ",", "b3", ",", "Casimir", ",", "b", ",", "e", ",", "b$", ",", 
+    "res", ",", "n2", ",", "v", ",", "RepMatrices", ",", "rep", ",", 
+    "Invariants", ",", "a", ",", "x1", ",", "x2", ",", "c", ",", "x3", ",", 
+    "y1", ",", "x1$", ",", "x2$", ",", "y1$", ",", "conj", ",", "expr", ",", 
+    "j1", ",", "j2", ",", "j3", ",", "res1", ",", "res2", ",", "var1", ",", 
+    "var2", ",", "var3", ",", "weights", ",", "\[NoBreak]", "l1", ",", "end", 
+    ",", "groups", ",", "group", ",", "max", ",", "adjoint", ",", "cas", ",", 
+    "ConjugateIrrep", ",", "DynkinIndex", ",", "repsWithSizeN", ",", 
+    "CongruencyClass", ",", " ", "sR", ",", "TriangularAnomalyValue", ",", 
+    "InvariantsBaseMethod", ",", "reps", ",", "vector", ",", "i1", ",", "pos",
+     ",", "dims", ",", "r", ",", " ", "v1", ",", " ", "v2", ",", 
+    "Conjugations", ",", "r1", ",", "r2", ",", "SU3", ",", " ", "dt", ",", 
+    "ReduceRepProduct"}], "}"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"EndPackage", "[", "]"}], "\[IndentingNewLine]", 
  RowBox[{"BeginPackage", "[", "\"\<Susyno`SusyRGEs`\>\"", "]"}], "\n", 
  RowBox[{
@@ -78,7 +79,7 @@ Cell[BoxData[{
      RowBox[{"System`Private`FindFile", "[", "$Input", "]"}], "]"}], "]"}]}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{" ", 
-  RowBox[{"ResetDirectory", "[", "]"}], "\n"}], "\[IndentingNewLine]", 
+  RowBox[{"ResetDirectory", "[", "]"}], "\[IndentingNewLine]"}], "\n", 
  RowBox[{"$sarahPackageDir", "=", 
   RowBox[{"ToFileName", "[", 
    RowBox[{"{", 
@@ -163,7 +164,8 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Print", "[", 
    RowBox[{"StyleForm", "[", 
-    RowBox[{"\"\<contributions by M. D. Goodsell, K. Nickel\>\"", ",", 
+    RowBox[{
+    "\"\<contributions by M. Gabelmann, M. D. Goodsell, K. Nickel\>\"", ",", 
      RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], " ", "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -291,7 +293,20 @@ Cell[BoxData[{
       RowBox[{"<<", "mixings`"}], ";", " ", "\[IndentingNewLine]", 
       RowBox[{"<<", "ghosts`"}], ";", " ", "\[IndentingNewLine]", 
       RowBox[{"<<", "tadpoles`"}], ";"}]}], "\[IndentingNewLine]", "]"}], 
-   ";"}], "\[IndentingNewLine]", 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"$Path", "=", 
+       RowBox[{"ToFileName", "[", 
+        RowBox[{"{", 
+         RowBox[{"$sarahPackageDir", ",", "\"\<Matching\>\""}], "}"}], 
+        "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"<<", "ScalarNLOMatcher`"}], ";"}]}], " ", 
+    "\[IndentingNewLine]", "]"}], ";"}], "\[IndentingNewLine]", 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -907,11 +922,16 @@ Cell[BoxData[{
    3.635672583699441*^9, 3.635672657598296*^9}, {3.639197765381242*^9, 
    3.639197765918161*^9}, 3.657273140978862*^9, {3.6982112045844383`*^9, 
    3.698211205247841*^9}, {3.73133300969841*^9, 3.731333017866742*^9}, {
-   3.732089262141467*^9, 3.732089263305499*^9}}]
+   3.732089262141467*^9, 3.732089263305499*^9}, {3.735636799513876*^9, 
+   3.735636799758675*^9}, {3.738061149866737*^9, 3.738061165531451*^9}, {
+   3.738316186521269*^9, 3.738316189321466*^9}, {3.738316219957603*^9, 
+   3.738316222993147*^9}, {3.738316274355041*^9, 3.738316324148073*^9}, {
+   3.738316382854601*^9, 3.7383163829993973`*^9}, {3.7383166892137413`*^9, 
+   3.738316690974288*^9}, {3.742790883726029*^9, 3.742790887835824*^9}}]
 },
 AutoGeneratedPackage->Automatic,
-WindowSize->{1364, 688},
-WindowMargins->{{2, Automatic}, {1, Automatic}},
+WindowSize->{1918, 1027},
+WindowMargins->{{1, Automatic}, {1, Automatic}},
 DockedCells->FEPrivate`FrontEndResource[
  "FEExpressions", "CompatibilityToolbar"],
 FrontEndVersion->"11.0 for Linux x86 (64-bit) (July 28, 2016)",
@@ -928,7 +948,7 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[545, 20, 41325, 889, 6684, "Input",
+Cell[545, 20, 42271, 909, 6708, "Input",
  InitializationCell->True]
 }
 ]

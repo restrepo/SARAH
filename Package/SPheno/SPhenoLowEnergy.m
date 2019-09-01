@@ -3240,11 +3240,16 @@ WriteString[sphenoLow, "End If \n"];
 WriteString[sphenoLow, "scalein=SetRenormalizationScale(scale_save**2) \n"];
 WriteString[sphenoLow,"If (MatchingOrder.gt.-1) Then \n"];
 MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"mz"},{"CKM_MZ", "sinW2_MZ", "Alpha_MZ","AlphaS_MZ",".true."},sphenoLow];
-WriteTadpoleSolution[sphenoLow];
-
-MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLow];
-WriteString[sphenoLow,"End if \n"];
+WriteString[sphenoLow,"Else \n"];
 (* ]; *)
+For[i=1,i<=Length[listAllParametersAndVEVs],
+WriteString[sphenoLow,SPhenoForm[listAllParametersAndVEVs[[i]]]<>"="<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"input \n"];
+i++;];
+WriteString[sphenoLow,"End if \n"];
+
+WriteTadpoleSolution[sphenoLow];
+MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoLow];
+
 
 WriteString[sphenoLow, "mzsave  = sqrt(mz2) \n"];
 If[OnlyLowEnergySPheno=!=True,

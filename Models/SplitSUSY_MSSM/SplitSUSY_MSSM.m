@@ -51,7 +51,7 @@ DEFINITION[GaugeES][LagrangianInput] = {
 
 LagNoHC = m2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 LagHC = - Yd conj[H].d.q - Ye conj[H].e.l + Yu H.u.q \
-  - MG/2 FG.FG - MW/2 FW.FW - MB/2 FB.FB - \[Mu] Hu.Hd \
+  - MG/2 FG.FG - MW/2 FW.FW - MB/2 FB.FB - MuSplit Hu.Hd \
   - g2u conj[H].FW.Hu - g1u/Sqrt[2] conj[H].FB.Hu  + g2d H.FW.Hd - g1d/Sqrt[2] H.FB.Hd;
 
 (* ----- After EWSB ----- *)

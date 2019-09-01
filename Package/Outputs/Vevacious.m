@@ -163,7 +163,7 @@ For[i=1,i<=Length[SA`PseudoScalarHF[EWSB]],
 pos=Position[DEFINITION[EWSB][VEVs],SA`PseudoScalarHF[EWSB][[i]]][[1,1]];
 If[Length[DEFINITION[EWSB][VEVs][[pos]]]===5,
 If[DEFINITION[EWSB][VEVs][[pos]][[3,1]]=!=0,
-subVEVtoScalar=Join[subVEVtoScalar,{DEFINITION[EWSB][VEVs][[pos]][[2,1]]->SA`PseudoScalarHF[EWSB][[i]]}];
+subVEVtoScalar=Join[subVEVtoScalar,{DEFINITION[EWSB][VEVs][[pos]][[3,1]]->SA`PseudoScalarHF[EWSB][[i]]}];
 ];
 ];
 i++;];
@@ -243,6 +243,49 @@ WriteString[homout, "                                      -->\n \n \n"];
 WriteString[homout,"<VevaciousModelFile> \n"];
 GenerateVpp[renscheme];
 WriteString[homout,"</VevaciousModelFile> \n"];
+Close[homout];
+
+
+homout=OpenWrite[ToFileName[$sarahCurrentVevaciousDir,"ScaleAndBlock.xml"]];
+
+WriteString[homout, "<!--  \n"];
+WriteString[homout, " This model file was automatically created by SARAH version"<>SA`Version<>"  \n"];
+WriteString[homout, " SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223 \n"];
+WriteString[homout, " (c) Florian Staub, 2013   \n \n"];
+Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
+WriteString[homout, " File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  \n \n"];
+WriteString[homout, "                                      -->\n \n \n"];
+
+
+
+WriteString[homout,"<LhaBlockParameterManagerInitializationFile> \n"];
+
+WriteString[homout,"<ParameterManagerDetails \n"];
+WriteString[homout,"ParameterManagerName=\"SARAHManager\" \n"];
+WriteString[homout,"VevaciousMajorVersion=\"2\" VevaciousMinorVersion=\"0\" /> \n\n"];
+
+
+WriteString[homout,"<RenormalizationScaleChoices> \n"];
+WriteString[homout,"	<FixedScaleChoice>\n"];
+WriteString[homout,"	  <EvaluationType>\n"];
+WriteString[homout,"		BlockLowestScale\n"];
+WriteString[homout,"	  </EvaluationType>\n"];
+WriteString[homout,"		  <EvaluationArgument>\n"];
+WriteString[homout,"			GAUGE\n"];
+WriteString[homout,"		  </EvaluationArgument>\n"];
+WriteString[homout,"		</FixedScaleChoice>\n"];
+WriteString[homout,"		<MaximumScaleBound>\n"];
+WriteString[homout,"		  <EvaluationType>\n"];
+WriteString[homout,"			FixedNumber\n"];
+WriteString[homout,"		  </EvaluationType>\n"];
+WriteString[homout,"		  <EvaluationArgument>\n"];
+WriteString[homout,"			1.0E+016 <!-- Roughly the GUT scale. -->\n"];
+WriteString[homout,"		  </EvaluationArgument>\n"];
+WriteString[homout,"		</MaximumScaleBound>\n"];
+WriteString[homout,"	</RenormalizationScaleChoices>\n"];
+WriteBlocksVpp;
+WriteDerivedParametersVpp;
+WriteString[homout,"</LhaBlockParameterManagerInitializationFile> \n"];
 Close[homout];
 
 Print["Finished! Output was written to file ",$sarahCurrentVevaciousDir];
@@ -382,7 +425,7 @@ GenerateXLM[renscheme_]:=Block[{i,j,k},
 
 GenerateVpp[renscheme_]:=Block[{i,j,k},
       WriteDetailsVpp;
-      WriteBlocksVpp;
+ (*     WriteBlocksVpp; *)
 (*
 WriteString[homout,"<AllowedNonZeroVariables>\n"];      
       WriteFieldVariablesVpp;
@@ -390,13 +433,13 @@ WriteString[homout,"<AllowedNonZeroVariables>\n"];
 WriteString[homout,"</AllowedNonZeroVariables>\n\n"];
 *)
       WriteFieldVariablesVpp;
-      WriteDerivedParametersVpp;
+  (*    WriteDerivedParametersVpp; *)
       WritePotVpp;
       
 WriteString[homout,"<LoopCorrections RenormalizationScheme=\""<>If[renscheme==="DR","DRBAR","MSBAR"]<>"\" GaugeFixing=\"LANDAU\">\n"];  
       WriteExtraPolynomialVpp;
       WriteMassMatricesVpp[renscheme];
-WriteString[homout,"<LoopCorrections>\n\n\n"];  
+WriteString[homout,"</LoopCorrections>\n\n\n"];  
       
 
       ];
@@ -404,11 +447,15 @@ WriteString[homout,"<LoopCorrections>\n\n\n"];
 
 WriteExtraPolynomialVpp:=Block[{term},
 WriteString[homout,"<ExtraPolynomialPart> \n"];
-  term=Expand[SA`PotentialVevaciousExtra];
+  term=Expand[-SA`PotentialVevaciousExtra];
+  (*
       For[i=1,i<=Length[term],
         WriteString[homout,"("<>ToString[InputForm[term[[i]]]]<>") \n "];
         If[i<Length[term],WriteString[homout," + "];];
-        i++;];
+        *)
+              For[i=1,i<=Length[term],
+        WriteString[homout,StringReplace["+"<>ToString[InputForm[term[[i]]]],{"+-"->"-"}]<>" \n "];
+           i++;];
 WriteString[homout,"</ExtraPolynomialPart> \n\n"];
 ];
 
@@ -489,7 +536,7 @@ If[Length[ParametersToSolveTadpoles]>0 && Length[ParametersToSolveTadpolesLowSca
  temp=Intersection[Table[temp[[i,2]],{i,1,Length[temp]}]  /. A_[b_Integer]->A /. A_[b_]->A];
  temp=Intersection[Join[temp,LHBlockName/@SA`VEVs]];
  
- WriteString[homout,"<SlhaBlocks>\n"];
+ WriteString[homout,"<ValidBlocks>\n"];
   For[i=1,i<=Length[temp],
      WriteString[homout,ToString[temp[[i]]]<>"\n"];
    If[FreeQ[extra,temp[[i]]]==False,
@@ -497,7 +544,7 @@ If[Length[ParametersToSolveTadpoles]>0 && Length[ParametersToSolveTadpolesLowSca
      WriteString[homout,"LOOP"<>ToString[temp[[i]]]<>"\n"];
     ];
   i++;];
-  WriteString[homout,"</SlhaBlocks>\n\n"];
+  WriteString[homout,"</ValidBlocks>\n\n"];
 ];
 
 

@@ -127,9 +127,9 @@ Print["Output is saved in ",StyleForm[$sarahCurrentUfoDir,"Section",FontSize->10
 
 (* ::Input::Initialization:: *)
 ExtractColor[vertex_]:=Block[{i,j,temp={},temp2,res,CS,diffCol,coeff,current },
-diffCol={fSU3,Delta,Lam, LamHlf,K6,K6Bar,T6,CG,Generator, epsTensor}; (* Possible Headers *)
+diffCol={fSU3,dSU3,Delta,Lam, LamHlf,K6,K6Bar,T6,CG,Generator, epsTensor}; (* Possible Headers *)
 diffColQT={ct1,ct2,ct3,ct4}; (* name of color indices *)
-CS = Intersection[Cases[vertex,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={} || Head[#]===fSU3))&),10]];
+CS = Intersection[Cases[vertex,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={} || Head[#]===fSU3 || Head[#]===dSU3))&),10]];
 
 If[CS=={}, (* only color singlets *)
 temp = Join[temp,{{1,vertex}}];,
@@ -140,7 +140,7 @@ SA`NrD=1;
 coeff= ExtractColorCoeff[vertex,current]; (* get the coefficients *)
 
 (* check, if there is no color structure left in the coefficient *)
-If[coeff=!= 0 &&  Intersection[Cases[coeff,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={}||Head[#]===fSU3))&),10]]=={},
+If[coeff=!= 0 &&  Intersection[Cases[coeff,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={}||Head[#]===fSU3||Head[#]===dSU3))&),10]]=={},
 temp=Join[temp,{{current,coeff}}];
 ];
 j++;];
@@ -714,6 +714,7 @@ conj[CG[SU[3],{r1_,r2_,{1,1}}]][a_,b_,c_]:=CG[SU[3],{{1,1},r1,r2}][b,a,c];
 *)
 conj[LamHlf[a_,b_,c_]]=LamHlf[a,b,c];
 conj[fSU3[a__]]=fSU3[a];
+conj[dSU3[a__]]=dSU3[a];
 conj[T6[a__]]=T6[a];
 
 If[FreeQ[vlist,Delta[gt1,gt2]]==False, start2=Hold[iter1]; gf2=Hold[iter1]; ];

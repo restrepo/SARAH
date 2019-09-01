@@ -117,6 +117,11 @@ Include2LoopCorrections=False;
 
 Include2LoopCorrections=inc2Lcorrections;
 
+
+If[Length[MatchingToModel]>0,
+HighscaleMatching=True;
+];
+
 (* If[OnlyLowEnergySPheno=!=True, *)
 GenerateMatchingConditions;
 (* ]; *)
@@ -231,6 +236,8 @@ Print[StyleForm["Preparing SPheno code","Section",FontSize->12]];
 
 SPhenoParameters = parameters;
 
+MakeSPhenoFortran;
+
 NewNumericalDependences ={};
 NewNumericalDependencesSub = {};
 
@@ -263,7 +270,6 @@ ImplementThresholds=False;
 
 
 
-MakeSPhenoFortran;
 
 
 
@@ -314,6 +320,7 @@ realVar = Join[realVar,RealParameters];
 ];
 
 realVar = Join[realVar,ToExpression/@getOutputNameParameter/@Select[realVar,getOutputNameParameter[#]=!=#&]];
+
 
 If[Head[RegimeNr]==Integer,
 If[IntermediateScale =!=True,
@@ -373,10 +380,22 @@ AdditionalFortranForm;
 CheckDefinitionParameters;
 
 InitInputOutput;
+
 GenerateSPhenoRGEs; 
+
+MakeSPhenoFortran;
 
 If[HighscaleMatching===True,
 RunHighScaleModel[ReadL];
+];
+
+If[AddMatchingRoutines===True,
+Include2LoopCorrections=False;
+AddLowEnergyConstraint=False;
+subEpsUV=Join[Select[AssumptionsMatchingScale,FreeQ[#,epsUV]==False&],Select[AssumptionsMatchingScale,#[[2]]===0&]];
+subEpsUV=Table[subEpsUV[[i,1]]->subEpsUV[[i,2]],{i,1,Length[subEpsUV]}];
+subEpsUV=Join[Flatten[{#->#}&/@Select[Select[listAllParametersAndVEVs,(Head[#]===B || Head[#]===T)&],FreeQ[subEpsUV,#] && FreeQ[subEpsUV,#[[1]]]==False&]],subEpsUV];,
+subEpsUV={};
 ];
 
 
@@ -399,6 +418,7 @@ DefineGlobalParticleLists;(* This is performed in SPhenoEffPot, and is needed fo
 
 GenerateSPheno2LPole[ReadL];
 ];
+If[AddMatchingRoutines=!=True,
 GenerateSPhenoLoopMasses[Eigenstates];
 
 GenerateSPhenoTreeLevelDecays[Eigenstates];
@@ -410,7 +430,7 @@ GenerateSPhenoBR[Eigenstates];
 If[SPhenoOnlyForHM=!=True,
 GenerateSPhenoHiggsCS[Eigenstates];
 ];
-
+];
 MakePDGList[Eigenstates];
 MakeModelData;
 
@@ -424,7 +444,6 @@ GenerateSPhenoLowEnergy;
 ];
 
 If[AddMatchingRoutines===True,GenerateMatching;];
-
 GenerateInOut;
 ];
 GenerateSPhenoTadpoleInformation;
@@ -1645,7 +1664,7 @@ temp=Select[HighScaleParameter,(MemberQ[TransposeChecked[BoundaryHighScale[[k]]]
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles,temp[[i]]],
 BoundaryHighScale[[k]] = Join[BoundaryHighScale[[k]],{{temp[[i]],0}}];,
-If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoBoundaryGUT,temp[[i]]];];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]] && FreeQ[BoundaryMatchingUV,temp[[i]]] && FreeQ[BoundaryMatchingScaleDown,temp[[i]]]&& FreeQ[BoundaryMatchingScaleUp,temp[[i]]] ,Message[SPheno::NoBoundaryGUT,temp[[i]]];];
 ];
 i++;];
 
@@ -1663,7 +1682,7 @@ temp=Select[temp,(FreeQ[Transpose[DEFINITION[MatchingConditions]][[1]],#])&];
 
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles /.{re[x_]->x,im[x_]->x,A_[b__Integer]->A},temp[[i]]]==False,
-If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]] && FreeQ[BoundaryMatchingScaleDown,temp[[i]]]&& FreeQ[BoundaryMatchingScaleUp,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
 ];
 i++;];
 
@@ -1680,7 +1699,7 @@ If[MemberQ[ParametersToSolveTadpoles,temp[[i]]] || MemberQ[ParametersToSolveTadp
 BoundaryHighScale = Join[BoundaryHighScale,{{temp[[i]],0}}];,
 If[MemberQ[down,temp[[i]]],
 BoundaryHighScale = Join[BoundaryHighScale,{{temp[[i]],0}}];,
-If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoBoundaryGUT,temp[[i]]];];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]] && FreeQ[BoundaryMatchingScaleDown,temp[[i]]] ,Message[SPheno::NoBoundaryGUT,temp[[i]]];];
 ];
 ];
 i++;];
@@ -1695,7 +1714,7 @@ temp=Select[temp,(FreeQ[DEFINITION[NonStandardYukawas],#])&];
 
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles /. {re[x_]->x,im[x_]->x},temp[[i]]]==False,
-If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]]&& FreeQ[BoundaryMatchingScaleDown,temp[[i]]] && FreeQ[BoundaryMatchingScaleUp,temp[[i]]] ,Message[SPheno::NoConditionForParameter,temp[[i]]];];
 ];
 i++;];
 ];,

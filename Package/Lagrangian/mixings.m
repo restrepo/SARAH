@@ -616,7 +616,7 @@ realVar=Join[realVar,{newMatrixName}];
 ];
 ];
 ];
-If[FreeQ[ParameterDefinitions,mixES[[i,2,2]]]==False,
+If[FreeQ[Transpose[ParameterDefinitions][[1]],mixES[[i,2,2]]]==False,
 If[(Real /. Extract[ParameterDefinitions,Position[Transpose[ParameterDefinitions][[1]],mixES[[i,2,2]]][[1,1]]][[2]])==True,
 realVar=Join[realVar,{mixES[[i,2,2]]}];
 ];
@@ -1379,7 +1379,7 @@ i++;];
 ];
 
 
-CalcGaugeMixing2[name_, def_]:=Block[{temp,temp2,i,j,i1,i2,PartLag,subV={},subVI={},subG={},subGI={},todel},
+CalcGaugeMixing2[name_, def_]:=Block[{temp,temp2,i,j,i1,i2,jj,PartLag,subV={},subVI={},subG={},subGI={},todel},
 Print["Calc mass matrices gauge sector: ",Dynamic[DynamicMMgaugeNr[name]],"/",Length[def],"(",Dynamic[DynamicMMgaugeName[name]],")"];
 PrintDebug["Calc mass matrices gauge sector"];
 SA`NewGaugeBosons={};
@@ -1405,7 +1405,13 @@ subVI = Join[subVI,GenerateSubGauge[{def[[i,2]],def[[i,1]],InvMT[def[[i,3]]]}] /
 If[getType[def[[i,1,1]]]===V,
 AssociatedMixingAngles[def[[i,3]]]={};
 subG = Join[subG, GenerateSubGauge[{getGhost /@ def[[i,1]],getGhost /@ def[[i,2]],def[[i,3]]}]];
-subGI = Join[subGI, GenerateSubGauge[{getGhost /@ def[[i,2]],getGhost /@ def[[i,1]],InvMT[def[[i,3]]]}] /. InvMT[A_][b_,c_]->conj[A[c,b]]];
+subGI = Join[subGI, GenerateSubGauge[{getGhost /@ def[[i,2]],getGhost /@ def[[i,1]],InvMT[def[[i,3]]]}] /. InvMT[A_][b_,c_]->conj[A[c,b]]];,
+For[jj=1,jj<=Length[def[[i,2]]],
+SA`Casimir[def[[i,2,jj]],a_]=SA`Casimir[def[[i,1,1]]/.A_[b_Integer]->A,a];
+SA`Dynkin[def[[i,2,jj]],a_]=SA`Dynkin[def[[i,1,1]]/.A_[b_Integer]->A,a];
+SA`DimensionGG[def[[i,2,jj]],a_]=SA`DimensionGG[def[[i,1,1]]/.A_[b_Integer]->A,a];
+SA`DynL[def[[i,2,jj]],a_]=SA`DynL[def[[i,1,1]]/.A_[b_Integer]->A,a];
+jj++];
 ];
 
 
