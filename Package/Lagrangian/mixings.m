@@ -20,7 +20,14 @@
 
 
 (* ::Input::Initialization:: *)
+(* Removed, because outdated! FS, 21/05/2019; *)
+(*
 CalcGaugeMixing[type_, def_]:=Block[{i,ll,j,k,l},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CalcGaugeMixing";
+SA`Doc`Info = "Mixing gauge eigenstates of vector bosons to mass eigenstates. Automatically, the corresponding ghosts are mixed as well;
+OLD VERSION! Only kept for backward compatibility with old SARAH model files. ";
+SA`Doc`GenerateEntry[];
 
 PrintAll["Calc Mixings Gauge Sector"];
 
@@ -31,48 +38,48 @@ mixedGauge={}; mixedGhost={};
 mixBosonBasis = {}; mixGhostBasis = {}; mixBasisNumbers={};
 mixBosonFinal = {}; mixGhostFinal = {};
 
- For[i=1,i<=Length[def],
+ For[i=1,i\[LessEqual]Length[def],
 If[getType[def[[i,1]]]=!=F,
-If[FreeQ[SGauge,def[[i,1]]]==False,
+If[FreeQ[SGauge,def[[i,1]]]\[Equal]False,
 BrokenSymmetries=Join[BrokenSymmetries,{Position[SGauge,def[[i,1]]][[1,1]]}];
 ];
-subGauge = Join[subGauge,{(getFull[def[[i,1]]] /. subIndizesMixStart) -> Sum[Delta[xgen,def[[i,j,1]]] Sum[def[[i,j,k,2]]*repl[xgen] (sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[def[[i,j,k,1]]],GetGen[def[[i,j,k,1]]]]def[[i,j,k,1]][(getIndizes[def[[i,1]]]/.subIndizesMixEnde)])  ,{k,2,Length[def[[i,j]]]}],{j,2,Length[def[[i]]]}]}];,
-subGauge = Join[subGauge,{(getFull[def[[i,1]]][fNr_] /. subIndizesMixStart) -> Sum[Delta[xgen,def[[i,j,1]]] Sum[def[[i,j,k,2]]*repl[xgen] (sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[def[[i,j,k,1]]],GetGen[def[[i,j,k,1]]]]def[[i,j,k,1]][(getIndizes[def[[i,1]]]/.subIndizesMixEnde)][fNr])  ,{k,2,Length[def[[i,j]]]}],{j,2,Length[def[[i]]]}]}]; 
+subGauge = Join[subGauge,{(getFull[def[[i,1]]] /. subIndizesMixStart) \[Rule] Sum[Delta[xgen,def[[i,j,1]]] Sum[def[[i,j,k,2]]*repl[xgen] (sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[def[[i,j,k,1]]],GetGen[def[[i,j,k,1]]]]def[[i,j,k,1]][(getIndizes[def[[i,1]]]/.subIndizesMixEnde)])  ,{k,2,Length[def[[i,j]]]}],{j,2,Length[def[[i]]]}]}];,
+subGauge = Join[subGauge,{(getFull[def[[i,1]]][fNr_] /. subIndizesMixStart) \[Rule] Sum[Delta[xgen,def[[i,j,1]]] Sum[def[[i,j,k,2]]*repl[xgen] (sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[def[[i,j,k,1]]],GetGen[def[[i,j,k,1]]]]def[[i,j,k,1]][(getIndizes[def[[i,1]]]/.subIndizesMixEnde)][fNr])  ,{k,2,Length[def[[i,j]]]}],{j,2,Length[def[[i]]]}]}]; 
 ]; 
-If[getType[def[[i,1]]]==V,
-subGhost = Join[subGhost,{(getFull[getGhost[def[[i,1]]]] /. subIndizesMixStart) -> Sum[Delta[xgen,def[[i,j,1]]] Sum[def[[i,j,k,2]]*repl[xgen] (sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[getGhost[def[[i,j,k,1]]]],GetGen[getGhost[def[[i,j,k,1]]]]]getGhost[def[[i,j,k,1]]][(getIndizes[getGhost[def[[i,1]]]]/.subIndizesMixEnde)])  ,{k,2,Length[def[[i,j]]]}],{j,2,Length[def[[i]]]}]}];
+If[getType[def[[i,1]]]\[Equal]V,
+subGhost = Join[subGhost,{(getFull[getGhost[def[[i,1]]]] /. subIndizesMixStart) \[Rule] Sum[Delta[xgen,def[[i,j,1]]] Sum[def[[i,j,k,2]]*repl[xgen] (sum[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],GetGenStart[getGhost[def[[i,j,k,1]]]],GetGen[getGhost[def[[i,j,k,1]]]]]getGhost[def[[i,j,k,1]]][(getIndizes[getGhost[def[[i,1]]]]/.subIndizesMixEnde)])  ,{k,2,Length[def[[i,j]]]}],{j,2,Length[def[[i]]]}]}];
 mixedGauge=Join[mixedGauge,{def[[i,1]]}];
 mixedGhost=Join[mixedGhost,{getGhost[def[[i,1]]]}];
 ];
-For[j=2,j<=Length[def[[i]]],
+For[j=2,j\[LessEqual]Length[def[[i]]],
 If[getType[def[[i,1]]]===V,
 mixBosonBasis=Join[mixBosonBasis,{getFull[def[[i,1]]]}];
 mixGhostBasis=Join[mixGhostBasis,{getFull[getGhost[def[[i,1]]]]}];
 mixBasisNumbers=Join[mixBasisNumbers,{def[[i,j,1]]}];
 ];
-For[k=2,k<=Length[def[[i,j]]],
+For[k=2,k\[LessEqual]Length[def[[i,j]]],
 newSymbol= Cases[def[[i,j,k,2]],x_Symbol,2];
- For[ll=1,ll<=Length[newSymbol],
-If[FreeQ[parameters,newSymbol[[ll]]]==True,
+ For[ll=1,ll\[LessEqual]Length[newSymbol],
+If[FreeQ[parameters,newSymbol[[ll]]]\[Equal]True,
 parameters=Join[parameters,{{newSymbol[[ll]],{},{1}}}];
 realVar=Join[realVar,{newSymbol[[ll]]}];
 rotationAngleGaugeBoson = Join[rotationAngleGaugeBoson,{newSymbol[[ll]]}];
 ];
 ll++;]; 
- If[FreeQ[Particles[Current],def[[i,j,k,1]]]==True,
-If[FreeQ[Particles[Current],RE[def[[i,j,k,1]]]]==True,
+ If[FreeQ[Particles[Current],def[[i,j,k,1]]]\[Equal]True,
+If[FreeQ[Particles[Current],RE[def[[i,j,k,1]]]]\[Equal]True,
 (* addParticle[RE[def[[i,j,k,1]]],getIndizesWI[def[[i,1]]], 1,getType[def[[i,1]]]]; *)
 addParticle[RE[def[[i,j,k,1]]],{{lorentz,4}}, 1,getType[def[[i,1]]]];
-For[l=1,l<=Length[Gauge],SA`DynL[RE[def[[i,j,k,1]]],Gauge[[l,2]]]={0};];
+For[l=1,l\[LessEqual]Length[Gauge],SA`DynL[RE[def[[i,j,k,1]]],Gauge[[l,2]]]={0};];
 ];
-If[getType[def[[i,1]]]===V && FreeQ[Particles[Current],getGhost[def[[i,j,k,1]]]]==True,
+If[getType[def[[i,1]]]===V && FreeQ[Particles[Current],getGhost[def[[i,j,k,1]]]]\[Equal]True,
 (* addParticle[getGhost[def[[i,j,k,1]]],getIndizesWI[getGhost[def[[i,1]]]], 1,G]; *)
 addParticle[getGhost[def[[i,j,k,1]]],{}, 1,G];
-For[l=1,l<=Length[Gauge],SA`DynL[getGhost[def[[i,j,k,1]]],Gauge[[l,2]]]={0};];
+For[l=1,l\[LessEqual]Length[Gauge],SA`DynL[getGhost[def[[i,j,k,1]]],Gauge[[l,2]]]={0};];
 ];
 If[getType[def[[i,1]]]===V, bosons = Join[bosons,{RE[def[[i,j,k,1]]]}]];
 ];
-If[getType[def[[i,1]]]===V && FreeQ[mixBosonFinal,getFull[def[[i,j,k,1]]]]==True,
+If[getType[def[[i,1]]]===V && FreeQ[mixBosonFinal,getFull[def[[i,j,k,1]]]]\[Equal]True,
 mixBosonFinal = Join[mixBosonFinal,{getFull[def[[i,j,k,1]]]}];
 mixGhostFinal = Join[mixGhostFinal,{getFull[getGhost[def[[i,j,k,1]]]]}];
 ];
@@ -85,16 +92,16 @@ SubGauge[Eigenstates]=subGauge;
 SubGhost[Eigenstates]=subGhost;
 
 
-MixingM=Table[Coefficient[replaceGen[ReleaseHold[mixBosonBasis[[i]] /.subGC[1]/. subGauge],0] /. i001->mixBasisNumbers[[i]],mixBosonFinal[[j]] /.subGC[1]],{i,1,Length[mixBosonBasis]},{j,1,Length[mixBosonFinal]}] /.sum[a_,b_,c_]->1;
+MixingM=Table[Coefficient[replaceGen[ReleaseHold[mixBosonBasis[[i]] /.subGC[1]/. subGauge],0] /. i001\[Rule]mixBasisNumbers[[i]],mixBosonFinal[[j]] /.subGC[1]],{i,1,Length[mixBosonBasis]},{j,1,Length[mixBosonFinal]}] /.sum[a_,b_,c_]\[Rule]1;
 If[Length[MixingM]>0,
 InvMixingM = Simplify[Inverse[MixingM]];
 ];
 
-For[i=1,i<=Length[mixBosonFinal],
-subGaugeInv=Join[subGaugeInv,{(mixBosonFinal[[i]] /.subIndizesMixStart) -> Sum[InvMixingM[[i,j]] (mixBosonBasis[[j]] /.subIndizesMixEnde) Delta[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],mixBasisNumbers[[j]]],{j,1,Length[mixBosonBasis]}]}];
-subGhostInv=Join[subGhostInv,{(mixGhostFinal[[i]] /.subIndizesMixStart) -> Sum[InvMixingM[[i,j]] (mixGhostBasis[[j]] /.subIndizesMixEnde) Delta[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],mixBasisNumbers[[j]]],{j,1,Length[mixGhostBasis]}]}];
+For[i=1,i\[LessEqual]Length[mixBosonFinal],
+subGaugeInv=Join[subGaugeInv,{(mixBosonFinal[[i]] /.subIndizesMixStart) \[Rule] Sum[InvMixingM[[i,j]] (mixBosonBasis[[j]] /.subIndizesMixEnde) Delta[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],mixBasisNumbers[[j]]],{j,1,Length[mixBosonBasis]}]}];
+subGhostInv=Join[subGhostInv,{(mixGhostFinal[[i]] /.subIndizesMixStart) \[Rule] Sum[InvMixingM[[i,j]] (mixGhostBasis[[j]] /.subIndizesMixEnde) Delta[Hold[ToExpression["n"<>StringDrop[ToString[xgen],3]]],mixBasisNumbers[[j]]],{j,1,Length[mixGhostBasis]}]}];
 mixedPart=replaceGen[ReleaseHold[mixBosonFinal[[i]] /. subGaugeInv],rgNr];
-If[mixedPart==conj[mixedPart],
+If[mixedPart\[Equal]conj[mixedPart],
 realVar = Join[realVar,{getBlank[mixBosonFinal[[i]]]}];
 realVar = Join[realVar,{getBlank[mixGhostFinal[[i]]]}]; 
 ];
@@ -105,17 +112,18 @@ UpdateGaugeTransformations[subGauge,subGaugeInv,UGTgaugeMM[rotNr]];
 GaugeTransformation=replaceGen[ReleaseHold[GaugeTransformation /. subGhost /.subGauge],rgNr];
 ];
 
-For[i=1,i<=Length[def],
-If[getType[def[[i,1]]]==V,
+For[i=1,i\[LessEqual]Length[def],
+If[getType[def[[i,1]]]\[Equal]V,
 delParticle[getGhost[def[[i,1]]]];
 delParticle[getGhostBar[def[[i,1]]]];
 ];
 delParticle[def[[i,1]]];
 i++;];
 
-
+SA`Doc`EndEntry[];
 
 ];
+*)
 
 (* --------------------------------------------------- *)
 (* Calculate Mixed Lagrangians *)
@@ -123,6 +131,12 @@ i++;];
 
 
 CalcMixedLagrangian:=Block[{i, rotNr,j,ll,add,newTerms},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CalcMixedLagrangian";
+SA`Doc`Info = "Main function to perform all rotations from gauge to the final mass eigenstates. It loops over all eigenstates and performs the different steps.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 EffectiveOperators=0;
 EffectiveTheory=False;
 
@@ -342,36 +356,6 @@ Lagrangian = Kinetic - Potential + LagrangianVVV + LagrangianVVVV;
 MakeEffective;
 ];
 
-(*
-If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][GaugeFixing]]]=!=DEFINITION,
-CalcGhostLagrangian[DEFINITION[NameOfStates[[rotNr]]][GaugeFixing]];
-];
-*)
-(*
-If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][LagrangianInput]]]=!=DEFINITION,
-DEFINITION[NameOfStates[[rotNr]]][Additional]=DEFINITION[NameOfStates[[rotNr]]][LagrangianInput];
-];
-*)
-(*
-If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][Additional]]]=!=DEFINITION,
-PrintAll["Adding terms to the Lagrangian: "];
-add=DEFINITION[NameOfStates[[rotNr]]][Additional];
-sumLagInput=0;
-For[j=1,j\[LessEqual]Length[add],
-Print[" ... adding: ",add[[j,1]], " (",Dynamic[DynamicStatusAddTerms[ADD]]/. ADD\[Rule]add[[j,1]],")"];
-
-PrintDebug[" ... adding: ",add[[j,1]]];
-newTerms=CreateLagrangian[add[[j,1]],AddHC /. add[[j,2]] /. {AddHC\[Rule]False},Overwrite /. add[[j,2]] /. {Overwrite\[Rule]False}];
-sumLagInput+=newTerms[[1]];
-LagReDef+=newTerms[[1]];
-LagrangianVVV+=newTerms[[2]];
-LagrangianVVVV+=newTerms[[3]];
-Potential-=newTerms[[4]];
-Kinetic +=newTerms[[5]];
-j++;];
-LagInput[NameOfStates[[rotNr]]]=sumLagInput;
-];
-*)
 SaveModelParameters[NameOfStates[[rotNr]]];
 
 rotNr++;
@@ -416,6 +400,8 @@ If[FreeQ[makeOutput[[i,2]],CHep]==True,writech=False;,writech=True;];
 ModelOutput[makeOutput[[i,1]],WriteTeX->writetex, WriteCHep->writech, WriteFeynArts->writefa];
 i++;];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -428,6 +414,13 @@ i++;];
 
 
 MakeStates[mixDef_]:=Block[{i,k,i2,j1,j2,gen,j3,ll,flavors},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "MakeStates";
+SA`Doc`Info = "Generates all necessary information (quantum numbers, global charges, generations, names) about the new mass eigenstates showing up as mixture of gauge eigenstates. ";
+SA`Doc`Input={"mixDef"->"The definition of the mixing as given in the model file"};
+SA`Doc`GenerateEntry[];
+
+
 mixES = {};
 mixESnoFV = {};
 mixBasis = {};
@@ -707,6 +700,7 @@ If[FreeQ[Particles[Current],RE[mixESnoFV[[i,1,j]]]],Message[ModelFile::UnknownPa
 delParticle[RE[mixESnoFV[[i,1,j]]]]; 
 j++;];i++;];
 
+SA`Doc`EndEntry[];
 
 If[mixBasisNoFV=!={},
 Return[{subDef,Join[MMatrices[[1]],MMatricesNo[[1]]]/.subAlways,Join[MMatrices[[2]],MMatricesNo[[2]]]/.subAlways,Join[mixBasis,mixBasisNoFV],Join[mixMatES,mixMatESnoFV],Join[mixES,mixESnoFV],Join[mixedNames,mixedNamesNoFV],Join[MMatrices[[1]],MMatricesNo[[1]]]/.DeleteCases[subAlways,x_?((FreeQ[#,sum]==False)&)],Join[MMatrices[[2]],MMatricesNo[[2]]]/.DeleteCases[subAlways,x_?((FreeQ[#,sum]==False)&)]}];,
@@ -724,6 +718,13 @@ Return[{subDef,MMatrices[[1]]/.subAlways,MMatrices[[2]]/.subAlways,mixBasis,mixM
 (* ----------------------------------------------- *)
 
 MakeEffective:=Block[{Masse, temp, i,l,allGenerations},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "MakeEffective";
+SA`Doc`Info = "Responsible for getting an 'effective theory' where degrees of freedoms are removed from the final Lagrangian. 
+The main purpose was to get the RGEs for seesaw (-like) models where heavy states shouldn't show up in the Lagrangian. Note, the option to get dimension 6 operators via tree-level exchange of the heavy states was never tested in practice! ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 IntegrateOutNew={};
 DeleteParticlesNew = {};
 
@@ -808,6 +809,8 @@ Particles[Current]=allGenerations;
 (* PrintAll[DeleteParticles]; *)
 
 DeleteParticles = DeleteParticlesNew; 
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -821,6 +824,11 @@ DeleteParticles = DeleteParticlesNew;
 (* ::Input::Initialization:: *)
 
 CalcMassMatrices[basis_, potential_, names_,FV_]:=Block[{i1,j,i2,off,ll,m,k,n, MassMatrices, MassMatricesFull, subVac},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CalcMassMatrices";
+SA`Doc`Info = "Calculates the mass matrices for fermions and scalars as second derivative of the potential.";
+SA`Doc`Input={"basis"->"The fields before the rotation", "potential"->"The potential of the Lagrangian","names"->"The name of the considered eigenstates","FV"->"If flavour violation is included"};
+SA`Doc`GenerateEntry[];
 
 Print["   Calculate mass matrices ",Dynamic[DynamicNrMass[basis]],"/",Length[basis]," (",Dynamic[DynamicNameMass[basis]],")"];
 PrintDebug["  Calculate mass matrices"];
@@ -934,12 +942,21 @@ Message[MassMatrix::OnlyZero,basis[[i]]];
 i++;];
 *)
 SA`MassMatricesFullSave=MassMatricesFull;
+
+SA`Doc`EndEntry[];
+
 Return[{CalcDelta[MassMatrices],CalcDelta[MassMatricesFull]}];
 
 ];
 
 
  CalculateTreeLevelMasses:=Block[{i,j,k,mass,statelist,partList, states,defList,entry,pdgList={},doubleCheck,dc},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CalculateTreeLevelMasses";
+SA`Doc`Info = "Calculates/Derives the tree-level masses or introduces dummy symbols for them according to the option in particles.m (LesHouches, Automatic, Dependence). I think this part can be really cleaned up!";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["   ... calculating tree level masses (",Dynamic[DynamicCalcTreeMasses],")"];
 PrintDebug["   ...Calculating Tree Level Masses"];
 LesHouchesListMasses={};
@@ -1062,10 +1079,18 @@ If[FreeQ[parameters,subNumDependencesMasses[[i,1]]],parameters=Join[parameters,{
 addNewSym[subNumDependencesMasses[[i,1]], subNumDependencesMasses[[i,2]]];
 i++;];
 DynamicCalcTreeMasses="All Done";
+
+SA`Doc`EndEntry[];
 ]; 
 
 
 GenerateFlavors[type_]:=Block[{i,j,i2},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "GenerateFlavors";
+SA`Doc`Info = "Routine to support the option to mix gauge eigenstates to mass eigenstates under the assumption of no-flavour mixing. This introduces a new index 'flavour' to the mass eigenstates, e.g. the six down-squarks are decomposed in three flavours with two generations each.";
+SA`Doc`Input={"type"->"The name of the considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 PrintAll["Split Flavors"];
 OffSetFlavors={};
 flavorSub={};
@@ -1116,9 +1141,17 @@ FlavorSubInverse[type]=flavorInverse;
 If[IgnoreGaugeFixing=!=True,
 UpdateGaugeTransformations[flavorSub,flavorInverse,UGTflavorMM[rotNr]];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 DecomposeStates[type_]:=Block[{i,j,k,decomp},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "DecomposeStates";
+SA`Doc`Info = "Option to decompose complex states into real components. This was needed for a 3HDM models with a higher CP symmetry.";
+SA`Doc`Input={"type"->"The name of the considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 PrintAll["Decompose Fields"];
 decomposeSub={};
 decomposeInverse={};
@@ -1169,10 +1202,18 @@ DecompSubInverse[type]=decomposeInverse;
 If[IgnoreGaugeFixing=!=True,
 UpdateGaugeTransformations[decomposeSub,decomposeInverse,UGTflavorMM[rotNr]];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
 GeneratePhases[type_]:=Block[{i,j},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "GeneratePhases";
+SA`Doc`Info = "Adds complex phases to fermions which don't mix (like the gluino or vector-like fermions). ";
+SA`Doc`Input={"type"->"The name of the considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 PrintAll["Add Phases"];
 phaseSub={};
 phaseInverse={};
@@ -1206,6 +1247,8 @@ PhaseSubInverse[type]=phaseInverse;
 If[IgnoreGaugeFixing=!=True,
 UpdateGaugeTransformations[phaseSub,phaseInverse,UGTphasesMM[rotNr]];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -1213,6 +1256,11 @@ UpdateGaugeTransformations[phaseSub,phaseInverse,UGTphasesMM[rotNr]];
 
 (* ::Input::Initialization:: *)
 SaveModelParameters[name_]:=Block[{},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "SaveModelParameters";
+SA`Doc`Info = "This function stores all information about a given set of eigenstates. It also decomposes the Lagrangian into pieces in order to speed up further calculations (especially the one for the vertices). ";
+SA`Doc`Input={"name"->"The name of the considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["Save information (",Dynamic[DynamicSaveInfo[name]],")"];
 PrintDebug["Save information"];
@@ -1297,10 +1345,18 @@ GoldstoneBosons[name]=GoldstoneGhost;
 SetGenerations=False; 
 CalcImp = False;
 DynamicSaveInfo[name]="All Done";
+
+SA`Doc`EndEntry[];
 ];
 
 
 SimplifyMatrices:=Block[{i,particles,para,temp,sub},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "SimplifyMatrices";
+SA`Doc`Info = "Routine to simplify the mass matrices. It automatically loops over all eigenstates and all rotated fields.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintAll["   ... simplify mass matrices"];
 states=NameOfStates;
 
@@ -1323,6 +1379,8 @@ MassMatrices[states[[i]]]=mat;
 MassMatricesFullND[states[[i]]]=matFullND;
 MassMatricesND[states[[i]]]=matND;
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -1330,6 +1388,11 @@ i++;];
 
 
 AddMatrixProducts:=Block[{i},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "AddMatrixProducts";
+SA`Doc`Info = "In case that the product of two rotation matrices is expressed as a new matrix (like the CKM matrix), this replacement is done here. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintAll["   ... add matrix products"];
 
@@ -1349,11 +1412,17 @@ If[FreeQ[parameters,MayBeParameters[[i,1]]],
 parameters = Join[parameters,{MayBeParameters[[i]] /. GetDimParameters-> getDimParameters}];
 ];
 i++;];
-
+SA`Doc`EndEntry[];
 
 ];
 
 CheckForMassless:=Block[{i,j,particle,type},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CheckForMassless";
+SA`Doc`Info = "Checks if states have zero mass (at tree-level). These particles receive some special treatment in particular in the SPheno output to prevent numerical problems. These states are stored in 'Massless[Eigenstates]'";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintAll["   ... checking for massless particles"];
 
 For[i=1,i<=Length[NameOfStates],
@@ -1376,10 +1445,17 @@ j++;];
 Massless[NameOfStates[[i]]]=temp;
 ];
 i++;];
+SA`Doc`EndEntry[];
 ];
 
 
 CalcGaugeMixing2[name_, def_]:=Block[{temp,temp2,i,j,i1,i2,jj,PartLag,subV={},subVI={},subG={},subGI={},todel},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CalcGaugeMixing2";
+SA`Doc`Info = "Mixing gauge eigenstates of vector bosons to mass eigenstates. Automatically, the corresponding ghosts are mixed as well. Also the mass matrix for the vector bososn is obtained in this step. ";
+SA`Doc`Input={"name"->"Name of the considered eigenstates","def"->"The definition of the mixing is written in the model file"};
+SA`Doc`GenerateEntry[];
+
 Print["Calc mass matrices gauge sector: ",Dynamic[DynamicMMgaugeNr[name]],"/",Length[def],"(",Dynamic[DynamicMMgaugeName[name]],")"];
 PrintDebug["Calc mass matrices gauge sector"];
 SA`NewGaugeBosons={};
@@ -1443,9 +1519,16 @@ SA`RemovedGhosts=getGhost/@Select[todel,(getType[#]===V)&];
 SA`RemovedGhosts= Table[{SA`RemovedGhosts[[i]][a__]->0,SA`RemovedGhosts[[i]]->0},{i,1,Length[SA`RemovedGhosts]}];
 Flatten[SA`RemovedGaugeBosons];
 Flatten[SA`RemovedGhosts];
+SA`Doc`EndEntry[];
 ];
 
 GenerateSubGauge[{in_,out_,mat_}]:=Block[{i,j,k,ll,temp={},FermMix,gnr,a,b,listSub={},instate,outstate,div,i2},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "GenerateSubGauge";
+SA`Doc`Info = "Generates the substitution rules to mix vector bosons and ghosts. Moreover, it checks which quantum number (local and global charges) the final states will carry after the mixing.";
+SA`Doc`Input={"in"->"The initial states","out"->"The final states after mixing","mat"->"the mass matrix"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[parameters,mat] && Head[mat]=!=InvMT,parameters=Join[parameters,{{mat,{generation,generation},{Length[in],Length[in]}}}];];
 If[getType[getBlank[in[[1]] /. a_[b_Integer]->a]]=!=F,FermMix=False;,FermMix=True];
 If[FermMix==False,
@@ -1512,10 +1595,8 @@ For[ll=1,ll<=Length[Gauge],SA`DynL[getBlank[out[[i]]],Gauge[[ll,3]]]={0};ll++;];
 i++;];
 ];
 
+SA`Doc`EndEntry[];
 Return[listSub];
-
-
-
 ];
 
 OrderSubstitutions[list_]:=Block[{div},
@@ -1527,6 +1608,12 @@ ExtractGen[x_]:=If[ Cases[x,y_?IntegerQ]=={},Return[1],Return[Cases[x,y_?Integer
 
 
 CheckHiggsStates:=Block[{i,j,k,temp},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "CheckHiggsStates";
+SA`Doc`Info = "Checks if real states (CP even or odd) are present. The states are then stored in the lists SA`ScalarCPeven and SA`ScalarCPodd which are used for instance by the Vevacious or HiggsBounds output.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintAll["Checking for CP even and odd scalars"];
 SA`ScalarsCPeven = {};
 SA`ScalarsCPodd={};
@@ -1568,10 +1655,15 @@ SA`CPodd[NameOfStates[[i]]]=Select[SA`ScalarsCPodd ,(FreeQ[Particles[NameOfState
 SA`CPeven[NameOfStates[[i]]]=Select[SA`ScalarsCPeven ,(FreeQ[Particles[NameOfStates[[i]]],#]==False)&];
 
 i++;];
-
+SA`Doc`EndEntry[];
 ];
 
 ReplaceTensorRepsByVectors[def_]:=Block[{i,i2,j,indold,renameindices},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "ReplaceTensorRepsByVectors";
+SA`Doc`Info = "Replaces higher-dimensional tensor represenetations into vector-representations. Necessary for the gauge of unbroken subgroups. So far only implemented for the adjoint. (Only tested for the Pati-Salam model so far)";
+SA`Doc`Input={"def"->"Definition of the replacement"};
+SA`Doc`GenerateEntry[];
 
 genMax=8;
 For[i=1,i<=Length[def],
@@ -1614,9 +1706,16 @@ If[IgnoreGaugeFixing=!=True,
 UpdateGaugeTransformationsTensorToVector[def];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 RenameIndicesAux:=Block[{i,j,jjj,sub,sub2},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "RenameIndicesAux";
+SA`Doc`Info = "Renames the indices associated with auxiliary gauge groups. Only used for the Pati-Salam model up to now.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Rename indices"];
 For[i=1,i<=Length[AuxGauge],
 sub2=Reverse/@Flatten[Table[Delta[1,generation/.subGC[iii+jjj+10]]A[{generation/.subGC[iii+jjj+10],(AuxGauge[[i,3]]/.subGC[iii+jjj+10])}]->A_[{generation/.subGC[iii],ToExpression[ToString[AuxGauge[[i,3]]/.subGC[iii]]<>appendIndex[[jjj]]]}],{jjj,2,4},{iii,1,4}],1];
@@ -1637,11 +1736,16 @@ genMax=20;
 
 
 
-
+SA`Doc`EndEntry[];
 ];
 
 
 ComplexifyFields[type_] := Block[{i,j,i2,equ,iii,vev,pos,form,scalarform,alignment},
+SA`Doc`File = "Package/Lagrangian/mixings.nb";
+SA`Doc`Name = "ComplexifyFields";
+SA`Doc`Info = "Combines two real fields to a complex states. Introduced for 3HDM model with higher CP symmetry. It also checks for all properties (quantum numbers) of the new state.";
+SA`Doc`Input={"type"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 title=ToString[type];
 
@@ -1741,7 +1845,7 @@ If[IgnoreGaugeFixing=!=True,
 UpdateGaugeTransformations[compSub,compSubInverse,UGTvev[rotNr]];
 ];
 
-
+SA`Doc`EndEntry[];
 ];
 
  

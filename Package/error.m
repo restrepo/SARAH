@@ -485,6 +485,10 @@ i++;];
 ];
 
 CheckModelFile:=Block[{i,j,k,l},
+SA`Doc`File = "Package/error.nb";
+SA`Doc`Name = "CheckModelFile";
+SA`Doc`Info = "This routine checks the model files for the initialised models for Syntax errors.";
+SA`Doc`GenerateEntry[];
 
 PrintDebug["Checking Model Files ..."];
 Print["Checking model files: ",Dynamic[DynamicCheckModelFiles]];
@@ -596,11 +600,18 @@ DynamicCheckModelFiles="All files okay";,
 DynamicCheckModelFiles="Found problems. Main file: "<>(ModelFileOK /. {True->"ok",False->"buggy"})<>". Particle file: "<>(ParticleFileOK /. {True->"ok",False->"buggy"})<>". Parameter file: "<>(ParameterFileOK /. {True->"ok",False->"buggy"})<>"\n";
 	];
 
+SA`Doc`EndEntry[];
 ];
 
 
 
 CheckParameterDefinitions[list_]:=Block[{temp,i},
+SA`Doc`File = "Package/error.nb";
+SA`Doc`Name = "CheckModelFile";
+SA`Doc`Info = "This routine checks the parameters.m file for the initialised model for Syntax errors. ";
+SA`Doc`Input={"list"->"List with all definitions"};
+SA`Doc`GenerateEntry[];
+
 KnownEntries={Dependence,DependenceNum,DependenceOptional,Description,DependenceSPheno,Form,GUTnormalization,LaTeX,LesHouches,OutputName,Real,Value,MatrixProduct};
 temp=Intersection[Flatten[Transpose[list][[2]]] /. (a_ -> b_)->a];
 temp=Complement[temp,KnownEntries];
@@ -616,9 +627,17 @@ Message[Symmetry::obsolete];
 ];
 
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckParticleDefinitions[list_]:=Block[{temp,i},
+SA`Doc`File = "Package/error.nb";
+SA`Doc`Name = "CheckParticleDefinitions";
+SA`Doc`Info = "This routine checks the particles.m file for the initialised model for Syntax errors. ";
+SA`Doc`Input={"list"->"List with all definitions"};
+SA`Doc`GenerateEntry[];
+
 KnownEntries={Description,FeynArtsNr,LaTeX,Mass,MassDependence,OutputName,PDG,PDG.IX,ElectricCharge,Width,LHPC, Goldstone};
 temp=Intersection[Flatten[Transpose[list][[2]]] /. (a_ -> b_)->a];
 temp=Complement[temp,KnownEntries];
@@ -633,11 +652,18 @@ RParity::obsolete="Note, the Definition of the R-partiy is no longer necessary i
 Message[RParity::obsolete];
 ];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 CheckConsistency[ES_]:=Block[{i, missingParticle={},missingParameter={},missingPDG={}, missingLHparameter={},allParticleNames,allParameterNames,missingOutputNames,missingPDGIX,UsePDGIXsave},
+SA`Doc`File = "Package/error.nb";
+SA`Doc`Name = "CheckConsistency";
+SA`Doc`Info = "This routine performs some basic check of the consistency of the content of parameters.m and particles.m (number of PDGs per particle, missing definitions, etc.)";
+SA`Doc`Input={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["Checking model for missing definitions"];
 
@@ -685,6 +711,7 @@ If[missingOutputNameParameter=!={},Message[CheckModelFiles::MissingOutputNamePar
 
 (* longOutputName = Select[allParameterNames, (StringLength[ToString[getEntryParameter[#,OutputName]]]>4)&]; *)
 
+SA`Doc`EndEntry[];
 ];
 
 

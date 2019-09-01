@@ -73,15 +73,18 @@ vacHead[x_]:= Return[x->zero[x]];
 
 
 MakeInteractionListRGE[SP_]:=Block[{i,j,k,PM,listNew= {},SymmetryFactor=1,tempList,pos,pos2,symmetric,tempsub,nfac,rtemp,temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "MakeInteractionListRGE";
+SA`Doc`Info = "Generates a  list with interactions (including the contraction of indices) stemming from a superpotential. This list is used by the RGE calculation.";
+SA`Doc`Input={"SP"->"A term in the Superpotential"};
+SA`Doc`GenerateEntry[];
+
 If[Length[SP[[1]]]==2,
 GivenIndexStructure=MakeIndexStructure[SP[[2]] ];,
 GivenIndexStructure=SP[[1,3]];
 ];
 
 GivenIndexStructure=MakeIndexStructure[SP[[2]] ];
-(* If[Length[SP[[2]]]<3, (* Needs to wait until Susyno can calculate Invaraints of 4 irreps *)
-GivenIndexStructure=getInvariantMatrix[SP[[2]],GivenIndexStructure]; 
-]; *)
 GivenIndexStructure=getInvariantMatrix[SP[[2]],GivenIndexStructure]; 
 
 PM=Permutations[Table[i,{i,1,Length[SP[[2]]]}]];
@@ -104,23 +107,21 @@ listNew = tempList;
 
 tempList[[1,2,1]]=tempList[[1,2,1]]*SymmetryFactor;
 
-Return[{(tempList[[1]]),listNew}];
+SA`Doc`Return[{(tempList[[1]]),listNew}];
 ];
 
-
-
-
-
-(* getDimFundamentalAux[nr_]:=Block[{},
-If[GaugeListAux[[nr,1]]\[Equal]False,
-Return[getDimFundamental[Gauge[[nr,2]]]];,
-Return[GaugeListAux[[nr,2]]];
-];
-]; *)
 
 getDimFundamentalAux[nr_]:=getDimFundamental[Gauge[[nr,2]]];
 
 GenerateAllIndizes[Nr_]:=Block[{i,j,k,l,m,n,res,states,templ,resSusyno,temp,temp2},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "GenerateAllIndizes";
+SA`Doc`Info = "Generates all indices for a particle defined in the model. There are two diferent kind of indices: \n
+- not expanded: correspond to unbroken gauge groups\n
+- expanded: correspond to broken gauge groups, i.e. the sum over the indices is performed";
+SA`Doc`Input={"Nr"->"The position of the considered field in the array 'Fields'"};
+SA`Doc`GenerateEntry[];
+
 notExpanded={{generation,Fields[[Nr,2]]}}; expanded={};
 notShort={{generation,Fields[[Nr,2]]}}; expShort={};
 
@@ -175,7 +176,7 @@ notExpanded=notExpanded /. -a_Integer b_ -> a b;
 expanded=expanded /. -a_Integer b_ -> a b;
 
 
-Return[{notExpanded,expanded, notShort,expShort}];
+SA`Doc`Return[{notExpanded,expanded, notShort,expShort}];
 
 ];
 
@@ -189,12 +190,18 @@ If[s===1,Return[name];,Return[ToExpression[ToString[name]<>appendIndex[[s]]]]];
 
 
 Deri[x_,l_]:=Block[{erg, erg2},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "Deri";
+SA`Doc`Info = "Symbol for the partial derivative of a particle with respect to a given Lorentz index. Further simplifications are done via the dependent function 'Der'";
+SA`Doc`Input={"x"->"The particle","l"->"The Lorentz index"};
+SA`Doc`GenerateEntry[];
+
 If[Head[x] == List,
 erg = List@@x;
 erg2 = Deri/@Table[{erg[[i]],l},{i,1,Length[erg]}];
-Return[List@@erg2/.a_[{b_,c_}]->a[b,c]];
+SA`Doc`Return[List@@erg2/.a_[{b_,c_}]->a[b,c]];
 ];
-Return[Der[x,l]];
+SA`Doc`Return[Der[x,l]];
 ];
 
 
@@ -213,22 +220,28 @@ If[Head[x]==repl,Return[x];];
 If[Head[x]==Rational,Return[x];];
 If[Head[x]==Complex,Return[x];];
 
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "Der";
+SA`Doc`Info = "Symbol for the partial derivative of a particle with respect to a given Lorentz index. Returns the corresponding term in momentum space.";
+SA`Doc`Input={"x"->"The particle","lor"->"The Lorentz index"};
+SA`Doc`GenerateEntry[];
+
 If[Head[x] == conj,
 If[FreeQ[Particles[Current],Head[x[[1]]]]==False || (FreeQ[Particles[Current],Head[Head[x[[1]]]]]==False && Head[x[[1]][[-1]]]===Integer),
 If[getType[x[[1]]]=!=G,
-Return[x Mom[x /. A__[b_Integer]->A,lor]];,
-Return[x];
+SA`Doc`Return[x Mom[x /. A__[b_Integer]->A,lor]];,
+SA`Doc`Return[x];
 ];,
-Return[x];
+SA`Doc`Return[x];
 ];
 ];
 
 If[FreeQ[Particles[Current],Head[x]]==False|| (FreeQ[Particles[Current],Head[Head[x]]]==False && Head[x[[-1]]]===Integer),
 If[getType[x]=!=G,
-Return[x Mom[x/. A__[b_Integer]->A,lor]];,
-Return[x];
+SA`Doc`Return[x Mom[x/. A__[b_Integer]->A,lor]];,
+SA`Doc`Return[x];
 ];,
-Return[x];
+SA`Doc`Return[x];
 ];
 ] /; (CalcImp == True || Head[x]==List || Head[x]==Plus || Head[x]==Times || Head[x]==Power || Head[x]==repl) && (Head[x]=!=DeltaGT);
 
@@ -242,6 +255,12 @@ Mom[x_,l_]:=Mom[x /. zero[y_]->y,l] /;FreeQ[x,zero]== False;
 
 
 replaceGen[x_,nr_] :=Block[{i,temp,subng},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "replaceGen";
+SA`Doc`Info = "Replaces an intermediate generation index 'nX' (which is the result of the substitutions during a field rotation) by a proper generation index 'genY'.";
+SA`Doc`Input={"x"->"The considered index","nr"->"The numbr which shall be used"};
+SA`Doc`GenerateEntry[];
+
 subng=Table[ToExpression["n"<>ToString[i]]->genf[i],{i,1,genMax}];
 temp=x;
 For[i=1,i<=genMax,
@@ -251,12 +270,19 @@ i++;];
 (* temp=temp/.{ n1\[Rule]gen1,n2\[Rule]gen2,n3\[Rule]gen3,n4\[Rule]gen4,n5\[Rule]gen5,n6\[Rule]gen6} /. Mom[repl[a_]]\[Rule]1 /.repl[a_]\[Rule]1  /. Mom[1]\[Rule]1 ; *)
 temp=temp/.subng /. Mom[repl[a_]]->1 /.repl[a_]->1  /. Mom[1]->1 ;
 
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 repl[1]:=1;
 
 CheckOne:=Block[{part,i,j,k,liste1,liste2,listen},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckOne";
+SA`Doc`Info = "Checks which particles or VEVs appear only in one generation. For those a definition is added to automatically remove the generation index, i.e. 
+replace X[{genX,more indices}] by X[{more indices}].";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 listen={Particles[ALL],Particles[Current]};
 ParticleListOneGeneration={};
 
@@ -304,16 +330,30 @@ i++;
 ];
 
 OnesChecked=True;
+SA`Doc`EndEntry[];
 ];
 
 deletedTotal[x_]:=If[x[[2]]>x[[3]], Return[True];,Return[False];];
 
 
 MakeSuperpotentialAsList[term_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "MakeSuperpotentialAsList";
+SA`Doc`Info = "Brings the superpotential defined in the input file into a list-notation where fields, coupling and coefficient are separated.";
+SA`Doc`Input={"term"->"The considered superpotential"};
+SA`Doc`GenerateEntry[];
+
 If[Head[term]===Plus,list=CreateSPlist/@ (List@@term);,list={CreateSPlist[term]}];
-Return[list];
+SA`Doc`Return[list];
 ];
+
 CreateSPlist[term_]:=Block[{fields,coup,par,coeff,contraction},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CreateSPlist";
+SA`Doc`Info = "Brings a single term from superpotential defined in the input file into a list-notation where fields, coupling and coefficient are separated.";
+SA`Doc`Input={"term"->"The considered terms"};
+SA`Doc`GenerateEntry[];
+
 fields=Cases[term,x_Dot];
 If[fields==={},
 fields=Select[List@@term,MemberQ[Transpose[SuperFields][[1]],#]&];
@@ -327,8 +367,8 @@ par=coup;
 ];
 coeff=coup/par;
 If[FreeQ[coup,Delta] &&FreeQ[coup,epsTensor]  && FreeQ[coup,CG] ,
-Return[{{coeff,par },fields}];,
-Return[{{coeff/. {Delta[a__]->1,epsTensor[a__]->1, CG[a__][b__]->1},par ,coeff/(coeff/. {Delta[a__]->1,epsTensor[a__]->1, CG[a__][b__]->1})},fields}];
+SA`Doc`Return[{{coeff,par },fields}];,
+SA`Doc`Return[{{coeff/. {Delta[a__]->1,epsTensor[a__]->1, CG[a__][b__]->1},par ,coeff/(coeff/. {Delta[a__]->1,epsTensor[a__]->1, CG[a__][b__]->1})},fields}];
 ];
 ];
 
@@ -345,12 +385,23 @@ ParticleQ[x_]:=If[MemberQ[vacuum,x] || MemberQ[vacuum,Head[x]],Return[True];,Ret
 LorentzQ[x_]:= If[FreeQ[x,lt1] &&  FreeQ[x,lt2] && FreeQ[x,lt3] && FreeQ[x,lt4],Return[False];,Return[True];];
 
 getInitializationIndices[particle_]:=Block[{pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getInitializationIndices";
+SA`Doc`Info = "Gets the indices of particles used during initialisation.";
+SA`Doc`Input={"particle"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[SA`ListAllFieldsInit,getBlankSF[particle]][[1,1]];
-(* Return[Join[SA`ListAllFieldsInit[[pos,2]],SA`ListAllFieldsInit[[pos,3]]]]; *)
-Return[SA`ListAllFieldsInit[[pos,3]]];
+SA`Doc`Return[SA`ListAllFieldsInit[[pos,3]]];
 ];
 
 part[particle_,nr_]:=Block[{res,sub,i,temp,ind,sumStates,nonSUN,pos,pos2},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "part";
+SA`Doc`Info = "Takes the full form of a given particle where the indices get given number. Also the sums over gauge and generations indices are added. For instance (uR[{generation,color}],1) becomes sum[gem1,1,3] sum[col1,1,3] uR[{gen1,col1}]. This is the form which can be used in the Lagrangian. ";
+SA`Doc`Input={"particle"->"The considered particle","nr"->"The used number"};
+SA`Doc`GenerateEntry[];
+
 (* ind=Cases[RE[particle],x_?ListQ,2][[1]]; *)
 (* ind=getIndizesOldWI[RE[particle]]; *)
 ind=getInitializationIndices[RE[particle]];
@@ -365,12 +416,18 @@ Return[temp[nr]*sumStates*sum[genf[nr],GetGenStart[particle[1] /. subGC[nr]],Get
 Return[temp*sumStates*sum[genf[nr],GetGenStart[particle /. subGC[nr]],GetGen[particle /. subGC[nr]]]]; 
 ]; *)
 If[getType[particle,True]===F,
-Return[temp[nr]*sumStates*sum[genf[nr],GetGenStart[getBlank[particle[1] /. subGC[nr]]],GetGen[getBlank[particle[1] /. subGC[nr]]]]];, 
-Return[temp*sumStates*sum[genf[nr],GetGenStart[getBlank[particle /. subGC[nr]]],GetGen[getBlank[particle /. subGC[nr]]]]]; 
+SA`Doc`Return[temp[nr]*sumStates*sum[genf[nr],GetGenStart[getBlank[particle[1] /. subGC[nr]]],GetGen[getBlank[particle[1] /. subGC[nr]]]]];, 
+SA`Doc`Return[temp*sumStates*sum[genf[nr],GetGenStart[getBlank[particle /. subGC[nr]]],GetGen[getBlank[particle /. subGC[nr]]]]]; 
 ];
 ];
 
 partBlank[particle_,nr_]:=Block[{res,sub,i,temp,ind,sumStates},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "partBlank";
+"Takes the short form of a given particle, adds the indices and sets the indices to a  given number. Also the sums over gauge and generations indices are added. For instance (uR,1) becomes sum[gem1,1,3] sum[col1,1,3] uR[{gen1,col1}]. This is the form which can be used in the Lagrangian. ";
+SA`Doc`Input={"particle"->"The considered particle","nr"->"The used number"};
+SA`Doc`GenerateEntry[];
+
 temp=RE[particle];
 sumStates=1;
 ind=getIndizes[temp];
@@ -385,16 +442,6 @@ temp = temp[nr];
 ];
 ];
 
-(*
-For[i=1,i\[LessEqual]Length[ind],
-If[ind[[i]]=!= generation && ind[[i]] =!=lorentz,
-(* sumStates=sumStates*sum[ToExpression["a"<>StringTake[ToString[ind[[i]]],{4,6}]<>ToString[nr]],1,getNumberStates[ind[[i]]]]; *)
-sumStates=sumStates*sum[ToExpression[StringTake[ToString[ind[[i]]],{1,3}]<>ToString[nr]],1,getNumberStates[ind[[i]]]];
-];
-i++;
-];
-*)
-
 For[i=1,i<=Length[ind],If[ind[[i]]=!=generation&&ind[[i]]=!=lorentz,(*sumStates=sumStates*sum[ToExpression["a"<>StringTake[ToString[ind[[i]]],{4,6}]<>ToString[nr]],1,getNumberStates[ind[[i]]]];*)(*H*)(*I am changing this since getNumberStates[color] did not work if pati\[Rule]color breaking is present.I suspect that it does not work correctly even without such breaking (e.g.gG[{col1}]sum[col1,1,3]),to be discussed!!!*)(*At this stage it is not very general,however,at least it works for the ToyPS model*)If[AuxGaugesPresent===True&&MemberQ[UnbrokenSubgroups,ind[[i]],3]&&getType[particle]===G&&MemberQ[RepGaugeBosons,ToExpression["V"<>StringDrop[ToString[particle],1]],3],pos=Position[RepGaugeBosons,ToExpression["V"<>StringDrop[ToString[particle],1]]][[1]];
 nStates=RepGaugeBosons[[pos[[1]],pos[[2]],2]];,nStates=getNumberStates[ind[[i]]];
 ];
@@ -407,11 +454,17 @@ res = {temp[[1]]*sumStates*sum[genf[nr],GetGenStart[RE[particle][[1]]],GetGen[RE
 res = temp*sumStates*sum[genf[nr],GetGenStart[RE[particle]],GetGen[RE[particle]]]; 
 ];
 
-Return[res];
+SA`Doc`Return[res];
 ];
 
 
 addParticle[name_, ind_, gens_,type_,fla___]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "addParticle";
+SA`Doc`Info = "Adds a particle to the list of all existing particles 'Particle[X]'";
+SA`Doc`Input={"name"->"The name of the particle","ind"->"the indices of the particle","gens"->"The number of generations of the particle","type"->"The generic type of the particle","fla"->"The number of flavours of the particle"};
+SA`Doc`GenerateEntry[];
+
 If[Head[gens]===List,
 Particles[Current] = Join[Particles[Current],{{name,gens[[1]], gens[[2]],type,ind,fla}}];
 Particles[ALL] = Join[Particles[ALL],{{name,gens[[1]], gens[[2]],type,ind,fla}}];,
@@ -431,23 +484,43 @@ A, vacuumA=Join[vacuumA,{name->zero[name]}];
 ];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 delParticle[part_]:=Block[{pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "delParticle";
+SA`Doc`Info = "Removes a particle from 'Particles[Current]'.";
+SA`Doc`Input={"part"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[Particles[Current],part]==False,
 pos =Position[Particles[Current],RE[part]][[1,1]];
 Particles[Current]=Delete[Particles[Current],pos];
 ];
+SA`Doc`EndEntry[];
 ];
 
 makeDelta[listP_, skip_]:=Block[{i,j,k,res, listIndices,listIndicesNoSUN},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "makeDelta";
+SA`Doc`Info = "Generates a product of Kronecker deltas between the gauge indices of a set of given fields.";
+SA`Doc`Input={"listP"->"The list of particles","skip"->"The indices which shouldn't be included"};
+SA`Doc`GenerateEntry[];
+
 listIndices =MapIndexed[If[getGen[listP[[#2[[1]],1]]]==1,DeleteCases[#1,generation,4],#1]&, DeleteCases[Table[getIndizes[listP[[i,1]]],{i,1,Length[listP]}],x_/; MemberQ[skip,x],4]];
-Return[Product[Times@@Map[Delta[#1 /. subGC[listP[[i,2]]],#1/. subGC[listP[[j,2]]]]&,Intersection[listIndices[[i]],listIndices[[j]]] ],{i,1,Length[listP]-1},{j,i+1,Length[listP]}]];
+SA`Doc`Return[Product[Times@@Map[Delta[#1 /. subGC[listP[[i,2]]],#1/. subGC[listP[[j,2]]]]&,Intersection[listIndices[[i]],listIndices[[j]]] ],{i,1,Length[listP]-1},{j,i+1,Length[listP]}]];
 ];
 
 
 makeDelta[particleNr_,nr1_,nr2_, skip_]:=Block[{i,j,k,res, deltas, list,SKIP,gnr},
-If[particleNr > Length[Fields],Return[0];];
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "makeDelta";
+SA`Doc`Info = "Generates a product of Kronecker deltas for the gauge indices of particle, e.g. something like Delta[gen1,gen2] Delta[col1,col2]'. The result is used in the Lagrangian. ";
+SA`Doc`Input={"particleNr"->"The position of the particle in 'Fields'", "nr1"->"The first number used for the indices","nr2"->"The second number used for the indices","skip"->"The indices which shouldn't be included"};
+SA`Doc`GenerateEntry[];
+
+If[particleNr > Length[Fields],SA`Doc`Return[0];];
 SKIP=skip;
 If[Extract[Fields,particleNr][[2]]==1,
 SKIP = Join[SKIP,{generations}];
@@ -466,12 +539,18 @@ deltas = deltas*RM[Gauge[[gnr,2]],FieldDim[particleNr,gnr],DynkinLabels[Gauge[[g
 ]; *)
 ];
 i++;];
-Return[deltas];
+SA`Doc`Return[deltas];
 ];
 
 
 makeDeltaRGE[particleNr_,nr1_,nr2_, skip_]:=Block[{i,j,k,res, deltas, list,SKIP,gnr},
-If[particleNr > Length[Fields],Return[0];];
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "makeDeltaRGE"; 
+SA`Doc`Info = "Generates a product of Kronecker deltas for the gauge indices of particle, e.g. something like Delta[gen1,gen2] Delta[col1,col2]'. The result is used for the RGEs.";
+SA`Doc`Input={"particleNr"->"The position of the particle in 'Fields'", "nr1"->"The first number used for the indices","nr2"->"The second number used for the indices","skip"->"The indices which shouldn't be included"};
+SA`Doc`GenerateEntry[];
+
+If[particleNr > Length[Fields],SA`Doc`Return[0];];
 SKIP=skip;
 If[Extract[Fields,particleNr][[2]]==1,
 SKIP = Join[SKIP,{generations}];
@@ -486,10 +565,16 @@ If[FreeQ[SKIP,listTypes[[i]]]==True,
 deltas = deltas* Delta[listNames[[i]] /. subGC[nr1] /. subIndFinalX[nr1,nr1,"i"],listNames[[i]] /. subGC[nr2]/. subIndFinalX[nr2,nr2,"i"]]; 
 ];
 i++;];
-Return[deltas];
+SA`Doc`Return[deltas];
 ];
 
 MakeIndexStructureRGE[partListIN_]:=Block[{i,j,k,l,pos,pos2,temp,dyn,ind,sign={},dims, CGc,inds, i1,i2,i3,i4,partList={}},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "MakeIndexStructureRGE";
+SA`Doc`Info = "Generates the index structure of a given superpotential term in a format suitable for the RGE calculation. This version is used for SUSY models. ";
+SA`Doc`Input={"partListIN"->"The list of considered particles"};
+SA`Doc`GenerateEntry[];
+
 IndexTypes={};
 For[i=1,i<=Length[partListIN],
 If[FreeQ[ListFields,RE[partListIN[[i]]]]==False,
@@ -537,10 +622,16 @@ structure=structure /. CG[a_,b_]:>InvariantMatrixSusyno[Gauge[[pos,2]],getDynkin
 i++;];
 On[Part::"pspec"];
 On[Part::"pkspec1"];
-Return[structure];
+SA`Doc`Return[structure];
 ];
 
 MakeIndexStructureRGEnonSUSY[partListIN_,coup_]:=Block[{i,j,k,l,pos,pos2,temp,dyn,ind,sign={},dims, CGc,inds, i1,i2,i3,i4,partList={},realScalarInv={}},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "MakeIndexStructureRGEnonSUSY";
+SA`Doc`Info = "Generates the index structure of a given superpotential term in a format suitable for the RGE calculation. This version is used for non-SUSY models. ";
+SA`Doc`Input={"partListIN"->"The list of considered particles"};
+SA`Doc`GenerateEntry[];
+
 IndexTypes={};
 For[i=1,i<=Length[partListIN],
 If[FreeQ[ListFields,RE[partListIN[[i]]]]==False,
@@ -603,10 +694,16 @@ inds[[j]]={inds[[j,1]]+(inds[[j,1]]-1)*(inds[[j,2]])};
 j++;];
 If[Head[inds]===List,inds=Flatten[inds];];
 If[inds=!={}, structure=structure*(CGCBroken[partListIN,coup ]@@inds);];
-Return[structure];
+SA`Doc`Return[structure];
 ];
 
 MakeIndexStructure[partList_]:=Block[{i,j,k,l,pos,pos2,temp,dyn,ind,sign={}},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "MakeIndexStructure";
+SA`Doc`Info = "Generates the index structure for a given a set of particles. The result is used in the Lagrangian.";
+SA`Doc`Input={"partList"->"The list of considered particles"};
+SA`Doc`GenerateEntry[];
+
 IndexTypes={};
 For[i=1,i<=Length[partList],
 pos=Position[ListFields,RE[partList[[i]]]][[1,1]];
@@ -622,10 +719,16 @@ structure=structure*ContractIndicesSUN[Gauge[[pos,2]],Gauge[[pos,3]],Table[sign[
 structure=structure*GenerateInvariantsTensor[Gauge[[pos,2]],Gauge[[pos,3]],Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
 ];
 i++;];
-Return[structure];
+SA`Doc`Return[structure];
 ];
 
 ContractIndicesSUN[group_,name_,dims_]:=Block[{i,j,k,l,pos,pos2,temp,dyn,ind},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "ContractIndicesSUN";
+SA`Doc`Info = "Contracts the indices of particles charged under a SU(N) group. Note, the contraction might not be unique! Only the first valid contraction is returned. Works wiht up to four involved particles. (The function is quite old and clumpsy, but there might no need to spend to write a modern version) ";
+SA`Doc`Input={"group"->"The dimension of the considered gauge group","name"->"The name of the gauge group","dims"->"The involved dimensions of the fields"};
+SA`Doc`GenerateEntry[];
+
 CurrentNumberStates=Table[{getDimFundamental[group]},{i,1,Length[IndexTypes]}];
 NeededStructures={};
 
@@ -890,11 +993,19 @@ If[Mod[Length[ind],CurrentNumberStates[[i,1]]]=!=0,Print["Problem in contracting
 (*structure=structure*term;*)];];
 i++;];
 
-Return[structure];
+
+SA`Doc`Return[structure];
 
 ];
 
-ContractIndizes[a_,b_]:=Block[{i,j},tempA=a;tempB=b;term=1;
+ContractIndizes[a_,b_]:=Block[{i,j},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "ContractIndizes";
+SA`Doc`Info = "Tries to contract two sets of indices with a Delta function";
+SA`Doc`Input={"a,b"->"The sets of indices"};
+SA`Doc`GenerateEntry[];
+
+tempA=a;tempB=b;term=1;
 For[i=0,i<=Length[a]-1,contracted=False;
 j=1;
 While[j<=Length[tempB]&&contracted==False,If[Head[a[[Length[a]-i]]]=!=Head[tempB[[j]]],contracted=True;,j++;];];
@@ -902,8 +1013,16 @@ If[contracted==True,term=term*(Delta[a[[Length[a]-i]],tempB[[j]]]/.{Cov[x_]->x,C
 tempA=DeleteCases[tempA,a[[Length[a]-i]]];
 tempB=Delete[tempB,j];];
 i++;];
-Return[{tempA,tempB,term}];];
+SA`Doc`Return[{tempA,tempB,term}];
+];
+
 ContractIndizesEps2[a_,b_]:=Block[{i,j},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "ContractIndizesEps2";
+SA`Doc`Info = "Tries to contract two sets of indices with a epsilon function";
+SA`Doc`Input={"a,b"->"The sets of indices"};
+SA`Doc`GenerateEntry[];
+
 tempA=a;tempB=b;term=1;
 For[i=1,i<=Length[a],contracted=False;
 j=1;
@@ -912,9 +1031,16 @@ If[contracted==True,term=term*(epsTensor[a[[i]],tempB[[j]]]/.{Cov[x_]->x,Con[x_]
 tempA=DeleteCases[tempA,a[[i]]];
 tempB=Delete[tempB,j];];
 i++;];
-Return[{tempA,tempB,term}];];
+SA`Doc`Return[{tempA,tempB,term}];
+];
 
 GenerateInvariantsTensor[group_,name_,dims_]:=Block[{i,j,k,inds={},dyn={}},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "GenerateInvariantsTensor";
+SA`Doc`Info = "Finds the contractions of particles charged under a given gauge group using Susyno.";
+SA`Doc`Input={"group"->"The dimension of the considered gauge group","name"->"The name of the gauge group","dims"->"The involved dimensions of the fields"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[dims],
 If[Abs[dims[[i]]]=!=1,
 If[Head[dims[[i]]]===List,
@@ -929,10 +1055,10 @@ inds=Join[inds,{name /. subGC[i]}];
 i++;];
 If[Length[dyn]===4,
 If[Invariants[SusynoForm[group],Take[dyn,{1,2}]]=!={}&&Invariants[SusynoForm[group],Take[dyn,{3,4}]]=!={},
-Return[CG[group,Take[dyn,{1,2}]]@@Take[inds,{1,2}]CG[group,Take[dyn,{3,4}]]@@Take[inds,{3,4}]];
+SA`Doc`Return[CG[group,Take[dyn,{1,2}]]@@Take[inds,{1,2}]CG[group,Take[dyn,{3,4}]]@@Take[inds,{3,4}]];
 ];
 ];
-Return[CG[group,dyn]@@inds];
+SA`Doc`Return[CG[group,dyn]@@inds];
 ];
 
 
@@ -947,6 +1073,12 @@ Return[ToExpression[StringDrop[ToString[ind],{-1}]]];
 ReplacementRuleAux[ind_]:={Delta[a_, ind]:>DELTAaux[a,ind],Delta[ind,a_]:>DELTAaux[a,ind],epsTensor[a_,ind]:>EPSaux[a,ind],epsTensor[a_,ind]:>EPSaux[a,ind],sum[ind,a__]:>SUMaux[ind,a]};
 
 SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos,IndexNames={},IndexNamesSub={},iter,fin,SUB,posGauge,nr,suffix},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SumOverExpandedIndizes";
+SA`Doc`Info = "Performs the sum over expanded indices (i.e. those corresponding to a broken gauge group, e.g. 'sum[lef1,1,2] H[{lef1}]' gives 'H[{1}] + H[{2}]')";
+SA`Doc`Input={"term"->"The considered term", "partList"->"The list of involved particles","Matrix"->""};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[partList],
 If[partList[[i]]=!=None,
 pos=Position[ListFields,partList[[i]]][[1,1]];
@@ -1008,11 +1140,17 @@ If[AuxGaugesPresent===True,
 temp=SplitGaugeBosonsAux[temp];
 ];
 
-Return[ReleaseHold[temp]];
+SA`Doc`Return[ReleaseHold[temp]];
 
 ];
 
 SplitGaugeBosonsAux[term_]:=Block[{i,j,temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SplitGaugeBosonsAux";
+SA`Doc`Info = "Splits the gauge bosons of groups which don't get fully broken (e.g. for SU(4)->SU(3)).";
+SA`Doc`Input={"term"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 temp=Expand[term];
 For[i=1,i<=Length[GaugeListAux],
 If[GaugeListAux[[i,1]]==True,
@@ -1023,10 +1161,16 @@ temp=temp /. (subGaugeBosonsAux /. {a->(generation/. subGC[j]), b->(lorentz/.sub
 j++;];
 ];
 i++;];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 SplitGaugeBosonsAuxFabc[term_]:=Block[{i,j,temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SplitGaugeBosonsAuxFabc";
+SA`Doc`Info = "Splits the gauge bosons of groups which don't get fully broken (e.g. for SU(4)->SU(3)). Special function for terms involving the structure constants.";
+SA`Doc`Input={"term"->"The considered term"}
+SA`Doc`GenerateEntry[];
+
 temp=Expand[term];
 For[i=1,i<=Length[GaugeListAux],
 If[GaugeListAux[[i,1]]==True,
@@ -1037,17 +1181,31 @@ temp=Expand[temp] //. (subGaugeBosonsAuxFabc /. {a->(generation/. subGC[j]), b->
 j++;];
 ];
 i++;];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 (*H*)(*Analogous routines as for GB,to be used in generating gauge transformations*)
-SplitGhostsAux[term_]:=Block[{i,j,temp},temp=Expand[term];
+SplitGhostsAux[term_]:=Block[{i,j,temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SplitGhostsAux";
+SA`Doc`Info = "Splits the ghosts bosons of groups which don't get fully broken (e.g. for SU(4)->SU(3)).";
+SA`Doc`Input={"term"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
+temp=Expand[term];
 For[i=1,i<=Length[GaugeListAux],If[GaugeListAux[[i,1]]==True,For[j=1,j<=4,If[FreeQ[term,getGhost[Head[SGauge[[i]]]][{SGauge[[i,1,1]]}]/.subGC[j]]==False,temp=temp/.(subGhostsAux/.{a->(generation/.subGC[j]),b->(lorentz/.subGC[j])})/.{color->((Gauge[[i,3]]/.subGC[j])/.subNamesAux)};];
 j++;];];
 i++;];
-Return[temp];];
+SA`Doc`Return[temp];];
 
-SplitGhostsAuxFabc[term_]:=Block[{i,j,temp},temp=Expand[term];
+SplitGhostsAuxFabc[term_]:=Block[{i,j,temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SplitGhostsAuxFabc";
+SA`Doc`Info = "Splits the ghosts bosons of groups which don't get fully broken (e.g. for SU(4)->SU(3)).  Special function for terms involving the structure constants.";
+SA`Doc`Input={"term"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
+temp=Expand[term];
 For[i=1,i<=Length[GaugeListAux],
 If[GaugeListAux[[i,1]]==True,
 For[j=1,j<=5,
@@ -1055,7 +1213,7 @@ If[FreeQ[term,getGhost[Head[SGauge[[i]]]][{SGauge[[i,1,1]]}]/.subGC[j]]==False,t
 ];
 j++;];];
 i++;];
-Return[temp];];
+SA`Doc`Return[temp];];
 
 
 
@@ -1069,37 +1227,67 @@ Return[temp];];
 (* ::Input::Initialization:: *)
 
 getGenerator[k_,dim_,lor_,p1_,p2_]:=If[Gauge[[k,2]]===U[1],dim,
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getGenerator";
+SA`Doc`Info = "Wrapper function to obtain the generator for a given gauge group and  Irrep.";
+SA`Doc`Input={"k"->"Position of the gauge group in 'Gauge'","dim"->"Dimension of the field under the gauge group","lor"->"The Lorentz index","p1,p2"->"The indices for the involved fields"};
+SA`Doc`GenerateEntry[];
+
 If[Gauge[[k,5]]===True,
-Return[ReleaseHold[Generator[Gauge[[k,2]],getDynkinLabels[dim,Gauge[[k,2]]],Gauge[[k,3]]][lor,p1,p2]]];,
-Return[Generator[Gauge[[k,2]],getDynkinLabels[dim,Gauge[[k,2]]]][getAdjointIndex[Gauge[[k,3]]]/. subGC[lor],Gauge[[k,3]]/.subGC[p1],Gauge[[k,3]]/.subGC[p2]]];
+SA`Doc`Return[ReleaseHold[Generator[Gauge[[k,2]],getDynkinLabels[dim,Gauge[[k,2]]],Gauge[[k,3]]][lor,p1,p2]]];,
+SA`Doc`Return[Generator[Gauge[[k,2]],getDynkinLabels[dim,Gauge[[k,2]]]][getAdjointIndex[Gauge[[k,3]]]/. subGC[lor],Gauge[[k,3]]/.subGC[p1],Gauge[[k,3]]/.subGC[p2]]];
 ];
 ];
 
 getStructureConstant[group_,p1_,p2_,p3_]:=Block[{erg},
-If[Gauge[[group,2]]==1,Return[0];];
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getStructureConstant";
+SA`Doc`Info = "Wrapper function to obtain the structure constant for a gauge group.";
+SA`Doc`Input={"group"->"Position of the gauge group in 'Gauge'","p1,p2,p3"->"The indices for the involved fields"};
+SA`Doc`GenerateEntry[];
+
+If[Gauge[[group,2]]==1,SA`Doc`Return[0];];
 Set[erg,FST[Gauge[[group,2]]][p1,p2,p3]];
-Return[erg];
+SA`Doc`Return[erg];
 ];
 
 (* getAdjointIndex[name_]:=ToExpression["adj"<>StringTake[ToString[name],3]]; *)
 getAdjointIndex[name_]:=Block[{pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getAdjointIndex";
+SA`Doc`Info = "Returns the adjoint index. (Most likely no longer needed!)";
+SA`Doc`Input={"name"->"name of the gauge group"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[Gauge,name][[1,1]];
 If[Gauge[[pos,5]]===False,
-Return[name];
+SA`Doc`Return[name];
 (* Return[ToExpression["adj"<>ToString[name]]]; *),
-Return[generation];
+SA`Doc`Return[generation];
 ];
 ];
 
 getIndexFamilyName[x_]:=Block[{i,j,pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getIndexFamilyName";
+SA`Doc`Info = "Return the name of the gauge group for a given index carrying a number, e.g. col1->color";
+SA`Doc`Input={"x"->"The considered index"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[Table[StringTake[ToString[Gauge[[i,3]]],{1,3}],{i,1,Length[Gauge]}],StringTake[ToString[x],{1,3}]];
-Return[Gauge[[pos[[1,1]],3]]];
+SA`Doc`Return[Gauge[[pos[[1,1]],3]]];
 
 ];
 
 getCoeff[doub_,k_,lNr_,p1_,p2_]:=FieldDim[doub,k];
 
 getIndexRange[x_]:=Block[{i,ind,result},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getIndexRange";
+SA`Doc`Info = "Returns the range of a considered index";
+SA`Doc`Input={"x"->"The considered index"};
+SA`Doc`GenerateEntry[];
+
 ind=getIndizes[x];
 result={};
 For[i=1,i<=Length[ind],
@@ -1109,49 +1297,79 @@ generation,result=Join[result,{{generation,getGen[x]}}];,
 _,result = Join[result,{{ind[[i]],getNumberStates[ind[[i]]]}}];
 ];
 i++;];
-Return[result];
+SA`Doc`Return[result];
 ];
 
 getScalar[x_]:=ToExpression["S"<>ToString[x]];
 getSF[x_]:=Block[{pos,field},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getSF";
+SA`Doc`Info = "Returns the superfield corresponding to a component field";
+SA`Doc`Input={"x"->"The considered field"};
+SA`Doc`GenerateEntry[];
+
 field = getBlank[x];
 If[FreeQ[SFields,field],
 pos=Position[FFields,field];
 If[pos=!={},
-Return[Fields[[pos[[1,1]]]][[3]]];
+SA`Doc`Return[Fields[[pos[[1,1]]]][[3]]];
 ];,
 pos=Position[SFields,field];
 If[pos=!={},
-Return[Fields[[pos[[1,1]]]][[3]]];
+SA`Doc`Return[Fields[[pos[[1,1]]]][[3]]];
 ];
 ];
 ];
 
 
 getGhost[VBoson_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getGhost";
+SA`Doc`Info = "Returns the ghost of a vector boson.";
+SA`Doc`Input={"VBoson"->"The considered vector boson"};
+SA`Doc`GenerateEntry[];
+
 If[Head[VBoson]===conj,
-Return[ToExpression["g"<>StringDrop[ToString[RE[VBoson]],1]<>"C"]];,
-Return[ToExpression["g"<>StringDrop[ToString[VBoson],1]]];
+SA`Doc`Return[ToExpression["g"<>StringDrop[ToString[RE[VBoson]],1]<>"C"]];,
+SA`Doc`Return[ToExpression["g"<>StringDrop[ToString[VBoson],1]]];
 ];
 ]; 
 
 getVectorBoson[Ghost_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getVectorBoson";
+SA`Doc`Info = "Returns the vector boson of a ghost.";
+SA`Doc`Input={"VBoson"->"The considered Ghost"};
+SA`Doc`GenerateEntry[];
+
 ghost=ToString[getBlank[Ghost]];
 If[StringTake[ghost,-1]==="C",ghost =StringDrop[ghost,-1];];
- Return[ToExpression["V"<>StringDrop[ghost,1]]];
+SA`Doc`Return[ToExpression["V"<>StringDrop[ghost,1]]];
 ]; 
 
 getAuxScalar[scalar_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getAuxScalar";
+SA`Doc`Info = "Return the auxiliary field of a scalar.";
+SA`Doc`Input={"scalar"->"The considered scalar"};
+SA`Doc`GenerateEntry[];
+
 If[Head[scalar]===conj,
-Return[conj[getFull[ToExpression["A"<>StringDrop[ToString[getBlank[scalar]],1]]]]];,
-Return[getFull[ToExpression["A"<>StringDrop[ToString[getBlank[scalar]],1]]]];
+SA`Doc`Return[conj[getFull[ToExpression["A"<>StringDrop[ToString[getBlank[scalar]],1]]]]];,
+SA`Doc`Return[getFull[ToExpression["A"<>StringDrop[ToString[getBlank[scalar]],1]]]];
 ];
 ]; 
 
 getAuxVector[vector_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getAuxVector";
+SA`Doc`Info = "Return the auxiliary field of a vector.";
+SA`Doc`Input={"vector"->"The considered vector"};
+SA`Doc`GenerateEntry[];
+
 If[Head[vector]===conj,
-Return[conj[ToExpression["A"<>StringDrop[ToString[RE[vector]],1]]]];,
-Return[ToExpression["A"<>StringDrop[ToString[vector],1]]];
+SA`Doc`Return[conj[ToExpression["A"<>StringDrop[ToString[RE[vector]],1]]]];,
+SA`Doc`Return[ToExpression["A"<>StringDrop[ToString[vector],1]]];
 ];
 ]; 
 
@@ -1165,6 +1383,12 @@ If[temp==={},Return[1];,Return[temp[[1,2]]];];
 UseSymmASymm=False;
 
 SymmetriceIndices[Operator_,length_,SameInd_,preFac_]:=Block[{i,Op,Op2,GEN1,GEN2,OP,OP2},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SymmetriceIndices";
+SA`Doc`Info = "Takes an object and symmetrices/anti-symmetrices the indices of it";
+SA`Doc`Input={"Operator"->"The considered object","length"->"the number of indices in total","SameInd"->"The indices whiche are of the smae kind", "preFac"->"The prefactor after shufflng the indices"};
+SA`Doc`GenerateEntry[];
+
 Op=Operator[]; Op2=Operator[];
 For[i=1,i<=length,
 Op=Append[Op,generation /. subGCRule[i]];
@@ -1174,16 +1398,23 @@ Op2=Append[Op2,(generation /. subGC[i])];
 ];
 i++;];
 ReleaseHold[Hold[SetDelayed[OP,preFac OP2 /; (OrderedQ[{(GEN1),(GEN2)}]==False&& UseSymmASymm==True)]] /. OP->Op /. OP2 ->Op2 /. GEN1 -> (generation /. subGC[SameInd[[1]]])/. GEN2 -> (generation /. subGC[SameInd[[2]]])];
+SA`Doc`EndEntry[];
 ];
-ExtractSymmetryOfParametersNS[Op_,listP_,ind_]:=Block[{i,j,same,sameDis,pos,org,rep,posDef,gens,symmetry},
 
-If[MemberQ[SA`SymmetryAlreadyDefined,Op],Return[];];
+ExtractSymmetryOfParametersNS[Op_,listP_,ind_]:=Block[{i,j,same,sameDis,pos,org,rep,posDef,gens,symmetry},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "ExtractSymmetryOfParametersNS";
+SA`Doc`Info = "Takes a parameters and checks if it is symmetric under the exchange of indices. This version is used for non-SUSY models.";
+SA`Doc`Input={"Op"->"The considered object","listP"->"The list of involved fields","ind"->"The involved indices"};
+SA`Doc`GenerateEntry[];
+
+If[MemberQ[SA`SymmetryAlreadyDefined,Op],SA`Doc`Return[];];
 same=Select[RE/@listP,(Count[RE/@listP,#]>1)&];
-If[same==={}||FreeQ[FGauge,listP[[1]]]==False,Return[];];
+If[same==={}||FreeQ[FGauge,listP[[1]]]==False,SA`Doc`Return[];];
 (* If[AtomQ[Op]&&FreeQ[Superpotential,Op],Return[];]; *)
 sameDis=Intersection[same];
 (* ind=MakeIndexStructure[listP]; *)
-If[Times@@getGen/@sameDis===1,Return[];];
+If[Times@@getGen/@sameDis===1,SA`Doc`Return[];];
 For[i=1,i<=Length[sameDis],
 If[getGen[sameDis[[i]]]===99,
 gens=getGenSF[sameDis[[i]]];,
@@ -1216,16 +1447,23 @@ Symmetry::Unknown="Symmetric of parameter `` can not be resolved. Indexstructure
 ];
 ];
 i++;];
+SA`Doc`EndEntry[];
 ];
 
 ExtractSymmetryOfParameters[Op_,listP_]:=Block[{i,j,same,sameDis,pos,org,rep,ind,posDef,gens,symmetry},
-If[MemberQ[SA`SymmetryAlreadyDefined,Op],Return[];];
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "ExtractSymmetryOfParameters";
+SA`Doc`Info = "Takes a parameters and checks if it is symmetric under the exchange of indices. This version is used for SUSY models.";
+SA`Doc`Input={"Op"->"The considered object","listP"->"The list of involved fields","ind"->"The involved indices"};
+SA`Doc`GenerateEntry[];
+
+If[MemberQ[SA`SymmetryAlreadyDefined,Op],SA`Doc`Return[];];
 same=Select[RE/@listP,(Count[RE/@listP,#]>1)&];
-If[same==={}||FreeQ[FGauge,listP[[1]]]==False,Return[];];
+If[same==={}||FreeQ[FGauge,listP[[1]]]==False,SA`Doc`Return[];];
 (* If[AtomQ[Op]&&FreeQ[Superpotential,Op],Return[];]; *)
 sameDis=Intersection[same];
 (* ind=MakeIndexStructure[listP]; *)
-If[Times@@getGen/@sameDis===1,Return[];];
+If[Times@@getGen/@sameDis===1,SA`Doc`Return[];];
 ind=MakeIndexStructureRGE[listP];
 For[i=1,i<=Length[sameDis],
 If[getGen[sameDis[[i]]]===99,
@@ -1259,9 +1497,16 @@ Symmetry::Unknown="Symmetric of parameter `` can not be resolved. Indexstructure
 ];
 ];
 i++;];
+SA`Doc`EndEntry[];
 ];
 
 DefineSymmetryOp[Op_,symmetry_,posIN_,listP_]:=Block[{len,pos,i,j},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "DefineSymmetryOp";
+SA`Doc`Info = "Creates functions to handle the indices of a parameter according to the given symmetry.";
+SA`Doc`Input={"Op"->"The conisdered parameters","symmetry"->"The given symmetry","posIN"->"List with the position of indices which are symmetric","listP"->"The list of involved particles"};
+SA`Doc`GenerateEntry[];
+
 SA`SymmetryAlreadyDefined = Join[SA`SymmetryAlreadyDefined,{Op}];
 pos=Table[posIN[[i,1]],{i,1,Length[posIN]}];
 len=getGen/@(RE/@listP);
@@ -1365,63 +1610,49 @@ Hermitian,
 ];
 ];
 ];
-
+SA`Doc`EndEntry[];
 ];
 
 CheckSymmetry[Op_,part_,sameInd_]:=Block[{pos},
- ExtractSymmetryOfParameters[Op,part]; 
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckSymmetry";
+SA`Doc`Info = "Takes a parameters and checks if it is symmetric under the exchange of indices. This is mainly a wrapper for 'ExtractSymmetryOfParameters' which in addition checks if a parameter is real. ";
+SA`Doc`Input={"Op"->"The considered object","part"->"The list of involved fields","ind"->"The involved indices"};
+SA`Doc`GenerateEntry[];
+
+ExtractSymmetryOfParameters[Op,part]; 
 
 If[FreeQ[Transpose[ParameterDefinitions][[1]],Op]==False,
 pos=Position[Transpose[ParameterDefinitions][[1]],Op][[1,1]];
 If[(Real/.Extract[ParameterDefinitions,pos][[2]])===True && FreeQ[realVar,Op],realVar=Join[realVar,{Op}]];
-(* If[sameInd=!={} && (Symmetry/.Extract[ParameterDefinitions,pos][[2]])===Symmetry, ExtractSymmetryOfParameters[Op,part];]; *)
-(*
-Switch[(Symmetry/.Extract[ParameterDefinitions,pos][[2]]),
-Symmetric, 
-	Op[a___,b_,c_,d___]:=Op[a,c,b,d] /;(OrderedQ[{b,c}]\[Equal]False && UseSymmASymm\[Equal]True);
-	Tp[Op] =Op;
-	Adj[Op] = conj[Op]; 
-	If[MemberQ[ListSymmetricParameters,(Op /. conj[x_]\[Rule]x)]\[Equal]False,ListSymmetricParameters=Join[ListSymmetricParameters,{Op}];];,
-AntiSymmetric, 
-	Op[a___,b_,c_,d___]:=-Op[a,c,b,d] /;(OrderedQ[{b,c}]\[Equal]False && UseSymmASymm\[Equal]True); 
-	Tp[Op] = -Op;
-	Adj[Op] = -conj[Op];
-	If[MemberQ[ListAntiSymmetricParameters,(Op /. conj[x_]\[Rule]x)]\[Equal]False,ListAntiSymmetricParameters=Join[ListAntiSymmetricParameters,{Op}];];,
-Hermitian,
-	Op[a___,b_,c_,d___]:=conj[Op[a,c,b,d]] /;(OrderedQ[{b,c}]\[Equal]False && UseSymmASymm\[Equal]True); 
-	Tp[Op] = conj[Op];
-	Adj[Op] = Op;
-	]; *)
-	];
-
+];
+SA`Doc`EndEntry[];
 ];
 
 CheckSymmetryLarger[Op_,part_,same_,len_]:=Block[{pos,subs},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckSymmetryLarger";
+SA`Doc`Info = "Takes a parameters and checks if it is symmetric under the exchange of indices. This is mainly a wrapper for 'ExtractSymmetryOfParameters' which in addition checks if a parameter is real. ";
+SA`Doc`Input={"Op"->"The considered object","part"->"The list of involved fields","same"->"NO LONGER USED", "len"->"NO LONGER USED"};
+SA`Doc`GenerateEntry[];
+
  ExtractSymmetryOfParameters[Op,part];
 If[FreeQ[Transpose[ParameterDefinitions][[1]],Op]==False,
 pos=Position[Transpose[ParameterDefinitions][[1]],Op][[1,1]];
 If[(Real/.Extract[ParameterDefinitions,pos][[2]])===True && FreeQ[realVar,Op],realVar=Join[realVar,{Op}]];
 subs=Flatten[Map[Subsets[#,{2}]&,same],1];
-(* If[sameInd=!={} && (Symmetry/.Extract[ParameterDefinitions,pos][[2]])===Symmetry, ExtractSymmetryOfParameters[Op,part];]; *)
-(*
-For[i=1,i\[LessEqual]Length[subs],
-Switch[(Symmetry/.Extract[ParameterDefinitions,pos][[2]]),
-Symmetric, 
-	SymmetriceIndices[Op,len,subs[[i]],1];
-	If[MemberQ[ListSymmetricParameters,(Op /. conj[x_]\[Rule]x)]\[Equal]False,ListSymmetricParameters=Join[ListSymmetricParameters,{Op}];];
-	If[Length[same[[1]]]\[Equal]len,SetOrderlessSARAH[Op]];,
-AntiSymmetric, 
-	SymmetriceIndices[Op,len,subs[[i]],-1];
-	If[MemberQ[ListAntiSymmetricParameters,(Op /. conj[x_]\[Rule]x)]\[Equal]False,ListAntiSymmetricParameters=Join[ListAntiSymmetricParameters,{Op}];];
-
-];
-i++;]; *)
 ]; 
-
+SA`Doc`EndEntry[];
 ];
 
 
 genTest[Op_,listP_,AddSB_]:=Block[{i,res,struct,gens,genstruct,temp, SBHeader,listPGen},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "genTest";
+SA`Doc`Info = "Checks if a given parameter needs to carry generation indices (depending on the involved fields) and adds them.";
+SA`Doc`Input={"Op"->"The name of the parameters","listP"->"The list of involved fields","AddSB"->"Add a soft-breaking term?"};
+SA`Doc`GenerateEntry[];
+
 If[Depth[Op]==2,
 newHead=Op[[0]];Opc=Op[[1]];AddHead=True;,
 AddHead=False; Opc = Op;
@@ -1507,8 +1738,8 @@ Tp[SBHeader[Opc]]=SBHeader[Opc];Adj[SBHeader[Opc]]=conj[SBHeader[Opc]];
 ];
 
 If[AddHead==True,
-Return[newHead[res]*genStruct];,
-Return[res*genStruct];
+SA`Doc`Return[newHead[res]*genStruct];,
+SA`Doc`Return[res*genStruct];
 ];
 ];
 
@@ -1519,6 +1750,12 @@ getFla[part_]:=getFla[part,SA`CurrentStates];
 getFlaALL[part_]:=getFla[part,ALL];
 
 getGen[part_,states_]:=Block[{pos, particle,partTemp,j,cparticles},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getGen";
+SA`Doc`Info = "Returns the number of generations of a givnen particle";
+SA`Doc`Input={"part"->"Name of the particles","states"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 partTemp= getBlank[DeleteCases[getBlank[part],x_?NumberQ,4]];
 particle = getParticleName[partTemp];
 cparticles=Table[Particles[states][[j,1]],{j,1,Length[Particles[states]]}];
@@ -1526,34 +1763,40 @@ If[FreeQ[cparticles,getBlank[particle]]==False,
 (* pos = Position[Particles[states],getBlank[particle]]; *)
 pos = Position[cparticles,getBlank[particle]];
 If[pos=!={},
-Return[Evaluate[Extract[Particles[states],pos[[1,1]]][[3]]/. GetGen -> getGen]];,
+SA`Doc`Return[Evaluate[Extract[Particles[states],pos[[1,1]]][[3]]/. GetGen -> getGen]];,
 Message[Particle::unknown ,part];
-Return[0];
+SA`Doc`Return[0];
 ];,
 If[FreeQ[SFields,particle]==False,
-Return[Fields[[Position[SFields,particle][[1,1]],2]]];
+SA`Doc`Return[Fields[[Position[SFields,particle][[1,1]],2]]];
 ];
 If[FreeQ[FFields,particle]==False,
-Return[Fields[[Position[FFields,particle][[1,1]],2]]];
+SA`Doc`Return[Fields[[Position[FFields,particle][[1,1]],2]]];
 ];
-Return[99];
+SA`Doc`Return[99];
 ];
 ]/; (FreeQ[part,getGen]==True);
 
 getFla[part_,states_]:=Block[{pos, particle,partTemp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getFla";
+SA`Doc`Info = "Returns the number of flavours of a given particle";
+SA`Doc`Input={"part"->"Name of the particles","states"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 partTemp= getBlank[DeleteCases[getBlank[part],x_?NumberQ,4]];
 particle = getParticleName[partTemp];
 If[FreeQ[Particles[states],getBlank[particle]]==False,
 pos = Position[Particles[states],getBlank[particle]];
 If[pos=!={},
 If[Length[Extract[Particles[states],pos[[1,1]]]]==6,
-Return[Evaluate[Extract[Particles[states],pos[[1,1]]][[6]]/. GetGen -> getGen]];,
-Return[1];
+SA`Doc`Return[Evaluate[Extract[Particles[states],pos[[1,1]]][[6]]/. GetGen -> getGen]];,
+SA`Doc`Return[1];
 ];,
 Message[Particle::unknown ,part];
-Return[0];
+SA`Doc`Return[0];
 ];,
-Return[1];
+SA`Doc`Return[1];
 ];
 ]/; (FreeQ[part,getGen]==True);
 
@@ -1572,20 +1815,26 @@ Return[getGen[part]];
 *)
 
 getGenStart[part_]:=Block[{pos, particle},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getGenStart";
+SA`Doc`Info = "Returns the number of the first generation of a given particle (only needed for effective theories)";
+SA`Doc`Input={"part"->"Name of the particles"};
+SA`Doc`GenerateEntry[];
+
 particle = getBlank[DeleteCases[getBlank[part],x_?NumberQ,4]];
 particle = getParticleName[particle];
 pos = Position[Particles[Current],particle];
 If[pos=!={},
-Return[Evaluate[Extract[Particles[Current],pos[[1,1]]][[2]]/. GetGen -> getGen]];,
+SA`Doc`Return[Evaluate[Extract[Particles[Current],pos[[1,1]]][[2]]/. GetGen -> getGen]];,
 If[FreeQ[SFields,particle]==False,
-Return[1];
+SA`Doc`Return[1];
 ];
 If[FreeQ[FFields,particle]==False,
-Return[1];
+SA`Doc`Return[1];
 ];
 Message[Particle::unknown ,part];
 (* Print["ERROR (getGenStart)  ",part, particle]; *)
-Return[0];
+SA`Doc`Return[0];
 ];
 ] /; (FreeQ[part,getGen]==True);
 
@@ -1597,9 +1846,15 @@ GetGenStart[x_]:= getGenStart[x] /; (SetGenerations==True);
 (* ::Input::Initialization:: *)
 
 getNumberStatesAdjoint[group_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getNumberStatesAdjoint";
+SA`Doc`Info = "Returns the name of states in the adjoint representation of a given group";
+SA`Doc`Input={"group"->"The considered gauge group"};
+SA`Doc`GenerateEntry[];
+
 Switch[Head[group],
-U,Return[1];,
-SU,Return[group[[1]]^2-1];
+U,SA`Doc`Return[1];,
+SU,SA`Doc`Return[group[[1]]^2-1];
 ];
 ];
 
@@ -1620,17 +1875,24 @@ Return[(Extract[Gauge,pos][[2,1]])];
 *)
 
 getNumberStates[charge_]:=Block[{cCharge,pos,particle,i,GaugeHere},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getNumberStates";
+SA`Doc`Info = "Returns the name of states in the fundamental representation of a given group";
+SA`Doc`Input={"charge"->"The considered gauge group"};
+
+SA`Doc`GenerateEntry[];
+
 cCharge=DeleteCases[charge,x_?NumberQ];
 (*H*)(*If AuxGaugesPresent,one has to take into account also the unbroken subgroup*)
 If[AuxGaugesPresent===True,GaugeHere=Join[Gauge,AuxGauge];,GaugeHere=Gauge];
 If[StringTake[ToString[cCharge],3]==="adj",
 cCharge=ToExpression[StringDrop[ToString[cCharge],3]];
 pos=Position[GaugeHere,cCharge][[1,1]];
-Return[(Extract[GaugeHere,pos][[2,1]]^2-1)];,
+SA`Doc`Return[(Extract[GaugeHere,pos][[2,1]]^2-1)];,
 If[FreeQ[GaugeHere,cCharge],
 cCharge=ToExpression[StringDrop[ToString[cCharge],-1]];];
 pos=Position[GaugeHere,cCharge][[1,1]];
-Return[(Extract[GaugeHere,pos][[2,1]])];
+SA`Doc`Return[(Extract[GaugeHere,pos][[2,1]])];
 ];
 ];
 
@@ -1646,22 +1908,28 @@ getTypeOld[part_]:=getType[part,False,ALL];
 getType[part_,True]:=getType[part,True,SA`CurrentStates];
 
  getType[part_,init_,states_]:=Block[{pos, particle},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getType";
+SA`Doc`Info = "Returns the generic type of a given particle";
+SA`Doc`Input={"part"->"Name of the particles","init"->"is it a particle present during initialisation only?","states"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 particle = getParticleName[part];
 If[init==True,
 If[FreeQ[typeList,particle]==False,
-Return[Extract[typeList,Position[typeList,particle][[1,1]]][[2]]];,
-Return[NoField];
+SA`Doc`Return[Extract[typeList,Position[typeList,particle][[1,1]]][[2]]];,
+SA`Doc`Return[NoField];
 ];
 ];
 
-If[FreeQ[vacuum,particle]==True && FreeQ[typeList,particle],Return[NoField];];
+If[FreeQ[vacuum,particle]==True && FreeQ[typeList,particle],SA`Doc`Return[NoField];];
 If[FreeQ[Particles[states],RE[particle]]==False,
 pos = Drop[DeleteCases[Position[Particles[states],particle,3,1][[1]],0],-1];
-Return[Extract[Particles[states],pos][[4]]];,
+SA`Doc`Return[Extract[Particles[states],pos][[4]]];,
 If[FreeQ[typeList,particle]==False,
-Return[Extract[typeList,Position[typeList,particle][[1,1]]][[2]]];
+SA`Doc`Return[Extract[typeList,Position[typeList,particle][[1,1]]][[2]]];
 ];
-Return[NoField];
+SA`Doc`Return[NoField];
 ];
 ];
 
@@ -1695,9 +1963,15 @@ getFullOld[part_]:=getFull[part,ALL];
 getFullSF[part_]:=SFields[[Position[SFields,getBlankSF[part]][[1,1]]]];
 
 getFull[part_,states_]:=Block[{pos,particle,indizes,sub},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getFull";
+SA`Doc`Info = "Returns the full form (i.e. including all indices) of a particle";
+SA`Doc`Input={"part"->"Name of the particles","states"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[diracFermions[ALL],getBlank[part]],sub={};,sub=Join[diracSubBack1[ALL],diracSubBack2[ALL]]];
 If[FreeQ[diracFermions[states],getBlank[part]]==False,sub=Join[diracSubBack1[states],diracSubBack2[states]]];
-If[FreeQ[Particles[states],getParticleName[part]],Return[part]];
+If[FreeQ[Particles[states],getParticleName[part]],SA`Doc`Return[part]];
 pos = Drop[DeleteCases[Position[Particles[states],getParticleName[part],3,1][[1]],0],-1];
 particle=Extract[Particles[states],pos][[1]];
 indizes = Extract[Particles[states],pos][[5]];
@@ -1705,21 +1979,27 @@ If[indizes=!={},indizes=Transpose[indizes][[1]]];
 If[indizes != {},particle=particle[indizes]];
 If[(Head[part]===conj)||(Head[part]===bar),
 If[(Head[part]===conj),
-Return[conj[particle/.sub]];,
-Return[bar[particle/.sub]];
+SA`Doc`Return[conj[particle/.sub]];,
+SA`Doc`Return[bar[particle/.sub]];
 ];,
-Return[particle/.sub];
+SA`Doc`Return[particle/.sub];
 ];
 ];
 
 getFull2[part_]:=getFull2[part,SA`CurrentStates];
 getFull2[part_,states_]:=Block[{pos,particle,indizes,sub,head},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getFull2";
+SA`Doc`Info = "Returns the full form (i.e. including all indices) of a particle. This versio includes also superfields.";
+SA`Doc`Input={"part"->"Name of the particles","states"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 If[(Head[part]===conj)||(Head[part]===bar),head=Head[part];,head=Evaluate;];
-If[FreeQ[SFields,getBlankSF[part]]==False,Return[head[SFields[[Position[SFields,getBlankSF[part]][[1,1]]]]]]];
-If[FreeQ[FFields,getBlankSF[part]]==False,Return[head[FFields[[Position[FFields,getBlankSF[part]][[1,1]]]]]]];
+If[FreeQ[SFields,getBlankSF[part]]==False,SA`Doc`Return[head[SFields[[Position[SFields,getBlankSF[part]][[1,1]]]]]]];
+If[FreeQ[FFields,getBlankSF[part]]==False,SA`Doc`Return[head[FFields[[Position[FFields,getBlankSF[part]][[1,1]]]]]]];
 
 If[FreeQ[diracFermions[ALL],getBlank[part]],sub={};,sub=Join[diracSubBack1[states],diracSubBack2[states]]];
-If[FreeQ[Particles[states],getParticleName[part]],Return[part]];
+If[FreeQ[Particles[states],getParticleName[part]],SA`Doc`Return[part]];
 pos = Drop[DeleteCases[Position[Particles[states],getParticleName[part],3,1][[1]],0],-1];
 particle=Extract[Particles[states],pos][[1]];
 indizes = Extract[Particles[states],pos][[5]];
@@ -1727,64 +2007,107 @@ indizes=Flatten[DeleteCases[{indizes},x_Integer] /. {a_,b_Integer}->a];
 If[indizes != {},particle=particle[indizes]];
 If[(Head[part]===conj)||(Head[part]===bar),
 If[(Head[part]===conj),
-Return[conj[particle/.sub]];,
-Return[bar[particle/.sub]];
+SA`Doc`Return[conj[particle/.sub]];,
+SA`Doc`Return[bar[particle/.sub]];
 ];,
-Return[particle/.sub];
+SA`Doc`Return[particle/.sub];
 ];
 ];
 
 
 (* ::Input::Initialization:: *)
 getIndizes[part_]:= Block[{list},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getIndizes";
+SA`Doc`Info = "Returns the indices of particles";
+SA`Doc`Input={"part"->"Name of the particles"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[Particles[Current],getParticleName[part]],
 (* Print["error get Indizes", part]; *)
-Return[{n}];,
+SA`Doc`Return[{n}];,
 list=Extract[Particles[Current],Position[Particles[Current],getParticleName[part]][[1,1]]][[5]];
 ];
-If[list==={},Return[list];,Return[Transpose[list][[1]]];];
+If[list==={},SA`Doc`Return[list];,SA`Doc`Return[Transpose[list][[1]]];];
 ];
 
 getIndizesWI[part_]:=Block[{list},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getIndizesWI";
+SA`Doc`Info = "Returns the indices and the index ranges of particles";
+SA`Doc`Input={"part"->"Name of the particles"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[Particles[Current],getParticleName[part]],
 (* Print["error getIndizesWI",part]; *)
-Return[{n}];,
-Return[Extract[Particles[Current],Position[Particles[Current],getParticleName[part]][[1,1]]][[5]]];
+SA`Doc`Return[{n}];,
+SA`Doc`Return[Extract[Particles[Current],Position[Particles[Current],getParticleName[part]][[1,1]]][[5]]];
 ];
 ];
 
 
 getIndizesOld[part_]:= Block[{list},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getIndizesOld";
+SA`Doc`Info = "Returns the indices of particles which is not part of the current eigenstates";
+SA`Doc`Input={"part"->"Name of the particles"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[Particles[ALL],getParticleName[part]],
 (* Print["error getIndizesOld",part]; *)
-Return[{n}];,
+SA`Doc`Return[{n}];,
 list=Extract[Particles[ALL],Position[Particles[ALL],getParticleName[part]][[1,1]]][[5]]
 ];
-If[list==={},Return[list];,Return[Transpose[list][[1]]];];
+If[list==={},SA`Doc`Return[list];,SA`Doc`Return[Transpose[list][[1]]];];
 ];
 
 getIndizesOldWI[part_]:= Block[{list},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getIndizesOldWI";
+SA`Doc`Info = "Returns the indices and index ranges of particles which is not part of the current eigenstates";
+SA`Doc`Input={"part"->"Name of the particles"};
+
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[Particles[ALL],getParticleName[part]],
 (* Print["error getIndizesOldWI",part]; *)
-Return[{n}];,
-Return[Extract[Particles[ALL],Position[Particles[ALL],getParticleName[part]][[1,1]]][[5]]];
+SA`Doc`Return[{n}];,
+SA`Doc`Return[Extract[Particles[ALL],Position[Particles[ALL],getParticleName[part]][[1,1]]][[5]]];
 ];
 ];
 
 
 getDescriptionField[y_]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getDescriptionField";
+SA`Doc`Info = "Returns the description from particles.m of a given particle";
+SA`Doc`Input={"y"->"Name of the particles"};
+SA`Doc`GenerateEntry[];
+
 temp=getEntryField[y,Description];
 If[Head[temp]===String,
-Return[temp];,
-Return[ToString[y]];
+SA`Doc`Return[temp];,
+SA`Doc`Return[ToString[y]];
 ];
 ];
 
-getEntryFieldAux[y_,Type_]:=Block[{pos,field,i,states,des},field=y;
+getEntryFieldAux[y_,Type_]:=Block[{pos,field,i,states,des},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getEntryFieldAux";
+SA`Doc`Info = "Returns an information from particles.m of an auxiliary particle";
+SA`Doc`Input={"y"->"Name of the particles","Type"->"Type of information"};
+SA`Doc`GenerateEntry[];
+
+field=y;
 If[FreeQ[WeylFermionAndIndermediate,field]==False,
 pos=Position[Transpose[WeylFermionAndIndermediate][[1]],field];
 ];
-If[Head[pos]===List,If[FreeQ[WeylFermionAndIndermediate[[pos[[1,1]]]][[2]],Type],Return[None];,Return[Type/. WeylFermionAndIndermediate[[pos[[1,1]]]][[2]]];];,Return[None];];]
+If[Head[pos]===List,If[FreeQ[WeylFermionAndIndermediate[[pos[[1,1]]]][[2]],Type],
+SA`Doc`Return[None];,
+SA`Doc`Return[Type/. WeylFermionAndIndermediate[[pos[[1,1]]]][[2]]];
+];,
+SA`Doc`Return[None];]
+;]
 
 
 getElectricCharge[x_conj]:=-getElectricCharge[RE[x]];
@@ -1792,57 +2115,81 @@ getElectricCharge[x_bar]:=-getElectricCharge[RE[x]];
 getElectricCharge[x_]:=getEntryField[x,ElectricCharge] /; (getType[x]=!=A);
 
 getDescriptionParameter[y_]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getDescriptionParameter";
+SA`Doc`Info = "Returns the description from parameters.m of a given parameter";
+SA`Doc`Input={"y"->"Name of the parameters"};
+SA`Doc`GenerateEntry[];
+
 temp=getEntryParameter[y,Description];
 If[Head[temp]===String,
-Return[temp];,
-Return[ToString[y]];
+SA`Doc`Return[temp];,
+SA`Doc`Return[ToString[y]];
 ];
 ];
 
 getDescription[y_]:=getDescriptionParameter[y];
 
 getDescriptionField[y_,gen_,fla___]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getDescriptionField";
+SA`Doc`Info = "Returns the description of a field and adds a generation and flavour number";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index"};
+SA`Doc`GenerateEntry[];
+
 temp = getDescriptionField[y];
 If[getGen[y]>1,
 If[getFla[y]>1,
-Return[temp<>" "<>ToString[gen]<>" "<>ToString[fla]];,
-Return[temp<>" "<>ToString[gen]];
+SA`Doc`Return[temp<>" "<>ToString[gen]<>" "<>ToString[fla]];,
+SA`Doc`Return[temp<>" "<>ToString[gen]];
 ];,
-Return[temp];
+SA`Doc`Return[temp];
 ];
 ];
 
 getLaTeXField[y_,gen_,fla___]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getLaTeXField";
+SA`Doc`Info = "Returns the LaTeX name of a field and adds a generation and flavour number";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index"};
+SA`Doc`GenerateEntry[];
+
 temp = getLaTeXField[y];
 If[getGen[y]>1,
 If[getFla[y]>1,
-Return["{"<>temp<>"}_{"<>ToString[gen]<>ToString[fla]<>"}"];,
-Return["{"<>temp<>"}_"<>ToString[gen]];
+SA`Doc`Return["{"<>temp<>"}_{"<>ToString[gen]<>ToString[fla]<>"}"];,
+SA`Doc`Return["{"<>temp<>"}_"<>ToString[gen]];
 ];,
-Return[temp];
+SA`Doc`Return[temp];
 ];
 ];
 
 getLaTeXField[y_]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getLaTeXField";
+SA`Doc`Info = "Returns the LaTeX of a field";
+SA`Doc`Input={"y"->"The considered field"};
+SA`Doc`GenerateEntry[];
+
 temp=getEntryField[RE[y],LaTeX];
 If[Head[temp]===List,
 If[Head[y]===bar || Head[y]===conj,
-Return[temp[[2]]];,
-Return[temp[[1]]];
+SA`Doc`Return[temp[[2]]];,
+SA`Doc`Return[temp[[1]]];
 ];,
 If[Head[temp]===String,
 If[Head[y]===bar,
-Return["\\bar{"<>temp<>"}"];,
+SA`Doc`Return["\\bar{"<>temp<>"}"];,
 If[Head[y]===conj,
-Return[temp<>"^*"];,
-Return[temp];
+SA`Doc`Return[temp<>"^*"];,
+SA`Doc`Return[temp];
 ];
 ];,
 If[Head[y]===bar,
-Return["\\bar{"<>ToString[y]<>"}"];,
+SA`Doc`Return["\\bar{"<>ToString[y]<>"}"];,
 If[Head[y]===conj,
-Return[ToString[y]<>"^*"];,
-Return[ToString[y]];
+SA`Doc`Return[ToString[y]<>"^*"];,
+SA`Doc`Return[ToString[y]];
 ];
 ];
 ];
@@ -1850,47 +2197,71 @@ Return[ToString[y]];
 ];
 
 getLaTeXParameter[y_]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getLaTeXParameter";
+SA`Doc`Info = "Returns the LaTeX of a parameter";
+SA`Doc`Input={"y"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
 temp=getEntryParameter[y,LaTeX];
 If[Head[temp]===String,
-Return[temp];,
-Return[ToString[y]];
+SA`Doc`Return[temp];,
+SA`Doc`Return[ToString[y]];
 ];
 ];
 
 getOutputNameAnti[y_,gen_,fla___]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getOutputNameAnti";
+SA`Doc`Info = "Returns the output name of an anti-field and adds a generation and flavour number";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index"};
+SA`Doc`GenerateEntry[];
+
 temp = getOutputName[y,gen,fla];
 If[AntiField[y]===y,
-Return[ToExpression[temp]];,
+SA`Doc`Return[ToExpression[temp]];,
 If[getType[y]===F,
-Return[ToExpression[ToString[temp]<>"bar"]];,
+SA`Doc`Return[ToExpression[ToString[temp]<>"bar"]];,
 (* Return[ToExpression["c"<>ToString[temp]]]; *)
-Return[ToExpression[ToString[temp]<>"c"]];
+SA`Doc`Return[ToExpression[ToString[temp]<>"c"]];
 ];
 ];
 ];
 
 getOutputNameParameter[x_]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getOutputNameParameter";
+SA`Doc`Info = "Returns the output name of a parameter";
+SA`Doc`Input={"x"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
 temp=getEntryParameter[x,OutputName];
-If[temp===None, Return[x];,Return[temp];];
+If[temp===None, SA`Doc`Return[x];, SA`Doc`Return[temp];];
 ];
 
 getOutputName[y_]:=getEntryField[y,OutputName];
 getOutputName[y_,gen_,fla___]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getOutputName";
+SA`Doc`Info = "Returns the output name of an anti-field and adds a generation and flavour number";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index"};
+SA`Doc`GenerateEntry[];
+
 temp = getOutputName[y];
-If[temp===None || temp===NONE, Return[temp];];
+If[temp===None || temp===NONE, SA`Doc`Return[temp];];
 If[gen==0,
 If[Head[temp]===List,
-Return[ToExpression[temp[[1]]]];,
-Return[ToExpression[temp]];
+SA`Doc`Return[ToExpression[temp[[1]]]];,
+SA`Doc`Return[ToExpression[temp]];
 ];,
 If[Head[temp]===List,
 temp=temp[[1]];
 ];
 If[getGen[y]==1,
-Return[ToExpression[temp]];,
+SA`Doc`Return[ToExpression[temp]];,
 If[getFla[y]>1,
-Return[ToExpression[temp<>ToString[gen]<>ToString[fla]]];,
-Return[ToExpression[temp<>ToString[gen]]];
+SA`Doc`Return[ToExpression[temp<>ToString[gen]<>ToString[fla]]];,
+SA`Doc`Return[ToExpression[temp<>ToString[gen]]];
 ];
 ];
 ];
@@ -1901,27 +2272,39 @@ getWidth[y_,gen_]:=getMassWidth[y,gen,1,"W"];
 getMass[y_,gen_,fla_]:=getMassWidth[y,gen,fla,"M"];
 getWidth[y_,gen_,fla_]:=getMassWidth[y,gen,fla,"W"];
 getMassWidth[y_,gen_,fla_,letter_]:=Block[{temp},
-If[FreeQ[massless,y]==False,Return[0]];
-If[getMassNumerical[y,gen]===0,Return[0];];
-If[letter==="W" , If[getWidthNumerical[y,gen,fla]===0,Return[0];];];
-If[getMassNumerical[y,gen,fla]===0,Return[0];];
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getMassWidth";
+SA`Doc`Info = "Returns the mass and width of a field and adds a generation and flavour number";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index","letter"->"A prefix for the particle name"};
+SA`Doc`GenerateEntry[];
+
+If[FreeQ[massless,y]==False,SA`Doc`Return[0]];
+If[getMassNumerical[y,gen]===0,SA`Doc`Return[0];];
+If[letter==="W" , If[getWidthNumerical[y,gen,fla]===0,SA`Doc`Return[0];];];
+If[getMassNumerical[y,gen,fla]===0,SA`Doc`Return[0];];
 temp = letter<>ToString[y];
 If[gen==0,
-Return[ToExpression[temp]];,
+SA`Doc`Return[ToExpression[temp]];,
 If[getGen[y]==1,
-Return[ToExpression[temp]];,
+SA`Doc`Return[ToExpression[temp]];,
 If[getFla[y]>1,
-Return[ToExpression[temp<>ToString[gen]<>ToString[fla]]];,
-Return[ToExpression[temp<>ToString[gen]]];
+SA`Doc`Return[ToExpression[temp<>ToString[gen]<>ToString[fla]]];,
+SA`Doc`Return[ToExpression[temp<>ToString[gen]]];
 ];
 ];
 ];
 ];
 
 getMassWidthOutputName[y_,gen_,fla_,letter_]:=Block[{temp},
-If[FreeQ[massless,y]==False,Return[0]];
-If[getMassNumerical[y,gen]===0,Return[0];];
-If[getMassNumerical[y,gen,fla]===0,Return[0];];
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getMassWidthOutputName";
+SA`Doc`Info = "Returns the mass and width of a field and adds a generation and flavour number. The ouput name of the particle is used to get the names for the mass and width.";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index","letter"->"A prefix for the particle name"};
+SA`Doc`GenerateEntry[];
+
+If[FreeQ[massless,y]==False,SA`Doc`Return[0]];
+If[getMassNumerical[y,gen]===0,SA`Doc`Return[0];];
+If[getMassNumerical[y,gen,fla]===0,SA`Doc`Return[0];];
 If[letter==="W" , If[getWidthNumerical[y,gen,fla]===0,Return[0];];];
 temp = letter<>ToString[y];
 outname=getOutputName[y];
@@ -1930,12 +2313,12 @@ temp = letter<>outname[[1]];,
 temp = letter<>outname;
 ];
 If[gen==0,
-Return[ToExpression[temp]];,
+SA`Doc`Return[ToExpression[temp]];,
 If[getGen[y]==1,
-Return[ToExpression[temp]];,
+SA`Doc`Return[ToExpression[temp]];,
 If[getFla[y]>1,
-Return[ToExpression[temp<>ToString[gen]<>ToString[fla]]];,
-Return[ToExpression[temp<>ToString[gen]]];
+SA`Doc`Return[ToExpression[temp<>ToString[gen]<>ToString[fla]]];,
+SA`Doc`Return[ToExpression[temp<>ToString[gen]]];
 ];
 ];
 ];
@@ -1945,40 +2328,58 @@ Return[ToExpression[temp<>ToString[gen]]];
 getPDGList[y_]:=getPDG[y,0];
 getPDG[x_]:=getPDG[x,0];
 getPDG[y_,gen_,fla___]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getPDG";
+SA`Doc`Info = "Returns the PDG of a given particle for a fixed generation and flavour number.";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index"};
+SA`Doc`GenerateEntry[];
+
 If[UsePDGIX ===True,
 temp = getEntryField[y,PDG.IX];,
 temp = getEntryField[y,PDG];
 ];
 If[gen==0,
-Return[temp];,
+SA`Doc`Return[temp];,
 If[getGen[y]==1,
 If[Head[temp]===List,
-Return[temp[[1]]];,
-Return[temp];
+SA`Doc`Return[temp[[1]]];,
+SA`Doc`Return[temp];
 ];,
 If[getFla[y]>1,
-Return[temp[[1+(gen-1)*getFla[y]+(fla-1)]]];,
-Return[temp[[gen]]];
+SA`Doc`Return[temp[[1+(gen-1)*getFla[y]+(fla-1)]]];,
+SA`Doc`Return[temp[[gen]]];
 ];
 ];
 ];
 ];
 
 getEntryParameter[y_,Type_]:=Block[{pos,field,i,states,des},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getEntryParameter";
+SA`Doc`Info = "Returns a specific information from parameters.m ofor a given parameter";
+SA`Doc`Input={"y"->"Name of the parameter","Type"->"Type of information"};
+SA`Doc`GenerateEntry[];
+
 field = y;
 If[FreeQ[Transpose[ParameterDefinitions][[1]],field]==False,
 pos = Position[Transpose[ParameterDefinitions][[1]],field];
 ];
 If[Head[pos]===List,
 If[FreeQ[ParameterDefinitions[[pos[[1,1]]]][[2]],Type],
-Return[None];,
-Return[Type /. ParameterDefinitions[[pos[[1,1]]]][[2]]];
+SA`Doc`Return[None];,
+SA`Doc`Return[Type /. ParameterDefinitions[[pos[[1,1]]]][[2]]];
 ];,
-Return[None];
+SA`Doc`Return[None];
 ];
 ];
 
 getEntryField[y_,Type_]:=Block[{pos,field,i,states,des},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getEntryField";
+SA`Doc`Info = "Returns a specific information from particles.m ofor a given particle";
+SA`Doc`Input={"y"->"Name of the particle","Type"->"Type of information"};
+SA`Doc`GenerateEntry[];
+
 field = y;
 For[i=1,i<=Length[NameOfStates],
 If[FreeQ[ParticleDefinitions[NameOfStates[[i]]],field]==False,
@@ -1989,10 +2390,10 @@ i++;];
 
 If[Head[pos]===List,
 If[FreeQ[ParticleDefinitions[states][[pos[[1,1]]]][[2]],Type],
-Return[None];,
-Return[Type /. ParticleDefinitions[states][[pos[[1,1]]]][[2]]];
+SA`Doc`Return[None];,
+SA`Doc`Return[Type /. ParticleDefinitions[states][[pos[[1,1]]]][[2]]];
 ];,
-Return[None];
+SA`Doc`Return[None];
 ];
 ];
 
@@ -2000,6 +2401,12 @@ Options[getMassNumerical]={ ReturnEquation->False};
 getMassNumerical[y_,gen_,fla_,opt___ ]:=getMassNumericalFunc[y,gen,fla, ReturnEquation/.{opt}/. Options[getMassNumerical]];
 
 getMassNumericalFunc[x_,gen_,fla_,formula_]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getMassNumericalFunc";
+SA`Doc`Info = "Returns a numerical value for the mass of a given particle (and fixed generation and flavour index). ";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index","formula"->"Includes given expressions"};
+SA`Doc`GenerateEntry[];
+
 If[getGen[x]==1,
 temp = Mass[x] /. Flatten[Table[Masses[NameOfStates[[i]]],{i,1,Length[NameOfStates]}]] /. subNum;,
 If[getFla[x]>1,
@@ -2008,9 +2415,9 @@ temp = Mass[x[gen]] /. Flatten[Table[Masses[NameOfStates[[i]]],{i,1,Length[NameO
 ];
 ];
 If[NumberQ[temp],
-Return[temp];,
+SA`Doc`Return[temp];,
 If[Head[temp]===Mass || Head[temp]===MassRead,
-Return[100];,
+SA`Doc`Return[100];,
 If[formula==True,
 If[getGen[x]==1,
 temp = Mass[x] /. Flatten[Table[Masses[NameOfStates[[i]]],{i,1,Length[NameOfStates]}]];,
@@ -2020,13 +2427,19 @@ temp = Mass[x[gen]] /. Flatten[Table[Masses[NameOfStates[[i]]],{i,1,Length[NameO
 ];
 ];
 ];
-Return[temp];
+SA`Doc`Return[temp];
 
 ];
 ];
 ];
 
 getWidthNumerical[x_,gen_,fla___]:=Block[{temp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getWidthNumerical";
+SA`Doc`Info = "Returns a numerical value for the width of a given particle (and fixed generation and flavour index). ";
+SA`Doc`Input={"y"->"The considered field","gen,fla"->"generation and flavour index"};
+SA`Doc`GenerateEntry[];
+
 If[getGen[x]==1,
 temp = WidthUsed[x] /. Flatten[Table[Width[NameOfStates[[i]]],{i,1,Length[NameOfStates]}]];,
 If[getFla[x]>1,
@@ -2035,10 +2448,10 @@ temp = WidthUsed[x[gen]] /. Flatten[Table[Width[NameOfStates[[i]]],{i,1,Length[N
 ];
 ];
 If[NumberQ[temp],
-Return[temp];,
+SA`Return[temp];,
 If[Head[temp]===WidthUsed,
-Return[1];,
-Return[External];
+SA`Return[1];,
+SA`Return[External];
 ];
 ];
 ];
@@ -2072,6 +2485,12 @@ Return[0];
 
 
 getRParitySF[x_]:=Block[{temp,pos,field,sign=1},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getRParitySF";
+SA`Doc`Info = "Returns the global symmetry of a superfield. Note, this must no longer be the R-parity!";
+SA`Doc`Input={"SF"->"The considered superfield"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[Fields,x][[1,1]];
 field = Fields[[pos]][[1]];
 If[Head[field]===List,
@@ -2080,24 +2499,30 @@ field=DeleteCases[Cases[field,y_Symbol,99],conj][[1]];
 If[Head[field]===conj,field=field[[1]]; sign=-1;]; *)
 ];
 field = field /. conj[y_]->y;
-Return[getRParity[getScalar[field],GaugeES]];
+SA`Doc`Return[getRParity[getScalar[field],GaugeES]];
 ];
 
 getRParity[name_,Eigenstates_]:=Block[{temp,pos, part,sign},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getRParity";
+SA`Doc`Info = "Returns the first global charge of a given field. Note, this must no longer be the R-parity!";
+SA`Doc`Input={"name"->"The considered particle","Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 (* If[FreeQ[name,conj] && FreeQ[name,bar],sign=1;,sign=-1;]; *)
 
 If[Length[Global]>0 && FreeQ[Global,Z[2]]==False,
 If[FreeQ[Global,RParity]==False,
-Return[SA`ChargeGlobal[name,RParity]];,
+SA`Doc`Return[SA`ChargeGlobal[name,RParity]];,
 pos=Position[Global,Z[2]][[1,1]];
-Return[SA`ChargeGlobal[name,Global[[pos,2]]]];
+SA`Doc`Return[SA`ChargeGlobal[name,Global[[pos,2]]]];
 ];
 ];
 
 If[Length[Global]>0 && FreeQ[Global,RSymmetry]==False,
 If[EvenQ[SA`ChargeGlobal[name,RSymmetry]]===True,
-Return[1];,
-Return[-1];
+SA`Doc`Return[1];,
+SA`Doc`Return[-1];
 ];
 ];
 (*
@@ -2113,20 +2538,29 @@ Return[(RParity /. temp[[pos]][[2]])];,
 Return[None];
 ];
 *)
-Return[None];
+SA`Doc`Return[None];
 ];
 
 getSecondParity[name_,Eigenstates_,sym_]:=Block[{temp,pos, part,sign},
-(* If[FreeQ[name,conj] && FreeQ[name,bar],sign=1;,sign=-1;]; *)
-
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getSecondParity";
+SA`Doc`Info = "Returns the global charge of a given field under a given symmetry.";
+SA`Doc`Input={"name"->"The considered particle","Eigenstates"->"The considered eigenstates","sym"->"The considered symmetry"};
+SA`Doc`GenerateEntry[];
 
 pos=Position[Global,sym][[1,1]];
-Return[SA`ChargeGlobal[name,Global[[pos,2]]]];
+SA`Doc`Return[SA`ChargeGlobal[name,Global[[pos,2]]]];
 ];
 
 getDimParameter[x_]:=Extract[parameters,Position[parameters,x][[1,1]]][[3]];
 
 getPartCode[parts_]:=Block[{i,partCode},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getPartCode";
+SA`Doc`Info = "Returns an integer to uniquely identify the generic type of a vertex";
+SA`Doc`Input={"parts"->"List of fields"};
+SA`Doc`GenerateEntry[];
+
 partCode=0;
 For[i=1,i<=Length[parts],
 Switch[getType[parts[[i]] /. Der[x_]->x],
@@ -2138,14 +2572,20 @@ G,partCode+=1;
 ];
 i++;
 ];
-Return[partCode];
+SA`Doc`Return[partCode];
 ];
 
 GetEntryDef[Field_,ES_,Entry_]:=Block[{i,pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "GetEntryDef";
+SA`Doc`Info = "Returns an entry from the particle definitions for a given particle";
+SA`Doc`Input={"Field"->"The considered field","ES"->"The considered eigenstates","Entry"->"The kind of information"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[ParticleDefinitions[ES],getParticleNameDirac[Field]];
 If[pos==={},
-Return[Non];,
-Return[Entry /. ParticleDefinitions[ES][[pos[[1,1]]]][[2]]];
+SA`Doc`Return[Non];,
+SA`Doc`Return[Entry /. ParticleDefinitions[ES][[pos[[1,1]]]][[2]]];
 ];
 ];
 
@@ -2165,6 +2605,12 @@ NoFermionQ[x_]:=If[getType[x]===F,Return[False];,Return[True];];
 
 (* ::Input::Initialization:: *)
 MakeTypeListParticles[ES_]:=Block[{i,diracTemp},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "MakeTypeListParticles";
+SA`Doc`Info = "Generates for given eigenstates the lists of all particles sorted by their generic type (PART[X] with X={S,V,F,G,A})";
+SA`Doc`Input={"ES"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 SA`CurrentStates=ES;
 
 PART[S]={}; PART[V]={}; PART[F]={}; PART[G]={};PART[A]={};
@@ -2184,49 +2630,55 @@ G, PART[G] = Join[PART[G],{{Particles[ES][[i,1]],Particles[ES][[i,3]], Particles
 A, PART[A] = Join[PART[A],{{Particles[ES][[i,1]],Particles[ES][[i,3]], Particles[ES][[i,5]],False}}];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckConservationGlobal[listP_]:=Block[{res,i},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckConservationGlobal";
+SA`Doc`Info = "Checks if an interaction of a set of particles is in agreement with all global symmetries";
+SA`Doc`Input={"listP"->"The considered list of particles"};
+SA`Doc`GenerateEntry[];
+
 res=CheckChargeConservationGlobal[listP,#]&/@Table[Global[[i,2]],{i,1,Length[Global]}];
-If[FreeQ[res,False],Return[True];,Return[False];];
+If[FreeQ[res,False],SA`Doc`Return[True];,SA`Doc`Return[False];];
 ];
 
 CheckChargeConservationGlobal[listP_,group_]:=Block[{i,charges,pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckChargeConservationGlobal";
+SA`Doc`Info = "Checks if an interaction of a set of particles is in agreement with all specfic global symmetry";
+SA`Doc`Input={"listP"->"The considered list of particles","group"->"The considered symmetry"};
+
+SA`Doc`GenerateEntry[];
+
 charges =SA`ChargeGlobal[#,group]&/@listP;
 pos=Position[Global,group][[1,1]];
-(*
-Switch[Global[[pos,1]],
-Z[2],
-	If[Length[Global[[pos]]]===3,
-	If[Global[[pos,3]]===Additive,
-	If[Plus@@charges===0,Return[True];,Return[False];];,
-	If[Times@@charges===1,Return[True];,Return[False];];
-];,
-	If[Times@@charges===1,Return[True];,Return[False];];
-];,
-U[1],
-	If[Mod[Plus@@charges,1]===0,Return[True];,Return[False];];,
-_,
-	If[Mod[Plus@@charges,1]===0,Return[True];,Return[False];];
-];
-*)
+
 Switch[Head[Global[[pos,1]]],
 Z,
-	If[Times@@charges===1,Return[True];,Return[False];];,
+	If[Times@@charges===1,SA`Doc`Return[True];,SA`Doc`Return[False];];,
 U,
 	(* If[Mod[Plus@@charges,1]===0,Return[True];,Return[False];];, *)
 	If[group===RSymmetry && SA`CheckGlobalLagLevel===False,
-	If[Plus@@charges===2,Return[True];,Return[False];];,
-	If[Plus@@charges===0,Return[True];,Return[False];];
+	If[Plus@@charges===2,SA`Doc`Return[True];,SA`Doc`Return[False];];,
+	If[Plus@@charges===0,SA`Doc`Return[True];,SA`Doc`Return[False];];
 	];,
 _,
-	If[Mod[Plus@@charges,1]===0,Return[True];,Return[False];];
+	If[Mod[Plus@@charges,1]===0,SA`Doc`Return[True];,SA`Doc`Return[False];];
 ];
 
 ];
 
 
 GenerateCGCsForBrokenGroups[contraction_,partListIN_,particles_,invFields_,withHead_,coup_]:=Block[{i,j,k,IndexTypes={},partList={},pos,temp,result,repsNC,group},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "GenerateCGCsForBrokenGroups";
+SA`Doc`Info = "Generates the Celbsch Gordon coefficients for broken groups basaed on CGCs in the unbroken phase. Loops over all gauges and calls 'getCGCbroken' with the correc input. It further processes the output of 'getCGCbroken' and stores it in dedicated variables.";
+SA`Doc`Input={"contraction"->"Contraction in the unbroken phase","partListIN"->"List of the involved particles","particles"->"The product of all particles with all indices as well as the sums over indices","invFields"->"A list of involved fields with bar and conj removed","withHead"->"A list of involved fields with bar or conj","coup"->"Name of the coupling"};
+SA`Doc`GenerateEntry[];
+
 (* Print[contraction,partListIN,particles,invFields,withHead,coup]; *)
 For[i=1,i<=Length[partListIN],
 If[FreeQ[ListFields,RE[partListIN[[i]]]]==False,
@@ -2275,25 +2727,22 @@ ReleaseHold[Hold[Set[LHS[a__Integer],RHS[a]]]/. RHS -> InvMat[SA`RnR] /. LHS -> 
 subCGCBroken=Join[subCGCBroken,{CGCBroken[withHead,coup ] ->InvMat[SA`RnR]}];
 CheckSymmetryCGCBroken[withHead,SA`RnR];
 CheckStandardCGC[SA`RnR];
-(*
-ReleaseHold[Hold[Set[LHS[a__Integer],RHS[a]]]/. RHS \[Rule] InvMat[SA`RnR] /. LHS \[Rule] CG[group,repsNC] ];
-ReleaseHold[Hold[Set[LHS[a__Integer],RHS[a]]]/. RHS \[Rule] InvMat[SA`RnR] /. LHS \[Rule] CG[group,Reverse/@repsNC] ];
-*)
 
 On[Part::"pspec"];
 On[Part::"pkspec1"];
 SA`RnR++;
-(* SA`ClebschGordon=Join[SA`ClebschGordon,{{CG[group,repsNC],result}}]; *)
- (* SA`KnonwCG=Join[SA`KnonwCG,{CG[group,repsNC]}];  *)
-(* CheckSymmetryCG[CG[group,repsNC]]; *)
-(* ]; *)
-
-
 ];
 (* i++;]; *)
+SA`Doc`EndEntry[];
 ];
 
 CheckStandardCGC[nr_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckStandardCGC";
+SA`Doc`Info = "Checks if a CGC is one of the very simple cases where dedicated symbols exist for.";
+SA`Doc`Input={"nr"->"The number of the considered CGC"};
+SA`Doc`GenerateEntry[];
+
 Switch[InvMatFull[nr],
 {{1,0},{0,1}},InvMat[nr][a__]=Delta[a];,
 {{1,0,0},{0,1,0},{0,0,1}},InvMat[nr][a__]=Delta[a];,
@@ -2301,12 +2750,20 @@ Switch[InvMatFull[nr],
 {{0,-1},{1,0}},InvMat[nr][a__]=-epsTensor[a];,
 {{{{1,0},{0,1}},{{0,0},{0,0}}},{{{0,0},{0,0}},{{1,0},{0,1}}}}, InvMat[nr][a_,b_,c_,d_]=Delta[a,b]Delta[c,d];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckSymmetryCGCBroken[fields_,nr_]:=Block[{j,pos},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "CheckSymmetryCGCBroken";
+SA`Doc`Info = "Checks if a CGC is symmetric under the exchange of indices.";
+SA`Doc`Input={"fields"->"The involved particles","nr"->"The number of the considered CGC"};
+SA`Doc`GenerateEntry[];
+
 reps=fields;
 repsDoub=Intersection[Select[fields,(Count[fields,#]>1)&]];
-If[repsDoub==={},Return[];];
+If[repsDoub==={},SA`Doc`Return[];];
 Switch[Length[Dimensions[InvMatFull[nr]]],
 2,
 	If[(Table[CGCBroken[fields][i,j],{i,1,Dimensions[InvMatFull[nr]][[1]]},{j,1,Dimensions[InvMatFull[nr]][[1]]}]==Transpose[Table[CGCBroken[fields][i,j],{i,1,Dimensions[InvMatFull[nr]][[1]]},{j,1,Dimensions[InvMatFull[nr]][[1]]}]]),
@@ -2364,55 +2821,22 @@ InvMat[nr][a_,b_,c_]:= -InvMat[nr][b,a,c] /;(OrderedQ[{a,b}]==False);
 j++;];
 ];
 
+SA`Doc`EndEntry[];
 
 
 ];
-
-(* getCGCbroken[contraction_,particles_,invFields_,index_,withHead_]:=Block[{i,j,names={a,b,c,d},pos,subs={},temp,result,reps={},subInv={},nameNr,dims={},group,sub2},
-group=Position[Gauge,index][[1,1]];
-group=Gauge[[group]][[2]];
-nameNr=1;
-sub2={};
-For[j=1,j\[LessEqual]Length[invFields],
-i=1;
-If[SA`DynL[invFields[[j]],index]=!={0},
-If[Head[withHead[[j]]]===conj && group===SU[2] && SA`DynL[invFields[[j]],index]==={1},
-reps=Join[reps,{-SA`DynL[invFields[[j]],index]}];
-(* sub2=Join[sub2,{names[[nameNr]][1]\[Rule]-names[[nameNr]][2],names[[nameNr]][2]\[Rule]names[[nameNr]][1]}]; *),
-reps=Join[reps,{SA`DynL[withHead[[j]],index]}];
-];
-If[FreeQ[FFields,invFields[[j]]],
-pos=Position[SFields,invFields[[j]]][[1,1]];
-subs=Join[subs,{Replace[DeleteDuplicates[Cases[Flatten[SFieldsMultiplets[[pos]] ] /. x_?NumericQ\[Rule]1,x_Symbol]], x_Symbol:>(x[names[[nameNr]]]\[Rule]names[[nameNr]][i++]),2]}];,
-pos=Position[FFields,invFields[[j]]][[1,1]];
-If[Head[FFieldsMultiplets[[pos]] ]===List,
-subs=Join[subs,{Replace[DeleteDuplicates[Cases[Flatten[FFieldsMultiplets[[pos]] ] /. x_?NumericQ\[Rule]1,x_Symbol]], x_Symbol:>(x[names[[nameNr]]]\[Rule]names[[nameNr]][i++]),2]}];,
-subs=Join[subs,{{invFields[[j]][names[[nameNr]]]\[Rule]names[[nameNr]][1]}}];
-];
-];
-subInv=Join[subInv,{invFields[[j]][{b__}][{genf[j],d___}]\[Rule]invFields[[j]][{b}][{genf[j],d}][names[[nameNr]]],invFields[[j]][{genf[j],d___}]\[Rule]invFields[[j]][{genf[j],d}][names[[nameNr]]],invFields[[j]][{b__}][{genf[j],d___}][c_Integer]\[Rule]invFields[[j]][{b}][{genf[j],d}][c][names[[nameNr]]],invFields[[j]][{genf[j],d___}][c_Integer]\[Rule]invFields[[j]][{genf[j],d}][c][names[[nameNr]]]}];
-nameNr++;,
-subInv=Join[subInv,{invFields[[j]][{b__}][{genf[j],d___}]\[Rule]1,invFields[[j]][{genf[j],d___}]\[Rule]1,invFields[[j]][{b__}][{genf[j],d___}][c_Integer]\[Rule]1,invFields[[j]][{genf[j],d___}][c_Integer]\[Rule]1}];
-];
-j++;];
-subInv=Flatten[subInv];
-temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]\[Rule]1 /.A_[{b__}][c_Integer]\[Rule]A[{b}] /.A_[{b__}][{d__}][c_Integer]\[Rule]A[{b}][{d}] /. subInv,invFields] /. A_[{b__}][c_Integer]\[Rule]A/. A_[{b__}]\[Rule]A;
-temp = temp //. Flatten[subs] /. Delta[a__]\[Rule]1 /. epsTensor[a__]\[Rule]1 /. CG[a__]\[Rule]1 /. conj[x_]\[Rule]x;
-dims=Table[DimR[SusynoForm[group],Abs[reps[[i]]]],{i,1,Length[reps]}];
-temp=temp/.sub2;
-Switch[Length[reps],
-2,
-result=Table[Coefficient[temp,a[i]b[j]],{i,1,dims[[1]]},{j,1,dims[[2]]}];,
-3,
-result=Table[Coefficient[temp,a[i]b[j]c[k]],{i,1,dims[[1]]},{j,1,dims[[2]]},{k,1,dims[[3]]}];,
-4,
-temp =2*temp;
-result=Table[Coefficient[temp,a[i]b[j]c[k] d[l]],{i,1,dims[[1]]},{j,1,dims[[2]]},{k,1,dims[[3]]},{l,1,dims[[4]]}];
-];
-Return[{result,reps,group}];
-]; *)
 
 getCGCbroken[contraction_,particles_,invFields_,withHead_]:=Block[{i,j,names={a,b,c,d},pos,subs={},temp,result,reps={},subInv={},nameNr,dims={},group,sub2,subC={},checkC},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getCGCbroken";
+SA`Doc`Info = "Generates the Celbsch Gordon coefficients for broken groups basaed on a given contraction in the unbroken phase. For that, the following steps are performed:\n
+1) it generates substitutions to map the fields in the broken and unbroken case (e.g. in the broken phase the triplet is a 2x2 matrix with entries involving (T^0,T^+,T^-), while it is a vector with entries T_i in the unbroken case. Thus, mapping between both are needed.). \n
+2) The substitutions is done and the sum over the charges is performed\n
+3) The entries of searched for CGC are given by the coefficients in front of the different field combinations \n
+NOTE: I'm not very happy with this version/approach and it might be useful to improve this routine. It works for SU(2) but was never tested for SU(3) or higher.";
+SA`Doc`Input={"contraction"->"Contraction in the unbroken phase","particles"->"The fields as given in the Lagrangian","invFields"->"A list of involved fields with bar and conj removed","withHead"->"A list of involved fields with bar or conj","coup"->"Name of the coupling"};
+SA`Doc`GenerateEntry[];
+
 (* Print[contraction, " ",particles," ",invFields," ",withHead]; *)
 
 nameNr=1;
@@ -2445,18 +2869,11 @@ subInv=Join[subInv,{invFields[[j]][{b__}][{genf[j],d___}]->1,invFields[[j]][{gen
 ];
 j++;];
 subInv=Flatten[subInv];
-(* Print[subInv];
-Print["sub2", subs]; *)
-(* Print[contraction*particles /. sum[a__]\[Rule]1 /.A_[{b__}][c_Integer]\[Rule]A[{b}] /.A_[{b__}][{d__}][c_Integer]\[Rule]A[{b}][{d}]];  *)
+
 temp=SumOverExpandedIndizes[contraction*particles /. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}]    /. subInv  ,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A (*/.conj[x_]\[Rule]x*) /.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c] /.(a_?NumericQ conj[b_Symbol])[c_Symbol]->a conj[b[c]] /.subC/.conj[x_]->x ;
-(* Print["TEMP",temp]; *)
 temp = temp /. conj[x_[y_]]:>ToExpression[ToString[x]<>"c"][y] //. Flatten[subs] /. Delta[a__]->1 /. epsTensor[a__]->1 /.Lam[__]->1 /. CG[a__][b__]->1 (*/. conj[x_]\[Rule]x*);
 temp=temp/.sub2;
-(*
-Print["subs",subs];
-Print["subC",subC];
-Print["TEMP2",temp];
-*)
+
 Switch[Length[dims],
 2,
 result=Table[Coefficient[temp,a[i]b[j]],{i,1,dims[[1]]},{j,1,dims[[2]]}];,
@@ -2466,10 +2883,16 @@ result=Table[Coefficient[temp,a[i]b[j]c[k]],{i,1,dims[[1]]},{j,1,dims[[2]]},{k,1
 result=Table[Coefficient[temp,a[i]b[j]c[k] d[l]],{i,1,dims[[1]]},{j,1,dims[[2]]},{k,1,dims[[3]]},{l,1,dims[[4]]}];
 ];
 (* Print["particles",result]; *)
-Return[result];
+SA`Doc`Return[result];
 ];
 
 getGeneratorsBroken:=Block[{i,j,k},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getGeneratorsBroken";
+SA`Doc`Info = "Creates the generators for the broken gauge groups.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[Gauge],
 If[Gauge[[i,5]]==True&&Gauge[[i,2]]=!=U[1],
 For[j=1,j<=Length[SFields],
@@ -2500,11 +2923,19 @@ j++;];
 
 ];
 i++;];
+
+SA`Doc`Return[result];
 ];
 KovariantDerivative[fieldNr_,gNr_,p1_,p2_,LorNr_]:=part[SGauge[[gNr]],LorNr] getGenerator[gNr,FieldDim[fieldNr,gNr],LorNr,p1,p2]*
 (* Gauge[[gNr,4]] *) makeDelta[fieldNr,p1,p2,{Gauge[[gNr,3]]}];
 
 getGeneratorNum[fieldNr_,gNr_,type_]:=Block[{i,j,temp,pos,checkC,result,subC={},subs={},subInv={},nameNr,names={a,b,c,d},dims={}},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "getGeneratorNum";
+SA`Doc`Info = "Extracts the generator matrix for a given field and (broken) gauge group. The result is used in the RGE calculation for non-SUSY RGEs (to get tA and ThS).";
+SA`Doc`Input={"fieldNr"->"The position of the considered field in the array 'Fields'","gNr"->"The position of the considered gauge in the array 'Gauge'","type"->"The generic type of the particle"};
+SA`Doc`GenerateEntry[];
+
 subC={};
 subs={};
 subInv={};
@@ -2551,18 +2982,19 @@ tempKD=(conj[part[FFields[[fieldNr]],1]]  KovariantDerivative[fieldNr,gNr,1,2,3]
 temp=SumOverExpandedIndizes[tempKD/. sum[a__]->1 /.A_[{b__}][c_Integer]->A[{b}] /.A_[{b__}][{d__}][c_Integer]->A[{b}][{d}]    /. subInv  ,invFields] /. A_[{b__}][c_Integer]->A/. A_[{b__}]->A (*/.conj[x_]\[Rule]x*) /.(a_?NumericQ b_Symbol)[c_Symbol]->a b[c] /.(a_?NumericQ conj[b_Symbol])[c_Symbol]->a conj[b[c]] /.subC/.conj[x_]->x /.Flatten[subs];
 temp=Sum[temp,{gen3,1,dims[[3]]}]/.Delta[__]->1;
 
-(*
-temp = temp /. conj[x_[y_]]\[RuleDelayed]ToExpression[ToString[x]<>"c"][y] //. Flatten[subs] /. Delta[a__]\[Rule]1 /. epsTensor[a__]\[Rule]1 /. CG[a__][b__]\[Rule]1 (*/. conj[x_]\[Rule]x*);
-temp=temp/.sub2;
-*)
+
 result=Table[Coefficient[temp,a[i]b[j]c[k]],{k,1,dims[[3]]},{i,1,dims[[1]]},{j,1,dims[[2]]}];
-Return[result];
-
-
+SA`Doc`Return[result];
 
 ];
 
 GetNormalizationFactors[invFields_]:=Block[{i,j,pos,IndexTypes={},partList={},subs,nameNr,factors=1,names={a,b,c,d}},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "GetNormalizationFactors";
+SA`Doc`Info = "Calculates the normalization of field. (NO LONGER USED AS FAR AS I CAN SEE!)";
+SA`Doc`Input={"invFields"->"List of involved fields"};
+SA`Doc`GenerateEntry[];
+
 For[j=1,j<=Length[invFields],
 If[FreeQ[FFields,invFields[[j]]],
 pos=Position[SFields,invFields[[j]]][[1,1]];
@@ -2575,7 +3007,7 @@ factors=factors*NM[FFieldsMultiplets[[pos]] /.Replace[DeleteDuplicates[Cases[Fla
 ];
 ];
 j++;];
-Return[factors];
+SA`Doc`Return[factors];
 ];
 NM[a_][b__Integer]:=a[[b]];
 NM[{1,1}][b__]=1;
@@ -2583,6 +3015,12 @@ NM[{1,1,1}][b__]=1;
 
 
 SetGroupConstants[field_,group_,casimir_,dynkin_,generator_,mul_,dim_,dynL_,addInd_,addInd2_]:=Block[{},
+SA`Doc`File = "Package/mathParticleProp.nb";
+SA`Doc`Name = "SetGroupConstants";
+SA`Doc`Info = "Wrapper function to set all the groups constants for a given particle.";
+SA`Doc`Input={"field"->"The considered particles","group...dynL"->"All the properties","addInd"->"Adding the possibility that the field in the function definitions can carry indices"};
+SA`Doc`GenerateEntry[];
+
 SA`Casimir[field,group]=casimir;
 SA`Dynkin[field,group]=dynkin;
 Generator[field,group]=generator;
@@ -2598,6 +3036,7 @@ SA`Casimir[field[a__][b__],group]=casimir;
 SA`Dynkin[field[a__][b__],group]=dynkin;
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 

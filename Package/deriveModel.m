@@ -34,7 +34,13 @@ Options[MakeVertexList]={ SixParticleInteractions->False,effectiveOperators->Fal
 Options[MakeAll]={ReadLists->False,IncludeSPheno->True, IncludeFeynArts->True, IncludeCalcHep->True, IncludeTeX->True, IncludeWHIZARD->True, IncludeUFO->True, Eigenstates->Automatic};
 MakeAll[opt___]:=MakeAllOutput[ReadLists /. {opt} /. Options[MakeAll],IncludeSPheno /. {opt} /. Options[MakeAll],IncludeFeynArts /. {opt} /. Options[MakeAll],IncludeCalcHep /. {opt} /. Options[MakeAll],IncludeTeX /. {opt} /. Options[MakeAll],IncludeWHIZARD /. {opt} /. Options[MakeAll],IncludeUFO /. {opt} /. Options[MakeAll],
 Eigenstates /. {opt} /. Options[MakeAll]];
+
 MakeAllOutput[ReadL_,IncSPheno_,IncFA_, IncCH_, IncTeX_,IncWO_,IncUFO_,ESin_]:=Block[{ES},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "MakeAllOutput";
+SA`Doc`Info = "Wrapper function to create all output for other codes (SPheno, FeynArts, UFO, etc.).";
+SA`Doc`Input={"ReadL"->"Read previous results?", "IncSPheno"->"Include SPheno Output?","IncFA"->"Include FeynArts output?","IncCH"->"Include CalcHep Output?","IncTeX"->"Include TeX Ouptut?","IncWO"->"Include WHIZARD and Omega output?","IncUFO"->"Include UFO output?","ESin"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print[StyleForm["Create output for: ","Section",FontSize->14]];
 Print[StyleForm[" \[Bullet] SPheno ","Section",FontSize->10]];
@@ -73,13 +79,21 @@ If[IncUFO,MakeUFO[];];
 If[WriteModelDirectories==True,
 Close[DirectoryNamesFile];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
-ModelOutput[Eigenstates_,opt___ ]:=DeriveModel[Eigenstates, effectiveOperators/.{opt}/.Options[ModelOutput],SixParticleInteractions/.{opt}/.Options[ModelOutput],ReadLists/.{opt}/.Options[ModelOutput], WriteTeX/.{opt}/.Options[ModelOutput],WriteCHep/.{opt}/.Options[ModelOutput],WriteFeynArts/.{opt}/.Options[ModelOutput],WriteUFO/.{opt}/.Options[ModelOutput],FeynmanDiagrams/.{opt}/.Options[ModelOutput],IncludeLoopCorrections/.{opt}/.Options[ModelOutput],IncludeRGEs/.{opt}/.Options[ModelOutput],TwoLoopRGEs/.{opt}/.Options[ModelOutput],VerticesForLoops/.{opt}/.Options[ModelOutput],SimplifySums/.{opt}/.Options[ModelOutput],IncludeVertices/.{opt}/.Options[ModelOutput]];
+ModelOutput[Eigenstates_,opt___ ]:=ModelOutputFunc[Eigenstates, effectiveOperators/.{opt}/.Options[ModelOutput],SixParticleInteractions/.{opt}/.Options[ModelOutput],ReadLists/.{opt}/.Options[ModelOutput], WriteTeX/.{opt}/.Options[ModelOutput],WriteCHep/.{opt}/.Options[ModelOutput],WriteFeynArts/.{opt}/.Options[ModelOutput],WriteUFO/.{opt}/.Options[ModelOutput],FeynmanDiagrams/.{opt}/.Options[ModelOutput],IncludeLoopCorrections/.{opt}/.Options[ModelOutput],IncludeRGEs/.{opt}/.Options[ModelOutput],TwoLoopRGEs/.{opt}/.Options[ModelOutput],VerticesForLoops/.{opt}/.Options[ModelOutput],SimplifySums/.{opt}/.Options[ModelOutput],IncludeVertices/.{opt}/.Options[ModelOutput]];
 
+SA`Doc`ToDo="Remove all references to 6-particle vertices to prevent confusion?";
 
-DeriveModel[Eigenstates_,effOp_, SixP_,ReadL_,WriteTeX_, WriteCHep_, WriteFeynArts_,WriteUFO_, FeynDia_,LoopC_, IncludeRGEs_,TwoLoopRGEs_,VLoop_ , SimplifySUMs_, IncludeVert_]:=Block[{CalcVLoop},
+ModelOutputFunc[Eigenstates_,effOp_, SixP_,ReadL_,WriteTeX_, WriteCHep_, WriteFeynArts_,WriteUFO_, FeynDia_,LoopC_, IncludeRGEs_,TwoLoopRGEs_,VLoop_ , SimplifySUMs_, IncludeVert_]:=Block[{CalcVLoop},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "ModelOutputFunc";
+SA`Doc`Info = "This function calculates all vertices in the Lagrangian for the given Eigenstates. Also the model files for other codes could be generated via the given options or the calculation of the RGEs could be truned on. Here and in the following, 6-particle vertices are considered to some extent, but this was never well tested or used in practive. Maybe, it might the best to remove all that until there is a proper implementation of effective theories.";
+SA`Doc`Input={"Eigenstates"->"Considered Eigenstates","effOp"->"Include effective operators?","SixP"->"Inclue 6-particle interactions?","ReadL"->"Read previous results?", "IncSPheno"->"Include SPheno Output?","WriteFeynArts"->"Include FeynArts output?","WriteCHep"->"Include CalcHep Output?","WriteTeX"->"Include TeX Ouptut?","WriteUFO"->"Include UFO output?","FeynDia"->"Show Feynman diagrams in LaTeX output?","LoopC"->"Calculate loop corrections?","IncludeRGEs"->"Calcualte RGEs?","TwoLoopRGEs"->"Calculate two-loop RGEs?", "VLoop"->"Calculate loop vertices?","SimplifSUMs"->"Simplify appearing sums in vertices","IncludeVert"->"Include the vertex calculation?"};
+SA`Doc`GenerateEntry[];
 
 SA`CurrentStates=Eigenstates;
 
@@ -134,7 +148,7 @@ If[WriteUFO == True,
 MakeUFO[];
 ];
 
-
+SA`Doc`EndEntry[];
 ];
 
 ITypes={ {SSS,S,S,S}, {SSSS,S,S,S,S}, {SSVV,S,S,V,V}, {SSV,S,S,V}, {SVV,S,V,V}, {GGV,G,G,V}, {GGS,G,G,S}, {FFS,F,F,S}, {FFV,F,F,V},{VVV,V,V,V},{VVVV,V,V,V,V},{ASS,A,S,S}};
@@ -145,6 +159,12 @@ ITypesNonRen={ {SSSSSS,S,S,S,S,S,S}, {SSSSVV,S,S,S,S,V,V}, {SSVVVV,S,S,V,V,V,V},
 
 (* ::Input::Initialization:: *)
 InitVertexCalculation[Eigenstates_,WriteTeX_]:=Block[{},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "InitVertexCalculation";
+SA`Doc`Info = "Initialises the calculation of all vertices: the necessary directories are created, the necessary information for the given eigenstates is stored in variables with shorter names, all existing scalars, fermions and vector bososn are collected in respective lists (PART[S,F,V]).";
+SA`Doc`Input={"Eigenstates"->"Considered Eigenstates","WriteTeX"->"Write LaTeX Output?"};
+SA`Doc`GenerateEntry[];
+
 Print["Generate Directories"];
 
 modelName=ToString[Eigenstates];
@@ -217,6 +237,7 @@ i++;];
 
 CreateTeXNameList[Eigenstates];
 
+SA`Doc`EndEntry[];
 ];
 
 
@@ -224,6 +245,12 @@ CreateTeXNameList[Eigenstates];
 
 
 ReadVertexList[ES_,effectiveOperators_,SixP_,VLoop_]:=Block[{i},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "ReadVertexList";
+SA`Doc`Info = "Reads the stored vertices from a previous calculation. ";
+SA`Doc`Input={"Eigenstates"->"Considered Eigenstates","effectiveOperators"->"Include effective operators?","SixP"->"Inclue 6-particle interactions?","VLoop"->"Include vertices for loop calculations?"};
+SA`Doc`GenerateEntry[];
+
 Print["Read Vertex Lists"];
 EigenstateName=ES;
 VerticesForEigenstates=ES;
@@ -250,6 +277,8 @@ SA`VertexList[ITypesNonRen[[i,1]]]=Get[ToFileName[$sarahCurrentVerticesDir,"Vert
 ];
 i++;];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -257,6 +286,12 @@ i++;];
 MakeVertexList[ES_,opt___]:=MakeVertexListFun[ES, effectiveOperators/.{opt}/.Options[MakeVertexList],SixParticleInteractions/.{opt}/.Options[MakeVertexList], VerticesForLoops /.{opt}/.Options[MakeVertexList],SimplifySums /.{opt}/.Options[MakeVertexList],GenericClasses /.{opt}/.Options[MakeVertexList]];
 
 MakeVertexListFun[ES_,effectiveOperators_,SixParticleInteractions_, VerticesForLoops_,SimplifySums_,classes_]:=Block[{s1,s2,s3,s4,s5,s6,fin,iteration,starttime},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "MakeVertexListFun";
+SA`Doc`Info = "Main function to check the Lagrangian for existing combinations of fields and calculating the vertices for these combinations. The results are stored in different arrays for the generically different vertices (FFS, SSS, etc.). By default, vertices for all generic classes are calculated, but this could be changed via the options. Also six-particle interactions could be included (HARDLY TESTED!!). \n
+Also vertices for loops are calculated. For these vertices some sums involving rotation matrices are not simplified. The reason is that the external particles might be replaced by gauge eigenstates, i.e. the rotation matrix must be replaced by the unit matrix. That's not possible, if the matrix has been disappeared during some simplification. ";
+SA`Doc`Input={"ES"->"Considered Eigenstates","effectiveOperators"->"Include effective operators?","SixParticleInteractions"->"Inclue 6-particle interactions?","VerticesForLoops"->"Include vertices for loop calculations?","SimplifSums"->"Simplify appearing sums in vertices?","classes"->"Considered, generic classes"};
+SA`Doc`GenerateEntry[];
 
 starttime=TimeUsed[];
 
@@ -417,10 +452,17 @@ i++;];
 
 Print["All vertices calculated. (Time needed: ",TimeUsed[]-starttime,"s)"];
 Print["The vertices are saved in ",StyleForm[ToString[$sarahCurrentVerticesDir ],"Section",FontSize->10]];
+
+SA`Doc`EndEntry[];
 ];
 
 
 InitAutomaticCalc[ES_]:=Block[{},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "InitAutomaticCalc";
+SA`Doc`Info = "This function initialises some lists and substitutions to extract the existing vertices. The substitution 'subNonFields' is used to get a simpler Lagrangian where only pure fields show up. This can then be used to extract all existing field combinations which might lead to a vertex. Moreover, the necessary parts of the Lagrangian are stored in new variables which are accesible from the generic type of the considered interaction, e.g. Lag[SSV][ES] or Lag[FFS][ES].";
+SA`Doc`Input={"ES"->"Considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 (* subNonFields = {sum[a_,b_,c_]\[Rule]1,  Delta[a_,b_]\[Rule]1,epsTensor[a__]\[Rule]1, g[a__]\[Rule]1, Sig[a__]\[Rule]1,Lam[a__]\[Rule]1, Mom[a_,b_]\[Rule]1, T[a_]\[Rule] 1, B[a_]\[Rule]1, L[a_]\[Rule]1,gamma[a_]\[Rule]1 ,fSU2[a__]\[Rule]1, fSU3[a__]\[Rule]1, pmue[a__]\[Rule]a,RXi[a__]\[Rule]1, Mass[x_]\[Rule]1,Inv[a__][b__]\[Rule]1};  *)
 subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]:>Random[], T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]:>Random[] ,fSU2[a__]->1, fSU3[a__]->1, fSU4[a__]->1,pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[], LorentzProduct[a___]:>Random[]}; 
@@ -472,6 +514,8 @@ LAG[FFVV][ES]=LagFFVV[ES];
 Cp[a___,Power[b_,x_],c___]:=Nest[Append[#1,b]&,Cp[a,c],x];
 COUP[a__ b_?NumericQ]=COUP[a];
 COUP[ b_?NumericQ]=1;
+
+SA`Doc`EndEntry[];
 ];
 
 SortCoup[x_]:=List@@C@@Map[getTypeSort[#1][#1]&,x] /. {Fb[y_]->y,Szc[y_]->y,Vc[y_]->y,Gb[y_]->y,Ab[y_]->y,Fn[y_]->y,Fm[y_]->y,Sn[y_]->y,Vn[y_]->y,Gn[y_]->y, An[y_]->y};
@@ -494,6 +538,12 @@ A,
 ];
 
 GenericVertices[Type_,Eigenstates_]:=Block[{i,list,nonCC={},res,all={},startedtime},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "GenericVertices";
+SA`Doc`Info = "This function calculates all vertices of a given, generic type. For this purpose, it first generates a toy version of the Lagrangian cotaining only fields to check which field combinations in principle show up. ";
+SA`Doc`Input={"Type"->"Generic type of vertices","ES"->"Considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 Switch[Type,
 SSS,
       Print[StyleForm["      Three Scalar - Interactions","Section",FontSize->12]];,
@@ -599,9 +649,15 @@ progressCurrentGV[Type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s; "<
 SA`VertexList[temp][Type]={};
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 CheckPossible[p_,list_]:=Block[{i,t1,t2,poss=True,pos,k},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "CheckPossible";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 t1=CountFields[p];
 t2=CountFields/@list;
 c1 = Complement[t1,#1]&/@t2;
@@ -609,8 +665,8 @@ c2 = AntiField/@Complement[#1,t1]&/@t2;
 pos=Position[(c1-c2),{0}];
 
 If[FreeQ[Table[Length[c1[[pos[[k]]]]],{k,1,Length[pos]}],1],
-Return[True];,
-Return[False];
+SA`Doc`Return[True];,
+SA`Doc`Return[False];
 ];
 ];
 
@@ -621,6 +677,12 @@ Return[x/. subCount];
 
 
 MakeFlavorKitOutput[Eigenstates_]:=Block[{},
+SA`Doc`File = "Package/deriveModel.nb";
+SA`Doc`Name = "MakeFlavorKitOutput";
+SA`Doc`Info = "Writes the FlavorKit Output independently from the SPheno output.";
+SA`Doc`Input={"ES"->"Considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 SPhenoParameters = parameters;
 MakeSPhenoFortran;
 SPheno`Eigenstates=Eigenstates;
@@ -649,6 +711,7 @@ Close[sphenoFlavorKitLFV];
 Close[sphenoFlavorKitQFV];
 Close[sphenoFlavorKitObs];
 
+SA`Doc`EndEntry[];
 ];
 
 

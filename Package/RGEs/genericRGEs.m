@@ -31,6 +31,13 @@ MakeDummyListRGEs:=If[SupersymmetricModel=!=False,MakeDummyListRGEsSUSY,MakeDumm
 
 
 CalculateRGEs[TwoL_, ReadLists_,VarGens_, NoMatMul_,Simp_, Force_,IgnoreAt2L_,WriteRunning_]:=Block[{i,startedtime},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalculateRGEs\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This is the main file to calcualte the one- and two-loop RGEs for supersymmetric models based on generic formula given in literature (by Martin & Vaughn; Jack & Jones; Yamada; Goodsell; Stockinger & Voigt; Fonseca, Malinsky, Porod & Staub). \n
+This routine creates the necessary directories and calls the functions for the different parts of the calculation.";
+SA`Doc`Input={"TwoL"->"Include two-loop RGEs?","ReadLists"->"Read results from previous calculation?","VarGens"->"A list with particles whose generations shall be treated as variable", "NoMatMul"->"Don't use matrix multiplication to represent the results, but write everything as sums","Simp"->"Simplify the results?","Force"->"Enforce matrix notation even for parameters with three indices","IgnoreAt2L"->"A list if couplings which shall be ignored at the two-loop level","WriteRunning"->"Write a file (RunRGEs.m) to run the RGEs within Mathematica"};
+SA`Doc`GenerateEntry[];
 
 Off[CreateDirectory::ioerr];
 
@@ -106,9 +113,17 @@ Print[""];
 Print["Finished with the calculation of the RGEs. Time needed: ",TimeUsed []-startedtime,"s"];
 Print["The results are saved in ",StyleForm[ToString[$sarahCurrentRGEDir],"Section",FontSize->10]];
 
+SA`Doc`EndEntry[];
 ];
 
 ReadBetaFunctions:=Block[{},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ReadBetaFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Reads the results from a previosu calculation";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Read Beta Functions"];
 BetaYijk=Get[ToFileName[$sarahCurrentRGEDir,"BetaYijk.m"]];
 BetaTijk=Get[ToFileName[$sarahCurrentRGEDir,"BetaTijk.m"]];
@@ -154,11 +169,19 @@ BetaMFij3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaMFij3I.m"]];
 ];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 GenerateCouplingList[NoMatMul_,Force_]:=Block[{i,indices,indNr},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"GenerateCouplingList\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routines generates functions (Yijk, Aijk, Bij, Muij, Li, m2ij, Mi,..) to represent the different couplings. For instance, Yukawa-like can then called by Yijk[p1,p2,p3] where p1..p3 are the involved superfields and the full expression is inserted. This is heavily used to implement the beta-function in a notation very similar to the generic notation used in literature. \n Some additional efforts are needed to bring the VEVs into the correct form and to associate them with the correct superfield. That's done at the end of this routine.";
+SA`Doc`Input={"NoMatMul"->"Don't use matrix multiplication to represent the results, but write everything as sums","Force"->"Enforce matrix notation even for parameters with three indices"};
+SA`Doc`GenerateEntry[];
+
 If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
 
 threeIndexParameter={};
@@ -295,12 +318,19 @@ i++;];
 ];
 j++;];
 
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 
 MakeParticleLists :=Block[{i,j},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"MakeParticleLists\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function generates lists with all particles that appear together in a couping. This is used to make the insertion of fields in the generic expressions more efficient than a full brute force methods where all existing combinations are tested.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Making Lists of Particles and Couplings"];
 
@@ -372,12 +402,20 @@ listTri[[i]]=Union[listTri[[i]]];
 listQuad[[i]]=Union[listQuad[[i]]];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 
 
 (* ::Input::Initialization:: *)
 CalcGroupFactors[VarGens_]:=Block[{i,j,k,l,sum,gNr2},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalcGroupFactors\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine performs the group theory needed for the RGE calculation: generator functions 'TA' are initialised and all necessary combinations of Dynkin and Casimir indices showing up in the RGEs are calculated.";
+SA`Doc`Input={"VarGens"->"A list of fields whose generations should be treated as variabel"};
+SA`Doc`GenerateEntry[];
+
 GaugeInteractionMatrix[#[[1]],#[[2]]]&/@ SA`ListRepresentations;
 
 For[i=1,i<=AnzahlGauge,
@@ -468,9 +506,17 @@ SA`CheckU1[i]=0;
 ];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 GenerateGroupFactorsMixed:=Block[{i,j,k,sum,sum2,sum3,sum2c,Y1,Y2},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"GenerateGroupFactorsMixed\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function generates the group factors appearing in the generic beta-function including the possibility of gauge kinetic mixing. The used equations are based on 1107.2670.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[SA`ListGaugeMixedAll],
 SA`gCoup[SA`ListGaugeMixedAll[[i,1,1]],SA`ListGaugeMixedAll[[i,1,2]]]=SA`ListGaugeMixedAll[[i,2,2]];
 i++;];
@@ -573,6 +619,7 @@ Sum[(1-SA`CheckU1[gn])  gc[gn]^2  SA`Casimir[p1,gn](32 Mi[gn] Conj[Mi[gn]] Sum[S
 
 SA`CasimirDynkinU1Summed[gnr1_,gnr2_]:=Sum[Sum[MulFactor[getBlankSF[LP[[i]]],gnr1] SA`Casimir2[LP[[i]],n1]  ,{n1,1,AnzahlGauge}]  YBar[LP[[i]],gnr1] YBar[LP[[i]],gnr2] ,{i,1,Length[LP]}] /. YBar[a__]->0 //. SA`gCoup[a__]->0 //. SA`Gaugino[a__]->0;
 
+SA`Doc`EndEntry[];
 ];
 
 
@@ -580,6 +627,13 @@ SA`CasimirDynkinU1Summed[gnr1_,gnr2_]:=Sum[Sum[MulFactor[getBlankSF[LP[[i]]],gnr
 
 (* ::Input::Initialization:: *)
 CalcGammaij[TwoLoop_,Simp_]:=Block[{i,j,subChargeInd},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalcGammaij\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the anomalous dimensions for all superfields (gammaij) as well as the scalar components (gammaijScalar). The later is needed for the running VEVs. Also the gauge dependent parts as given in 1305.1548 & 1310.7629 are included (gammaijHat).";
+SA`Doc`Input={"TwoLoop"->"Include two loop?","Simp"->"Simplify expressions?"};
+SA`Doc`GenerateEntry[];
+
 UseSymmASymm=True;
 Gij={};
 Gij1={};
@@ -706,6 +760,7 @@ Put[Gij,ToFileName[$sarahCurrentRGEDir,"Gij.m"]];
 Put[Gij1,ToFileName[$sarahCurrentRGEDir,"Gij1.m"]];
 UseSymmASymm=False;
 
+SA`Doc`EndEntry[];
 ];
 
 
@@ -713,6 +768,13 @@ UseSymmASymm=False;
 (* ::Input::Initialization:: *)
 
 InitBetaFunctions:=Block[{},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"InitBetaFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function initialises the beta-functions. Mainly bassed on the equations given by Martin & Vaughn. Only the beta-functions for the tadpoles are taken from Yamada, and those for the Dirac gaugino masses from Goodsell.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 betaFuncWijkl[p1_,p2_,p3_,p4_] := ExpandTerm[Wijkl[p1,p2,p3,pZ] gammaij[pZ,p4]];
 betaFuncWijkl2L[p1_,p2_,p3_,p4_] := ExpandTerm[Wijkl[p1,p2,p3,pP] gammaij2L[pP,p4]];
 
@@ -803,6 +865,8 @@ betaFuncFIi2L[gNr_]:=Sum[2   GUTren[gNr] SA`gCoup[gNr,gnr2] Tr3[gnr2],{gnr2,1,An
 betaFuncDGi[p1_,gNr_]:=ExpandTerm[DGi[pN,gNr] gammaij[pN,p1]]+Sum[DGi[p1,gSUM] (QBar[gSUM,gNr] - 3 SA`gCoup[gSUM,gNr]^2 SA`Casimir[gNr]),{gSUM,1,Length[Gauge]}] //.  SA`gCoup[a__]->0 //. QBar[a__]->0;
 betaFuncDGi2L[p1_,gNr_]:=ExpandTerm[DGi[pN,gNr] gammaij2L[pN,p1]]+DGi[p1,gNr] betaFuncGauge2L[gNr,gNr]/SA`gCoup[gNr,gNr];
 betaFuncDGiU12L[p1_,gNr_]:=ExpandTerm[DGi[pN,gNr] gammaij2L[pN,p1]] -2 Sum[DGi[p1,gSUM]  ((1/2 Conj[Yijk[pL,pP,pQ]] Yijk[pL,pP,pQ] YBar[pL,gSUM] YBar[pL,gNr]-2 SA`CasimirDynkinU1Summed[gSUM,gNr] ) ),{gSUM,1,Length[Gauge]}] //.  SA`gCoup[a__]->0 //. QBar[a__]->0;
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -1009,6 +1073,19 @@ Return[betaFuncDGi2L[term[[1]] /. subGC[1],term[[2]]]];
 
 (* ::Input::Initialization:: *)
 CalcBetaFunctions[type_,fields_,filename_,filename3I_,twoloop_,Simp_]:=Block[{i,factor,res,subNonZero,coup,SaveArray={},SaveArray3I={},startedtime},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalcBetaFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine combines the different information derived so far and calculates the full expressions for the beta-functions. This is done via the following steps: \n
+1) The external fields are inserted in the generic beta-functions\ n
+2) It is checked which combinaiton of external indices corresponds to a non-vanishing coupling. The numerical coefficient in front of the coupling fixes the normalisation of the beta-function \n
+3) The chosen indices are inserted in the beta-function\n
+4) 'Expand Term' is called to find all possible field combinations (i.e. this is equivalent to generating all possible Feynman diagrams) \n
+5) 'CalcRGEValue' is used to simplify the expression by summing over internal indices, etc. \n
+6) The results are stored in the given array as well as written to external files." ;
+SA`Doc`Input={"type"->"The generic type of the coupling","fields"->"The external fields for all couplings","filename"->"The file name to save the results","filename3I"->"The file name to save the results using a second approach to treat parameters with three-indices","twoloop"->"Including two-loop?","Simp"->"Simplify the results?"};
+SA`Doc`GenerateEntry[];
+
 startedtime=TimeUsed[];
 Switch[type,
 WIJKL, Print[StyleForm["Calculate Beta Functions for 4-point Superpotential parameters","Section",FontSize->12]];,
@@ -1175,9 +1252,17 @@ UseSymmASymm=False;
 
 DynamicCoupProgess[type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
 
+SA`Doc`EndEntry[];
 ];
 
 CalcRGEtraces[TwoLoop_,Simp_]:=Block[{i,j,Spur,Spur2,startedtime},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalcRGEtraces\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the values for the traces which are introduced in the generic expressions for the soft-breaking scalar masses. ";
+SA`Doc`Input={"TwoLoo"->"Including two-loop?","Simp"->"Simplify the results?"};
+SA`Doc`GenerateEntry[];
+
 Print[StyleForm["Calculate Traces for soft-scalar masses","Section",FontSize->12]];
 TraceAbbr={{},{}};
 startedtime=TimeUsed[];
@@ -1253,6 +1338,8 @@ Put[TraceAbbr3I,ToFileName[$sarahCurrentRGEDir,"RGEtraces3I.m"]];
 MakeMatrixMul=False;
 ];
 DynamicCoupProgess[trace]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -1275,6 +1362,13 @@ CalcBetaVEVs[TwoL_,Simp_]:=CalcBetaFunctions[VEV,SA`ListVEVi,"BetaVEV","BetaVEV3
 
 
 MakeDummyListRGEsSUSY:=Block[{i,j,sf,pos},
+SA`Doc`File = "Package/RGEs/genericRGEs.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"MakeDummyListRGEsSUSY\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This creates dummy lists with only zeros for the beta-functions. These are used in the SPheno output if the RGE calculation/output is turned off.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 UseSymmASymm=True;
 NeededAnaDimsForVEVs={};
 listVEVi={};
@@ -1314,6 +1408,8 @@ BetaDGi = Table[{SA`DiracGauginosInfo[[i,2,2]],0,0},{i,1,Length[SA`DiracGauginos
 
 BetaVEV= Table[{SA`ListVEVi[[i,2,2]],0,0},{i,1,Length[SA`ListVEVi]}]/. {Delta[a__]->1 ,epsTensor[a__]->1,CG[a__][b__]->1,gen1->i1,gen2->i2,gen3->i3,gen4->i4};
 UseSymmASymm=False;
+
+SA`Doc`EndEntry[];
 ];
 
 

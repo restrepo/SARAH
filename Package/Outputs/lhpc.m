@@ -19,7 +19,14 @@
 
 
 
+(* ::Input::Initialization:: *)
+SA`Doc`ToDo="This file contrains the routine to generated an input file for Ben O'learies spectrum plotter LHPC. As far as I know, it was only used once and also LHPC is not under development for years. Because of that, you might consider removing it from SARAH.  "
+
 MakeLHPCstyle[Eigenstates_]:=Block[{i,j,f,g,part,k},
+SA`Doc`File = "Package/Output/lhpc.nb";
+SA`Doc`Name = "MakeLHPCstyle";
+SA`Doc`Info = "Writes the model information needed for LHPC: for each particle the colour is set which should be used for plotting.";
+SA`Doc`GenerateEntry[];
 
 (* Print["Write style file for LHPC "]; *)
 
@@ -90,6 +97,8 @@ j++;];
 Print["Done... Output is in ",$sarahCurrentLHPCdir];
 
 Close[LHPC];
+
+SA`Doc`EndEntry[];
 ];
 
 getLHPCcolor[x_]:=Block[{temp},

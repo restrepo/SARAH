@@ -52,14 +52,15 @@ DEFINITION[GaugeES][Additional]= {
 (*
 Lambda4=0;
 Lambda5=0;
+(*
 Lambda6=0;
 Lambda7=0;
 Lambda8=0;
 Lambda9=0;
 Lambda10=0;
+
 Lambda11=0;
 *)
-
 
 (*
 LagNoHC = -(mu2 conj[H].H + MS2/2 s.s + LambdaS s.s.s.s + LambdaH conj[H].H.conj[H].H + Kappa1  conj[H].H.s.s + \

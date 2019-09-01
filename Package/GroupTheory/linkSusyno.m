@@ -25,6 +25,12 @@
 (* ---------------------------------------------------- *)
 
 InitSusyno:=Block[{},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "InitSusyno";
+SA`Doc`Info = "This routine loads (a slightly modified) version of Susyno which is delivered with SARAH.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["******************************************************* "];
 Print["Loading ",StyleForm["Susyno","Section",FontSize->10]," functions for the handling of Lie Groups "];
 Print["Based on Susyno v.2.0 by Renato Fonseca (1106.5016)"];
@@ -33,38 +39,43 @@ Print["******************************************************* "];
 
 Get[ToFileName[$sarahSusynoDir,"LieGroups_SARAH.m"]];
 
+SA`Doc`EndEntry[];
 ];
 
 CheckSusynoGaugeInvariant[fields_,group_]:=Block[{reps={},pos,i,res},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "CheckSusynoGaugeInvariant";
+SA`Doc`Info = "This routine checks if a combination of given fields is gauge invariant under a given gauge group";
+SA`Doc`Input={"fields"->"list of involved fields","group"->"Considered gauge group"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[fields],
 pos=Position[Fields,fields[[i]]][[1,1]];
 reps=Join[reps,{getDynkinLabels[Fields[[pos,3+group]],Gauge[[group,2]]]}];
 i++;];
-(* res=(Apply[Inv[SusynoForm[Gauge[[group,2]]]],reps] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants); *)
 reps=DeleteCases[reps,{0}];
 res=Invariants[SusynoForm[Gauge[[group,2]]],reps];
+
 If[res=={} && reps=!={},
-Return[False];,
-Return[True];
+SA`Doc`Return[False];,
+SA`Doc`Return[True];
 ];
 ];
 
 InvariantMatrixSusyno[group_,dim_]:=Block[{i,j,dimTemp={},subName={},dims,reps,result,factored,repsNC, temp, list, prefactor, subSU2={},conjugations={},sign},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "InvariantMatrixSusyno";
+SA`Doc`Info = "This function uses Susyno to obtain the invariant matrix for a given combination of fields. First, it gets the Dynkin labels for the involved fields. Second, it calls other routines to get the invariant matrix in the Susyno format. Third, it brings the Suysno output in matrix form. \n
+	Moreover, also a list with containing information which entries in the matrix are non-zero is generated. This is used for the RGE calculation.";
+SA`Doc`Input={"group"->"Considered gauge group", "dim"->"a list containing the dimensions under the gauge group of the involved fields"};
+SA`Doc`GenerateEntry[];
+
 reps=DeleteCases[dim,{0},3];
 If[reps==={},
-Return[1];,
+SA`Doc`Return[1];,
 dims=Table[DimR[SusynoForm[group],Abs[reps[[i]]]],{i,1,Length[reps]}];
 repsNC=Abs/@reps;
-(*
-If[group=!=SU[2] || (Length[reps]\[Equal]2 && reps[[1]]==={2} && reps[[2]]==={2}),
-reps[[-1]]=ConjugatedRep[reps[[-1]],group];
-temp=(Append[Apply[Inv[SusynoForm[group]],reps],True] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants);, 
-If[group===SU[2] && reps[[1]]==={-1},
-reps=Abs[reps];
-temp=(Append[Apply[Inv[SusynoForm[group]],reps],True] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants);, 
-temp=(Apply[Inv[SusynoForm[group]],reps] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants);  
-];
-]; *)
+
 If[group===SU[2],
 For[i=1,i<=Length[reps],
 If[reps[[i]]==={-1},
@@ -89,7 +100,7 @@ ReleaseHold[Hold[Set[CG[group,Reverse/@repsNC][i1_,i2_,i3_,i4_],RHS]]/. RHS -> t
 ReleaseHold[Hold[Set[InvMat[SA`RnR-1][i1_,i2_,i3_,i4_],RHS]]/. RHS -> temp[[2]] ];
 On[Part::"pspec"]; 
 On[Part::"pkspec1"];
-Return[InvMat[SA`RnR-1]];,
+SA`Doc`Return[InvMat[SA`RnR-1]];,
 LagInput::ZeroCoupling="The contraction `` vanishes";
 Message[LagInput::ZeroCoupling,dim];
 ];
@@ -99,7 +110,7 @@ temp=Invariants[SusynoForm[group],Abs/@reps,Conjugations->conjugations];
 If[temp==={} || Head[temp]===InvariantsBaseMethod,
 Susyno::CGfailed="There has been a problem with calculating the Clebsch-Gordon coefficienty for `` in (``)";
 Message[Susyno::CGfailed,reps,group];
-Return[];,
+SA`Doc`Return[];,
 temp=temp[[1]];
 ];
 temp=temp/.subSU2;
@@ -152,13 +163,18 @@ CG[group,repsNC][a___]=epsTensor[a];
 ];
 ];
 
-
-Return[InvMat[SA`RnR-1]];
+SA`Doc`Return[InvMat[SA`RnR-1]];
 ];
 
 ];
 
 Get4Invariants[groups_,reps_]:=Block[{i,t,p,t1,t2,Found=False,fields},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "Get4Invariants";
+SA`Doc`Info = "This routine returns the invariant matrix of a four scalar interaction. It first checks, if the matrix factorises, i.e. if the combinations of two fields are already invariant (e.g. |H_d H_u|^2 and most other examples in widely study models factorise!). It then returns the CGC as product of two CGC's.";
+SA`Doc`Input={"groups"->"Considered gauge group", "reps"->"a list containing the Dynkin labels of the involved fields"};
+SA`Doc`GenerateEntry[];
+
 p=Intersection[Map[Sort[#]&,Permutations[{1,2,3,4}] /. {a_,b_,c_,d_}->{{a,b},{c,d}},{2}]];
 fields={a,b,c,d};
 i=1;
@@ -172,29 +188,33 @@ i++;
 ];
 InvariantMatrixSusyno[groups,{reps[[p[[i,1,1]]]],reps[[p[[i,1,2]]]]}];
 InvariantMatrixSusyno[groups,{reps[[p[[i,2,1]]]],reps[[p[[i,2,2]]]]}];
-Return[{CG[groups,{reps[[p[[i,1,1]]]],reps[[p[[i,1,2]]]]}][fields[[p[[i,1,1]]]],fields[[p[[i,1,2]]]]]*CG[groups,{reps[[p[[i,2,1]]]],reps[[p[[i,2,2]]]]}][fields[[p[[i,2,1]]]],fields[[p[[i,2,2]]]]],InvMat[SA`RnR-2][fields[[p[[i,1,1]]]],fields[[p[[i,1,2]]]]] InvMat[SA`RnR-1][fields[[p[[i,2,1]]]],fields[[p[[i,2,2]]]]]} /. {a->i1,b->i2,c->i3,d->i4}];
+
+SA`Doc`Return[{CG[groups,{reps[[p[[i,1,1]]]],reps[[p[[i,1,2]]]]}][fields[[p[[i,1,1]]]],fields[[p[[i,1,2]]]]]*CG[groups,{reps[[p[[i,2,1]]]],reps[[p[[i,2,2]]]]}][fields[[p[[i,2,1]]]],fields[[p[[i,2,2]]]]],InvMat[SA`RnR-2][fields[[p[[i,1,1]]]],fields[[p[[i,1,2]]]]] InvMat[SA`RnR-1][fields[[p[[i,2,1]]]],fields[[p[[i,2,2]]]]]} /. {a->i1,b->i2,c->i3,d->i4}];
 (* Return[t1*t2]; *)
 ];
 
 CheckInvariants[group_,repIN_]:=Block[{temp,reps},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "CheckInvariants";
+SA`Doc`Info = "Just a wrapper function for the 'Invariants' function of Susyno. ";
+SA`Doc`Input={"groups"->"Considered gauge group", "repIN"->"a list containing the Dynkin labels of the involved fields"};
+SA`Doc`GenerateEntry[];
+
 reps=repIN;
-(*
-If[group=!=SU[2] || (Length[reps]\[Equal]2 && reps[[1]]==={2} && reps[[2]]==={2}),
-reps[[-1]]=ConjugatedRep[reps[[-1]],group];
-temp=(Append[Apply[Inv[SusynoForm[group]],reps],True] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants);, 
-If[group===SU[2] && reps[[1]]==={-1},
-reps=Abs[reps];
-temp=(Append[Apply[Inv[SusynoForm[group]],reps],True] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants);, 
-temp=(Apply[Inv[SusynoForm[group]],reps] /. Inv[a_][b__]\[Rule]Inv[a,b]/. Inv\[Rule]Invariants);  
-];
-]; *)
 temp=Invariants[SusynoForm[group],Abs/@reps];
-Return[temp];
+
+SA`Doc`Return[temp];
 ];
 
 
 
 getDynkinLabelsSusyno[group_,dim_]:=Block[{reps,i,j,dyns},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "getDynkinLabelsSusyno";
+SA`Doc`Info = "This function uses Susyno to obtain the Dynkin labels for a given Irrep.";
+SA`Doc`Input={"group"->"Considered gauge group", "dim"->"the dimension of the considered irrep under the given gauge group"};
+SA`Doc`GenerateEntry[];
+
 reps=repsWithSizeN[group,Abs[dim]];
 If[Length[reps]>2,
 dyns=DynkinIndex[group,#]&/@reps;
@@ -206,15 +226,15 @@ min=Position[congr,Min[congr]];
 max=Position[congr,Max[congr]];
 If[Length[min]===1,
 If[dim>0,
-Return[reps[[min[[1,1]] ]]],
-Return[reps[[max[[1,1]]]]]
+SA`Doc`Return[reps[[min[[1,1]] ]]],
+SA`Doc`Return[reps[[max[[1,1]]]]]
 ];,
 digits=ToExpression[StringReplace[ToString[#],{" "->"",","->""}]]&/@reps;
 min=Position[digits,Min[digits]];
 max=Position[digits,Max[digits]];
 If[dim>0,
-Return[reps[[min[[1,1]] ]]],
-Return[reps[[max[[1,1]]]]]
+SA`Doc`Return[reps[[min[[1,1]] ]]],
+SA`Doc`Return[reps[[max[[1,1]]]]]
 ];
 ];
 ];
@@ -234,16 +254,23 @@ SusynoForm[SP[x_]]:=ToExpression["SP"<>ToString[x]];
 
 
 (* ::Input::Initialization:: *)
+(*
+SA`Doc`ToDo="Commented out by FS, 20/05/2019=>check that nothing is broken!"
 GetInformationSusyno[Nr_,k_]:=Block[{i,resSusyno,temp},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "GetInformationSusyno";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 resSusyno = CallSusyno[Fields[[Nr,k+3]],Gauge[[k,2]]];
 MakeGroupConstants[Nr,k,resSusyno[[2]],resSusyno[[3]],resSusyno[[4]],resSusyno[[5]]];
-Generator[Gauge[[k,2]],k,FieldDim[Nr,k],lor_,p1_,p2_]=(Hold[TA[DIMGAUGE,DIM,genf[lor],listIndizes[[GAUGE,1]]/.subGC[p1],listIndizes[[GAUGE,1]]/.subGC[p2]]] /. {DIMGAUGE -> Gauge[[k,2]],DIM->FieldDim[Nr,k],GAUGE->k});
+Generator[Gauge[[k,2]],k,FieldDim[Nr,k],lor_,p1_,p2_]=(Hold[TA[DIMGAUGE,DIM,genf[lor],listIndizes[[GAUGE,1]]/.subGC[p1],listIndizes[[GAUGE,1]]/.subGC[p2]]] /. {DIMGAUGE \[Rule] Gauge[[k,2]],DIM\[Rule]FieldDim[Nr,k],GAUGE\[Rule]k});
 
 SA`NeededGeneratorsSusyno= Join[SA`NeededGeneratorsSusyno,{{Gauge[[k,2]],FieldDim[Nr,k],DynkinLabels[Gauge[[k,2]],Fields[[Nr,3]]]}}];
 
 temp= {Gauge[[k,3]]};
-For[i=1,i<=Length[temp],
-If[Gauge[[k,5]]==False,
+For[i=1,i\[LessEqual]Length[temp],
+If[Gauge[[k,5]]\[Equal]False,
 notShort = Join[notShort,{ToExpression[ToString[temp[[i]]]<>appendIndex[[i]]]}];,
 expShort = Join[expShort,{ToExpression[ToString[temp[[i]]]<>appendIndex[[i]]]}];
 ];
@@ -252,30 +279,40 @@ NonSUNindices=Intersection[Join[NonSUNindices,{Gauge[[k,3]]}]];
 DynkinLabels[Gauge[[k,2]],Fields[[Nr,3]]]=resSusyno[[6]];
 ConjDynkinLabels[Gauge[[k,2]],Fields[[Nr,3]]]=ConjResSusyno[[6]];
 If[FieldDim[Nr,k]<0 && Head[Fields[[Nr,k+3]]]=!=List, temp = - temp;];
-If[Gauge[[k,5]]==False,
+If[Gauge[[k,5]]\[Equal]False,
 notExpanded=Join[notExpanded,temp];,
 expanded=Join[expanded,temp];
 ];
-];
 
+SA`Doc`EndEntry[];
+];
+*)
 
 
 
 
 (* ::Input::Initialization:: *)
+(*
+SA`Doc`ToDo="Commented out by FS, 20/05/2019=>check that nothing is broken!"
+
 CallSusyno[rep_,group_]:=Block[{dim,dimS,dynkin,temp,pos,checkvariableexistsSARAH,DL},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "CallSusyno";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 If[SusynoLoaded=!=True,
 Message[SARAH::UnknownGaugeGroup,group];
 Interrupt[];,
 If[Head[rep]===List,dimS=rep[[1]]; dynkin=rep[[2]];,dimS=rep; dynkin=None];
 dim=Abs[dimS];
 temp = SARAHCheckIrrep[dim,{ToString[Head[group]],group[[1]]}];
-If[dynkin===None && Length[temp]<= 2,
-If[dim==dimS,
-If[Length[temp]==1,ConjResSusyno=temp[[1]];,ConjResSusyno=temp[[2]];];
- Return[temp[[1]]];,
-ConjResSusyno=temp[[1]]; 
-Return[temp[[2]]];
+If[dynkin===None && Length[temp]\[LessEqual] 2,
+If[dim\[Equal]dimS,
+If[Length[temp]\[Equal]1,ConjResSusyno=temp[[1]];,ConjResSusyno=temp[[2]];];
+SA`Doc`Return[temp[[1]]];,
+ConjResSusyno=temp[[1]];
+SA`Doc`Return[temp[[2]]];
 ];,
 If[dynkin===None && Length[temp]> 2, 
 Message[SARAH::DimensionNotUnique,dim, group];,
@@ -283,7 +320,7 @@ pos = Position[temp,dynkin];
 If[pos==={};
 Message[SARAH::UnknownDynkin,dynkin];,
 ConjResSusyno=Delete[Position[temp,temp[[pos[[1,1,4]]]]],pos[[1,1]]];
-Return[temp[[pos[[1,1]]]]];
+SA`Doc`Return[temp[[pos[[1,1]]]]];
 ];
 ];
 ];
@@ -292,12 +329,16 @@ Return[temp[[pos[[1,1]]]]];
 
 
 GeneratInvariantMatrixSusyno[IndexTypesNonSUN_,partList_]:=Block[{resNonSUN,pos,tepm,i,j,dyn,ind},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "GeneratInvariantMatrixSusyno";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
 
 resNonSUN=1;
-For[i=1,i<=Length[IndexTypesNonSUN],
+For[i=1,i\[LessEqual]Length[IndexTypesNonSUN],
 pos = Position[Gauge,IndexTypesNonSUN[[i]]][[1,1]];
 temp={}; dyn={}; ind={};
-For[j=1,j<=Length[partList],
+For[j=1,j\[LessEqual]Length[partList],
 pos2=Position[Fields,partList[[j]]][[1,1]];
 If[FieldDim[pos2,pos]=!=1,
 temp = Join[temp,{FieldDim[pos2,pos]}];
@@ -312,75 +353,97 @@ SA`NeededInvariantsSusyno = Join[SA`NeededInvariantsSusyno,{{Gauge[[pos,2]],temp
 resNonSUN = resNonSUN*resNonSUNtemp;
 i++];
 
-Return[resNonSUN];
+SA`Doc`Return[resNonSUN];
 ];
+*)
 
 NumberStates[x_,y_]:=NumberStates[x,y//. (a_[{b__}]->a)]/;FreeQ[y,List]==False;
-
+(*
 GenerateSusyNoInvariants:=Block[{i,j,temp,pos},
-If[SusynoLoaded==True,
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "GenerateSusyNoInvariants";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
+If[SusynoLoaded\[Equal]True,
 PrintDebug["Get information from Susyno"];
 DynamicInitGaugeG="Get information from Susyno";
 SA`NeededInvariantsSusyno = Intersection[SA`NeededInvariantsSusyno];
 SA`NeededGeneratorsSusyno = Intersection[SA`NeededGeneratorsSusyno];
 SA`NonZeroEntries={};
 
-For[i=1,i<=Length[SA`NeededGeneratorsSusyno],
+For[i=1,i\[LessEqual]Length[SA`NeededGeneratorsSusyno],
 entry = SA`NeededGeneratorsSusyno[[i]];
 temp = Normal/@RepMatrices[SusynoForm[entry[[1]]],entry[[3]]];
-ReleaseHold[Hold[SetDelayed[TA[entry[[1]],entry[[2]],x_Integer,y_Integer,z_Integer],TEMP[[x,y,z]]]]/.TEMP->temp];
+ReleaseHold[Hold[SetDelayed[TA[entry[[1]],entry[[2]],x_Integer,y_Integer,z_Integer],TEMP[[x,y,z]]]]/.TEMP\[Rule]temp];
 pos=Take[Position[temp,_?((#=!=0)&&NumericQ[#]&),6,1][[1]],{1,3}];
 SA`NonZeroEntries = Join[SA`NonZeroEntries,{{TA[entry[[1]],entry[[2]],_,_,_],pos}}];
 i++;];
 
 
-For[i=1,i<=Length[SA`NeededInvariantsSusyno],
+For[i=1,i\[LessEqual]Length[SA`NeededInvariantsSusyno],
 entry=SA`NeededInvariantsSusyno[[i]];
 Switch[Length[entry[[2]]],
 2,
 	temp = Invariants[SusynoForm[entry[[1]]],entry[[3,1]],entry[[3,2]]][[1]];
 	temp = Table[Coefficient[temp,a[i1] b[i2]],{i1,1,entry[[2,1]]},{i2,1,entry[[2,2]]}];
-	ReleaseHold[Hold[SetDelayed[RM[entry[[1]],entry[[2]],entry[[3]]][x_Integer,y_Integer],TEMP[[x,y]]]]/.TEMP->temp];
+	ReleaseHold[Hold[SetDelayed[RM[entry[[1]],entry[[2]],entry[[3]]][x_Integer,y_Integer],TEMP[[x,y]]]]/.TEMP\[Rule]temp];
 	pos=Take[Position[temp,_?((#=!=0)&&NumericQ[#]&),6,1][[1]],{1,2}];
 	SA`NonZeroEntries = Join[SA`NonZeroEntries,{{RM[entry[[1]],entry[[2]],entry[[3]]],pos,entry[[4]]}}];,
 3,
 	temp = Invariants[SusynoForm[entry[[1]]],entry[[3,1]],entry[[3,2]],entry[[3,3]]][[1]];
 	temp = Table[Coefficient[temp,a[i1] b[i2] c[3]],{i1,1,entry[[2,1]]},{i2,1,entry[[2,2]]},{i3,1,entry[[2,3]]}];
-	ReleaseHold[Hold[SetDelayed[RM[entry[[1]],entry[[2]],entry[[3]]][x_Integer,y_Integer,z_Integer],TEMP[[x,y,z]]]]/.TEMP->temp];
+	ReleaseHold[Hold[SetDelayed[RM[entry[[1]],entry[[2]],entry[[3]]][x_Integer,y_Integer,z_Integer],TEMP[[x,y,z]]]]/.TEMP\[Rule]temp];
 	pos=Take[Position[temp,_?((#=!=0)&&NumericQ[#]&),6,1][[1]],{1,3}];
 	SA`NonZeroEntries = Join[SA`NonZeroEntries,{{RM[entry[[1]],entry[[2]],entry[[3]]],pos,entry[[4]]}}];
 ];
 i++;];
 
-For[i=1,i<=Length[Gauge],
+For[i=1,i\[LessEqual]Length[Gauge],
 If[Head[Gauge[[i,2]]]=!=SU && Head[Gauge[[i,2]]]=!=U,
-For[j=1,j<=Length[Fields],
+For[j=1,j\[LessEqual]Length[Fields],
 temp = Invariants[SusynoForm[Gauge[[i,2]]],DynkinLabels[Gauge[[i,2]],Fields[[j,3]]],ConjDynkinLabels[Gauge[[i,2]],Fields[[j,3]]]][[1]];
 temp = Table[Coefficient[temp,a[i1] b[i2]],{i1,1,entry[[2,1]]},{i2,1,entry[[2,2]]}];
-ReleaseHold[Hold[SetDelayed[RM[Gauge[[i,2]],FieldDim[j,i],DynkinLabels[Gauge[[i,2]],Fields[[j,3]]]][x_Integer,y_Integer],TEMP[[x,y]]]]/.TEMP->temp];
+ReleaseHold[Hold[SetDelayed[RM[Gauge[[i,2]],FieldDim[j,i],DynkinLabels[Gauge[[i,2]],Fields[[j,3]]]][x_Integer,y_Integer],TEMP[[x,y]]]]/.TEMP\[Rule]temp];
 pos=Take[Position[temp,_?((#=!=0)&&NumericQ[#]&),6,1][[1]],{1,2}];
 SA`NonZeroEntries = Join[SA`NonZeroEntries,{{RM[Gauge[[i,2]],FieldDim[j,i],DynkinLabels[Gauge[[i,2]],Fields[[j,3]]]],pos,Gauge[[i,2]]}}];
 j++;];
 ];
 i++;];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
 
 GenerateNoSUNsub[term_,length_]:=Block[{sub={},pos,i,fca},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "GenerateNoSUNsub";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 If[Head[term]===Times,
-temp=Select[List@@term,(Head[Head[#]]==RM)&,5];,
-temp=Select[{term},(Head[Head[#]]==RM)&,5];
+temp=Select[List@@term,(Head[Head[#]]\[Equal]RM)&,5];,
+temp=Select[{term},(Head[Head[#]]\[Equal]RM)&,5];
 ];
 fac=1;
-For[i=1,i<=Length[temp],pos=Position[SA`NonZeroEntries,temp[[i,0]]][[1,1]];
+For[i=1,i\[LessEqual]Length[temp],pos=Position[SA`NonZeroEntries,temp[[i,0]]][[1,1]];
 entry=Extract[SA`NonZeroEntries,pos];
-sub=Join[sub,Flatten[Table[(entry[[3]]/.subGC[j])->entry[[2,j]],{j,1,length}]]];
+sub=Join[sub,Flatten[Table[(entry[[3]]/.subGC[j])\[Rule]entry[[2,j]],{j,1,length}]]];
 fac=fac*(temp[[i]]/.sub) i++;];
-Return[{sub,fac}];];
+
+SA`Doc`Return[{sub,fac}];
+];
+*)
 
 CheckSymmetryCG[CG_]:=Block[{i,reps,repsDoub,group,pos,j,k,sign},
+SA`Doc`File = "Package/GroupTheory/linkSusyno.nb";
+SA`Doc`Name = "CheckSymmetryCG";
+SA`Doc`Info = "This routine checks of a considered CGC is symmetric or anti-symmetric under the exchange of indices. If that's the case, this information is included in the definition to the CGC and automatically applied in all calculations.";
+SA`Doc`Input = {"CG"->"The considered Clebsch-Gordon-Coefficient"};
+SA`Doc`GenerateEntry[];
+
 reps=CG[[2]];
 group=CG[[1]];
 repsDoub=Intersection[Select[reps,(Count[reps,#]>1)&]];
@@ -426,6 +489,7 @@ CG[a_,b_,c_]:= -CG[b,a,c] /;(OrderedQ[{a,b}]==False);
 j++;];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 

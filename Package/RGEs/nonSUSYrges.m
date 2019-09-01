@@ -26,6 +26,13 @@ Block[{$Path={ToFileName[{$sarahPackageDir,"RGEs"}]}},
 ];
 
 CalcRGEsNonSUSY[TwoLoop_,ReadLists_,VarGens_, NoMatMul_,Simp_, Force_,IgnoreAt2L_,WriteRunning_,ComplexScalarCouplings_]:=Block[{i,j,t,pos},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalcRGEsNonSUSY\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This is the main file to calcualte the one- and two-loop RGEs for a generic quantum field theory models based on generic formula given in literature (by Machacek & Vaughn; Luo & Ming-Xing; Schienbein, Staub, Steudtner & Svirinia; Sperling, Stockinger & Voigt; Fonseca, Malinsky, & Staub). \n
+This routine creates the necessary directories and calls the functions for the different parts of the calculation.";
+SA`Doc`Input={"TwoL"->"Include two-loop RGEs?","ReadLists"->"Read results from previous calculation?","VarGens"->"A list with particles whose generations shall be treated as variable", "NoMatMul"->"Don't use matrix multiplication to represent the results, but write everything as sums","Simp"->"Simplify the results?","Force"->"Enforce matrix notation even for parameters with three indices","IgnoreAt2L"->"A list if couplings which shall be ignored at the two-loop level","WriteRunning"->"Write a file (RunRGEs.m) to run the RGEs within Mathematica","ComplexScalarCouplings"->"Treat the scalar couplings as complex parameter"};
+SA`Doc`GenerateEntry[];
 
 (*
 Print["------------------------------------"];
@@ -96,9 +103,18 @@ RGEsCalculated = True;
 Print[""];
 Print["Finished with the calculation of the RGEs. Time needed: ",TimeUsed []-TimeStartedRGEs,"s"];
 Print["The results are saved in ",StyleForm[ToString[$sarahCurrentRGEDir],"Section",FontSize->10]];
+
+SA`Doc`EndEntry[];
 ];
 
 ReadBetaFunctionsNS:=Block[{},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ReadBetaFunctionsNS\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Reads the results from a previous calculation";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Read Beta Functions"];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaLijkl.m"]],BetaLijkl=Get[ToFileName[$sarahCurrentRGEDir,"BetaLijkl.m"]]];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaYijk.m"]],BetaYijk=Get[ToFileName[$sarahCurrentRGEDir,"BetaYijk.m"]];];
@@ -126,9 +142,17 @@ If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"GSij3I.m"]],Gij3I=Get[ToFileName[
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"GFij3I.m"]],Gij3I=Get[ToFileName[$sarahCurrentRGEDir,"GFij3I.m"]];];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 SplitComplexScalars[list_]:=Block[{i,j,temp,name,real,im,tempR},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"SplitComplexScalars\",\nInitializationCell->True]\)";
+SA`Doc`Info = "The generic expressions for non-SUSY RGEs are given for real scalars. Therefore, it is necessary to split all complex scalars in the given model into real components. This function does this splitting and generates substitutions rules for that.";
+SA`Doc`Input={"list"->"List of complex scalars"};
+SA`Doc`GenerateEntry[];
+
 subComplexScalarsSum={};
 subComplexScalarsList={};
 SFieldsSplitted={};
@@ -181,10 +205,17 @@ subComplexScalarsList = Join[subComplexScalarsList,{name[a__][b__]->{ real[a][b]
 subRealSplitted=Join[subRealSplitted,{conj[real[a__][b_]]->real[a][b],conj[real[a_]]->real[a]}];
 ];
 i++;];
-Return[{Flatten[temp],tempR}];
+SA`Doc`Return[{Flatten[temp],tempR}];
 ];
 
 SplitScalarCouplings[list_,ComplexScalarCouplings_]:=Block[{i,j,temp,fields,res={},resOne={},added=False,nonzero},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"SplitScalarCouplings\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function calculations the interactions after the splitting of complex scalar into real components.";
+SA`Doc`Input={"list"->"List of couplings involving complex scalars","ComplexScalarCouplings"->"Treat the scalar couplings as complex parameters"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[list],
 If[FreeQ[Take[list,{1,i-1}],list[[i,2]]/. InvMat[a__][__]->1 /. Delta[a__]->1 /.epsTensor[a__]->1],
 added=False;,
@@ -225,18 +256,32 @@ resOne=Join[resOne,{{Sort[Table[If[FreeQ[FFields,invfields[[j,k]]]==False,FField
 ];
 j++;];
 i++;];
-Return[{res,resOne}];
+SA`Doc`Return[{res,resOne}];
 
 ];
 DPRGE[term_,particle_,t_]:=Block[{part,i},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"DPRGE\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function is used to extract the couplings from a Lagrangian term after the complex scalars are decomposed: it performs the partial derivative of a given term with respect to a given particle. This is iterated for all external fields.";
+SA`Doc`Input={"term"->"The considered term","particle"->"The considered particle","t"->"The count of the particle"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[FFields,particle]==False,part=FFields[[Position[FFields,particle][[1,1]]]] /. conj[x_]->x;,part=getFullSF[particle];];
 If[AtomQ[RE[part]],
-Return[D[term,part]];,
-Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
+SA`Doc`Return[D[term,part]];,
+SA`Doc`Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
 ];
 ];
 
 CalculateAllRGEsNonSUSY[TwoLoop_,Simp_]:=Block[{subindnames},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalculateAllRGEsNonSUSY\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function is a wrapper to perform the calculations of all generic types of couplings.";
+SA`Doc`Input={"TwoLoop"->"Include two loop?","Simp"->"Simplify expressions?"};
+SA`Doc`GenerateEntry[];
+
 subindnames=Flatten[Table[Reverse/@ReleaseHold[subIndizesFinal/. number1->i /. number2->i],{i,1,4}]];
 CalcBetaFunctionsNonSUSY[GAUGE,SA`ListGC,"BetaGauge","BetaGauge3I",TwoLoop,Simp];
 CalcBetaFunctionsNonSUSY[GSIJ,Table[{{PART[S][[i]]/.subGC[1],PART[S][[i]]/.subGC[2]},{makeDeltaNS[PART[S][[i]],{}],1}},{i,1,Length[PART[S]]}] /.subindnames,"Gammaij","Gammaij3I",TwoLoop,Simp];
@@ -252,11 +297,20 @@ BetaVEV={};
 BetaVEV3I={};,
 CalcBetaFunctionsNonSUSY[VEVI,SA`ListVEVi  /.subGC[1]/.subindnames,"BetaVEV","BetaVEV3I",TwoLoop,Simp];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 GenerateCouplingVariables[NoMatMul_,Force_,ComplexScalarCouplings_]:=Block[{pos,i,j,k,subrule,per,free,added={},res,temp,tempS,indNr,indices,deltaInd,deltaInd2},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"GenerateCouplingVariables\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routines generates functions (Lijkl, Yijk, Aijk, Bij, ..) to represent the different couplings. For instance, Yukawa-like can then called by Yijk[p1,p2,p3] where p1..p3 are the involved fields and the full expression is inserted. This is heavily used to implement the beta-function in a notation very similar to the generic notation used in literature. \n Some additional efforts are needed to bring the VEVs into the correct form and to associate them with the correct superfield. That's done at the end of this routine.";
+SA`Doc`Input={"NoMatMul"->"Don't use matrix multiplication to represent the results, but write everything as sums","Force"->"Enforce matrix notation even for parameters with three indices","ComplexScalarCouplings"->"Treat scalar interactions as complex parameters?"};
+SA`Doc`GenerateEntry[];
+
 If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
 
 res=SplitScalarCouplings[SA`SSlist,ComplexScalarCouplings]; lA2=res[[1]];lA2one=res[[2]];
@@ -606,11 +660,18 @@ Lijkl[a___,getFull[getBlank[PART[F][[i]]]]/. subGCRule[1],b___]=0;
 Yijk[a_,b_,getFull[getBlank[PART[F][[i]]]]/. subGCRule[1]]=0;
 i++;];
 
-
+SA`Doc`EndEntry[];
 ];
 
 makeDeltaNS[particle_,skip_]:=Block[{i,j,k,res,temp,ind},
-If[AtomQ[particle],Return[1]];
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"makeDeltaNS\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function returns a delta function for the gauge indices of a given field.";
+SA`Doc`Input={"particle"->"The considered particle","skip"->"Indices which should not be included"};
+SA`Doc`GenerateEntry[];
+
+If[AtomQ[particle],SA`Doc`Return[1]];
 ind=List@@particle;
 If[Head[particle[[0]]]=!=Symbol,ind=Join[ind,List@@particle[[0]]];];
 ind=DeleteCases[Intersection[Flatten[ind]],skip,3];
@@ -622,12 +683,19 @@ res=res*Kronecker[ind[[i]]/.subGC[1]/.subIndFinal[1,1],ind[[i]]/.subGC[2]/.subIn
 ];*)
 res=res*Delta[ind[[i]]/.subGC[1]/.subIndFinal[1,1],ind[[i]]/.subGC[2]/.subIndFinal[2,2]];
 i++;];
-Return[res];
+SA`Doc`Return[res];
 ];
 
 
 (* ::Input::Initialization:: *)
 InitGaugeGroupInfo[varGens_]:=Block[{sumCS,sumCF,sumDS,sumDF,i,j,k,sumU1,delta,sum,gNr2,pos},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"InitGaugeGroupInfo\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine performs the group theory needed for the RGE calculation: generator functions 'tA', 'ThS' for fermions and scalars are initialised and all necessary combinations of Dynkin and Casimir indices showing up in the RGEs are calculated.";
+SA`Doc`Input={"VarGens"->"A list of fields whose generations should be treated as variabel"};
+SA`Doc`GenerateEntry[];
+
 SA`ListGC={};
 For[i=1,i<=Length[Gauge],
 SA`ListGC=Join[SA`ListGC,{{{i,i},{Gauge[[i,4]],1}}}];
@@ -911,6 +979,8 @@ dimAdj[k]=1;
 ];
 gc[k]=Gauge[[k,4]];
 k++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -918,6 +988,19 @@ k++;];
 
 (* ::Input::Initialization:: *)
 CalcBetaFunctionsNonSUSY[type_,fields_,filename_,filename3I_,twoloop_,Simp_]:=Block[{i,ii,factor,res,subNonZero,coup,SaveArray={},SaveArray3I={},bfcalculated={}},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CalcBetaFunctionsNonSUSY\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine combines the different information derived so far and calculates the full expressions for the beta-functions. This is done via the following steps: \n
+1) The external fields are inserted in the generic beta-functions\ n
+2) It is checked which combinaiton of external indices corresponds to a non-vanishing coupling. The numerical coefficient in front of the coupling fixes the normalisation of the beta-function \n
+3) The chosen indices are inserted in the beta-function\n
+4) 'Expand Term' is called to find all possible field combinations (i.e. this is equivalent to generating all possible Feynman diagrams) \n
+5) 'CalcRGEValue' is used to simplify the expression by summing over internal indices, etc. \n
+6) The results are stored in the given array as well as written to external files." ;
+SA`Doc`Input={"type"->"The generic type of the coupling","fields"->"The external fields for all couplings","filename"->"The file name to save the results","filename3I"->"The file name to save the results using a second approach to treat parameters with three-indices","twoloop"->"Including two-loop?","Simp"->"Simplify the results?"};
+SA`Doc`GenerateEntry[];
+
 Clear[bF1L,bF2L];
 kF=1/2; 
 
@@ -1148,10 +1231,19 @@ GFIJ,GFij=SaveArray; GFij3I=SaveArray3I;,
 GSijHat,GammaijHat=SaveArray; Gammaij3IHat=SaveArray3I;
 ];
 UseSymmASymm=False;
+
+SA`Doc`EndEntry[];
 ];
 
 
 GetNonZeroEntriesNS[term_,type_,fields_]:=Block[{sub={},pos,i,j,fac=1,epsilons, deltas, indnr,coup,coup2,searchedcoup,indtab,Found},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"GetNonZeroEntriesNS\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function returns a combination of gauge indices which lead to a non-zero value for a given interaction. For instance, if the interaction invovles Delta[col1,col2] a valid result might be (col1->1,col2->1)";
+SA`Doc`Input={"term"->"The considered term","type"->"The generic type of the interaction","fields"->"The involved particles"};
+SA`Doc`GenerateEntry[];
+
 Switch[type,
 LIJKL,
 	 coup=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3],fields[[4]]/.subGC[4] ];
@@ -1166,7 +1258,7 @@ TIJK,
 MSIJ,
 	coup=Bij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,
 GAUGE,
-	Return[{{},1}];
+	SA`Doc`Return[{{},1}];
 	coup=fields[[2,1]];,
 VEVI,
 	coup=VEVi[fields[[1]]/.subGC[1]];,
@@ -1190,12 +1282,12 @@ j++;];
 i++;];
 If[type===GSIJ || type===GSijHat ||type===GFIJ ,
 If[indtab==={},
-Return[{{1->1},1}];,
-Return[{indtab[[1]],1}];
+SA`Doc`Return[{{1->1},1}];,
+SA`Doc`Return[{indtab[[1]],1}];
 ];
 ];
 searchedcoup=Select[Transpose[parameters][[1]],(FreeQ[term/. CGCBroken[a___][b___]->CGCBroken[b],#]==False)&];
-If[indtab==={},Return[{{1->1},term[[1]] /. searchedcoup[[1]]->1 }];];
+If[indtab==={},SA`Doc`Return[{{1->1},term[[1]] /. searchedcoup[[1]]->1 }];];
 indtab=Tuples[indtab];
 
 searchedcoup=Select[Transpose[parameters][[1]],(FreeQ[term/. CGCBroken[a___][b___]->CGCBroken[b],#]==False)&];
@@ -1214,75 +1306,57 @@ i++;];
 
 
 If[Found==True,
-Return[{indtab[[i]],(term[[1]]*term[[2]] /. indtab[[i]]/.(indtab[[i]]/.Flatten[Table[subIndFinal[iii,iii],{iii,1,4}]])  /. Delta[a__]->1  /. searchedcoup[[1]][a__]->1 /. searchedcoup[[1]]->1)}];,
-Return[{}];
+SA`Doc`Return[{indtab[[i]],(term[[1]]*term[[2]] /. indtab[[i]]/.(indtab[[i]]/.Flatten[Table[subIndFinal[iii,iii],{iii,1,4}]])  /. Delta[a__]->1  /. searchedcoup[[1]][a__]->1 /. searchedcoup[[1]]->1)}];,
+SA`Doc`Return[{}];
+];
 ];
 
 (*
-If[Found\[Equal]True,
-Return[{indtab[[i]],(term[[1]]*term[[2]] /. indtab[[i]]/.(indtab[[i]]/.Flatten[Table[subIndFinal[iii,iii],{iii,1,4}]])  /. Delta[a__]\[Rule]1  /. searchedcoup[[1]][a__]\[Rule]1 /. searchedcoup[[1]]\[Rule]1)}];,
-i=1;j=1;
-Found=False;
-While[Found\[Equal]False && i <Length[indtab],
-j=1;
-While[Found\[Equal]False && j <Length[indtab],
-resM=(coup/.indtab[[i]]) - (coup2/.indtab[[j]]);
-resP=(coup/.indtab[[i]]) + (coup2/.indtab[[j]]);
-If[resM=!=0,
-If[Select[Transpose[parameters][[1]],(FreeQ[resM/. CGCBroken[a___][b___]\[Rule]CGCBroken[b],#]\[Equal]False)&]===searchedcoup,
-sign=MINUS;
-Found=True;
-];
-];
-If[resP=!=0 && Found\[Equal]False,
-If[Select[Transpose[parameters][[1]],(FreeQ[resP/. CGCBroken[a___][b___]\[Rule]CGCBroken[b],#]\[Equal]False)&]===searchedcoup,
-sign=PLUS;
-Found=True;
-];
-];
-If[Found\[Equal]False,j++;];];
-If[Found\[Equal]False,i++;];];
+GetNonZeroEntriesNSAll[term_,type_,fields_]:=Block[{sub={},pos,i,j,fac=1,epsilons,deltas,indnr,coup,coup2,searchedcoup,indtab,Found},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "GetNonZeroEntriesNSAll";
+SA`Doc`Info = "";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
-If[Found\[Equal]False,
-RGEs::StillEntangled="Can't disentangle the contributions to the running of ``";
-Message[RGEs::StillEntangled,term];
-];
-Return[{{indtab[[i]],indtab[[j]],sign},{(If[sign===MINUS,resM,resP] /. indtab[[i]]  /. Delta[a__]\[Rule]1  /. searchedcoup[[1]][a__]\[Rule]1 /. searchedcoup[[1]]\[Rule]1),searchedcoup[[1]]}}];
-];
-*)
-
-];
-
-GetNonZeroEntriesNSAll[term_,type_,fields_]:=Block[{sub={},pos,i,j,fac=1,epsilons,deltas,indnr,coup,coup2,searchedcoup,indtab,Found},Switch[type,LIJKL,coup=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3],fields[[4]]/.subGC[4]];
-coup2=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]/.SA`subImagToReal,fields[[4]]/.subGC[4]/.SA`subImagToReal];,YIJK,coup=Yijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,MFIJ,coup=Muij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,TIJK,coup=Aijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,MSIJ,coup=Bij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,GAUGE,Return[{{},1}];
+Switch[type,LIJKL,coup=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3],fields[[4]]/.subGC[4]];
+coup2=Lijkl[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]/.SA`subImagToReal,fields[[4]]/.subGC[4]/.SA`subImagToReal];,YIJK,coup=Yijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,MFIJ,coup=Muij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,TIJK,coup=Aijk[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2],fields[[3]]/.subGC[3]];,MSIJ,coup=Bij[fields[[1]]/.subGC[1],fields[[2]]/.subGC[2]];,GAUGE,SA`Doc`Return[{{},1}];
 coup=fields[[2,1]];,VEVI,coup=VEVi[fields[[1]]/.subGC[1]];,GSij,coup=1;,GSijHat,coup=1;];
 indtab={};
-For[i=1,i<=Length[fields],If[Head[fields[[i]]]=!=Symbol,indnr=ToExpression[StringTake[ToString[(fields[[i]]/.{A_[{a___}][{b__}]->{a,b},A_[{a___}]->{a}})[[1]]],-1]];
+For[i=1,i\[LessEqual]Length[fields],If[Head[fields[[i]]]=!=Symbol,indnr=ToExpression[StringTake[ToString[(fields[[i]]/.{A_[{a___}][{b__}]\[Rule]{a,b},A_[{a___}]\[Rule]{a}})[[1]]],-1]];
 ind=getIndRGENS[getBlankSF[fields[[i]]],indnr];
-For[j=1,j<=Length[ind],indtab=Join[indtab,{Table[ind[[j,1]]->k,{k,1,ind[[j,3]]}]}];
+For[j=1,j\[LessEqual]Length[ind],indtab=Join[indtab,{Table[ind[[j,1]]\[Rule]k,{k,1,ind[[j,3]]}]}];
 j++;];];
 i++;];
 indtab=Tuples[indtab/.Flatten[Table[subIndFinal[i,i],{i,1,4}],1]];
-Return[indtab];];
+
+SA`Doc`Return[indtab];
+];
 
 CheckPairsInsertions[list_,coups_,rcoup_]:=Block[{i,sums,lAins},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "CheckPairsInsertions";
+SA`Doc`Info = "";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 lAins={};
-For[i=1,i<=Length[list],
+For[i=1,i\[LessEqual]Length[list],
 inds=GetNonZeroEntriesNSAll[list[[i,2,1]],LIJKL,list[[i,1]]];
-For[j=1,j<=Length[inds],
+For[j=1,j\[LessEqual]Length[inds],
 If[(list[[i,2,1]]/.inds[[j]])=!=0,
 lAins=Join[lAins,{{list[[i,1]],inds[[j]],list[[i,2,1]]/.inds[[j]]}}];];
 j++;];
 i++;];
 sums={};
 For[i=1,i<Length[lAins],
-For[j=i+1,j<=Length[lAins],
+For[j=i+1,j\[LessEqual]Length[lAins],
 sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],P},{lAins[[i,3]]+lAins[[j,3]],1}}}];
 sums=Join[sums,{{{lAins[[i,1]],lAins[[i,2]],lAins[[j,1]],lAins[[j,2]],M},{lAins[[i,3]]-lAins[[j,3]],1}}}];
 j++;];
 i++;];
-sums=Select[sums,FreeQ[#,rcoup]==False&];
-sums=Select[sums,FreeQcoups[#,coups]=={}&];
+sums=Select[sums,FreeQ[#,rcoup]\[Equal]False&];
+sums=Select[sums,FreeQcoups[#,coups]\[Equal]{}&];
 
 If[sums=!={},
 sums=sums[[1]];
@@ -1292,23 +1366,52 @@ sums={{Join[{1},sums[[1,1]]],Join[{-1},sums[[1,3]]]},{{sums[[1,2]]},sums[[2]]}};
 sums={{Join[{1},sums[[1,1]]],Join[{1},sums[[1,3]]]},{{sums[[1,2]]},sums[[2]]}};
 ];
 ];
-Return[sums];
+SA`Doc`Return[sums];
 (* Return[Select[sums,FreeQcoups[#,coups]\[Equal]{}&]]; *)
 ];
 
-CheckPairs[list_,coups_,rcoup_]:=Block[{i,sums},sums={};
+
+CheckPairs[list_,coups_,rcoup_]:=Block[{i,sums},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "CheckPairs";
+SA`Doc`Info = "";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+sums={};
 For[i=1,i<Length[list],
-For[j=i+1,j<=Length[list],
+For[j=i+1,j\[LessEqual]Length[list],
 sums=Join[sums,{{{list[[i,1]],list[[j,1]],P},{list[[i,2,1]]+list[[j,2,1]],list[[i,2,2]]}}}];
 sums=Join[sums,{{{list[[i,1]],list[[j,1]],M},{list[[i,2,1]]-list[[j,2,1]],list[[i,2,2]]}}}];
 j++;];
 i++;];
-sums=Select[sums,FreeQ[#,rcoup]==False&];
-Return[Select[sums,FreeQcoups[#,coups]=={}&]];
+sums=Select[sums,FreeQ[#,rcoup]\[Equal]False&];
+SA`Doc`Return[Select[sums,FreeQcoups[#,coups]\[Equal]{}&]];
 ];
+*)
 FreeQcoups[list_,coups_]:=Select[coups,FreeQ[list,#]==False&];
 
 CheckForNecessarySuperpositions:=Block[{i,j,ii,temp,quartics,cubics,bilinears,res,res2},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CheckForNecessarySuperpositions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function checks if it is necessary to take the superposition of fields in order to get the beta-function of a coupling. For instance, looking at a left-right model there are two Yukawa couplings:
+
+ YQ1 Phi.QLbar.QR  + YQ2 conj[Phi].QLbar.QR 
+
+After splitting Phi in it's real components as it has to be done for the RGE calculation one gets
+
+(YQ1+YQ2) phi.QLbar.QR + (YQ1-YQ2) sigma.QLbar.QR
+
+This is the origin for the problem, because now YQ1 and YQ2 are no longer separated. Thus, to get the RGEs for the couplings SARAH calculates the beta-functions for both sets of external particles and uses
+
+beta(YQ1) = 1/2 (beta(phi.QLbar.QR) +  beta(sigma.QLbar.QR))
+beta(YQ2) = 1/2 (beta(phi.QLbar.QR) -  beta(sigma.QLbar.QR))
+
+to disentangle the running. Similar effects appear for instance for the quartic couplings in THDMs models.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 If[SA`SSSSlist=!={},
 quartics=Transpose[SA`SSSSlist][[2]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1;
 lA4oneNew={};
@@ -1412,10 +1515,18 @@ lA2oneBeta={};
 lA2oneNewFlat={};
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 MakeDummyListRGEsNonSUSY:=Block[{i,j},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"MakeDummyListRGEsNonSUSY\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This creates dummy lists with only zeros for the beta-functions. These are used in the SPheno output if the RGE calculation/output is turned off.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 OnlyDummy=True;
 NeededAnaDimsForVEVs={};
 UseSymmASymm=True;
@@ -1456,9 +1567,20 @@ BetaBij=Select[BetaBij,#[[1]]=!=1&];
 
 
 UseSymmASymm=False;
+
+SA`Doc`EndEntry[];
 ];
 
 BruteForceSuperpositionNew[coupling_,parameter_,type_,allpar_]:=Block[{tempList,temp,subindnames,fields,indnr,ind,indtab,i,Found,j,indlist,allCombinations,listcoefficients,tempterm,subcoeffs,acoeff,res,solall,nonzerosuper,pos,resout},
+SA`Doc`File = "Package/RGEs/nonSUSYrges.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"BruteForceSuperpositionNew\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine tries to find the necessary superpositions to disentangle the beta-functions of parameters which involve the same external states. The approach is to generate an equation with arbitrary coefficients in front of the contributions from different fields and use Mathematica's SolveAlways to find the coefficients which disentangle. For instance, one might have that two field combinations result in (L1 + L2) and (L1 - L2). This would give the following equaiton to find the coefficients to get L1: \n
+	a1 (L1 + L2) + a2 (L1 - L2) = L1 \n
+The SolveAlways function of Mathematica would find the result (a1->1/2, a2->1/2). ";
+SA`Doc`Input={"coupling"->"The currently considered coupling","parameter"->"The parameter which should be extracted","type"->"The generic type of the coupling","allpar"->"All other parameters (which shouldn't show up in the result)"};
+SA`Doc`GenerateEntry[];
+
 
 subindnames=Flatten[Table[Reverse/@ReleaseHold[subIndizesFinal/. number1->i /. number2->i],{i,1,4}]];
 tempList=List@@Expand[Times@@coupling[[1]]/. subComplexScalarsSum /. subRealSplitted]/. x_?NumericQ->1 /. Times->List /. subindnames;
@@ -1532,65 +1654,10 @@ If[(LinEqu/.res)=!=parameter,
 RGEs::StillEntangled="Can't disentangle the contributions to the running of ``";
 Message[RGEs::StillEntangled,parameter];
 Print["Check: ",LinEqu/.res];
-Return[];
+SA`Doc`Return[];
 ];
 
-Return[resout];
+SA`Doc`Return[resout];
 
 ];
-
-(*
-BruteForceSuperposition[coupling_,parameter_,type_]:=Block[{tempList,temp,subindnames,fields,indnr,ind,indtab,i,Found,j},
-subindnames=Flatten[Table[Reverse/@ReleaseHold[subIndizesFinal/. number1\[Rule]i /. number2\[Rule]i],{i,1,4}]];
-tempList=List@@Expand[Times@@coupling[[1]]/. subComplexScalarsSum /. subRealSplitted] /. Times\[Rule]List /. subindnames;
-fields=coupling[[1]]/. conj[x_]\[Rule]x;
-Switch[type,
-LIJKL,
- temp=Expand[Plus@@(tempList/. {a_,b_,c_,d_,e_}:>{a,Lijkl[b,c,d,e]}  /. Lijkl[a__]\[Rule]0  /. {a_,b_}\[Rule]Times[a,b])];, 
-(*tempList=Select[(tempList/. {a_,b_,c_,d_,e_}:>{{b,c,d,e},Lijkl[b,c,d,e]}  /. Lijkl[a__]\[Rule]0) ,#[[2]]=!=0&]; ,*)
-_,
-"not yet implemented"
-];
-
-indtab={};
-For[i=1,i\[LessEqual]Length[fields],
-If[Head[fields[[i]]]=!=Symbol,
-indnr=ToExpression[StringTake[ToString[(fields[[i]] /. {A_[{a___}][{b__}]\[Rule]{a,b},A_[{a___}]\[Rule]{a}})[[1]]],-1]];
-ind=getIndRGENS[getBlankSF[fields[[i]]],indnr];
-For[j=1,j\[LessEqual]Length[ind],
-indtab=Join[indtab,{Table[ind[[j,1]]\[Rule]k,{k,1,ind[[j,3]]}]}];
-j++;];
-];
-i++;];
-indtab=Tuples[indtab]/. subindnames;
-
-i=1;
-
-(*
-allCombinations={};
-For[i=1,i\[LessEqual]Length[tempList],
-For[j=1,j\[LessEqual]Length[indtab],
-If[(tempList[[i,2]]/. indtab[[j]])=!=0,
-allCombinations=Join[allCombinations,{{tempList[[i,1]],indtab[[j]],tempList[[i,2]]/. indtab[[j]]}}];
-];
-j++;];
-i++;];
-*)
-
-
-Found=False;
-While[i\[LessEqual]Length[indtab] && Found\[Equal]False,
-resTemp=temp/. indtab[[i]];
-If[Select[Transpose[parameters][[1]],(FreeQ[resTemp/. CGCBroken[a___][b___]\[Rule]CGCBroken[b],#]\[Equal]False)&]===parameter,
-Found=True;
-tempList=Join[tempList,{indtab[[i]]}];
-];
-i++;
-];
-
-If[Found\[Equal]False,
-Return[{}];,
-Return[tempList];
-];
-]; *)
 

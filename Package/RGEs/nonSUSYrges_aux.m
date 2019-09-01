@@ -343,6 +343,13 @@ SA`sub4Scalar={};
 
 
 Init4ScalarFunctions[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init4ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 4 external scalars and optionally a gauge structure. All possible field combinations of external scalars are considered.";
+SA`Doc`Input={"list1in"->"List of functions with four external scalars","list1inNE"->"List of functions with four external scalars (where the results should not be expanded","list2in"->"List of functions with four external scalars and a gauge index","list3in"->"List of functions with four external scalars and a gauge index as well as an external vector boson","list4in"->"List of functions with four external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -375,11 +382,20 @@ i4++;];
 i3++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ]; 
 
 
 
 Init4ScalarFunctionsFinal[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,listP},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init4ScalarFunctionsFinal\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 4 external scalars and optionally a gauge structure. Only field combinations are included which give valid tree-level couplings.";
+SA`Doc`Input={"list1in"->"List of functions with four external scalars","list1inNE"->"List of functions with four external scalars (where the results should not be expanded","list2in"->"List of functions with four external scalars and a gauge index","list3in"->"List of functions with four external scalars and a gauge index as well as an external vector boson","list4in"->"List of functions with four external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -404,6 +420,8 @@ il++;];
 k2++;];
 k++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ]; 
 
 (*
@@ -414,6 +432,13 @@ i2++;];
 i1++;];
 *)
 Init4ScalarFunctionsSymm[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init4ScalarFunctionsSymm\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 4 external scalars and optionally a gauge structure. Only specific field combinations are considered.";
+SA`Doc`Input={"list1in"->"List of functions with four external scalars","list1inNE"->"List of functions with four external scalars (where the results should not be expanded","list2in"->"List of functions with four external scalars and a gauge index","list3in"->"List of functions with four external scalars and a gauge index as well as an external vector boson","list4in"->"List of functions with four external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -428,9 +453,18 @@ list1b[[il,1]][getFullNS[per[[i1,1]]]/. subGCRule[1],getFullNS[per[[i1,2]]]/. su
 il++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ]; 
 
 Init4ScalarFunctionsPermutated[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init4ScalarFunctionsPermutated\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 4 external scalars and optionally a gauge structure. All permuations of field combinations are included which give valid tree-level couplings.";
+SA`Doc`Input={"list1in"->"List of functions with four external scalars","list1inNE"->"List of functions with four external scalars (where the results should not be expanded","list2in"->"List of functions with four external scalars and a gauge index","list3in"->"List of functions with four external scalars and a gauge index as well as an external vector boson","list4in"->"List of functions with four external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -457,8 +491,17 @@ k2++;];
 k++;];
 
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 Init4ScalarFunctionsPermutatedAll[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init4ScalarFunctionsPermutatedAll\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 4 external scalars and optionally a gauge structure. All permuations of field combinations are included which give valid tree-level couplings.";
+SA`Doc`Input={"list1in"->"List of functions with four external scalars","list1inNE"->"List of functions with four external scalars (where the results should not be expanded","list2in"->"List of functions with four external scalars and a gauge index","list3in"->"List of functions with four external scalars and a gauge index as well as an external vector boson","list4in"->"List of functions with four external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -483,11 +526,20 @@ k2++;];
 k++;];
 
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
 
 Init3ScalarFunctions[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init3ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 3 external scalars and optionally a gauge structure. All possible field combinations are considered.";
+SA`Doc`Input={"list1in"->"List of functions with three external scalars","list1inNE"->"List of functions with three external scalars (where the results should not be expanded","list2in"->"List of functions with three external scalars and a gauge index","list4in"->"List of functions with three external scalars and a gauge index as well as an external vector boson","list3in"->"List of functions with three external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -539,9 +591,18 @@ k++;];
 i3++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 Init3ScalarFunctionsFinal[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,listP},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init3ScalarFunctionsFinal\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 3 external scalars and optionally a gauge structure. Only field combinations giving a tree-level coupling are considered.";
+SA`Doc`Input={"list1in"->"List of functions with three external scalars","list1inNE"->"List of functions with three external scalars (where the results should not be expanded","list2in"->"List of functions with three external scalars and a gauge index","list4in"->"List of functions with three external scalars and a gauge index as well as an external vector boson","list3in"->"List of functions with three external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -568,9 +629,18 @@ il++;];
 k2++;];
 k++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ]; 
 
 Init3ScalarFunctionsPermutated[list1in_,list1inNE_,list2in_,list3in_,list4in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list2b,list3b,list4b,list1NE,i,per},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init3ScalarFunctionsPermutated\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 3 external scalars and optionally a gauge structure. Only field combinations giving a tree-level coupling are considered.";
+SA`Doc`Input={"list1in"->"List of functions with three external scalars","list1inNE"->"List of functions with three external scalars (where the results should not be expanded","list2in"->"List of functions with three external scalars and a gauge index","list4in"->"List of functions with three external scalars and a gauge index as well as an external vector boson","list3in"->"List of functions with three external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1NE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -595,9 +665,18 @@ k2++;];
 k++;];
 
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 Init1ScalarFunctions[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init1ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 1 external scalar and optionally a gauge structure.";
+SA`Doc`Input={"list1in"->"List of functions with one external scalar","list1inNE"->"List of functions with one external scalar (where the results should not be expanded","list2in"->"List of functions with one external scalar and a gauge index","list4in"->"List of functions with three one scalar and a gauge index as well as an external vector boson","list3in"->"List of functions with one external scalar and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -624,11 +703,20 @@ il++;];
 k2++;];
 k++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 SA`sub2Scalar={};
 
 Init2ScalarFunctions[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external scalars and optionally a gauge structure. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 external scalars","list1inNE"->"List of functions with 2 external scalars (where the results should not be expanded","list2in"->"List of functions with 2 external scalars and a gauge index","list3in"->"List of functions with 2 external scalars and a gauge index as well as an external vector boson","list2Gin"->"List of functions with 2 external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -660,9 +748,18 @@ k2++;];
 k++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 Init2ScalarFunctionsSymm[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2ScalarFunctionsSymm\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external scalars and optionally a gauge structure. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 external scalars","list1inNE"->"List of functions with 2 external scalars (where the results should not be expanded","list2in"->"List of functions with 2 external scalars and a gauge index","list3in"->"List of functions with 2 external scalars and a gauge index as well as an external vector boson","list2Gin"->"List of functions with 2 external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -694,9 +791,18 @@ k2++;];
 k++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 Init2ScalarFunctionsFinal[list1in_,list1inNE_,list2in_,list2Gin_,list3in_]:=Block[{i1,i2,i3,i4,il,k,k2,list1b,list1bNE,list2b,list3b,list2G,listP},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2ScalarFunctionsFinal\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external scalars and optionally a gauge structure. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 external scalars","list1inNE"->"List of functions with 2 external scalars (where the results should not be expanded","list2in"->"List of functions with 2 external scalars and a gauge index","list3in"->"List of functions with 2 external scalars and a gauge index as well as an external vector boson","list2Gin"->"List of functions with 2 external scalars and two gauge indices"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list1bNE=Table[{list1inNE[[i]],ToExpression[ToString[list1inNE[[i]]]<>"func"]},{i,1,Length[list1inNE]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
@@ -709,9 +815,19 @@ For[il=1,il<=Length[list1b],
 list1b[[il,1]][getFullNS[listP[[i1,1]]]/. subGCRule[1],getFullNS[listP[[i1,2]]]/. subGCRule[2]]=(ExpandTermNS[list1b[[il,2]][getFullNS[listP[[i1,1]]]/. subGC[1],getFullNS[listP[[i1,2]]]/. subGC[2]]]/. {Yijk[a__]->0,Aijk[a__]->0, Muij[a__]->0, Bij[a__]->0, LSi->0 /. Li->0} );
 il++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 Init2FermionFunctions[list1in_,list2in_,list3in_]:=Block[{i1,i2,i3,i4,il,k,list1b,list2b,list3b},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2FermionFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external fermions and optionally a gauge structure. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 fermions","list2in"->"List of functions with 2 external fermions and a gauge index","list3in"->"List of functions with 2 external fermions and a gauge index as well as an external vector boson"};
+
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 list2b=Table[{list2in[[i]],ToExpression[ToString[list2in[[i]]]<>"func"]},{i,1,Length[list2in]}];
 list3b=Table[{list3in[[i]],ToExpression[ToString[list3in[[i]]]<>"func"]},{i,1,Length[list3in]}];
@@ -730,9 +846,18 @@ il++;];
 k++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 Init2Fermion1ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,il,k,list1b,list2b,list3b},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2Fermion1ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external fermions and one scalar. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 fermions and one scalar"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 For[i1=1,i1<=Length[PARTALL[F]],
 For[i2=1,i2<=Length[PARTALL[F]],
@@ -743,8 +868,17 @@ il++;];
 i3++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 Init2Fermion2ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,il,k,list1b,list2b,list3b},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2Fermion2ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external fermions and two scalars. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 fermions and two scalars"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 For[i1=1,i1<=Length[PARTALL[F]],
 For[i2=1,i2<=Length[PARTALL[F]],
@@ -757,8 +891,17 @@ i4++;];
 i3++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 Init2Fermion3ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b,per},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2Fermion3ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external fermions and 3 scalars. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 fermions and 3 scalars"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 (*  per=Intersection[Flatten[Permutations[#,{3}]&/@Intersection[Sort/@Table[getBlank[lA4[[i,1]]],{i,1,Length[lA4]}]],1]]; *)
 per=Intersection[Permutations[(getBlank/@Flatten[{PART[S],PART[S],PART[S]}]),{3}]];
@@ -772,43 +915,17 @@ i2++;];
 i1++;];
  i3++;]; 
 
-
-(*
-per2=Intersection[Permutations[(getBlank/@Flatten[{PART[S],PART[S],PART[S]}]),{3}]];
-comp=Complement[per2,per];
-For[i3=1,i3\[LessEqual]Length[comp],
-For[il=1,il\[LessEqual]Length[list1b],
- list1b[[il,1]][_,_,getFullNS[comp[[i3,1]]]/. subGCRule[3],getFullNS[comp[[i3,2]]]/. subGCRule[4],getFullNS[comp[[i3,3]]]/. subGCRule[5]]=0; 
-il++;];
- i3++;]; 
-*)
-
+SA`Doc`EndEntry[];
 ];
 
-(*
-Init2Fermion3ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b,per},
-list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
-(* per=Intersection[Flatten[Permutations[#,{3}]&/@Intersection[Sort/@Table[getBlank[lA4[[i,1]]],{i,1,Length[lA4oneNewFlat]}]],1]];
-For[i3=1,i3\[LessEqual]Length[per], *)
-For[i1=1,i1\[LessEqual]Length[PARTALL[F]],
-For[i2=1,i2\[LessEqual]Length[PARTALL[F]],
- For[i3=1,i3\[LessEqual]Length[PART[S]],
-For[i4=1,i4\[LessEqual]Length[PART[S]],
-For[i5=1,i5\[LessEqual]Length[PART[S]], 
-For[il=1,il\[LessEqual]Length[list1b],
-(* list1b[[il,1]][PARTALL[F][[i1]]/. subGCRule[1],PARTALL[F][[i2]]/. subGCRule[2],per[[i3,1]]/. subGCRule[3],per[[i3,2]]/. subGCRule[4],per[[i3,3]]/. subGCRule[5]]=CalcDelta[ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/. subGC[1],PARTALL[F][[i2]]/. subGC[2],per[[i3,1]]/.subGC[3],per[[i3,2]]/.subGC[4],per[[i3,3]]/. subGC[5]]]/. {Yijk[a__]\[Rule]0,Aijk[a__]\[Rule]0,m2ij[a__]\[Rule]0, Muij[a__]\[Rule]0, Bij[a__]\[Rule]0, LSi\[Rule]0 /. Li\[Rule]0}(*//. sum[a_,b_,c_] d_ \[RuleDelayed]Sum[d,{a,b,c}]*) ]; *)
-list1b[[il,1]][PARTALL[F][[i1]]/.subGCRule[1],PARTALL[F][[i2]]/.subGCRule[2],PART[S][[i3]]/.subGCRule[3],PART[S][[i4]]/.subGCRule[4],PART[S][[i5]]/.subGCRule[5]]=ExpandTermNS[list1b[[il,2]][PARTALL[F][[i1]]/.subGC[1],PARTALL[F][[i2]]/.subGC[2],PART[S][[i3]]/.subGC[3],PART[S][[i4]]/.subGC[4],PART[S][[i5]]/.subGC[5]]]/.{Yijk[a__]\[Rule]0,Aijk[a__]\[Rule]0,m2ij[a__]\[Rule]0,Muij[a__]\[Rule]0,Bij[a__]\[Rule]0,LSi\[Rule]0/.Li\[Rule]0}(*//.sum[a_,b_,c_] d_\[RuleDelayed]Sum[d,{a,b,c}]*);
-
-il++;];
- i5++;];
-i4++;];
-i3++;]; 
-i2++;];
-i1++;];
-(* i3++;]; *)
-];
-*)
 Init2Fermion4ScalarFunctions[list1in_]:=Block[{i1,i2,i3,i4,i5,i6,il,k,list1b,list2b,list3b},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"Init2Fermion4ScalarFunctions\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine calculates the invariants with 2 external fermions and 4 scalars. ";
+SA`Doc`Input={"list1in"->"List of functions with 2 fermions and 4 scalars"};
+SA`Doc`GenerateEntry[];
+
 list1b=Table[{list1in[[i]],ToExpression[ToString[list1in[[i]]]<>"func"]},{i,1,Length[list1in]}];
 
 For[i1=1,i1<=Length[PARTALL[F]],
@@ -826,10 +943,18 @@ i4++;];
 i3++;];
 i2++;];
 i1++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
 InitializeInvariants[TwoLoop_]:=Block[{i,j,k,k2, i1,i2,i3,i4,temp},
+SA`Doc`File = "Package/RGEs/nonSUSYrges_aux.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"InitializeInvariants\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Wrapper function to pre-calculate all the invariants. First, everything is put to zero what can't exist. Afterwards, the functions to calculate the invariants are called with the list of suitable functions. If possible, the results are symmetrized with respect to the external fields.";
+SA`Doc`Input={"TwoLoop"->"Include two-loop invariants?"};
+SA`Doc`GenerateEntry[];
 
 (* What has to be zero for sure ... *)
 For[i=1,i<=Length[PARTALL[F]],
@@ -1114,4 +1239,6 @@ Print["                      (Time needed so far: ",TimeUsed[]-TimeStartedRGEs,"
 ];
 Print["All necessary invariants are ready (Time needed: ",TimeUsed[]-TimeStartedRGEs,"s)"];
 Print[""];
+
+SA`Doc`EndEntry[];
 ];

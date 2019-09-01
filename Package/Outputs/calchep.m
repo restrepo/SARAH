@@ -1081,7 +1081,7 @@ Protect[Cos,Sin,Tan];
 
 
 CalcHepVertex[vertex_]:=Block[{i,temp},
-temp=vertex /. Exp[a_]->(Cos[a] + I Sin[a]);
+temp=vertex /. Exp[I a_]->(Cos[a] + I Sin[a]);
 While[(FreeQ[temp,sum]==False),
 temp=ReleaseHold[ReleaseHold[ReleaseHold[temp /. sum[a_,b_,c_,d_]->Hold[Sum[d,{a,b,c}]]]/. sum[a_,b_,c_,d_]->Hold[Sum[d,{a,b,c}]]]/. sum[a_,b_,c_,d_]->Hold[Sum[d,{a,b,c}]] ];
 ];
@@ -1342,7 +1342,7 @@ Return[AddExp[texname,"","{"<>ToString[gen]<>ToString[fla]<>"}"]];
 
 CalcHepSubs:=Block[{i},
 CHsub={};
-CHsub = Join[CHsub,{RXi[x_]->1, fSU3[a__]->1,epsTensor[ct1,ct2,ct3]->1,Delta[a__]->1,ThetaStep[a__]->1,Lam[a__]->2,CG[SU[3],{___,{1,1},___}][a__]->2}];
+CHsub = Join[CHsub,{RXi[x_]->1, fSU3[a__]->I,epsTensor[ct1,ct2,ct3]->1,Delta[a__]->1,ThetaStep[a__]->1,Lam[a__]->2,CG[SU[3],{___,{1,1},___}][a__]->2}];
 ];
 
 AddGoldstone[CompHep_]:=Block[{i,j,k},

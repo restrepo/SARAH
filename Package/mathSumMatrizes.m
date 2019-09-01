@@ -103,13 +103,19 @@ Return[res];
 ThetaStep[a_Integer,b_Integer]:=If[a<=b,Return[1];,Return[0];];
 
 getDimParameters[x_]:=Block[{pos},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "getDimParameters";
+SA`Doc`Info = "Returns the dimension of a parameter.";
+SA`Doc`Input={"par"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
 If[Head[x]===Adj ||  Head[x]===T || Head[x]===conj || Head[x]===Conj,
 pos=Position[parameters,x[[1]]];,
 pos=Position[parameters,x]
 ];
 If[pos=!={},
-Return[Extract[parameters,pos[[1,1]]][[3]]];,
-Return[{0}];
+SA`Doc`Return[Extract[parameters,pos[[1,1]]][[3]]];,
+SA`Doc`Return[{0}];
 ];
 ];
 
@@ -202,6 +208,12 @@ erg=CalcDelta/@erg;
 Return[Plus@@erg];
 ];
 
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "CalcDelta";
+SA`Doc`Info = "Simplifies expression by evaluating the Kronecker Deltas which are present. ";
+SA`Doc`Input={"expr"->"The considered expressions"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[expr,Delta]==False,
 (* expand=expand//.Delta[a_,b_] Delta[c_,b_] sum[b_,__]\[Rule]Delta[a,c]; *)
 expand=expand//.(Delta[a_,b_] Delta[c_,b_] sum[b_,__]/; FreeQ[expand/. Delta[a,b] Delta[c,b] sum[b,__]->Delta[a,c],b])->Delta[a,c]; 
@@ -221,8 +233,8 @@ i++;];
 ]; 
 
 If[UseCheckMatrixProduct==True,
-Return[CheckMatrixProduct[expand]];,
-Return[expand];
+SA`Doc`Return[CheckMatrixProduct[expand]];,
+SA`Doc`Return[expand];
 ];
 
 ];
@@ -233,10 +245,16 @@ IntF[x_]:=IntegerQ[x[[1]]];
 
 
 CheckMatrixProduct[term_]:=Block[{i,expand,op1,op2,summe, iterator},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "CheckMatrixProduct";
+SA`Doc`Info = "Checks if a given term involves the product of two matrices and if the product has a well defined value. In that case the term is simplified using this information.";
+SA`Doc`Input={"term"->"The considered expressions"};
+SA`Doc`GenerateEntry[];
+
 expand=term;
 op1={};op2={};summe={};iterator={};
 If[FreeQ[expand,sum[b_,1,d_]*A_[x_,b_] conj[B_[z_,b_]]]==True,
-Return[term];,
+SA`Doc`Return[term];,
 
 needed=term;
 While[FreeQ[needed,sum[b_,1,d_]*A_[x_,b_] conj[B_[z_,b_]]]==False,
@@ -261,12 +279,18 @@ expand=expand /. op1[[i]][x_,b_] conj[op2[[i]][z_,b_]] -> prod[[1,4]][z,x]/. sum
 ];
 ];
 i++;];
-Return[expand];];
+SA`Doc`Return[expand];];
 ]; 
 
 CheckMatrixProduct[x_Plus]=CheckMatrixProduct/@x;
 
 CheckMatrixProduct2[x_]:=Block[{temp,res,i},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "CheckMatrixProduct2";
+SA`Doc`Info = "Wrapper function for 'CheckMatrixProduct' which first prepares the term (rewriting the sum's) in a way that it can be used in 'CheckMatrixProduct'.";
+SA`Doc`Input={"expr"->"The considered expressions"};
+SA`Doc`GenerateEntry[];
+
 temp=x;
 While[FreeQ[temp,sum[a_,b_,c_,d_]]==False,
 temp = temp /. sum[a_,b_,c_,d_]->d  sum[a,b,c];
@@ -280,19 +304,25 @@ i++;];,
 res= CheckMatrixProduct[temp];
 ];
 res=makeSumAll[res];
-Return[res];
+SA`Doc`Return[res];
 ];
 
 CheckMatrixProduct2[x_List]:=CheckMatrixProduct2 /@x;
 
 
 getDescription[x_]:=Block[{pos},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "getDescription";
+SA`Doc`Info = "Returns the description of a parameter as given in parameters.m";
+SA`Doc`Input={"x"->"The considered parameters"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[Transpose[ParameterDefinitions][[1]],x];
 If[pos==={},
-Return[ToString[x]];,
+SA`Doc`Return[ToString[x]];,
 If[FreeQ[Extract[ParameterDefinitions,pos[[1,1]]][[2]],Description],
-Return[ToString[Extract[ParameterDefinitions,pos[[1,1]]][[1]]]];,
-Return[(Description /. Extract[ParameterDefinitions,pos[[1,1]]][[2]])];
+SA`Doc`Return[ToString[Extract[ParameterDefinitions,pos[[1,1]]][[1]]]];,
+SA`Doc`Return[(Description /. Extract[ParameterDefinitions,pos[[1,1]]][[2]])];
 ];
 ];
 ];
@@ -301,6 +331,12 @@ MassMatrix[y_]:=ShowMassMatrix[y,True];
 MassMatrixUnexpanded[y_]:=ShowMassMatrix[y,False];
 
 ShowMassMatrix[y_,Full_]:=Block[{pos,field,i,states},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "ShowMassMatrix";
+SA`Doc`Info = "Shows the mass matrix for a given field.";
+SA`Doc`Input={"y"->"The considered field","Full"->"Printing the full matrix?"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[diracFermions[ALL],y]==False,
 field =  (y /. diracSub[ALL])[[1]];,
 field = y;
@@ -320,8 +356,8 @@ i++;];
 
 If[Head[pos]===List,
 If[Full==True,
-Return[MassMatricesFull[states][[pos[[1,1]]]]];,
-Return[MassMatrices[states][[pos[[1,1]]]]];
+SA`Doc`Return[MassMatricesFull[states][[pos[[1,1]]]]];,
+SA`Doc`Return[MassMatrices[states][[pos[[1,1]]]]];
 ];,
 Print["Mass matrix for ",y," does not exist!"];
 ];,
@@ -332,22 +368,34 @@ states = NameOfStates[[i]];
 ];
 i++;];
 If[Head[pos]===List,
-Return[MassMatricesGauge[states][[pos[[1,1]]]]];
+SA`Doc`Return[MassMatricesGauge[states][[pos[[1,1]]]]];
 ];
 ];
 ];
 
 getMixingMatrixHead[part_]:=Block[{},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "getMixingMatrixHead";
+SA`Doc`Info = "Returns the mixing matrix of a particle. This is a wrapper for 'getMixingMatrix' which offers the possibility that the particle comes with a conj.";
+SA`Doc`Input={"part"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 If[Head[part]===conj,
-Return[conj[getMixingMatrix[part]]];,
-Return[getMixingMatrix[part]];
+SA`Doc`Return[conj[getMixingMatrix[part]]];,
+SA`Doc`Return[getMixingMatrix[part]];
 ];
 ];
 
 getMixingMatrix[part_]:=Block[{i,j,x,res=NoMatrix,pos},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "getMixingMatrix";
+SA`Doc`Info = "Returns the mixing matrix of a particle. ";
+SA`Doc`Input={"part"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 x=RE[part];
 If[Head[x /. diracSub[ALL]]==List,
-Return[getMixingMatrix/@(DeleteCases[RE/@(x /. diracSub[ALL]),0])];
+SA`Doc`Return[getMixingMatrix/@(DeleteCases[RE/@(x /. diracSub[ALL]),0])];
 ];
 For[i=1,i<=Length[NameOfStates],
 If[Head[DEFINITION[NameOfStates[[i]]][MatterSector]]===List,
@@ -358,7 +406,7 @@ res=Extract[DEFINITION[NameOfStates[[i]]][MatterSector],pos];
 ];
 ];
 i++;];
-Return[res];
+SA`Doc`Return[res];
 ];
 
 
@@ -366,6 +414,12 @@ SelfEnergySum[y_]:=ShowSelfEnergy[y,True];
 SelfEnergyList[y_]:=ShowSelfEnergy[y,False];
 
 ShowSelfEnergy[y_,sum_]:=Block[{pos,field,i,states},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "ShowSelfEnergy";
+SA`Doc`Info = "Shows the self-energy for a given particle";
+SA`Doc`Input={"y"->"The considered particle","sum"->"Display the self-energy as sum or as list?"};
+SA`Doc`GenerateEntry[];
+
 field = y;
 For[i=1,i<=Length[NameOfStates],
 If[FreeQ[ParticlesSelfEnergy1LoopSum[NameOfStates[[i]]],field]==False,
@@ -376,14 +430,20 @@ i++;];
 
 If[Head[pos]===List,
 If[sum==True,
-Return[SelfEnergy1LoopSum[states][[pos[[1,1]]]]];,
-Return[SelfEnergy1LoopList[states][[pos[[1,1]]]]];
+SA`Doc`Return[SelfEnergy1LoopSum[states][[pos[[1,1]]]]];,
+SA`Doc`Return[SelfEnergy1LoopList[states][[pos[[1,1]]]]];
 ];
 Print["Self energy for ",y," does not exist!"];
 ];
 ];
 
 TadpoleEquation[y_]:=Block[{pos,field,i,states},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "TadpoleEquation";
+SA`Doc`Info = "Returns the tadpole equation associated with a given field.";
+SA`Doc`Input={"y"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[diracFermions[ALL],y]==False,
 field =  (y /. diracSub[ALL])[[1]];,
 field = y;
@@ -398,7 +458,7 @@ states = NameOfStates[[i]];
 i++;];
 
 If[Head[pos]===List,
-Return[TadpoleEquations[states][[pos[[1,1]]]]==0];,
+SA`Doc`Return[TadpoleEquations[states][[pos[[1,1]]]]==0];,
 Print["Tadpole equation for ",y," does not exist!"];
 ];
 ];
@@ -408,6 +468,12 @@ Tadpole1LoopSum[y_]=ShowTadpole1Loop[y,True];
 Tadpole1LoopList[y_]=ShowTadpole1Loop[y,False];
 
 ShowTadpole1Loop[y_,sum_]:=Block[{pos,field,i,states},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "ShowTadpole1Loop";
+SA`Doc`Info = "Shows the one-loop tadpoles for a given particle";
+SA`Doc`Input={"y"->"The considered particle","sum"->"Display the one-loop part as sum or as list?"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[diracFermions[ALL],y]==False,
 field =  (y /. diracSub[ALL])[[1]];,
 field = y;
@@ -423,19 +489,25 @@ i++;];
 
 If[Head[pos]===List,
 If[sum==True,
-Return[Tadpoles1LoopSum[states][[pos[[1,1]]]]];,
-Return[Tadpoles1LoopList[states][[pos[[1,1]]]]];
+SA`Doc`Return[Tadpoles1LoopSum[states][[pos[[1,1]]]]];,
+SA`Doc`Return[Tadpoles1LoopList[states][[pos[[1,1]]]]];
 ];
 Print["One loop tadpole for ",y," does not exist!"];
 ];
 ];
 
 makeSumAll[expr_]:=Block[{i,erg,expand,summand},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "makeSumAll";
+SA`Doc`Info = "This function writes the sums in a proper way by replacing 'sum[a,b,c] * d' by 'sum[a,b,c,d]'";
+SA`Doc`Input={"expr"->"The considered expression"};
+SA`Doc`GenerateEntry[];
+
 expand=Expand[expr];
 If[Head[expand]===Plus,
 erg=List@@expand;
 erg=makeSumAll/@erg;
-Return[Plus@@erg];,
+SA`Doc`Return[Plus@@erg];,
 expand=expand*StillCalcSum;
 ];
 
@@ -446,7 +518,7 @@ summand = DeleteCases[expand, x_?sumQ,3];
 For[i=1,i<=Length[sums],
 summand=Append[sums[[i]],summand] /. {sums[[i,1]] -> jnf[i]} ;
 i++;];
-Return[summand /. StillCalcSum->1 ];
+SA`Doc`Return[summand /. StillCalcSum->1 ];
 
 ];
 
@@ -519,6 +591,12 @@ FST[SU[3]][a__]:=fSU3[a];
 FST[SU[4]][a__]:=fSU4[a];
 
 MakeMatricesSUN[N_,old_]:=Block[{i,j,n1,n2,generators,sum},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "MakeMatricesSUN";
+SA`Doc`Info = "Generates the generator matrices for a SU(N) group based on the generators for SU(N-1)";
+SA`Doc`Input={"N"->"The N in SU(N)","old"->"The generator matrices for SU(N-1)"};
+SA`Doc`GenerateEntry[];
+
 generators = Table[0,{N^2-1},{N},{N}];
 
 For[i=1,i<=Length[old],
@@ -551,7 +629,7 @@ generators[[N^2-1]]=generators[[N^2-1]]/Sqrt[( sum^2 + N-1)/2];
 
 GeneratorMatrices[SU[N]]=generators;
 
-Return[generators];
+SA`Doc`Return[generators];
 ];
 
 
@@ -566,6 +644,12 @@ g[a_Integer,b_Integer]:=0 /; (a!= b);
 
 (* ::Input::Initialization:: *)
 GetNonZeroEntries[term_]:=Block[{sub={},pos,i,j,fac=1,epsilons, deltas, noSUN},
+SA`Doc`File = "Package/mathSumMatrizes.nb";
+SA`Doc`Name = "GetNonZeroEntries";
+SA`Doc`Info = "Takes as input a term fro the Lagrangian consisting of fields and a contraction. It returns for which charges indices of the involved field, a non-zero value is obtained. It also calculates the numerical value for these cases.";
+SA`Doc`Input={"term"->"The considerd term"};
+SA`Doc`GenerateEntry[];
+
 If[Head[term]===Times, temp= List@@term;, temp = {term}];
 
 noSUN =Select[temp,(Head[Head[#]]==RM)&,5];
@@ -599,7 +683,7 @@ sub = Join[sub,{Flatten[Table[Map[(#->1)&,List@@deltas[[i]]],{i,1,Length[deltas]
 sub = Join[sub,{Flatten[Table[Map[(#->Position[List@@epsilons[[i]],#][[1,1]])&,List@@epsilons[[i]]],{i,1,Length[epsilons]}]]}];
 
 
-Return[{Flatten[sub],fac}];
+SA`Doc`Return[{Flatten[sub],fac}];
 
 ];
 

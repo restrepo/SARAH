@@ -21,6 +21,12 @@
 
 (* ::Input::Initialization:: *)
 CreateLagrangian[terms_,HC_,Overwrite_]:=Block[{i,j,pos,temp,fields,list={},coup,numerical,res,lVVV,lVVVV,rVVV,rVVVV,rPot,rKin},
+SA`Doc`File = "Package/Lagrangian/inputLag.nb";
+SA`Doc`Name = "CreateLagrangian";
+SA`Doc`Info = "Generates the terms in the Lagrangian based on the input in the model file.";
+SA`Doc`Input={"terms"->"The list of terms as defined in the model file","HC"->"Should the hermitian conjugated be added?","Overwrite"->"Should existing terms involving the same states be overwritten?"};
+SA`Doc`GenerateEntry[];
+
 DynamicStatusAddTerms[terms]="initializing";
 If[SupersymmetricModel===False,InitChargeFactors;];
 DynamicStatusAddTerms[terms]="expand terms";
@@ -45,6 +51,9 @@ rVVVV=Plus@@(MakeTerms/@lVVVV);
 rPot=Plus@@(MakeTerms/@lPot);
 rKin=Plus@@(MakeTerms/@lKin);
 DynamicStatusAddTerms[terms]="All Done";
+
+SA`Doc`EndEntry[];
+
 If[Overwrite===True, 
 Return[{rVVV+rVVVV+rPot+rKin,rVVV,rVVVV,rPot,rKin}];,
 Return[{0,rVVV,rVVVV,rPot,rKin}];
@@ -87,6 +96,16 @@ Return[list];
 ]; *)
 
 CreateTermList[terms_]:=Block[{i,j,pos,temp,fields,list={},coup,coeff,potenz,structure,coupling},
+SA`Doc`File = "Package/Lagrangian/inputLag.nb";
+SA`Doc`Name = "CreateTermList";
+SA`Doc`Info = "Generates for a given term in the model file a list containing the following information: \n
+- the numerical coefficient \n
+- the name of the coupling \n
+- the involved fields \n
+- the power of the coupling";
+SA`Doc`Input={"terms"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[FullForm[terms],Dot]==False,
 fields=Select[List@@terms,(Head[#]==Dot)&][[1]];,
 fields=Select[List@@terms,(FreeQ[SFields,#]==False || FreeQ[FFields,#]==False )&];
@@ -103,11 +122,20 @@ coeff=Simplify[terms/coupling/fields];
 fields=List@@fields;
 potenz=Select[Cases[List@@terms,x_Power,3],(FreeQ[#,coupling]==False)&]/.Power[a_,b_]->b/.{a_Integer}->a/.{}->1;
 list={coeff,coupling,fields,potenz};
+
+SA`Doc`EndEntry[];
 Return[list];
 ];
 
 
 MakeTerms[entry_]:=Block[{i,i1,j,temp,part,particles,particleNr=1,fermNr=1,head,newParticle,pos,invFields={},coup,fields,withHead={},head2, headDer,lorIndex,Fincluded=False,IndStructure},
+SA`Doc`File = "Package/Lagrangian/inputLag.nb";
+SA`Doc`Name = "MakeTerms";
+SA`Doc`Info = "Translates a Lagrangian term from short-hand notation into the full SARAH format containing all indices, summation over indices, etc.. The necessary CG's for a gauge invaraint contraction are obtained and checks for gauge invariance are performed. Moreover, lists are generated to store the necessary information about the terms for the RGE calculation.   ";
+SA`Doc`Input={"entry"->"The considered entry"};
+SA`Doc`GenerateEntry[];
+
+
 fields=entry[[3]];
 (* coup = genTest[entry[[2]],fields,False]^entry[[4]]; *)
 AdditionalParametersLagrange = Join[AdditionalParametersLagrange,{entry[[2]]}];
@@ -227,7 +255,7 @@ temp = temp + (conj[temp]  /. {A_?(#=!=SU&)[1]->A[2],A_?(#=!=SU&)[2]->A[1],A_?(#
 ];
 
 
-
+SA`Doc`EndEntry[];
 Return[temp /. conj[gamma[a_]]->gamma[a]];
 
 
@@ -235,6 +263,9 @@ Return[temp /. conj[gamma[a_]]->gamma[a]];
 ];
 
 getHead[x_]:=If[Head[x]===conj, Return[conj];,Return[Evaluate];];
+
+(* I must admit, I'm not sure if the following is still needed! It might be save to remove it!! *)
+(* FS, 17/05/19 *)
 
 DC[fieldIN_,ind1_,ind2_,lor_]:=Block[{},
 If[Head[fieldIN]===conj,

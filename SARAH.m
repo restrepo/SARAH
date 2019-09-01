@@ -50,7 +50,7 @@ $sarahRGEsDir=ToFileName[{$sarahDir,"RGEs"}]
 $sarahInputDir=ToFileName[{$sarahDir,"Input"}]
 $sarahSusynoDir=ToFileName[{$sarahDir,"Susyno"}]
 
-SA`Version = "4.14.1";
+SA`Version = "4.14.2";
 
 
 
@@ -77,6 +77,7 @@ Print["To get a list with all installed models, use ",StyleForm["ShowModels","Se
 
 
 Block[{$Path={$sarahPackageDir}},
+<<doc`;
 <<variables`;
 <<dependences`;
 <<mathFunctions`;
@@ -148,6 +149,12 @@ Block[{$Path={$sarahDir}},
 ]
 
 Start[model_,sub___]:=Block[{i,startedtime},
+SA`Doc`Name = "Start";
+SA`Doc`Info="This is the main command to run and initialise a model";
+SA`Doc`Input={"model" ->"Name of the Model","sub" -> "Subdirectory in which the model is located"};
+SA`Doc`GenerateEntry[];
+
+
 startedtime=TimeUsed[];
 InitArrays;
 ModelLoaded=False;
@@ -320,6 +327,7 @@ Message[ModelFile::Aborted];
 
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 ShowModels=Return[DeleteCases[StringReplace[FileNames["particles.m",$sarahModelDir,4],{$sarahModelDir->"","/particles.m"->""}],"particles.m"] //TableForm];

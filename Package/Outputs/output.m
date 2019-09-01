@@ -21,6 +21,11 @@
 
 (* ::Input::Initialization:: *)
 CreateTeXNameList[Eigenstates_]:=Block[{i,j,k},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CreateTeXNameList";
+SA`Doc`Info = "This function handles the LaTeX format of particles and parameters. For this purpose, it generates based on the definitons in parameters.m and particles.m for all particles and parameters the LaTeX names with all indices included.";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 particleList=WeylFermionAndIndermediate;
 
@@ -91,6 +96,7 @@ j++;];
 ]; 
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 BaredField[field_]:=StringReplace[StringReplace["\\bar{"<>field<>"}",RegularExpression["\\\\bar{(.[^\\]]*)\\^(.[^\\]]*)}"]:>"\\bar{$1}^$2"],RegularExpression["\\\\bar{(.[^\\]]*)\\_(.[^\\]]*)}"]:>"\\bar{$1}_$2"];
@@ -98,23 +104,24 @@ ConjField[field_]:=StringReplace[field<>"^*",{RegularExpression["(.[^\\_\\^]*)\\
 HattedField[field_]:=StringReplace[StringReplace["\\check{"<>field<>"}",RegularExpression["\\\\check{(.[^\\]]*)\\^(.[^\\]]*)}"]:>"\\check{$1}^$2"],RegularExpression["\\\\check{(.[^\\]]*)\\_(.[^\\]]*)}"]:>"\\check{$1}_$2"];
 
 CreateTeXForm:=Block[{i,ii},
- TeXLineBreak=3; 
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CreateTeXForm";
+SA`Doc`Info = "This is the main routine to extend/modify the Mathematica internal TeXForm. A lot of explicit Format definitions are given. In addtion, functions are generated to improve the output of products, sums and lists.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+TeXLineBreak=3; 
 
 Unprotect[TeXForm];
 Unprotect[Power];
 
-(* TeXForm[x_Times]:=Block[{i,temp},
-temp="";
-For[i=1,i\[LessEqual]Length[x],
-If[Head[x[[i]]]===Plus,
-temp =temp<>"("<>ToString[TeXForm[x[[i]]]] <>")";,
-temp =temp<>ToString[TeXForm[x[[i]]]]<>" ";
-];
-i++;];
-Return[temp];
-]; *)
-
 TeXForm[x_Times]:=Block[{i,temp},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "TeXForm[x_Times]";
+SA`Doc`Info = "Defines how products should be treated in the TeX output";
+SA`Doc`Input={"x"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 temp="";
 For[i=1,i<=Length[x],
 If[Head[x[[i]]]===Plus,
@@ -125,12 +132,18 @@ temp =temp<>ToString[TeXForm[x[[i]]]]<>" ";
 ];
 ];
 i++;];
-Return[temp];
+SA`Doc`Return[temp];
 ]; 
 
 maxNumberSymbols =22;
 
 TeXForm[x_Plus]:=Block[{i,j,tempString,final, rest,term},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "TeXForm[x_Plus]";
+SA`Doc`Info = "Defines how sums should be treated in the TeX output (including line breaks!)";
+SA`Doc`Input={"x"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 If[getLaTeXlength[x]<=MAXTEXLENGTH,
 tempString=TeXForm/@x;,
 tempString="";term=0;
@@ -150,10 +163,16 @@ tempString = tempString <>"+"<>ToString[TeXForm[x[[i]]]];
 ];
 i++;];
 ];
-Return[tempString];
+SA`Doc`Return[tempString];
 ];
 
 TeXTimes[x_]:=Block[{i,j,tempString,final, rest,term,currentLength},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "TeXTimes";
+SA`Doc`Info = "Special function to handle lengthy products in the tex output. Lines breaks are added automatically.";
+SA`Doc`Input={"x"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 If[getLaTeXlength[x]<=MAXTEXLENGTH,
 tempString=TeXForm/@x;,
 tempString="";term=0;
@@ -179,7 +198,7 @@ tempString = tempString <>"\\\\ & "<>ToString[TeXForm[x[[i,j]]]];
 ];
 i++;];
 ];
-Return[tempString];
+SA`Doc`Return[tempString];
 ];
 
 
@@ -444,24 +463,30 @@ Format[\[Psi],TeXForm]:=Format["\\psi",OutputForm];
 Format[\[Theta],TeXForm]:=Format["\\theta",OutputForm];
 	
 
-
+SA`Doc`EndEntry[];
 ];
 
 
 ToStringFNr[x_]:=Block[{ex,nr,abs,sign},
-If[Abs[x] <10^-99, Return["0.0000000E+00"];];
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "ToStringFNr";
+SA`Doc`Info = "Takes a number and returns it in Fortran Format";
+SA`Doc`Input={"x"->"The considered number"};
+SA`Doc`GenerateEntry[];
+
+If[Abs[x] <10^-99, SA`Doc`Return["0.0000000E+00"];];
 If[x<0,sign="-";,sign="";];
 abs = Abs[x];
 ex = Floor[Log[10,abs]];
 nr = abs/(10^ex);
 If[ex<0,
 If[Abs[ex]<9,
-Return[sign<>ToString[SetPrecision[nr,8]]<>"E-0"<>ToString[Abs[ex]]];,
-Return[sign<>ToString[SetPrecision[nr,8]]<>"E-"<>ToString[Abs[ex]]];
+SA`Doc`Return[sign<>ToString[SetPrecision[nr,8]]<>"E-0"<>ToString[Abs[ex]]];,
+SA`Doc`Return[sign<>ToString[SetPrecision[nr,8]]<>"E-"<>ToString[Abs[ex]]];
 ];,
 If[Abs[ex]<9,
-Return[sign<>ToString[SetPrecision[nr,8]]<>"E+0"<>ToString[ex]];,
-Return[sign<>ToString[SetPrecision[nr,8]]<>"E+"<>ToString[ex]];
+SA`Doc`Return[sign<>ToString[SetPrecision[nr,8]]<>"E+0"<>ToString[ex]];,
+SA`Doc`Return[sign<>ToString[SetPrecision[nr,8]]<>"E+"<>ToString[ex]];
 ];
 ];
 ];
@@ -471,6 +496,12 @@ subGreek = {\[Mu] -> mue, \[Alpha] -> alpha, \[Beta] -> beta, \[Gamma] -> gamma,
 
 
 CreateCForm[CPV_,CalcMM_,SLHA_]:=Block[{i,temp},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CreateCForm";
+SA`Doc`Info = "Extends the CForm of Mathematica with special definitions for the CalcHep output.";
+SA`Doc`Input={"CPV"->"Complex parameters?","CalcMM"->"Does CalcHep calculate the mass matrices internally?","SLHA"->"Does CalcHep use the SLHA interface?"};
+SA`Doc`GenerateEntry[];
+
 Print["Create C Form"];
 Unprotect[CForm, Power, Cos, Sin, Tan,Csc,Sec,Cot,ArcCos,ArcSin,ArcTan];
 For[i=1,i<=Length[subGreek],
@@ -535,51 +566,38 @@ ReleaseHold[temp];
 i++;];
 
 Protect[CForm,Power,Cos, Sin, Tan,Csc,Sec,Cot,ArcCos,ArcSin,ArcTan];
+
+SA`Doc`EndEntry[];
 ];
 
 CreateUfoForm:=Block[{},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CreateUfoForm";
+SA`Doc`Info = "Extends the CForm of Mathematica with special definitions for the UFO output.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 subindufo={gt1->1,gt2->2,gt3->3,gt4->4,ct1->1,ct2->2,ct3->3,ct4->4};
 Format[LamHlf[a_,b_,c_], CForm]:=Format["T("<>ToString[a/. subindufo]<>","<>ToString[c /.subindufo]<>","<>ToString[b/.subindufo]<>")",OutputForm]/;UfoActive==True;
 
 Format[RXi[a_], CForm]:=Format["RXi"<>ToString[a],OutputForm]/;UfoActive==True;
-
 Format[Delta[a_,b_], CForm]:=Format["Identity("<>ToString[a /. subindufo]<>","<>ToString[b/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
 Format[fSU3[a_,b_,c_], CForm]:=Format["f("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
-(*
-Format[epsTensor[a_,b_,c_], CForm]:=Format["Epsilon("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive\[Equal]True;
-*)
-
-
 Format[epsTensor[a_,b_,c_], CForm]:=Format["Epsilon("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
 Format[epsTensorBar[a_,b_,c_], CForm]:=Format["EpsilonBar("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
-
 Format[K6[a_,b_,c_], CForm]:=Format["K6("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
-
-
 Format[K6Bar[a_,b_,c_], CForm]:=Format["K6Bar("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
 Format[T6[a_,b_,c_], CForm]:=Format["T6("<>ToString[a/.subindufo]<>","<>ToString[b /.subindufo]<>","<>ToString[c/.subindufo]<>")",OutputForm]/;UfoActive==True;
-
-
 
 
 Unprotect[Complex,Rational];
 
 Unprotect[CForm, Power];
-
 Format[x_Power,CForm]:=Format[ToString[CForm[x[[1]]]]<>"^"<>ToString[CForm[x[[2]]]],OutputForm]/;(Head[x[[2]]]===Integer && Head[x[[1]]]=!= Plus &&  Head[x[[1]]]=!=Times  && x[[2]]=!=-1);
 Format[x_Power,CForm]:=Format["1/"<>ToString[CForm[x[[1]]]],OutputForm]/;(Head[x[[2]]]===Integer && Head[x[[1]]]=!= Plus &&  Head[x[[1]]]=!=Times  && x[[2]]===-1);
 Format[x_Power,CForm]:=Format["("<>ToString[CForm[x[[1]]]]<>")^"<>ToString[CForm[x[[2]]]],OutputForm]/;(Head[x[[2]]]===Integer && (Head[x[[1]]]===Plus || Head[x[[1]]]===Times));
-
 Format[x_Power,CForm]:=Format["cmath.exp("<>ToString[CForm[x[[2]]]]<>")",OutputForm]/;(x[[1]]===E );
-
 Format[x_Mass,CForm]:=Format[CalcHepMass[x[[1]],1],OutputForm];
-
 Format[Sqrt[2],CForm]:=Format["sqrt2",OutputForm] /; UseCHForm ==True;
 
 For[i=1,i<=Length[parameters],
@@ -634,9 +652,16 @@ Format[Pi,CForm]:=Format["cmath.pi",OutputForm]/;UfoActive==True;
 (* Format[I,CForm]:=Format["j",OutputForm]/;UfoActive\[Equal]True;
 Format[Complex[0,a_Integer],CForm]:=Format[ToString[a]<>"*j",OutputForm]/;UfoActive\[Equal]True; *)
 Protect[Sin,Cos,Tan,Sqrt,Pi,Csc,Sec,ArcSec,ArcCsc,ArcSin, ArcCos, ArcTan,Power,Complex];
+
+SA`Doc`EndEntry[];
 ];
 
 StringReCH[CPV_]:=Block[{i},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "StringReCH";
+SA`Doc`Info = "This generates lists with string replacement rules with regular expressions. Mainly used for the CalcHep output.";
+SA`Doc`Input={"CPV"->"Complex parameters or not?"};
+SA`Doc`GenerateEntry[];
 
 StringReplaceConj={};
 StringReplaceConj=Join[StringReplaceConj,{RegularExpression["conj\\[(.[^\\]]*)\\]"]:>"$1c"}];
@@ -711,9 +736,17 @@ StringReplacementsCH = Join[StringReplacementsCH,{RegularExpression[StringReplac
 ];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 MakeSPhenoFortran:=Block[{i,j,pos,temp,nr,POS},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "MakeSPhenoFortran";
+SA`Doc`Info = "This extends the FortranForm of Mathematica with additional definitions/conventions used for the SPheno output. In particular, the names (=string representations) of particles and parameters in the Fortran are set here. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 If[Head[subSPhenoForm]=!=List,
 subSPhenoForm={};
 subSPhenoFormUV={};
@@ -770,19 +803,32 @@ For[i=1,i<=Length[SA`ClebschGordon],
 Format[SA`ClebschGordon[[i,1]],FortranForm]=Format["CG"<>ToString[i],OutputForm];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 AdditionalFortranForm:=Block[{i,pos},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "AdditionalFortranForm";
+SA`Doc`Info = "Defines the FortranForm for additional parameters appearing in the model.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 For[i=1,i<=Length[ListOfAdditionalParameters],
 temp=ReplaceAll[Hold[SetDelayed[Format[ListOfAdditionalParameters[[i,1]],FortranForm],Format[ListOfAdditionalParameters[[nr,2]],OutputForm]]], {nr->i}];
 ReleaseHold[temp];
 i++;];
 
+SA`Doc`EndEntry[];
 
 ];
 
 CreateWOForm:=Block[{i,j,k,j1,j2,j3},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CreateWOForm";
+SA`Doc`Info = "This function generates a list of substiutions to tranlsate the names of parameters from the SARAH convention to a format suitable for the WHIZARD output.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 ReplacementsWO = {};
 
 For[i=1,i<=Length[parameters],
@@ -809,6 +855,7 @@ i++;];
 
 ReplacementsWO = Flatten[ReplacementsWO];
 
+SA`Doc`EndEntry[];
 ];
 
 
@@ -819,19 +866,31 @@ ReplacementsWO = Flatten[ReplacementsWO];
 
 
 CHName[part_]:=Block[{pos,temp},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CHName";
+SA`Doc`Info = "Returns the name of a parameter using CalcHep format";
+SA`Doc`Input={"part"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
 temp=getEntryParameter[part,OutputName];
 If[Head[part]===Mass,
-Return[CalcHepMass[part,1]];
+SA`Doc`Return[CalcHepMass[part,1]];
 ];
 If[temp===None,
 temp=ToString[part];
 temp=StringReplace[temp,{"["->"","]"->""}];,
 temp=ToString[temp];
 ];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 CHName[part_,maxL_]:=Block[{pos,temp},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "CHName";
+SA`Doc`Info = "Returns the name of a parameter using CalcHep format.";
+SA`Doc`Input={"part"->"The considered parameter","maxL"->"Maximal string length"};
+SA`Doc`GenerateEntry[];
+
 If[Head[part]===Mass,
 temp=CalcHepMass[part[[1]],1];,
 temp=getEntryParameter[part,OutputName];
@@ -850,12 +909,18 @@ If[temp=="M1",temp="MG1";]; (* name occupied by CalcHep *)
 If[temp=="M2",temp="MG2";];(* name occupied by CalcHep *)
 If[temp=="M3",temp="MG3";];(* name occupied by CalcHep *)
 ];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 
 (* ::Input::Initialization:: *)
 ExportModelInformation:=Block[{i,particles, para},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "ExportModelInformation";
+SA`Doc`Info = "Writes all information about particles and parameters into external files. Note, This is hardly used in recent years and might not be up to date (FS, 21/05/19)";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Writing Information about Particles"];
 
 particles=OpenWrite[ToFileName[$sarahCurrentOutputMainDir,"ParticlesList.m"]];
@@ -956,9 +1021,16 @@ Close[para];
 
 Print["Done. Output is in ",$sarahCurrentOutputMainDir ];
 
+SA`Doc`EndEntry[];
 ];
 
 AddExp[string_,exp_,down_]:=Block[{basis="",super="", sub="",temp,temp2,res,next},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "AddExp";
+SA`Doc`Info = "Takes a (LaTeX) string and adds an exponent or subscript. Main purpose is to take care of already existing exponents and subscripts and generate a good looking LaTeX expression.";
+SA`Doc`Input={"string"->"The input string","exp"->"The exponent which should be added","down"->"the subscript which should be added"};
+SA`Doc`GenerateEntry[];
+
 temp=string;
 next = StringTake[temp,1];
 
@@ -1018,11 +1090,17 @@ If[exp =!="" || super =!= "",
 res = StringReplace[ res <>"^{"<>super <>","<>exp <>"}",{"{,"->"{",",}"->"}"}];
 ];
 
-Return[res];
+SA`Doc`Return[res];
 
 ];
 
 ExtractSubSuper[string_]:=Block[{temp,open,temp3,next},
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "ExtractSubSuper";
+SA`Doc`Info = "Takes a string and extracts exponents and subscripts";
+SA`Doc`Input={"string"->"The considered string"};
+SA`Doc`GenerateEntry[];
+
 temp=string;
 
 If[StringTake[temp,1]==="{",
@@ -1048,7 +1126,7 @@ next="";
 ];
 ];
 
-Return[{temp,temp3}];
+SA`Doc`Return[{temp,temp3}];
 
 ];
 
@@ -1097,15 +1175,21 @@ getLR[x_Mass2]:=2+getLR[x[[1]]];
 getLR[x_abs]:=5+getLR[x[[1]]];
 
 getLR[x_]:=Block[{},
-If[Head[Head[x]]==MatMul, Return[8+getLR[Plus@@x[[1]]]]];
-If[Head[x]==Integer, If[x>= 0,Return[1+Floor[Log[10.,Abs[x]]]], Return[2+Floor[Log[10.,Abs[x]]]]]];
-If[Head[x]==Complex, If[Im[x]>0 && Re[x]>0,Return[2], If[x/I>= 0,Return[1], Return[2]]]];
-If[Head[TeXLength[x]]===Integer,Return[TeXLength[x]]];
-If[Head[TeXLength[Head[x]]]===Integer,Return[TeXLength[Head[x]] + Plus@@getLR[Plus@@x]]];
-If[FreeQ[x,PL]==False || FreeQ[x,PR]==False, Return[getLR[x[[0]]]]];
+SA`Doc`File = "Package/Outputs/output.nb";
+SA`Doc`Name = "getLR";
+SA`Doc`Info = "Takes a Mathematica expression and tries to estimate the length (in arbitrary units) of the LaTeX representation of the expression. This is used to add linebreaks in long expressions.";
+SA`Doc`Input={"x"->"The considered expression"};
+SA`Doc`GenerateEntry[];
+
+If[Head[Head[x]]==MatMul, SA`Doc`Return[8+getLR[Plus@@x[[1]]]]];
+If[Head[x]==Integer, If[x>= 0,SA`Doc`Return[1+Floor[Log[10.,Abs[x]]]], SA`Doc`Return[2+Floor[Log[10.,Abs[x]]]]]];
+If[Head[x]==Complex, If[Im[x]>0 && Re[x]>0,SA`Doc`Return[2], If[x/I>= 0,SA`Doc`Return[1], SA`Doc`Return[2]]]];
+If[Head[TeXLength[x]]===Integer,SA`Doc`Return[TeXLength[x]]];
+If[Head[TeXLength[Head[x]]]===Integer,SA`Doc`Return[TeXLength[Head[x]] + Plus@@getLR[Plus@@x]]];
+If[FreeQ[x,PL]==False || FreeQ[x,PR]==False, SA`Doc`Return[getLR[x[[0]]]]];
 If[AtomQ[x],
-Return[1.];,
-Return[1.5 + getLR[Plus@@x] ];
+SA`Doc`Return[1.];,
+SA`Doc`Return[1.5 + getLR[Plus@@x] ];
 ];
 ];
 

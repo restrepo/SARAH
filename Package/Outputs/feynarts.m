@@ -53,11 +53,13 @@ Eigenstates /. {opt} /. Options[MakeFeynArts],
 ReadLists/.{opt}/.Options[MakeFeynArts]];
 
 MakeFeynArtsFunc[AddCounterT_,CTList_,IncludeWFRs_,CTdepPre_,CTdepPost_,dosums_,eigS_,read_]:=Block[{i,j,term,startedtime},
-(*
-Print["------------------------------"];
-Print[" Creating FeynArts Model File "];
-Print["------------------------------"];
-*)
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"MakeFeynArtsFunc\",\nInitializationCell->True]\)";
+SA`Doc`Info = "The main function to generate the FeynArts output. It creates the necessary directory and calls all necessary functions.";
+SA`Doc`Input={"AddCouterT"->"Adding counter terms to vertices?","CTList"->"List of defined counter terms","IncludeWFRs"->"Include wave-function renormalization?","CTdepPre"->"ASK MARTIN","CTdepPost"->"ASK MARTIN","dosums"->"expand all sums over indices in the vertices","eigS"->"considered eigenstates","read"->"read the vertices from a previous calclation?"};
+SA`Doc`GenerateEntry[];
+
 startedtime=TimeUsed[];
 Print[StyleForm["Generate FeynArts model files","Section"]];
 
@@ -119,12 +121,21 @@ WriteString[DirectoryNamesFile,"FeynArtsDir="<>ToString[$sarahCurrentFeynArtsDir
 
 SetAttributes[C,Orderless];
 (* ]; *)
+
+SA`Doc`EndEntry[];
 ];
 
 
 MakeNameTrig[x_,start_]:=Return[ToExpression[start<>StringReplace[ToString[x[[1]] /. SA`subParameterNames /. subGreek],{"-"->"m","+"->"p"," "->""," "->"",")"->"","("->""}]]];
 
 InitTrig:=Block[{i},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"InitTrig\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Create a list of replacements to replace trigonometric functions (to speed up the calculation in Mathematica)";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 sinL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Sin,99]];
 cosL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Cos,99]];
 tanL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Tan,99]];
@@ -161,9 +172,17 @@ i++;];
 
 subFA = Join[subFA,Table[TrigRepFA[[i,1]]->TrigRepFA[[i,2]],{i,1,Length[TrigRepFA]}]];
 
+SA`Doc`EndEntry[];
 ];
 
 InitFA[ES_]:=Block[{i,temp},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"InitFA\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Intialises the FeynArts ouptut: gauge indices are collected and replacements rules to map SARAH to FeynArts notation are generated.";
+SA`Doc`Input={"ES"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 
 If[InitalizedVertexCalculaton=!=ES,
 InitVertexCalculation[ES,False];
@@ -230,12 +249,19 @@ If[FreeQ[parameters[[i]],{generation,flavor,flavor}]==False,
 subFA = Join[subFA,{parameters[[i,1]][a_][b_,c_]->parameters[[i,1]][a,b,c]}];
 ];
 i++;];
-
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 FAIndizes[x_,add_]:=Block[{ind},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FAIndizes\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Returns the indices of a given field in FeynArts notation";
+SA`Doc`Input={"x"->"The considered field","add"->"Extend the list FAindices?"};
+SA`Doc`GenerateEntry[];
+
 (* ind=DeleteCases[getIndizes[x],lorentz,2] //. adjcolor\[Rule]Gluon; *)
 ind=DeleteCases[TransposeChecked[getIndizesWI[x] //. {color,8}->{Gluon,8}][[1]],lorentz,2] ;
 
@@ -255,22 +281,29 @@ subGenInd =Join[subGenInd ,{ToExpression["Fl"<>ToString[x]]->ToExpression["Fl"<>
 ];
 ];
 ];
-Return[Map[Index,ind /. color->Colour /. subGenInd]];
+SA`Doc`Return[Map[Index,ind /. color->Colour /. subGenInd]];
 ];
 
 FALabel[x_]:=Block[{i,tex,basis,ind,res},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FALabel\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Creates the FeynArts label used in the drawn diagrams for a given particle";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 tex=TeXName[x];
 basis=StringReplace[tex,subStringFA];
 If[basis===tex,
 If[Length[getIndizes[x]]==0,
-Return[ToExpression["\""<>basis<>"\""]];,
+SA`Doc`Return[ToExpression["\""<>basis<>"\""]];,
 ind=FAIndizes[x,False] /. subGenInd;
 If[Length[ind]>2,ind=Take[ind,{1,2}];];
 res ="ComposedChar[\""<>basis<>"\"";
 For[i=1,i<=Length[ind],
 res = res <>","<>ToString[ind[[i]]];
 i++;];
-Return[StringReplace[res<>"]",{"{"->"","}"->"","\\"->"\\\\"}]];
+SA`Doc`Return[StringReplace[res<>"]",{"{"->"","}"->"","\\"->"\\\\"}]];
 ];,
 ind=FAIndizes[x,False];
 If[Length[ind]>2,ind=Take[ind,{1,2}];];
@@ -294,11 +327,18 @@ res=res<>",\""<>index <>"\"";
 If[StringFreeQ[tex,"tilde"]==False,
 res=res<>",\"\\tilde\"";
 ];
-Return[StringReplace[res<>"]",{"{"->"","}"->"","\\"->"\\\\"}]];
+SA`Doc`Return[StringReplace[res<>"]",{"{"->"","}"->"","\\"->"\\\\"}]];
 ];
 ];
 
 FAMass[x_]:=Block[{},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FAMass\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Creates a variable for the mass of a given particle";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 Clear[gen];
 If[Length[DeleteCases[DeleteCases[getIndizes[x],generation,2],lorentz,2]]>0,
 Switch[Length[DeleteCases[DeleteCases[getIndizes[x],generation,2],lorentz,2]],
@@ -315,17 +355,31 @@ If[getGen[x]>1,
 ListofAllMasses =Join[ListofAllMasses,{ToExpression["Mass"<>ToString[x]]}];,
 ListofAllMassesOne =Join[ListofAllMassesOne,{ToExpression["Mass"<>ToString[x]]}];
 ];
-Return[ToExpression["Mass"<>ToString[x]]];
+SA`Doc`Return[ToExpression["Mass"<>ToString[x]]];
 ];
 
 FAArrow[x_]:=Block[{},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FAArrow\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Defined the arrow used in FeynArts to draw a particle";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 If[getType[x]===F,
-If[MemberQ[MajoranaPart,x],Return[None];,Return[Forward];];,
-If[MemberQ[realVar,x],Return[None];,Return[Forward];];
+If[MemberQ[MajoranaPart,x],SA`Doc`Return[None];,SA`Doc`Return[Forward];];,
+If[MemberQ[realVar,x],SA`Doc`Return[None];,SA`Doc`Return[Forward];];
 ];
 ];
 
 FANumber[x_]:=Block[{pos,tempNr, FAnr},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FANumber\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Returns the FeynArts number (=particle number) of a given particle";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 pos = Position[partDefinition,x];
 
 If[pos==={} ,
@@ -343,12 +397,16 @@ AutoFAnr=FAnr+1;
 ];
 
 Set[FeynArtsNr[x],FAnr];
-
-Return[FAnr];
+SA`Doc`Return[FAnr];
 ];
 
 CreateClassesFA[FeynRules_]:=Block[{i,k,j,temp},
-
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CreateClassesFA\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Creates the classes for all particles, i.e the content of 'M$ClassesDescription' in the FeynArts model file. To understand the different steps, it might be the simplest if you look at an example.  ";
+SA`Doc`Input={"FeynRules"->"FeynRules-like output with more information (e.g. PDGs)"};
+SA`Doc`GenerateEntry[];
 
 dummyPDG = 5000;
 Print["Create Class Output"];
@@ -707,14 +765,35 @@ Close[outputfile];
 
  M$ClassesDescription=M$ClassesDescription/. subGenInd;
 
+SA`Doc`EndEntry[];
 ];
 
-MakeGenericCouplingFA[fields_,suffix_]:=Block[{temp,ind},temp=cpl[ToExpression[(StringJoin[ToString/@(fields/.A_[{b___}]->A/.bar[x_]:>ToExpression["c"<>ToString[x]]/.conj[x_]:>ToExpression["c"<>ToString[x]])])<>suffix]];
+MakeGenericCouplingFA[fields_,suffix_]:=Block[{temp,ind},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"MakeGenericCouplingFA\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function returns a variable to uniquely idenfity a vertex (e.g. cplFdFdhhL) which can be used to get model files which don't include the full expressions but only these abbreviatins";
+SA`Doc`Input={"fields"->"External particles","suffix"->"used suffix in the name of the coupling"};
+SA`Doc`GenerateEntry[];
+
+
+temp=cpl[ToExpression[(StringJoin[ToString/@(fields/.A_[{b___}]->A/.bar[x_]:>ToExpression["c"<>ToString[x]]/.conj[x_]:>ToExpression["c"<>ToString[x]])])<>suffix]];
 ind=DeleteCases[DeleteCases[DeleteCases[DeleteCases[fields /. conj[x_]->x /. bar[x_]->x/.A_[{b___}]->b,lt1],lt2],lt3],lt4];
 ind=DeleteCases[DeleteCases[DeleteCases[DeleteCases[ind,ct1],ct2],ct3],ct4];
-If[ind=!={},Return[temp@@ind];,Return[temp];];];
+
+If[ind=!={},
+SA`Doc`Return[temp@@ind];,
+SA`Doc`Return[temp];
+];
+];
 
 FeynArtsVertices[addCT_]:=Block[{i,j},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FeynArtsVertices\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the vertices into the FeynArts model file.";
+SA`Doc`Input={"addCT"->"Adding the counter terms?"};
+SA`Doc`GenerateEntry[];
 
 SA`subCounterTerms={};
 
@@ -813,10 +892,17 @@ While[FreeQ[M$CouplingMatrices,sum]==False,
 M$CouplingMatrices=ReleaseHold[M$CouplingMatrices /.sum[a_,b_,c_,d_]->IndexSum[d,{a,c}]] (* /.sum[a_,b_,c_,d_]\[Rule]Hold[Sum[d,{a,c}]]] *);
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 WriteModelFA[addCT_,eigS_]:= Block[{Minutes,iii,i},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteModelFA\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine generates the file which has all the content to define  model for FeynArts.";
+SA`Doc`Input={"addCT"->"Add counter terms?","eigS"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["Write Model-File"];
 
@@ -1062,6 +1148,7 @@ WriteString[abbrfile, ToString[InputForm[subNum  /.subGreek]] <>"\n \n \n"];
 Close[outputfile];
 Close[abbrfile];
 
+SA`Doc`EndEntry[];
 
 ];
 
@@ -1096,6 +1183,13 @@ Return[temp];
 ]; *)
 
 CreateFACounterTerms:=Block[{i,j,k,dim,para},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CreateFACounterTerms\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Creates the counter terms for the FeynArts output for all parameters, i.e. x->x+dx";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 If[Head[SA`CTList]==List && Length[SA`CTList]>0,
 FA`subListCounter=((#[[1]]/.{a->a_,b->b_}):>(#[[1]]+deltaCT #[[2]]))&/@SA`CTList;
 ,
@@ -1123,9 +1217,18 @@ i++;];
 FA`subListCounter=Select[Join[FA`subListCounter,#->#+deltaCT dd[#]&/@(TrigRepFA[[All,2]])]//.SA`subParameterNames//.subFA//.dd[a__ b_]:>(dd[a]b+dd[b]a),Head[#[[1]]]=!=Times&];
 ];
 FA`subListCounterNames=(#[[1]]/.a:>a__)->#[[2]]&/@(Cases[Variables[Level[(FA`subListCounter//Values),{-\[Infinity],\[Infinity]}]],dd[__]]/.dd[a_]:>{dd[a],ToExpression["d"<>ToString[a]]});(*realVar=Join[realVar,(FA`subListCounterNames//.F_[a_]\[RuleDelayed]F//Values)];*)
+
+SA`Doc`EndEntry[];
 ];
 
 ExpandCTfa[vert_,fields_,fieldindices_,couplingid_]:=Block[{coupCT,wv,iii},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ExpandCTfa\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Expand a counter-term vertices and collects the terms linear in 'delta'. Moreover, it adds the WFR terms.";
+SA`Doc`Input={"vert"->"The considered vertex","fields"->"The involved particles","fieldinidces"->"The indices of the involved particles","couplingid"->"ASK MARTIN"};
+SA`Doc`GenerateEntry[];
+
 If[SA`FAgenericCTs=!=True,
 If[SA`CTSums=!=True,
 coupCT=Expand[(TrigExpand[(TrigExpand[vert//.SA`CTDependencesPre] /.FA`subListCounter)-vert]//.subFA)]/.deltaCT->1/. conj[dd[a_]]->dd[conj[a]]//.SA`CTDependencesPre/. sum->SUM //. SUM[a__, d_ SUM[f__,g_]]->SUM[a,SUM[f,d g]]//. SUM[a_,b_,c_,d_Times]:>SUM[a,b,c,Expand[d]] //.SUM[a_,b_,c_,d_ + e_]:>SUM[a,b,c,d]+SUM[a,b,c,e]//. sum[a_,b_,c_,d_Times]:>sum[a,b,c,Expand[d]] //.sum[a_,b_,c_,d_ + e_]:>sum[a,b,c,d]+sum[a,b,c,e]//.SA`CTDependencesPost;
@@ -1134,25 +1237,33 @@ Expand[coupCT]//. dd[a__] dd[b__]->0 //.dd[a__]^b__->0//. dd[a_] SUM[___,y___ dd
 coupCT=coupCT /.dd[conj[a_]]->conj[dd[a]]/. FA`subListCounterNames;
 ,
 coupCT=TrigExpand[(vert//.SA`CTDependencesPre/.FA`subListCounter)-vert]//.SA`CTDependencesPre//.subFA//.{conj[x_Times|x_Plus]:>(conj/@x),conj[deltaCT]:>deltaCT}//.sum[a_,b_,c_,d_]:>Sum[d,{a,c}];
-coupCT=(Series[coupCT,{deltaCT,0,1}]//Normal)/.deltaCT->1//.SA`CTDependencesPost;
+coupCT=(Series[coupCT,{deltaCT,0,1}]//Normal)/.deltaCT->1;
 ];
 ,
 coupCT=SACounterTerm[C[fieldindices//.subFA//.subFAFields][couplingid]];
 ];
 wv=0;
-If[SA`IncludeWFRs===True,
-For[iii=1,iii<=Length[fields],
+If[SA`IncludeWFRs===True||Head[SA`IncludeWFRs]===List,
+For[iii=1,iii<=Length[fields],iii++,
+If[Head[SA`IncludeWFRs]===List&&!MemberQ[SA`IncludeWFRs,fields[[iii]]],Continue[]];
 If[getGen[fields[[iii]]]>1,
 wv=wv+IndexSum[1/2(vert /. ToExpression["gt"<>ToString[iii]]->FA`newInd[iii]) FA`Zf[fields[[iii]],ToExpression["gt"<>ToString[iii]],FA`newInd[iii]],{FA`newInd[iii],getGen[fields[[iii]]]}];,
 wv=wv+1/2(vert ) FA`Zf[fields[[iii]],1,1];
 ];
-iii++;];
 ];
-Return[coupCT+wv];
+];
+SA`Doc`Return[coupCT+wv//.SA`CTDependencesPost];
 ];
 FA`newInd[n_]:=ToExpression["gsum"<>ToString[n]];
 
 FA`Zf[f_,i1_,i2_]:=Block[{field,conjf=False,temp},
+SA`Doc`File = "Package/Outputs/feynarts.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"FA`Zf\",\nInitializationCell->True]\)";
+SA`Doc`Info = "ASK MARTIN";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 If[Head[f]===conj,
 field=f[[1]];
 conjf=True;,
@@ -1163,8 +1274,8 @@ If[getGen[f]>1,
 temp=temp[i2,i1];
 ];
 If[conjf==True,
-Return[conj[temp]];,
-Return[temp];
+SA`Doc`Return[conj[temp]];,
+SA`Doc`Return[temp];
 ];
 ];
 

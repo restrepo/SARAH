@@ -21,6 +21,16 @@
 
 (* ::Input::Initialization:: *)
 MakeCouplingLists:=Block[{i,j,k,temp,pos},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "MakeCouplingLists";
+SA`Doc`Info = "Generates lists to store the information which particles couple to each other. \n
+- VerticesInv: contains only the involved particles \n
+- VerticesOrg: contains the original (full) information \n
+- VerticesVal: contains the values (expressions) of the couplings
+Note, the order in all three lists must be identical, because first VerticesInv is used to find if a vertex exist (as well as the position in the list) and then the value is taken from VerticesVal";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[ITypes],
 ISec=Intersection[ITypes[[i]]];
 For[j=1,j<=Length[ISec],
@@ -81,9 +91,17 @@ VerticesOrg[All]=Flatten[{VerticesOrg[FFS],VerticesOrg[FFV],VerticesOrg[SSS],Ver
 VerticesOrg[SVV],VerticesOrg[SSV],VerticesOrg[GGV],VerticesOrg[GGS],VerticesOrg[VVV],VerticesOrg[VVVV]},1];
 
 InitDiagramGeneration;
+
+SA`Doc`EndEntry[];
 ];
 
 ExtractVertexValues[list_,Type_]:= Block[{i,j,temp={}},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ExtractVertexValues";
+SA`Doc`Info = "Takes a list of vertices and only returns the 'value' (i.e. the part independent of the Lorentz structure)";
+SA`Doc`Input={"list"->"A list of vertices","Type"->"The generic type of the coupling"};
+SA`Doc`GenerateEntry[];
+
 Switch[Type,
 FFS | FFV,
 For[i=1,i<=Length[list],
@@ -92,9 +110,9 @@ temp=Join[temp,{{list[[i,3]]}}];,
 temp=Join[temp,{{list[[i,2]]}}];
 ];
 i++;];
-Return[temp];,
+SA`Doc`Return[temp];,
 _,
-Return[Transpose[list][[2]]];
+SA`Doc`Return[Transpose[list][[2]]];
 ];
 ];
 
@@ -102,6 +120,12 @@ Return[Transpose[list][[2]]];
 (* ::Input::Initialization:: *)
 
 AddUnrotatedVertex[coup_,matrix_]:=Block[{pos,vertex,parts},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "AddUnrotatedVertex";
+SA`Doc`Info = "This routine rewrites a vertex calculated for the mass eigenstates in order to be used in the one-loop correction of a given matrix: the external fields are renamed to 'unrotated particles' (ie. starting with 'U') and corresponding rotation matrix in the expression is replaced by the identity matrix.";
+SA`Doc`Input={"coup"->"A full vertex for mass eigenstates","matrix"->"The rotation matrix associated with the external fields"};
+SA`Doc`GenerateEntry[];
+
 If[coup[[1]]=!=SSSS && coup[[1]] =!=SSVV  && coup[[1]] =!=VVVV,
 pos=Position[VerticesInv[coup[[1]]],C[coup[[2]],coup[[3]],coup[[4]]]][[1,1]];
 vertex=Extract[VerticesValSUM[coup[[1]]],pos];
@@ -121,8 +145,8 @@ SubParticle = {};
 ];
 
 If[Length[Dimensions[vertex]]==2,
-Return[{parts /. SubParticle,vertex[[1]],vertex[[2]]}];,
-Return[{parts /. SubParticle,vertex}];
+SA`Doc`Return[{parts /. SubParticle,vertex[[1]],vertex[[2]]}];,
+SA`Doc`Return[{parts /. SubParticle,vertex}];
 ];,
 
 pos=Position[VerticesInv[coup[[1]]],C[coup[[2]],conj[coup[[2]]],coup[[3]],coup[[4]]]][[1,1]];
@@ -150,26 +174,32 @@ If[getGen[coup[[2]]]>1,
 SubParticle = {getBlank[coup[[2]]][{GT1,a___}]->ToExpression["U"<>ToString[getBlank[coup[[2]]]]][{GT1,a}],getBlank[coup[[2]]][{GT2,a___}]->ToExpression["U"<>ToString[getBlank[coup[[2]]]]][{GT2,a}]};,
 SubParticle = {};
 ];
-Return[{parts /. SubParticle,vertex}];
+SA`Doc`Return[{parts /. SubParticle,vertex}];
 ];
 ];
 
 
 AddVertex[coup_]:=Block[{pos,vertex,parts},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "AddVertex";
+SA`Doc`Info = "Take a coupling (defined by generic type and involved particles) as input and returns the involved particles as well as the parts of the coupling which are independent of the Lorentz structure.";
+SA`Doc`Input={"coup"->"the considered coupling"};
+SA`Doc`GenerateEntry[];
+
 If[coup[[1]]=!=SSSS && coup[[1]] =!=SSVV && coup[[1]] =!=VVVV,
 pos=Position[VerticesInv[coup[[1]]],C[coup[[2]],coup[[3]],coup[[4]]]][[1,1]];
 vertex=Extract[VerticesValSUM[coup[[1]]],pos]  /. sumExp->sum;
 parts=Extract[VerticesOrg[coup[[1]]],pos];
 If[Length[Dimensions[vertex]]==2,
-Return[{parts,vertex[[1]],vertex[[2]]}];,
-Return[{parts,vertex}];
+SA`Doc`Return[{parts,vertex[[1]],vertex[[2]]}];,
+SA`Doc`Return[{parts,vertex}];
 ];,
 pos=Position[VerticesInv[coup[[1]]],C[coup[[2]],conj[coup[[2]]],coup[[3]],coup[[4]]]][[1,1]];
 vertex=Extract[VerticesValSUM[coup[[1]]],pos] /. sumExp->sum;
 parts=Extract[VerticesOrg[coup[[1]]],pos];
 If[Length[vertex]==2,
-Return[{parts,vertex}];,
-Return[{parts,vertex[[1]],vertex[[2]],vertex[[3]]}];
+SA`Doc`Return[{parts,vertex}];,
+SA`Doc`Return[{parts,vertex[[1]],vertex[[2]],vertex[[3]]}];
 ];
 ];
 ];
@@ -180,52 +210,87 @@ VType[a__]:=ToExpression[StringReplace[ToString[{a}],{"{"->"","}"->"",","->""," 
 getVertexType[x_]:=VType@@getType/@x;
 
 ThreeParticleVertex[x_]:=Block[{i,temp,temp2},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ThreeParticleVertex";
+SA`Doc`Info = "Takes a particle as input and returns all 3-point couplings where this particle is involved.";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 temp=InsFields[{{C[AntiField[x],AntiField[FieldToInsert[1]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],External[1]->AntiField[x]}}];
-Return[Select[Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1]/.temp[[i,2]],AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]]]},{i,1,Length[temp]}],(FreeQ[getType/@#1,G])&]];
+SA`Doc`Return[Select[Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1]/.temp[[i,2]],AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]]]},{i,1,Length[temp]}],(FreeQ[getType/@#1,G])&]];
 ]; 
 
 
 ThreeParticleVertex2[x_]:=Block[{i,temp,temp2,symm,temp3},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ThreeParticleVertex2";
+SA`Doc`Info = "Takes a particle as input and returns all 1-loop self-energy diagrams for this particle where two three-point functions are involved. It filter for duplicates of complex conjugated diagrams.";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 temp=InsFields[{{C[AntiField[x],AntiField[FieldToInsert[1]],FieldToInsert[2]],C[x,AntiField[FieldToInsert[2]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],External[1]->AntiField[x],Index[1]->gO1,Index[2]->gI1,Index[3]->gI2}}];
 
-(* temp2=Select[Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1][{Index[1]}],AntiField[Internal[1][{Index[2]}]],Internal[2][{Index[3]}]]/.temp[[i,2]],VType[getType[Internal[1]/.temp[[i,2]]],getType[Internal[2]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]]],CalculateColorFactor[getBlank[External[1]/.temp[[i,2]]],Internal[1]/.temp[[i,2]],Internal[2]/.temp[[i,2]]],CalculateSymmetryFactor[Internal[1]/.temp[[i,2]],Internal[2]/.temp[[i,2]]]},{i,1,Length[temp]}],(FreeQ[#1,GGS]&&FreeQ[#1,GGV])&]; *)
 temp2=Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1][{Index[1]}],AntiField[Internal[1][{Index[2]}]],Internal[2][{Index[3]}]]/.temp[[i,2]],VType[getType[Internal[1]/.temp[[i,2]]],getType[Internal[2]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]]],CalculateColorFactor[External[1]/.temp[[i,2]],AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]]],CalculateSymmetryFactor[Internal[1]/.temp[[i,2]],Internal[2]/.temp[[i,2]]]},{i,1,Length[temp]}];
 temp3={};
 For[i=1,i<=Length[temp2],
 If[FreeQ[temp3 /. a_[{b__Symbol}]->a /. Cp->C,(AntiField/@temp2[[i,3]])/. a_[{b__Symbol}]->a /. Cp->C],
 temp3=Join[temp3,{temp2[[i]]}];];
 i++;];
-Return[temp3 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
+SA`Doc`Return[temp3 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
 ];
 
 ThreeParticleVertex3[x_]:=Block[{i,temp,temp2,symm,temp3},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ThreeParticleVertex3";
+SA`Doc`Info = "Takes a particle as input and returns all 1-loop self-energy diagrams for this particle where two three-point functions are involved. ";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 temp=InsFields[{{C[AntiField[x],AntiField[FieldToInsert[1]],FieldToInsert[2]],C[x,AntiField[FieldToInsert[2]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],External[1]->AntiField[x],Index[1]->gO1,Index[2]->gI1,Index[3]->gI2}}];
 
-(* temp2=Select[Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1][{Index[1]}],AntiField[Internal[1][{Index[2]}]],Internal[2][{Index[3]}]]/.temp[[i,2]],VType[getType[Internal[1]/.temp[[i,2]]],getType[Internal[2]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]]],CalculateColorFactor[getBlank[External[1]/.temp[[i,2]]],Internal[1]/.temp[[i,2]],Internal[2]/.temp[[i,2]]],CalculateSymmetryFactor[Internal[1]/.temp[[i,2]],Internal[2]/.temp[[i,2]]]},{i,1,Length[temp]}],(FreeQ[#1,GGS]&&FreeQ[#1,GGV])&]; *)
 temp2=Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Cp[External[1][{Index[1]}],AntiField[Internal[1][{Index[2]}]],Internal[2][{Index[3]}]]/.temp[[i,2]],VType[getType[Internal[1]/.temp[[i,2]]],getType[Internal[2]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]]],CalculateColorFactor[External[1]/.temp[[i,2]],AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]]],1/2},{i,1,Length[temp]}];
 temp3=temp2;
-Return[temp3 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
+SA`Doc`Return[temp3 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
 ];
 
 
 ThreeParticleVertex2check[x_]:=If[AntiField[x]=!=x,Return[ThreeParticleVertex2[x]];,Return[ThreeParticleVertex3[x]];];
 
 
-FourParticleVertex[x_]:=Block[{i,temp,temp2},temp=InsFields[{{C[AntiField[x],AntiField[FieldToInsert[1]],FieldToInsert[2],FieldToInsert[3]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],External[1]->AntiField[x]}}];
-Return[Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Internal[3]/.temp[[i,2]],temp[[i,1,1]]/.C->Cp},{i,1,Length[temp]}]];
+FourParticleVertex[x_]:=Block[{i,temp,temp2},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "FourParticleVertex";
+SA`Doc`Info = "Takes a particle as input and returns all 4-point couplings where this particle is involved.";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
+temp=InsFields[{{C[AntiField[x],AntiField[FieldToInsert[1]],FieldToInsert[2],FieldToInsert[3]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],External[1]->AntiField[x]}}];
+SA`Doc`Return[Table[{AntiField[Internal[1]/.temp[[i,2]]],Internal[2]/.temp[[i,2]],Internal[3]/.temp[[i,2]],temp[[i,1,1]]/.C->Cp},{i,1,Length[temp]}]];
 ];
 
 FourParticleVertex2[x_]:=Block[{i,temp,temp2={}},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "FourParticleVertex2";
+SA`Doc`Info = "Takes a particle as input and returns all 1-loop self-energy diagrams for this particle where one four point vertex is involved. ";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 temp=InsFields[{{C[AntiField[x],x,AntiField[FieldToInsert[1]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],External[1]->x,Index[1]->gO1,Index[2]->gI1}}];
 For[i=1,i<=Length[temp],
 temp2= Join[temp2,{{AntiField[Internal[1]/.temp[[i,2]]],Internal[1]/.temp[[i,2]],Cp[External[1][{Index[1]}],AntiField[External[1][{Index[1]}]],AntiField[Internal[1][{Index[2]}]],Internal[1][{Index[2]}]]/.temp[[i,2]],VType[getType[Internal[1]/.temp[[i,2]]],getType[Internal[1]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]],getType[External[1]/.temp[[i,2]]]],CalculateColorFactor4[External[1]/.temp[[i,2]],AntiField[External[1]/.temp[[i,2]]],Internal[1]/.temp[[i,2]],AntiField[Internal[1]/.temp[[i,2]]]] ,2 CalculateSymmetryFactor[Internal[1]/.temp[[i,2]],Internal[1]/.temp[[i,2]]]}}];
 i++;];
-Return[temp2 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
+SA`Doc`Return[temp2 /. Map[(#1[a_]->#1)&,Transpose[Select[Particles[Current],TrueQ[getGen[#1[[1]]]==1]&]][[1]]]];
 ];
 
 
 (* ::Input::Initialization:: *)
 ThreeBodyDecay[p_]:=Block[{i,res1,res2,listTemp,j,k},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ThreeBodyDecay";
+SA`Doc`Info = "Generates a list with all possible three-body decays (at tree-level) of a given particle. It sorts the diagrams according to the involved propagator (real/complex scalar or vector). Note, this function is supposed to be used only for decaying fermions!";
+SA`Doc`Input={"p"->"The decaying particle"};
+SA`Doc`GenerateEntry[];
+
 process={};
 res1=ThreeParticleVertex[p];
 
@@ -291,11 +356,17 @@ SortedProcesses[[i,1]]=FinalStates[Final1,Final2,Final3] /. SortedProcesses[[i,2
 finalstates=Join[finalstates,{FinalStates[Final1,Final2,Final3] /. SortedProcesses[[i,2]]}];
 i++;];
 
-Return[{finalstates,SortedProcesses}];
+SA`Doc`Return[{finalstates,SortedProcesses}];
 ];
 
 
 ThreeBodyDecayScalar[p_]:=Block[{i,res1,res2,listTemp,j,k,pos,temp},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ThreeBodyDecayScalar";
+SA`Doc`Info = "Generates a list with all possible three-body decays (at tree-level) of a given particle. It sorts the diagrams according to the involved propagator (real/complex scalar or vector; Dirac or Majorana fermion). Note, this function is supposed to be used only for decaying scalars!";
+SA`Doc`Input={"p"->"The decaying particle"};
+SA`Doc`GenerateEntry[];
+
 SA`CheckSameVertices=False;
 process={};
 res1=InsFields[{{C[p,FieldToInsert[2],FieldToInsert[1]],C[AntiField[FieldToInsert[2]],FieldToInsert[3],FieldToInsert[4]]},{Propagator->FieldToInsert[2],External[1]->p,External[2]->FieldToInsert[1],External[3]->FieldToInsert[3],External[4]->FieldToInsert[4]}}];
@@ -372,12 +443,18 @@ SortedProcesses[[i,1]]=FinalStates[Final1,Final2,Final3] /. SortedProcesses[[i,2
 finalstates=Join[finalstates,{FinalStates[Final1,Final2,Final3] /. SortedProcesses[[i,2]]}];
 i++;];
 SA`CheckSameVertices=True;
-Return[{finalstates,SortedProcesses}];
+SA`Doc`Return[{finalstates,SortedProcesses}];
 ];
 
 SetAttributes[FinalStatesNO,Orderless];
 
 TwoBodyDecay[p_]:=Block[{i,res1,res2,addedP},
+SA`Doc`File = "Package/TwoBodyDecay.nb";
+SA`Doc`Name = "MakeCouplingLists";
+SA`Doc`Info = "Generates a list with all possible two-body decays (at tree-level) of a given particle.";
+SA`Doc`Input={"p"->"The decaying particle"};
+SA`Doc`GenerateEntry[];
+
 process={};
 res1=ThreeParticleVertex[p]/.{a_,b_,Cp[c___]}:>Flatten[{SortFieldExternalDecay[a,b],Cp[c]}];
 addedP={};
@@ -390,7 +467,7 @@ addedP=Join[addedP,{C[res1[[i,1]],res1[[i,2]]]}];
 ];
 ];
 i++;];
-Return[process];
+SA`Doc`Return[process];
 ];
 
 SortFieldExternalDecay[a_,b_]:=Switch[getType/@{a,b},
@@ -427,75 +504,81 @@ Return[1];
 ]; *)
 
 SymmFactor2BodyDecay[pD_,p1_,p2_]:=Block[{res},
-res=1;
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "SymmFactor2BodyDecay";
+SA`Doc`Info = "Calculates the symmetry-factor for a two-body decay";
+SA`Doc`Input={"pD"->"Decying particle","p1,p2"->"decay products"};
+SA`Doc`GenerateEntry[];
 
-(* Identical states *)
+res=1;
 If[p1===p2,
 res=res 1/2;
 ];
-
-(*
-(* conjugated final state possible?*)
-If[AntiField[getBlank[pD]]===getBlank[pD],
-If[getBlank[p1]=!=getBlank[p2],
-If[AntiField[p1]===p1 &&  AntiField[p2]===p2,
-res=res 1/2;
-];
-];
-];
-*)
-Return[res];
+SA`Doc`Return[res];
 ];
 
 
 CalculateColorFactor[pD_,p1_,p2_]:=ChargeFactor[pD,p1,p2];
-(*
-CalculateColorFactor4[Ex1_,Ex2_,Int1_,Int2_]:=
-If[getType[Int1]===V && getType[Int2]===V,
-Return[1];,
-Return[getChargeFactor[{{Cp[Ex1,Ex2,Int1,Int2]},{External[1]\[Rule]Ex1,External[2]\[Rule]Ex2,Internal[1]\[Rule]Int1,Internal[2]\[Rule]Int2}},{{{Ex1,ex1}, {Ex2,ex2},{Int1,in1},{Int2,in2}}},Delta[in1,in2] Delta[ex1,ex2]]];
-]; *)
+
 CalculateColorFactor4[Ex1_,Ex2_,Int1_,Int2_]:=Block[{ind,diffind,mul},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "CalculateColorFactor4";
+SA`Doc`Info = "Calculates the color-factor for a 2->2 scatter process";
+SA`Doc`Input={"Ex1, Ex2"->"Initial state particle","Int1,Int2"->"Final state particles"};
+SA`Doc`GenerateEntry[];
+
 If[getType[Int1]===V && getType[Int2]===V,
-Return[1];,
+SA`Doc`Return[1];,
 ind=DeleteCases[DeleteCases[Flatten[getIndizes/@{Ex1,Ex2,Int1,Int2}],lorentz],generation];
 diffind=Intersection[ind];
 mul=Count[ind,#]&/@diffind;
 If[Max[mul]>2,
-Return[999];,
-Return[getChargeFactor[{{Cp[Ex1,Ex2,Int1,Int2]},{External[1]->Ex1,External[2]->Ex2,Internal[1]->Int1,Internal[2]->Int2}},{{{Ex1,ex1}, {Ex2,ex2},{Int1,in1},{Int2,in2}}}]];
+SA`Doc`Return[999];,
+SA`Doc`Return[getChargeFactor[{{Cp[Ex1,Ex2,Int1,Int2]},{External[1]->Ex1,External[2]->Ex2,Internal[1]->Int1,Internal[2]->Int2}},{{{Ex1,ex1}, {Ex2,ex2},{Int1,in1},{Int2,in2}}}]];
 ];
 ];
 ];
 CalculateColorFactorDecay[pD_,p1_,p2_]:=ChargeFactor[pD,p1,p2];
 
 ChargeFactor[Ext_,Int1_,Int2_]:=Block[{pos,temp},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ChargeFactor";
+SA`Doc`Info = "Calculates the color-factor for a self-energy diagram with given external and internal fields. First, some special cases are considered which result in a Dynkin or Casimir index as color factor before the general case is done.";
+SA`Doc`Input={"Ext"->"The external particle","Int1,Int2"->"The internal particles"};
+SA`Doc`GenerateEntry[];
+
 (*Is the external field a gauge boson?*)
 pos=Select[{Position[getBlank/@SGauge,getBlank[Ext]]},(#1=!={})&];
-If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]];,Return[1];];];
+If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],SA`Doc`Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]];,SA`Doc`Return[1];];];
 (*----*)
 (*Is an internal field a gauge boson?*)
 pos=Select[{Position[getBlank/@SGauge,getBlank[Int1]],Position[getBlank/@SGauge,getBlank[Int2]]},(#1=!={})&];
-If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]]];,Return[1];];];
+If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],SA`Doc`Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]]];,SA`Doc`Return[1];];];
 
 If[AddDiracGauginos=!=True,(* if true, then can have different couplings *)
 (*Is the external field a gaugino?*)
 pos=Select[{Position[getBlank/@Gauginos,getBlank[Ext]]/2},(#1=!={})&];
-If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]];,Return[1];];];
+If[pos=!={},If[Gauge[[pos[[1,1,1]],2]]=!=U[1],SA`Doc`Return[SA`Dynkin[getBlank[Int1],pos[[1,1,1]]]];,SA`Doc`Return[1];];];
 (*----*)
 (*Is an internal field a gaugino?*)
 pos=Select[{Position[getBlank/@Gauginos,getBlank[Int1]],Position[getBlank/@Gauginos,getBlank[Int2]]},(#1=!={})&];
-If[pos=!={},If[Gauge[[pos[[1,1,1]]/2,2]]=!=U[1],Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]/2]];,Return[1];];];
+If[pos=!={},If[Gauge[[pos[[1,1,1]]/2,2]]=!=U[1],SA`Doc`Return[SA`Casimir[getBlank[Ext],pos[[1,1,1]]/2]];,SA`Doc`Return[1];];];
 ];
 (*-- Otherwise do the calculation the hard way --*)
-If[Select[getIndizes[Int1],(FreeQ[getIndizes[Ext],#]==False&&FreeQ[getIndizes[Int2],#]==False&&#=!=generation &&#=!=lorentz)&]=!={},Return[Abs[getChargeFactor[{{Cp[Ext,Int1,Int2],Cp[AntiField[Ext],AntiField[Int1],AntiField[Int2]]},{External[1]->Ext,External[2]->AntiField[Ext],Internal[1]->Int1,Internal[2]->Int2}},{{{Ext,ex1},{Int1,in1},{Int2,in2}},{{AntiField[Ext],ex2},{AntiField[Int1],in1},{AntiField[Int2],in2}}},Delta[ex1,ex2]]]];
-Return[999];];
+If[Select[getIndizes[Int1],(FreeQ[getIndizes[Ext],#]==False&&FreeQ[getIndizes[Int2],#]==False&&#=!=generation &&#=!=lorentz)&]=!={},SA`Doc`Return[Abs[getChargeFactor[{{Cp[Ext,Int1,Int2],Cp[AntiField[Ext],AntiField[Int1],AntiField[Int2]]},{External[1]->Ext,External[2]->AntiField[Ext],Internal[1]->Int1,Internal[2]->Int2}},{{{Ext,ex1},{Int1,in1},{Int2,in2}},{{AntiField[Ext],ex2},{AntiField[Int1],in1},{AntiField[Int2],in2}}},Delta[ex1,ex2]]]];
+SA`Doc`Return[999];];
 temp=Select[getIndizesWI[Int1],(FreeQ[getIndizesWI[Ext],#1]&&#1[[1]]=!=generation &&#1[[1]]=!=lorentz)&];
-If[temp=!={},Return[Times@@Transpose[temp][[2]]];,Return[1];];];
+If[temp=!={},SA`Doc`Return[Times@@Transpose[temp][[2]]];,SA`Doc`Return[1];];];
 
 
 (* ::Input::Initialization:: *)
 CalculateSymmetryFactor[p1_,p2_]:=Block[{fac},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "CalculateSymmetryFactor";
+SA`Doc`Info = "Calculates the symmetry factor of a self-energy diagram for two given, internal states.";
+SA`Doc`Input={"p1, p2"->"The internal states"};
+SA`Doc`GenerateEntry[];
+
 fac=1/2;
 If[getBlank[p1]=!=getBlank[p2],
 If[(AntiField[p1]===p1 && AntiField[p2]===p2),
@@ -509,14 +592,26 @@ If[getBlank[p1]===getBlank[p2] && AntiField[p1]===p1,
 fac=1/2fac;
 ];
 
-Return[fac];
+SA`Doc`Return[fac];
 ];
 
 
 DeleteInds[x_]:=DeleteCases[DeleteCases[DeleteCases[DeleteCases[x,gt1,2],gt2,2],gt3,2],gt4,2];
 
+SA`Doc`ToDo="There is a lot of redudancy in the following function! It might be time to rewrite them from scratch!";
+
 getChargeFactor [list_,ind_]:=getChargeFactor [list,ind,1];
-getChargeFactor [list_,ind_,constraint_]:=Catch[Block[{i,j,k,l,temp,ps,adjointvertex,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={}},allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
+getChargeFactor [list_,ind_,constraint_]:=Catch[Block[{i,j,k,l,temp,ps,adjointvertex,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={}},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "getChargeFactor";
+SA`Doc`Info = "The most general function to calculate the color factor of a given diagram. The calculation is done in a brute force way: \n
+1) The colour structure of all involved vertices is extracted \n
+2) The colour of the external states if fixed to some number which gives a non-zero result \n
+3) The sum over the colours of internal states is explicitly performed";
+SA`Doc`Input={"list"->"List of involved couplings","ind"->"The indices of the involved states","constraint"->"Some additional constraint concerning the colour flow, e.g. external states could be forced to have identicla colour via Delta[ex1,ex2]"};
+SA`Doc`GenerateEntry[];
+
+allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
 constr=constraint/.CF[a_]->1;
 intfields=Select[list[[2]],(FreeQ[#,Internal]==False||FreeQ[#,Propagator]==False)&];
 extfields=Select[list[[2]],(FreeQ[#,External]==False)&];
@@ -585,6 +680,7 @@ adjointvertex=True;
 If[Length[Intersection[ps]]==3,
 If[FreeQ[getType/@{ps[[2]],ps[[3]]},V],
 Print["Triple adjoint colour structure not supported!",ps];
+SA`Doc`EndEntry[];
 Throw[0];
 ,
 (* There's a gauge boson present \[Rule] assume that only f^abc structure is allowed*)
@@ -660,152 +756,23 @@ Interrupt[];
 (*If[norm===0,Return[0];];*)
 i++;
 ];
+SA`Doc`EndEntry[];
 Throw[fac];
 ];
 ]; (* end catch *)
 
 
-(*
-getChargeFactor [list_,ind_,constraint_]:=Block[{i,j,k,temp,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={}},
-allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
-constr=constraint /. CF[a_]\[Rule]1;
-For[i=1,i\[LessEqual]Length[list[[1]]],
-pos=Position[VerticesInv[All],list[[1,i]] /. Cp\[Rule]C];
-If[pos==={},
-Vertex::DoesNotExist="The Vertex `` does not exit! Please contact the author. ";
-Message[Vertex::DoesNotExist,list[[1,i]]];
-Interrupt[];,
-pos=pos[[1,1]];
-];
-tordered=VerticesOrg[All][[pos]] /. A_[{b__}]\[Rule]A;
-coups=Join[coups,{VerticesVal[All][[pos]][[1]]}];
-indreptemp={};
-For[j=1,j\[LessEqual]Length[ind[[i]]],
-pos=DeleteCases[Position[tordered,ind[[i,j,1]]],{a_,b_}][[1,1]];
-tordered[[pos]]=XXX;
-indreptemp=Join[indreptemp,Reverse/@subIndFinal[pos,pos] /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];
-If[StringTake[ToString[ind[[i,j,2]]],2]==="ex" || StringTake[ToString[ind[[i,j,2]]],1]==="a",
-fixvar = Join[fixvar,subGC[pos] /. (a_\[Rule]b_)\[Rule]b /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];,
-sumvar = Join[sumvar,subGC[pos] /. (a_\[Rule]b_)\[Rule]b /. subIndFinalX[pos,1,ToString[ind[[i,j,2]]]]];
-];
-j++;];
-indrep=Join[indrep,{indreptemp}];
-i++;];
-sumvarSafe=sumvar;
-
-For[i=1,i\[LessEqual]Length[allind],
-chargepart= {};
-(* constr=constraint/. indrep[[j]]; *)
-For[j=1,j\[LessEqual]Length[coups],
-res=ExtractStructure[coups[[j]] /. Lam[a__] \[Rule]  LamHlf[a]2,allind[[i]]] /. LamHlf[a__]\[Rule]Lam[a]/2;
-If[Head[constraint]===CF && Length[res]>1,
-chargepart= Join[chargepart,{res[[constraint[[1]],1]] /. indrep[[j]]}];,
-chargepart= Join[chargepart,{res[[1,1]] /. indrep[[j]]}];
-];
-j++;];
-
-constr=constraint /. CF[a_]\[Rule]1/. {in1\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in11"],
-in2\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in21"],
-in3\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in31"],in4\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"in41"],ex1\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex11"],ex2\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex21"],ex3\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex31"],ex4\[Rule]ToExpression[StringTake[ToString[allind[[i]]],1]<>"ex41"]};
-cfac=constr*Times@@chargepart //. sum[a_,b_,c_,d_]\[RuleDelayed]Sum[d,{a,b,c}];
-
-cfac=cfac/. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]\[Rule]Lam[c,b,a]/2,
-CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]\[Rule]Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]\[Rule]Lam[a,c,b]/2,
-CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]\[Rule]Lam[c,a,b]/2,
-CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]\[Rule]Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]\[Rule]Lam[a,b,c]/2};
-
-norm=1;
-
-fixvar = Intersection[Select[fixvar,(FreeQ[cfac,#]\[Equal]False)&]];
-sumvar = Intersection[Select[sumvarSafe,(FreeQ[cfac,#]\[Equal]False)&]];
-
-
-subfixvar={};
-
-cfac = cfac/norm /. subfixvar;
-cfacsave=cfac;
-
-
-sumvarCount=1;
-intfields=Select[list[[2]],(FreeQ[#,Internal]\[Equal]False || FreeQ[#,Propagator]\[Equal]False) &];
-extfields=Select[list[[2]],(FreeQ[#,External]\[Equal]False)&];
-For[k=1,k\[LessEqual]Length[intfields],
-cind=getIndizesWI[RE[intfields[[k,2]]]];
-pos=Position[cind,allind[[i]]];
-If[pos=!={},
-cfac = ReleaseHold[Hold[Sum[cfac,{SUMVAR,1,LIMIT}]] /. SUMVAR->sumvar[[sumvarCount]] /. LIMIT\[Rule]cind[[pos[[1,1]],2]]];
-sumvarCount++;
-];
-k++;];
-
-rangext={};
-sumvarCount=1;
-For[k=1,k\[LessEqual]Length[extfields],
-cind=getIndizesWI[RE[extfields[[k,2]]]];
-pos=Position[cind,allind[[i]]];
-If[pos=!={},
-rangext=Join[rangext,{{fixvar[[sumvarCount]],cind[[pos[[1,1]],2]]}}];
-sumvarCount++;
-];
-k++;];
-rangextSave=rangext;
-rangext=Table[#[[1]]\[Rule]i,{i,1,#[[2]]}]&/@rangext;
-
-
-Switch[Length[rangext],
-0,sub={{}};,
-2,sub=Flatten[Outer[List,rangext[[1]],rangext[[2]]],1];,
-3,sub=Flatten[Outer[List,rangext[[1]],rangext[[2]],rangext[[3]]],2];,
-4,sub=Flatten[Outer[List,rangext[[1]],rangext[[2]],rangext[[3]],rangext[[4]]],3];
-];
-
-res=0;
-k=0;
-
-While[res===0 && k<Length[sub],
-k++;
-res=cfac/.sub[[k]];
-];
-(* If[res===0,i=Length[allind]+1;Return[0]]; *)
-If[FreeQ[Gauge,allind[[i]]]===False,
-group=Gauge[[Position[Gauge,allind[[i]]][[1,1]],2]];
-gname=Gauge[[Position[Gauge,allind[[i]]][[1,1]],3]];,
-group=AuxGauge[[Position[AuxGauge,allind[[i]]][[1,1]],2]];
-gname=AuxGauge[[Position[AuxGauge,allind[[i]]][[1,1]],3]];
-];
-
-If[FreeQ[extfields,External[3]],
-norm=1;,
-If[getType[External[3]/.extfields]===V && SA`DynL[External[3]/.extfields,allind[[i]]]=!={0},
-If[FreeQ[VerticesInv[All],C[External[1],External[2],External[3]] /. extfields],
-norm=1;,
-norm=Generator[(* Gauge[[Position[Gauge,allind[[i]]][[1,1]]]][[2]]*) group,SA`DynL[RE[extfields[[2,2]]],gname(* Position[Gauge,allind[[i]]][[1,1]] *)]]@@fixvar/.Lam[a_,b_,c_]\[Rule]Lam[c,a,b]/.A_[SU[n_],b_][a_,b_,c_]\[Rule]A[SU[n],b][c,a,b] /. sub[[k]];
-If[norm===0,norm=1;];
-];,
-norm=CG[group,DeleteCases[Table[SA`DynL[extfields[[k,2]],gname],{k,1,Length[extfields]}],{0}]]@@fixvar/.sub[[k]] /. {CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]\[Rule]Lam[c,b,a]/2,
-CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]\[Rule]Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]\[Rule]Lam[a,c,b]/2,
-CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]\[Rule]Lam[c,a,b]/2,
-CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]\[Rule]Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]\[Rule]Lam[a,b,c]/2,
-CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]\[Rule]1,
-CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]\[Rule]CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
-CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]\[Rule]CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],
-CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]\[Rule]CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]}; 
-];
-];
-fac = res*fac/norm;
-If[norm===0,Print[res];Interrupt[];];
-(* If[norm===0,Return[0];]; *)
-i++;];
-
-Return[fac];
-
-];
-*)
 
 
 
 
 ExtractStructure[vertex_,charge_]:=Block[{i,j,temp={},temp2,res,CS,diffCol,coeff,current,CSsum ,unbrokenInd},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "ExtractStructure";
+SA`Doc`Info = "This function takes a vertex and returns the charge (i.e. usually color) structure.";
+SA`Doc`Input={"vertex"->"The considered vertex","charge"->"The charge for which the strcture should be extraced. Usually this is the color structure unless a second, non-Abelian gauge group is present in the model."};
+SA`Doc`GenerateEntry[];
+
 diffCol={fSU3,dSU3,Delta,Lam, LamHlf,sum,epsTensor,CG,Generator}; (* Possible Headers *)
 (* diffColQT=Table[charge /. subGC[i] /. subIndFinal[i,i],{i,1,Length[vertex]}]; *)
 diffColQT=Table[charge /. subGC[i] /. subIndFinal[i,i],{i,1,4}]; (* check! *)
@@ -833,12 +800,22 @@ temp=Join[temp,{{current,coeff}}];
 ];
 j++;];
 ];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 
 (* ::Input::Initialization:: *)
 getChargeFactorDecay[list_,ind_,constraint_]:=Block[{i,j,k,temp,fac=1,allind,coups={},pos,chargepart={},indrep={},tordered,indreptemp,ccoup,sumvar={},fixvar={},sumvarA,fixvarA},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "getChargeFactorDecay";
+SA`Doc`Info = "Returns the color structure of a decay. The calculation is done in a brute force way: \n
+1) The colour structure of all involved vertices is extracted \n
+2) The colour of the external states if fixed to some number which gives a non-zero result \n
+3) The sum over the colours of internal states is explicitly performed";
+SA`Doc`Input={"list"->"List of involved couplings","ind"->"The indices of the involved states","constraint"->"Some additional constraint concerning the colour flow, e.g. external states could be forced to have identicla colour via Delta[ex1,ex2]"};
+
+SA`Doc`GenerateEntry[];
+
 allind=DeleteCases[DeleteCases[DeleteCases[Intersection[Flatten[getIndizes/@DeleteInds[Intersection[getBlank/@Intersection[Flatten[(List@@#)&/@list[[1]]]]]]]],generation],lorentz],n];
 
 constr=constraint;
@@ -933,36 +910,17 @@ fac = res*fac;
 (* If[norm===0,Return[0];]; *)
 i++;];
 
-Return[fac];
+SA`Doc`Return[fac];
 
 ];
-
-(*
-CallGetChargeFactorDecay[part_,d1_,d2_,type_]:=Block[{coups,res},
-coups=Join[Couplings /. d1,(Couplings/.d2  /.C\[Rule]Cp/. Cp[a__]:> Cp@@(AntiField/@{a}))]; 
-Switch[type,
-"BOX",
-res=getChargeFactorDecay[{coups,{External[1]\[Rule]part,Internal[1]\[Rule]Final1,Internal[2]\[Rule]Final2,Internal[3]\[Rule]Final3,Internal[4]\[Rule]Propagator /. d1,Internal[5]\[Rule]Propagator/.d2}}/. d1,{{{part,ex1},{Propagator,in4},{Final1,in1}}/.d1,
-ReleaseHold[Hold[{{AntiField[Propagator],in4},{Final2,in2},{Final3,in3}}]/.d1],
-ReleaseHold[Hold[{{AntiField[part],ex1},{AntiField[Propagator],in5},{AntiField[Final1],in1}}]/.d2],ReleaseHold[Hold[{{Propagator,in5},{AntiField[Final2],in2},{AntiField[Final3],in3}}]/.d2]} ,1];,
-"BOXCROSS",
-res=getChargeFactorDecay[{coups,{External[1]\[Rule]part,Internal[1]\[Rule]Final1,Internal[2]\[Rule]Final2,Internal[3]\[Rule]Final3,Internal[4]\[Rule]Propagator /. d1,Internal[5]\[Rule]Propagator/.d2}}/. d1,{{{part,ex1},{Propagator,in4},{Final1,in1}}/.d1,
-ReleaseHold[Hold[{{AntiField[Propagator],in4},{Final2,in2},{Final3,in3}}]/.d1],
-ReleaseHold[Hold[{{AntiField[part],ex1},{AntiField[Propagator],in5},{AntiField[Final1],in3}}]/.d2],ReleaseHold[Hold[{{Propagator,in5},{AntiField[Final2],in2},{AntiField[Final3],in1}}]/.d2]} ,1];,
-"TRIANGLE",
-If[(getType[Final2 /.d2]) ===S,
-res=getChargeFactorDecay[{coups,{External[1]\[Rule]part,Internal[1]\[Rule]Final1,Internal[2]\[Rule]Final2,Internal[3]\[Rule]Final3,Internal[4]\[Rule]Propagator/.d1,Internal[5]\[Rule]Propagator/.d2}}/.d1,{{{part,ex1},{Propagator,in4},{Final1,in1}}/.d1,ReleaseHold[Hold[{{AntiField[Propagator],in4},{Final2,in2},{Final3,in3}}]/.d1],ReleaseHold[Hold[{{AntiField[Propagator],in5},{AntiField[part],ex1},{AntiField[Final1],in3}}]/.d2],ReleaseHold[Hold[{{AntiField[Final3],in2},{Propagator,in5},{AntiField[Final2],in1}}]/.d2]},1];,
-res=getChargeFactorDecay[{coups,{External[1]\[Rule]part,Internal[1]\[Rule]Final1,Internal[2]\[Rule]Final2,Internal[3]\[Rule]Final3,Internal[4]\[Rule]Propagator /. d1,Internal[5]\[Rule]Propagator/.d2}}/. d1,{{{part,ex1},{Propagator,in4},{Final1,in1}}/.d1,
-ReleaseHold[Hold[{{AntiField[Propagator],in4},{Final2,in2},{Final3,in3}}]/.d1],
-ReleaseHold[Hold[{{AntiField[Propagator],in5},{AntiField[part],ex1},{AntiField[Final1],in2}}]/.d2],ReleaseHold[Hold[{{AntiField[Final3],in1},{Propagator,in5},{AntiField[Final2],in3}}]/.d2]} ,1];
-];
-];
-(* Print[part,"  ",d1,"   ",d2,"   ",type];
-Print[res]; *)
-Return[res];
-];*)
 
 CallGetChargeFactorDecay[part_,d1_,d2_,type_]:=Block[{coups,res,index1,index2,index3},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "CallGetChargeFactorDecay";
+SA`Doc`Info = "Calculates the colour structure of a two-body decay. (I.e. for the product of two diagrams with propagator)";
+SA`Doc`Input={"part"->"The decaying particle","d1"->"The first diagram","d2"->"The second diagram","type"->"kind of diagrams"};
+SA`Doc`GenerateEntry[];
+
 coups=Join[Couplings /. d1,(Couplings/.d2  /.C->Cp/. Cp[a__]:> Cp@@(AntiField/@{a}))]; 
 If[(((Final1/.d2))===(Final1/.d1))&&(((Final2/.d2))===(Final2/.d1)),index1=in1;
 index2=in2;index3=in3;,If[(((Final2/.d2))===(Final1/.d1))&&(((Final1/.d2))===(Final2/.d1)),index1=in2;
@@ -977,12 +935,18 @@ res=getChargeFactorDecay[{coups,{External[1]->part,Internal[1]->Final1,Internal[
 ];
 (* Print[part,"  ",d1,"   ",d2,"   ",type];
 Print[res];  *)
-Return[res];
+SA`Doc`Return[res];
 ];
 
 CheckChargeConservationDecay[{p1_,p2_,p3_}]:=Block[{iii,j,inv,reps,Tinv=True},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "CheckChargeConservationDecay";
+SA`Doc`Info = "Checks if a decay diagram is in agreement with all gauge symmetries. This is used to generate loop decays which don't have an associated tree-level coupling.";
+SA`Doc`Input={"p1,p2,p3"->"The involved particles"};
+SA`Doc`GenerateEntry[];
+
 eCharge=Plus@@(getElectricCharge/@{p1,p2,p3}) /.bar->conj;
-If[eCharge=!=0,Return[False];];
+If[eCharge=!=0,SA`Doc`Return[False];];
 For[iii=1,iii<=Length[Gauge],
 If[FreeQ[BrokenGaugeSymmetries[EWSB],iii],
 reps=DeleteCases[SA`DynL[#,iii]&/@({p1,p2,p3}/.bar->conj),{0}];
@@ -996,12 +960,18 @@ Tinv=False;
 ];
 ];
 iii++;];
-If[Tinv===False,Return[False];];
-Return[True];
+If[Tinv===False,SA`Doc`Return[False];];
+SA`Doc`Return[True];
 (* Return[CheckConservationGlobal[{p1,p2,p3}/.bar\[Rule]conj]]; *)
 ];
 
 TwoBodyDecayAllAllowed[p_]:=Block[{i,temp,proc,procTree},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "TwoBodyDecayAllAllowed";
+SA`Doc`Info = "This routine generates all possible two-body decays which are allowed by the given quantum numbers. This is includes also loop induced decays as H->gg for instance.";
+SA`Doc`Innput={"p"->"The decaying particle"};
+SA`Doc`GenerateEntry[];
+
 rres={};
 Switch[getType[p],
 F,
@@ -1029,22 +999,30 @@ procTree=Join[procTree,{{rres[[i,2]],rres[[i,3]],LOOP,CalculateColourFactorLoopI
 ];
 ];
 i++;];
-Return[procTree];
+SA`Doc`Return[procTree];
 ];
 
 mycgsub={CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->Lam[c,b,a]/2,CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->Lam[b,c,a]/2,CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->Lam[a,c,b]/2,CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->Lam[c,a,b]/2,CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->Lam[b,a,c]/2,CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->Lam[a,b,c]/2,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,b_,a_]->1,CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,b]*CG[SU[3],{{1,0},{0,1}}][c,d],CG[SU[3],{{1,0},{1,0},{0,1},{0,1}}][a_,b_,c_,d_]->CG[SU[3],{{1,0},{0,1}}][a,c]*CG[SU[3],{{1,0},{0,1}}][b,d]};
 
-CalculateColourFactorLoopInducedDecay[Ext_,Int1_,Int2_]:=Catch[Block[{i,j,k,l,coupps,res,dynks,pos,posV,dim,temp,gname,group,blankin,blankout1,blankout2,allinds,allorderedinds,allorderedindsWI,allindout,allindout2,normf,dims},(*Need to go through each index in term and determine the Clebsch-Gordan.No easy cases at loop level!*)
+CalculateColourFactorLoopInducedDecay[Ext_,Int1_,Int2_]:=Catch[Block[{i,j,k,l,coupps,res,dynks,pos,posV,dim,temp,gname,group,blankin,blankout1,blankout2,allinds,allorderedinds,allorderedindsWI,allindout,allindout2,normf,dims},
+
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "CalculateColourFactorLoopInducedDecay";
+SA`Doc`Info = "This calculates the colour factor for a one-loop decay which has no tree-level counter-part. The difference to a decay with tree-level part is that the colour factor is not normalized to the tree-level value.";
+SA`Doc`Input={"Ext"->"Decaying particle","Int1,Int2"->"Final state particles"};
+SA`Doc`GenerateEntry[];
+
+(*Need to go through each index in term and determine the Clebsch-Gordan.No easy cases at loop level!*)
 {blankin,blankout1,blankout2}=getBlank/@{Ext,Int1,Int2};
 coupps={Ext,Int1,Int2};
 allorderedinds=DeleteCases[DeleteCases[DeleteCases[getIndizes/@getBlank/@{blankin,blankout1,blankout2},generation,2],lorentz,2],n,2];
 allorderedindsWI=DeleteCases[DeleteCases[DeleteCases[getIndizesWI/@getBlank/@{blankin,blankout1,blankout2},{generation,x_},2],{lorentz,x_},2],n,2];
 allinds=Intersection[Flatten[allorderedinds]];
-If[Length[allinds]==0,Return[1]];(*simple check...*)res=1;
+If[Length[allinds]==0,SA`Doc`Return[1]];(*simple check...*)res=1;
 For[i=1,i<=Length[allinds],i++,pos=Position[allorderedindsWI,allinds[[i]]];
 Switch[Length[pos],
 0,(*something strange happenened here...*)Continue[];,
-1,(*Forbidden process!*)Throw[0];,
+1,(*Forbidden process!*)SA`Doc`EndEntry[];Throw[0];,
 2,(*Simplest case to deal with:only a delta function is possible,although we have to sum over final two indices*)
 If[pos[[1,1]]==1,(*Delta function*)
 Continue[];,(*sum over final two indices\[Rule]dimension of rep*)
@@ -1062,12 +1040,13 @@ posV=Position[getType/@{Int1,Int2},V];
 Switch[Length[posV],
 2,(*decay to two gauge bosons\[Rule]already excluded the delta function,so must be\Sum_{b,c} (d^abc)^2\[Rule]*)
 If[group===U[1]||group===SU[2],
+SA`Doc`EndEntry[];
 Throw[0]];
 res=res*5/3(*ASSUME SU(3) FOR NOW!*),
 (*SU[N>2]*)1,(*decay to one gauge boson\[Rule]assume either three adjoints or two (anti) fundamentals:get the dimension of the rep to decide*)If[allorderedindsWI[[2,i,2]]==allorderedindsWI[[3,i,2]],(*adjoints...\Sum_{b,c} (d^abc)^2 or (f^abc)^2*)If[getType[getBlank[Ext]]=!=F,res=res*5/3(*ASSUME SU(3) FOR NOW!*),res=res*(SA`Casimir[blankin,gname])(*(f^abc)^2=N for SU(N)*)];,(*Assume (anti) fundamentals\[Rule]C_2(R)*)res=res*SA`Casimir[RE[getBlank[Ext]],gname];];,
 0,(*'Simply' compute the Clebsch-Gordan*)dynks=Table[SA`DynL[coupps[[k]],gname],{k,1,3}];
 If[dynks=={{1,1},{1,1},{1,1}},(*adjoints...\Sum_{b,c} (d^abc)^2 or\Sum_{b,c} (f^abc)^2*)
-If[FreeQ[getType/@coupps,F],If[group===U[1]||group===SU[2],Throw[0]];
+If[FreeQ[getType/@coupps,F],If[group===U[1]||group===SU[2],SA`Doc`EndEntry[];Throw[0]];
 res=res*5/3;(*ASSUME SU(3) FOR NOW!*),res=res*(SA`Casimir[blankin,gname])(*(f^abc)^2=N for SU(N)*)];,dims={allorderedindsWI[[1,i,2]],allorderedindsWI[[2,i,2]],allorderedindsWI[[3,i,2]]};
 normf=Sum[Abs[CG[group,dynks][1,j,k]]^2/.mycgsub,{j,1,dims[[2]]},{k,1,dims[[3]]}];
 res=res*normf;
@@ -1076,31 +1055,23 @@ Continue[];
 ];
 ];
 ];
+SA`Doc`EndEntry[];
 Throw[res];];
 ];(*end catch*)
 
-(*TwoBodyDecay[p_]:=Block[{i,res1,res2,addedP},
-process={};
-res1=ThreeParticleVertex[p]/.{a_,b_,Cp[c___]}\[RuleDelayed]Flatten[{SortFieldExternalDecay[a,b],Cp[c]}];
-addedP={};
-
-For[i=1,i\[LessEqual]Length[res1],
-If[(FreeQ[addedP,C[res1[[i,1]],res1[[i,2]]]] && FreeQ[addedP,C[AntiField[res1[[i,1]]],AntiField[res1[[i,2]]]]]) || AntiField[p]=!=p,
-If[((FreeQ[massless,getBlank[res1[[i,1]]]]\[Equal]True || getType[res1[[i,1]]]=!=V) &&  (FreeQ[massless,getBlank[res1[[i,2]]]]\[Equal]True || getType[res1[[i,2]]]=!=V)) || (FreeQ[AllowDecaysMasslessVectors,RE[p]]\[Equal]False),
-process=Join[process,{{res1[[i,1]],res1[[i,2]],res1[[i,3]],CalculateColorFactorDecay[AntiField[p],res1[[i,1]],res1[[i,2]]],SymmFactor2BodyDecay[p,res1[[i,1]],res1[[i,2]]]}}];
-addedP=Join[addedP,{C[res1[[i,1]],res1[[i,2]]]}];
-];
-];
-i++;];
-Return[process];
-];*)
 
 getChargeFactorDec[diags_,treefactor_]:=Module[{temp1,temp2,temp3,cfactor},
+SA`Doc`File = "Package/processes.nb";
+SA`Doc`Name = "getChargeFactorDec";
+SA`Doc`Info = "Calculates the colour factor for a two-body decay at the one-loop level.";
+SA`Doc`Input={"daigs"->"The considered diagram","treefactor"->"Colour factor at tree-level"};
+SA`Doc`GenerateEntry[];
+
 temp1=Join[diags[[1]],{C[AntiField[External[1]],AntiField[External[2]],AntiField[External[3]]]/.diags[[2]]}];
 temp2=Join[DeleteCases[diags[[2]],Index[3]->x_]/.External[2]->Internal[4]/.External[3]->Internal[5],{External[2]->(AntiField[External[1]/.diags[[2]]])}];
 temp3=Join[diags[[3]],{{{AntiField[External[1]],ex2},{AntiField[External[2]],Index[2]},{AntiField[External[3]],Index[3]}}}]/.diags[[2]]/.{gt1->ex1,gt2->in4,gt3->in5,i1->in1,i2->in2,i3->in3};
 cfactor=getChargeFactor[{temp1,temp2,temp3},temp3/.temp2/.{gt1->ex1,gt2->ex2,gt3->ex3,i1->in1,i2->in2,i3->in3},CF[k]];
 If[Head[cfactor]===Complex&&SA`DynL[External[1]/.diags[[2]],color]==={1,1},
 cfactor=-cfactor];
-Return[cfactor/treefactor];
+SA`Doc`Return[cfactor/treefactor];
 ];

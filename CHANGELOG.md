@@ -1,5 +1,8 @@
 ## Changelog
 
+*   26.June 2019 **(4.14.2)**:
+    *   Bug-fix in CalcHep output (phase of fSU3)
+    *   Bug-fix in RGE output for Mathematica
 *   03.December 2018 **(4.14.1)**:
     *   Bug-fixes in NLO matching conditions (affects only diagrams with tree-level Propagator diagrams, ie. not the MSSM)
     *   Turned-off debug output of SPheno in NLO matching routines

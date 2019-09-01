@@ -31,6 +31,12 @@ weight[i_,n_]:=Sum[vec[k,n],{k,1,i}];
 SA`Casimir[vector_]:=Sum[weight[i,Length[vector]+1] vector[[i]],{i,1,Length[vector]}].(Sum[weight[i,Length[vector]+1] vector[[i]],{i,1,Length[vector]}]+2 Sum[weight[i,Length[vector]+1],{i,1,Length[vector]}]);
 
 YoungTableaux[rows_,N_]:=Block[{p,q,i,j,k, DynkinVector,hook,columns,cas,dimm},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "YoungTableaux";
+SA`Doc`Info = "Calculates the group constants (Casimir, Dynkin) and the Dynkin labels for a given Young tableaux and given N for SU(N).";
+SA`Doc`Input={"rows"->"Number of boxes per row in the considere Young Tableux","N"->"The N in SU(N), i.e. defined the gauge group"};
+SA`Doc`GenerateEntry[];
+
 dimm=1;
 For[i=1,i<=Length[rows],
 For[j=1,j<=rows[[i]],
@@ -63,23 +69,38 @@ DynkinVector=Join[DynkinVector,{rowLengthOld-rowLength}];
 rowLengthOld=rowLength;
 i++;];
 cas=Simplify[SA`Casimir[DynkinVector]];
+
+SA`Doc`EndEntry[];
 Return[{dimm,p,q,cas,cas*dimm/(N^2-1), DynkinVector}];
 ];
 
 FieldDim[field_,gauge_]:=Block[{},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "FieldDim";
+SA`Doc`Info = "Takes a number to define a field and a number to define the gauge groups and return the dimension of the field under the gauge group.";
+SA`Doc`Input = {"field"->"An integer, entry in the array 'Fields'","gauge"->"An integer, entry in the array 'Gauge'"};
+SA`Doc`GenerateEntry[];
+SA`Doc`EndEntry[];
+
 If[Head[Fields[[field,gauge+3]]]===List,
 Return[Fields[[field,gauge+3,1]]];,
 Return[Fields[[field,gauge+3]]];
 ];
 ];
 
+(*
 getRepresentationMatrix[field_]:=Block[{i,j,ind,pos,res={},indFinal={},k},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "getRepresentationMatrix";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 pos=Position[ListFields,field][[1,1]];
-For[j=1,j<=Length[Gauge],
-ind=Select[ListFields[[pos]],(FreeQ[#,Gauge[[j,3]]]==False)&];
+For[j=1,j\[LessEqual]Length[Gauge],
+ind=Select[ListFields[[pos]],(FreeQ[#,Gauge[[j,3]]]\[Equal]False)&];
 If[ind=!={},
 ind=ind[[1]]; indFinal={};
-For[k=1,k<=Length[ind[[1]]],
+For[k=1,k\[LessEqual]Length[ind[[1]]],
 If[ind[[2,k]]===Gauge[[j,3]] || ind[[2,k]]===-Gauge[[j,3]],
 indFinal = Join[indFinal,{ind[[1,k]]}];
 ];
@@ -91,8 +112,11 @@ If[Gauge[[j,2]]===U[1],res=Join[res,{IR[field][1]}];,res=Join[res,{1}];];
 If[Gauge[[j,2]]===U[1],res=Join[res,{IR[field][1]}];,res=Join[res,{1}];];
 ];
 j++;];
+
+SA`Doc`EndEntry[];
 Return[res];
 ];
+*)
 
 CheckIrrepSUN[x_,1]:={x,0,0,x^2,x^2,{1}};
 CheckIrrepSUN[a_,b_]:=TestDim[a,b];
@@ -100,27 +124,49 @@ CheckIrrepSUN[{a_,b_},c_]:=TestDim[{a,b},c];
 
 
 TestDim[dim_,N_]:=Block[{height, max},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "TestDim";
+SA`Doc`Info = "Brute force approach to find a Young Tab. which corresponds to the given dimension of a given SU(N) group.";
+SA`Doc`Input={"dim"->"Demanded dimension","N"->"The N in SU(N)"};
+SA`Doc`GenerateEntry[];
+
 correctTableaux=False; height=1; max=N;
 While[height<=N-1&&correctTableaux==False,
 (* AddRow[10 N,1,height,{},dim,N]; *)
 AddRow[3 N,1,height,{},dim,N];
 height++;];
 If[Ytab[[2]]==0 && Ytab[[3]] > N/2,Ytab[[2]]=N-Ytab[[3]]; Ytab[[3]]=0];
+
+SA`Doc`EndEntry[];
 Return[Ytab];
 ];
 
 TestDim[{dim_,dyn_},N_]:=Block[{height, max},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "TestDim";
+SA`Doc`Info = "Brute force approach to find a Young Tab. which corresponds to the given dimension AND given Dynkin labels of a given SU(N) group.";
+SA`Doc`Input={"dim"->"Demanded dimension", "dyn"->"The dynkin labels of the Irrep","N"->"The N in SU(N)"};
+SA`Doc`GenerateEntry[];
+
 correctTableaux=False;height=1;max=N;
 While[height<=N-1&&correctTableaux==False,
 (* AddRow[10 N,1,height,{},dim,dyn,N]; *)
 AddRow[3 N,1,height,{},dim,dyn,N];
 height++;];
 If[Ytab[[2]]==0 && Ytab[[3]] > N/2,Ytab[[2]]=N-Ytab[[3]]; Ytab[[3]]=0];
+
+SA`Doc`EndEntry[];
 Return[Ytab];
 ];
 
 
 AddRow[max_,height_,maxheight_,tableaux_,dim_,dyn_,N_]:=Block[{i,cdim},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "AddRow";
+SA`Doc`Info = "Adds a new row to a given Young tableuax";
+SA`Doc`Input={"max"->"maximal number of boxes in the row","height"->"height of the entire tableuax","maxheight"->"maximal height of the tableaux","dim"->"demanded dimension of the tableuax","dyn"->"demanded Dynkin labels the tableaux should correspond to", "N"->"N in SU(N) to define the gauge group"};
+SA`Doc`GenerateEntry[];
+
 i=1;
  While[i<=max&&correctTableaux==False, 
 tab=Join[tableaux,{i}];
@@ -132,9 +178,16 @@ correctTableaux=True;
 AddRow[i,height+1,maxheight,tab,dim,dyn,N];
 ];
 i++];
+
+SA`Doc`EndEntry[];
 ];
 
 AddRow[max_,height_,maxheight_,tableaux_,dim_,N_]:=Block[{i,cdim},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "AddRow";
+SA`Doc`Input={"max"->"maximal number of boxes in the row","height"->"height of the entire tableuax","maxheight"->"maximal height of the tableaux","dim"->"demanded dimension of the tableuax","N"->"N in SU(N) to define the gauge group"};
+SA`Doc`GenerateEntry[];
+
 i=1;
 cdim = 0;
 While[i<=max&&correctTableaux==False,
@@ -145,43 +198,52 @@ If[Ytab[[1]]==dim,correctTableaux=True;];,
 AddRow[i,height+1,maxheight,tab,dim,N];
 ];
 i++];
+SA`Doc`EndEntry[];
 ];
 
+SA`Doc`Todo=" Some more fun with Young Tableuax's. Not used by SARAH! Therefore, comment out. Maybe, you want to delete it; FS, 20/05/2019";
 
-ClueBoxes[tab_,nBoxes_,a_]:=Block[{nRows,integers,i,res={}},
+(*
+ClueBoxes[tab_,nBoxes_]:=Block[{nRows,integers,i,res={}},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "ClueBoxes";
+SA`Doc`Info = "Clues a new box to an existing tableuax.";
+SA`Doc`Input={"tab"\[Rule]"The existing tableaux","nBoxes"\[Rule]"The number of the new boxes"};
+SA`Doc`GenerateEntry[];
+
 nRows=Length[tab[[1]]]+1;
 integers=Table[i,{i,0,nBoxes}];
 If[nBoxes<nRows,integers=Join[integers,Table[0,{nRows-nBoxes}]];];
-combinations=Select[Tuples[integers,nRows],(Plus@@#==nBoxes)&];
+combinations=Select[Tuples[integers,nRows],(Plus@@#\[Equal]nBoxes)&];
 
 tabtemp={Join[tab[[1]],{0}],Join[tab[[2]],{{}}]};
 tabres=Transpose[{(tabtemp[[1]]+#)&/@combinations,(JoinI[tabtemp[[2]],#])&/@(a combinations)}];
-tabres=DeleteCases[Intersection[Select[tabres,(Sort[#[[1]],(#2<#1)&]==#[[1]])&]],0,2];
+tabres=DeleteCases[Intersection[Select[tabres,(Sort[#[[1]],(#2<#1)&]\[Equal]#[[1]])&]],0,2];
 
 (* make sure not to use the same column! *)
 
- (* Print["b  ",tabres];  *)
- For[i=1,i<=Length[tabres],
-(* If[CheckColumnCondition[tabres[[i]]]\[Equal]True, *)
- (* Print[" c  ",tabres[[i]]];   *)
-  If[CheckColumnCondition[{T1[[1]],tabres[[i,2]]}]==True,  
-(* If[CheckColumnCondition[{tabtemp[[1]],tabres[[i,2]]}]\[Equal]True,  *)
+  For[i=1,i\[LessEqual]Length[tabres],
+  If[CheckColumnCondition[{T1[[1]],tabres[[i,2]]}]\[Equal]True,  
 res=Join[res,{tabres[[i]]}];
 ];
 i++;]; 
-(* Print[res]; *)
- Return[res];  
-Return[tabres];
 
+SA`Doc`EndEntry[];
+ Return[res];  
 ];
 
 CheckColumnCondition[tab_]:=Block[{temp,i,j,double},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "CheckColumnCondition";
+SA`Doc`Info = "Checks if a Young tableaux is valid, i.e. number or columns and rows are in agreement.";
+SA`Doc`Input = {"tab"\[Rule]"The considered tableaux"};
+SA`Doc`GenerateEntry[];
+
 temp=JoinI[List/@tab[[1]],tab[[2]]];
-temp=DeleteCases[DeleteCases[Transpose[FillLinesYT[DeleteCases[Flatten/@((Flatten/@temp //.a_ *aa[b_]:>Table[aa[b],{a}]) //. aa[b_Integer]:>aa[ToString[b]]//.a_Integer:>Table[bb,{a}]),{},2]]],bb,3],{},3];
+temp=DeleteCases[DeleteCases[Transpose[FillLinesYT[DeleteCases[Flatten/@((Flatten/@temp //.a_ *aa[b_]\[RuleDelayed]Table[aa[b],{a}]) //. aa[b_Integer]\[RuleDelayed]aa[ToString[b]]//.a_Integer:>Table[bb,{a}]),{},2]]],bb,3],{},3];
  double=Cases[temp,{a___,aa[b_],d___,aa[b_],c___}];
-(*  Print[tab,"  ",temp,"  ",double, double==={}];  *)
-(* If[temp===Intersection/@temp, *)
-(*  Print[temp,"  ",double];  *)
+
+SA`Doc`EndEntry[];
 If[double==={},
 Return[True];,
 Return[False];
@@ -189,6 +251,11 @@ Return[False];
 ];
 
 FillLinesYT[tab_]:=Block[{temp,max,i},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "FillLinesYT";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 max=Max[Length/@tab];
 temp=Table[Flatten[Join[tab[[i]],Table[bb,{max-Length[tab[[i]]]}]]],{i,1,Length[tab]}];
 Return[temp];
@@ -196,18 +263,100 @@ Return[temp];
 
 
 JoinI[a_,b_]:=Block[{i,temp={}},
-For[i=1,i<=Length[a],
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "JoinI";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
+For[i=1,i\[LessEqual]Length[a],
 temp=Join[temp,{Join[a[[i]],{b[[i]]}]}];
 i++;];
 If[Length[b]>Length[a],
-For[i=Length[a]+1,i<=Length[b],
+For[i=Length[a]+1,i\[LessEqual]Length[b],
 temp=Join[temp,{{b[[i]]}}];
 i++;];
 ];
+
+SA`Doc`EndEntry[];
 Return[DeleteCases[temp,0,2]];
 ];
 
+
+MultiplyReps[a_,b_,N_]:=Block[{i,j,k,dims,tempTab,tempFin,dimA,dimB},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "MultiplyReps";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
+If[Head[a]===List,
+T1=DynkinToYoung[a];
+dimA=UseHookFormular[T1,N];,
+T1=getYoungTableaux[a,N];
+dimA=a;
+];
+If[Head[b]===List,
+T2=DynkinToYoung[b];
+dimB=UseHookFormular[T2,N],
+T2=getYoungTableaux[b,N];
+dimB=b;
+];
+
+T1={T1,Table[{},{Length[T1]}]};
+ tempTab={T1}; 
+For[i=1,i\[LessEqual]Length[T2],
+tempTab=(ClueBoxes[#,T2[[i]],aa[i]]&/@tempTab);
+save=tempTab;
+ tempTab=Flatten[tempTab,1]; 
+i++;];
+(* Print["before ",Table[tempTab[[i,1]],{i,1,Length[tempTab]}]]; *)
+tempFin={};
+ (* Print[UseHookFormular[#,N]&/@DeleteCases[tempFin,0,2]];  *)
+ For[i=1,i\[LessEqual]Length[tempTab],
+ (* Print["dim ", UseHookFormular[DeleteCases[tempTab[[i,1]],0,2],N],"  ",DeleteCases[tempTab[[i,1]],0,2]];   *)
+(* Print["tab ",tempTab[[i,1]]]; *)
+ If[CheckAllowedYT[tempTab[[i,2]]]\[Equal]True, 
+tempFin=Join[tempFin,{tempTab[[i,1]]}];
+  ];  
+i++;];
+ (* Print["after ",tempFin]; *)
+(* tempFin=Intersection[tempFin];  *)
+dims=DeleteCases[UseHookFormular[#,N]&/@DeleteCases[tempFin,0,2],0,2];
+If[Plus@@(Abs[dims])=!=Abs[dimA*dimB],Print["Problem with product ",a," x ",b," under SU(",N,")"];];
+
+SA`Doc`EndEntry[];
+Return[{dims,DeleteCases[YoungToDynkin[#,N]&/@tempFin,NOTAB]}];  
+
+];
+
+
+CheckAllowedYT[seq_]:=Block[{allowed=True,i,j,fin,remaining,max},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "CheckAllowedYT";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
+fin=Flatten[Flatten[Reverse/@seq]//.a_ *aa[b_]\[RuleDelayed]Table[aa[b],{a}]];
+max=Max[Cases[fin,x_Integer,5]];
+For[i=1,i\[LessEqual]Length[fin],
+int =fin[[i]] /. coeff___ aa[j_Integer]\[Rule]j /. aa[j_Integer]\[Rule]j;
+If[int>1,
+remaining=Take[fin,{1,i}];
+counts= {{Count[remaining,aa[int]],Count[remaining,aa[int-1]]}};
+If[Select[counts,(#[[1]]>#[[2]]) &]=!={},allowed=False;];
+];
+i++;];
+SA`Doc`EndEntry[];
+Return[allowed];
+];
+*)
+
 UseHookFormular[rowsIN_,N_]:=Block[{i,j,k,dimm,distance,hook,sign,ct},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "UseHookFormular";
+SA`Doc`Info = "Used the Hook formula to calculate the dimension of a given Young Tableuax.";
+SA`Doc`Input={"rowsIN"->"the number of boxes per row; this defines the Young tableuax","N"->"The N in SU(N)"};
+SA`Doc`GenerateEntry[];
+
 dimm=1;
 correcttablaux=False;
 sign=1;
@@ -229,106 +378,80 @@ distance=-i+j;
 dimm=dimm*(N+distance)/hook;
 j++;];
 i++;];
+
+SA`Doc`EndEntry[];
 Return[sign*dimm];
 ];
 
 
 CheckYonjugatedYT[rowsIN_,N_]:=Block[{lines,rowsinvers,sign=1},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "CheckYonjugatedYT";
+SA`Doc`Info = "Checks if a given Young Tableaux corresponds to a conjugates representation.";
+SA`Doc`Input={"rows"->"the number of boxes per row; this defines the Young tableuax","N"->"The N in SU(N)"};
+SA`Doc`GenerateEntry[];
+
 rows=rowsIN;
 nrL=Max[rows];
 If[(nrL*N)/2<Plus@@rows,
 rows=InvertYT[rows,N];
 sign=-1;
 ];
+
+SA`Doc`EndEntry[];
 Return[{rows,sign}];
 ];
 
 InvertYT[rows_,N_]:=Block[{nrL,i,lines},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "InvertYT";
+SA`Doc`Info = "Inverts a given Young Tableaux.";
+SA`Doc`Input={"rows"->"the number of boxes per row; this defines the Young tableuax","N"->"The N in SU(N)"};
+SA`Doc`GenerateEntry[];
+
 nrL=Max[rows];
 lines=Table[Length[Select[rows,(#>= i)&]],{i,1,nrL}];
 lines=-lines+Table[N,{Length[lines]}];
+
+SA`Doc`EndEntry[];
 Return[Table[Length[Select[lines,(#>= i)&]],{i,1,Max[lines]}]];
 ];
 
 
-MultiplyReps[a_,b_,N_]:=Block[{i,j,k,dims,tempTab,tempFin,dimA,dimB},
-If[Head[a]===List,
-T1=DynkinToYoung[a];
-dimA=UseHookFormular[T1,N];,
-T1=getYoungTableaux[a,N];
-dimA=a;
-];
-If[Head[b]===List,
-T2=DynkinToYoung[b];
-dimB=UseHookFormular[T2,N],
-T2=getYoungTableaux[b,N];
-dimB=b;
-];
-
-T1={T1,Table[{},{Length[T1]}]};
- tempTab={T1}; 
-For[i=1,i<=Length[T2],
-tempTab=(ClueBoxes[#,T2[[i]],aa[i]]&/@tempTab);
-save=tempTab;
- tempTab=Flatten[tempTab,1]; 
-i++;];
-(* Print["before ",Table[tempTab[[i,1]],{i,1,Length[tempTab]}]]; *)
-tempFin={};
- (* Print[UseHookFormular[#,N]&/@DeleteCases[tempFin,0,2]];  *)
- For[i=1,i<=Length[tempTab],
- (* Print["dim ", UseHookFormular[DeleteCases[tempTab[[i,1]],0,2],N],"  ",DeleteCases[tempTab[[i,1]],0,2]];   *)
-(* Print["tab ",tempTab[[i,1]]]; *)
- If[CheckAllowedYT[tempTab[[i,2]]]==True, 
-tempFin=Join[tempFin,{tempTab[[i,1]]}];
-  ];  
-i++;];
- (* Print["after ",tempFin]; *)
-(* tempFin=Intersection[tempFin];  *)
-dims=DeleteCases[UseHookFormular[#,N]&/@DeleteCases[tempFin,0,2],0,2];
-If[Plus@@(Abs[dims])=!=Abs[dimA*dimB],Print["Problem with product ",a," x ",b," under SU(",N,")"];];
-Return[{dims,DeleteCases[YoungToDynkin[#,N]&/@tempFin,NOTAB]}];  
-
-];
 
 getYoungTableaux[dim_,N_]:=Block[{},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "getYoungTableaux";
+SA`Doc`Info = "Wrapper function to find the young tableaux corresponding to a given dimension under a given gauge group. ";
+SA`Doc`Input={"dim"->"the demanded dimension","N"->"The N in SU(N)"};
+SA`Doc`GenerateEntry[];
+
 TestDim[Abs[dim],N];
+
+SA`Doc`EndEntry[];
 If[dim<0,
 Return[InvertYT[tab,N]];,
 Return[tab];
 ];
 ];
 
-CheckAllowedYT[seq_]:=Block[{allowed=True,i,j,fin,remaining,max},
-fin=Flatten[Flatten[Reverse/@seq]//.a_ *aa[b_]:>Table[aa[b],{a}]];
-max=Max[Cases[fin,x_Integer,5]];
-For[i=1,i<=Length[fin],
-int =fin[[i]] /. coeff___ aa[j_Integer]->j /. aa[j_Integer]->j;
-If[int>1,
-(* remaining=Take[fin,{i,Length[fin]}]; *)
-remaining=Take[fin,{1,i}];
-(* counts=Table[{Count[remaining,aa[j]],Count[remaining,aa[j-1]]},{j,1,max}]; *)
-counts= {{Count[remaining,aa[int]],Count[remaining,aa[int-1]]}};
-(* Print[fin,"  ",i,"  ",counts, "int ",int,"  ",Select[counts,(#[[1]]>#[[2]] )&]=!={}];   *)
-If[Select[counts,(#[[1]]>#[[2]]) &]=!={},allowed=False;];
-(* remaining=Take[fin,{i+1,Length[fin]}] /. aa[j_]\[RuleDelayed]1/;(j\[Equal](int-1)) /. aa[j_Integer]\[Rule]0;
- previous=Take[fin,{1,i}] /. aa[j_Integer]\[RuleDelayed]1/;(j\[Equal]int) /. aa[j_Integer]\[Rule]0;
-Print[previous, "  ",remaining, i];
-If[(Plus@@previous)>  (Plus@@remaining) && (Plus@@remaining=!=0),allowed=False; Print[False];];
-i++;]; *)
-];
-i++;];
-(* Print["fin ",fin," ",allowed]; *)
- (* Print["allowed ",allowed];  *)
-Return[allowed];
-];
 
 CalculateDynkinAndCasimir[gauge_,dim_]:=Block[{i,temp55},
+SA`Doc`File = "Package/GroupTheory/young.nb";
+SA`Doc`Name = "CalculateDynkinAndCasimir";
+SA`Doc`Info = "This routine calculates the quadratic Casimir and Dynkin index for a given dimension.";
+SA`Doc`Input={"gauge"->"the position in the array 'Gauge'","dim"->"the demanded dimension"};
+SA`Doc`GenerateEntry[];
+
 If[Gauge[[gauge,2]]===U[1],
 temp55=CheckIrrepSUN[dim,1];
+SA`Doc`EndEntry[];
 Return[{GUTren[gauge]^2*temp55[[4]],GUTren[gauge]^2*temp55[[5]]}];,
 If[dim===1,
+SA`Doc`EndEntry[];
 Return[{0,0}];,
 temp55=CheckIrrepSUN[dim,Gauge[[gauge,2]][[1]]];
+SA`Doc`EndEntry[];
 Return[{temp55[[4]],temp55[[5]]}];
 ];
 ];

@@ -19,10 +19,17 @@
 
 
 
+(* ::Input::Initialization:: *)
 Options[PrepareRGEs]={OnlyDiagonal->True,BetaFunctions->ALL,ComplexPhases->False};
 PrepareRGEs[opt___]:=PrepareRGEsFunc[OnlyDiagonal/.{opt}/.Options[PrepareRGEs],BetaFunctions/.{opt}/.Options[PrepareRGEs],ComplexPhases/.{opt}/.Options[PrepareRGEs]  ];
 PrepareRGEsFunc[OnlyDiag_,set_,complex_]:=Block[{i,j1,j2,j3,j4,dim,all},
 (* UseSymmASymm=True;  *)
+SA`Doc`File = "Package/RGEs/OutputRGEs.nb";
+SA`Doc`Name = "PrepareRGEsFunc";
+SA`Doc`Info = "This function first collects all parameters for which the beta-function need to be translated. Afterwards, it call the main function (InitEquations) to translate the expression into proper Mathematica syntax. By default, only diagonal entries are considered because the RGE evaluation with Mathematica is pretty slow. This can be changed by the options. Also only a subset of parameters could be included via the second input.";
+SA`Doc`Input={"OnlyDiag"->"Consider only diagonal entries in matrices","set"->"Considered set of parameters","complex"->"consider complex parameters"};
+SA`Doc`GenerateEntry[];
+
 If[set===ALL,
 If[SupersymmetricModel=!=False,
 all={BetaLSi, BetaBij, BetaTijk,BetaVEV,Betam2ij/.Flatten[Flatten[TraceAbbr,1] /.{a_,b_Times|b_Plus |b_Symbol |b_trace}->(a->b)]/. Kronecker->Delta, BetaMi,BetaGauge,BetaYijk,BetaMuij,BetaLi};
@@ -60,13 +67,21 @@ AllParametersEx=DeleteCases[Flatten[AllParametersEx],0];
 
 
 InitEquations[OnlyDiag,complex];
+SA`Doc`EndEntry[];
 (*  UseSymmASymm=False;  *)
 ];
 
 
 
 
+(* ::Input::Initialization:: *)
 InitEquations[OnlyDiag_,complex_]:=Block[{i,jj1,jj2,jj3,jj4,dim,temp,tempNew},
+SA`Doc`File = "Package/RGEs/OutputRGEs.nb";
+SA`Doc`Name = "InitEquations";
+SA`Doc`Info = "This function takes the beta-function in SARAH format and translates them into Mathematica format. All sums/matrix mulitplications are performed and an explicit scale index 't' is attached to all parameters.";
+SA`Doc`Input={"OnlyDiag"->"Consider only diagonal entries in matrices","set"->"Considered set of parameters","complex"->"consider parameters to be complex"};
+SA`Doc`GenerateEntry[];
+
 AllEquations={};
 subExpandRGEs = {trace[a__]:>Tr[Dot[a]], MatMul->Dot,Adj[x_]:>Transpose[Conjugate[x]],Tp[x_]:>Transpose[x], conj->Conjugate, sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}], ScalarProd[x__]:>Dot[x]};
 If[complex=!=True,
@@ -137,9 +152,12 @@ Switch[Length[dim],
 ];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
+(* ::Input::Initialization:: *)
 Options[RunRGEs]={TwoLoop->True};
 RunRGEs[input_,start_,finish_,opt___]:=RunRGEsFunc[input,start,finish,TwoLoop/.{opt}/.Options[RunRGEs]];
 RunRGEsFunc[input_,start_,finish_,twoloop_]:=Block[{init,coeff2L},
@@ -155,6 +173,13 @@ Return[sol];
 ];
 
 OutputRGEsFile[file_]:=Block[{i,j,out},
+SA`Doc`File = "Package/RGEs/OutputRGEs.nb";
+SA`Doc`Name = "OutputRGEsFile";
+SA`Doc`Info = "This routines writes the RGEs to an external file together with a function (RunRGEs) to run them.";
+SA`Doc`Input={"file"->"output file name"};
+SA`Doc`GenerateEntry[];
+
+
 out=OpenWrite[file];
 WriteString[out, "(* ---------------------------------------------------------------------- *) \n"];
 WriteString[out, "(* This model file was automatically created by SARAH version"<>SA`Version<>" *) \n"];
@@ -193,12 +218,21 @@ WriteString[out,"sol=NDSolve[equations,AllParametersEx,{t,start,finish}]; \n"];
 WriteString[out,"Return[sol]; \n"];
 WriteString[out,"]; \n"];
 Close[out];
+
+SA`Doc`EndEntry[];
 ];
 
 CreateFileForRunning:=Block[{},
+SA`Doc`File = "Package/RGEs/OutputRGEs.nb";
+SA`Doc`Name = "CreateFileForRunning";
+SA`Doc`Info = "This function translates the calculated RGEs into a format which can be used by NDSolve and stores the output in a separate file 'RunRGEs.m'. This file can then independently of SARAH be loaded in Mathematica to perform an RGE running (and do some plots of the scale dependencen of parameters).";
+SA`Doc`GenerateEntry[];
+
 Print["Writing Mathematica code to evaluate RGEs"];
 PrepareRGEs[];
 OutputRGEsFile[ToFileName[$sarahCurrentRGEDir,"RunRGEs.m"]];
+
+SA`Doc`EndEntry[];
 ];
 
 

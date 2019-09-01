@@ -2242,7 +2242,7 @@ PenguinGm2VVF,
 	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentVector1]/getElectricCharge[Electron]]<>")\n "];
 	WriteString[file,"ratio = 1._dp/ratio ! conventions in 1402.7065 are different \n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
-	WriteString[file,"a_mu = a_mu - 4._dp*chargefactor*(Real(coup1L*Conjg(coup1R),dp)*gVVF(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
+	WriteString[file,"a_mu = a_mu - 4._dp*chargefactor*ratio*(Real(coup1L*Conjg(coup1R),dp)*gVVF(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
 	WriteString[file,"      & + 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*fVVF(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>") \n"];
 WriteString[file,"End if \n \n"];,
 
@@ -2251,7 +2251,7 @@ PenguinGm2FFV,
 	WriteString[file,"ratio = 1._dp/ratio ! conventions in 1402.7065 are different \n "];
 	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
-	WriteString[file,"a_mu = a_mu - 8._dp*chargefactor*(Real(coup1L*Conjg(coup1R),dp)*gFFV(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
+	WriteString[file,"a_mu = a_mu - 8._dp*chargefactor*ratio*(Real(coup1L*Conjg(coup1R),dp)*gFFV(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
 	WriteString[file,"      & + 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*fFFV(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>") \n"];
 WriteString[file,"End if \n \n"];,
 

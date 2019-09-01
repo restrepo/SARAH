@@ -29,6 +29,13 @@ Vertex[x_,opt___ ]:=CalcVertex[x,Eigenstates/.{opt}/.Options[Vertex], UseDepende
 
 
 CalcVertex[parts_, Eigenstates_, UseDependences_, Lorentz_] := Block[{k,l,i,j,temp,temp2,subInvMatrices},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "CalcVertex";
+SA`Doc`Info = "Main function to calculate the vertex of a given combination of external fields. First, Dirac spinors are replaced by Weyl spinors. Second, the generic type of the vertex is checked and the necessary information (which part of the Lagrangina, what Lorentz structure) is initialised. Third, the vertex is calculated by taking the partial derivative with respect to the external fields. Finally, the Lorentz dependent and independent parts are separated. \n
+Note, some parts refer to effective operators (FFFF,SSSSS,FFSS,...) but those were never validated.";
+SA`Doc`Input={"parts"->"List of involved particles","Eigenstates"->"Considered eigenstates","UseDependences"->"Insert known dependences among parameters in the final expression?","Lorentz"->"NO LONGER USED"};
+SA`Doc`GenerateEntry[];
+
 
 partCode=0;
 vfactor=1;
@@ -512,7 +519,7 @@ If[(partCode===210 || partCode===2010 || partCode===220) && UseCheckMatrixProduc
 Result = Result /.  SA`subUnitaryCondition;
 ];
 
-Return[Result];
+SA`Doc`Return[Result];
 
 
 ];
@@ -524,6 +531,12 @@ Return[Append[LorentzProduct[a],b]];
 ];
 
 makeSubFinalIndizes:=Block[{i,t,broken},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "makeSubFinalIndizes";
+SA`Doc`Info = "Generates a substitution list to bring the names of the indices of the external fields into the correct form. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 subFinal={};
 subFinalX={};
 broken=Select[Gauge,(#[[5]]==True)&];
@@ -538,15 +551,23 @@ subFinalX = Join[subFinalX, {sum[(subIndizes[[i,1]] /.subGC[1] /.subIndFinalX[1,
 t++;]; 
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 ExtractLorentz[x_]:=Block[{temp,i,j},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "ExtractLorentz";
+SA`Doc`Info = "This functions extracts the Lorentz structure in a given expression. The result is that the Lorentz independent piece gets stored in 'Coeff' and the Lorentz piece in 'Lor'. These two variables are then used by the routine which calculates the vertices.";
+SA`Doc`Input={"x"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 saveLorIn=x;
 
 If[(FreeQ[x,lt3]==True) && (FreeQ[x,lt1]==True) &&(FreeQ[x,lt2]==True) &&(FreeQ[x,lt4]==True)&&(FreeQ[x,lor5]==True),
 Lor={1};
 Coeff={x};
-Return[];
+SA`Doc`Return[];
 ]; 
 
 If[Head[x]=!=Times,
@@ -626,6 +647,7 @@ Coeff[[1]]=-Coeff[[1]];
 
 Lor=Lor /. {lor3->lt5,lor4->lt5, lor5->lt5};
 
+SA`Doc`EndEntry[];
 ];
 
 LP[x__]:=LorentzProduct[x];
@@ -641,6 +663,12 @@ LorentzProduct[x_Plus,y__]:=LorentzProduct[#,y]&/@x;
 LorentzProduct[(A_ + B_) C_,y__]:=LorentzProduct[A C + B C,y] ;
 
 ExtractLorentzNew[vertexIN_]:=Block[{i,j,k,l,temp={},subs,current,coeff,vertex},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "ExtractLorentzNew";
+SA`Doc`Info = "This functions extracts the Lorentz structure in a given expression. The result is than returned in a two-dimensional list. It was supposed to be a cleaner replacement for the ugly 'ExtractLorentz', but never used in practice.";
+SA`Doc`Input={"vertexIN"->"The considered vertex"};
+SA`Doc`GenerateEntry[];
+
 LorentzHeaders={g,gamma,sig,Mom};
 LorentzInd={lt1,lt2,lt3,lt4,lt4,lt5};
 
@@ -663,16 +691,22 @@ temp=Join[temp,{{current,coeff}}];
 ];
 j++;];
 ];
-Return[temp];
+SA`Doc`Return[temp];
 
 ];
 
 ExtractLorentzCoeff[vertex_,lor_]:=Block[{i,temp},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "ExtractLorentzCoeff";
+SA`Doc`Info = "This function returns the coefficient in front of a given Lorentz structure.";
+SA`Doc`Input={"vert"->"The considered vertex","lor"->"The considered Lorentz structure"};
+SA`Doc`GenerateEntry[];
+
 If[Head[lor]===Times,
 temp=vertex;
 For[i=1,i<=Length[lor],temp=D[temp,lor[[i]]];i++;];
-Return[temp];,
-Return[D[vertex,lor]];
+SA`Doc`Return[temp];,
+SA`Doc`Return[D[vertex,lor]];
 ];
 ];
 
@@ -680,6 +714,12 @@ Return[D[vertex,lor]];
 TreeMass[x_,eigenstates_]:=TreeMass[x,eigenstates,True];
 
 TreeMass[x_,eigenstates_, insGen_]:=Block[{i,sub},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "TreeMass";
+SA`Doc`Info = "This function calculates the tree-level mass of a given particle.";
+SA`Doc`Input={"x"->"The considered particle","eigenstates"->"The considered eigenstates","insGen"->"shall the generation indices 'gt1,gt2' be replaced by an generic index 'generation'?"};
+SA`Doc`GenerateEntry[];
+
 Particles[Current] = Particles[eigenstates];
 If[insGen==True,
 sub = {gt1->generation,gt2->generation};,
@@ -693,20 +733,26 @@ sub = {gt1->1,gt2->1,generation->1};
 sub = Join[sub,PhasesToOneSub];
 
 Switch[getType[x,False,eigenstates],
-V,Return[-Vertex[{x,conj[x]},Eigenstates->eigenstates][[2,1]]/.sub];,
-S,Return[-Vertex[{x,conj[x]},Eigenstates->eigenstates][[2,1]]/. sub];,
+V,SA`Doc`Return[-Vertex[{x,conj[x]},Eigenstates->eigenstates][[2,1]]/.sub];,
+S,SA`Doc`Return[-Vertex[{x,conj[x]},Eigenstates->eigenstates][[2,1]]/. sub];,
 F, diracSpinor = x /. diracSubBack1[eigenstates]  /. diracSubBack2[eigenstates];
    If[MemberQ[MajoranaPart,x]===True,
-Return[-Vertex[{ diracSpinor , diracSpinor },Eigenstates->eigenstates][[2,1]]/. sub];,
-Return[-Vertex[{bar[ diracSpinor ], diracSpinor },Eigenstates->eigenstates][[2,1]]/.sub];
+SA`Doc`Return[-Vertex[{ diracSpinor , diracSpinor },Eigenstates->eigenstates][[2,1]]/. sub];,
+SA`Doc`Return[-Vertex[{bar[ diracSpinor ], diracSpinor },Eigenstates->eigenstates][[2,1]]/.sub];
 ];,
-G, Return[0];,
-NoField, Return[0];,
-A, Return[0];
+G, SA`Doc`Return[0];,
+NoField, SA`Doc`Return[0];,
+A, SA`Doc`Return[0];
 ];
 ];
 
 getPartInv[parts_] := Block[{k,l,i,j,temp,temp2,subInvMatrices,Eigenstates},
+SA`Doc`File = "Package/vertex.nb";
+SA`Doc`Name = "getPartInv";
+SA`Doc`Info = "This function takes a list of fields (potentially including Dirac spinors) and return the involved fields in terms of Wely Spinor. Moreoever, it strips indices off the fields. This function is actually used for the loop decays up to now.";
+SA`Doc`Input={"parts"->"The list of considered field"};
+SA`Doc`GenerateEntry[];
+
 Eigenstates=SA`CurrentStates;
 partCode=0;
 For[i=1,i<=Length[parts],
@@ -785,24 +831,6 @@ Switch[partCode,
 	LorentzNeeded=False;
 	];
 	subVacuum = vacuumS;,
-
-(* SS *)
-200,
-	Lag = LagSSSS[Eigenstates];
-	PartInv = {teilchen};
-	LorentzNeeded=False;
-	lorStructure = {1};
-	subVacuum = vacuumS;,
-
-(* VV *)
-20,
-	Lag = LagSV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	vfactor=-1;
-	subVacuum = vacuumS;,
-
 (* FFS *)
 2100,
 	If[FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[1]]]]==False || FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[2]]]]==False,
@@ -857,229 +885,10 @@ Switch[partCode,
 	Lag = LagFFV[Eigenstates]+ LagFFSV[Eigenstates];
 	LorentzNeeded=True;
 	subVacuum = vacuumV;,
-
-(* FFVV *)
-2020,
-	If[FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[1]]]]==False || FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[2]]]]==False,
-	FermFirst=True;
-	PartInv={{},{}};
-         For[i=1,i<=4,
-	   If[FermionQ[teilchen[[i]]]==False,
-	PartInv[[1]]=Join[PartInv[[1]],{teilchen[[i]]}];
-	PartInv[[2]]=Join[PartInv[[2]],{teilchen[[i]]}];,
-	If[Head[teilchen[[i]]]===bar,
-	ferm=conj[Reverse[RE[teilchen[[i]]]/.diracSub[Eigenstates]]];,
-	ferm=teilchen[[i]]/.diracSub[Eigenstates];
-	];
-	If[FermFirst==True,
-	PartInv[[1]] = Join[PartInv[[1]],{ferm[[2]]}];
-	PartInv[[2]] = Join[PartInv[[2]],{ferm[[1]]}];
-	FermFirst=False;,
-	PartInv[[1]] = Join[PartInv[[1]],{ferm[[1]]}];
-	PartInv[[2]] = Join[PartInv[[2]],{ferm[[2]]}];
-	];
-	];
-	 i++;];
-	lorStructure={PL,PR};,
-	lorStructure={1};
-	PartInv={teilchen};
-	];
-	Lag = LagFFVV[Eigenstates];
-	LorentzNeeded=True;
-	LorentzCond={WithGamma,WithGamma,WithGamma,WithGamma};
-	subVacuum = {};,
-
-(* FFSV *)
-2110,
-	If[FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[1]]]]==False || FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[2]]]]==False,
-	FermFirst=True;
-	PartInv={{},{}};
-         For[i=1,i<=4,
-           If[FermionQ[teilchen[[i]]]==False,
-	PartInv[[1]]=Join[PartInv[[1]],{teilchen[[i]]}];
-	PartInv[[2]]=Join[PartInv[[2]],{teilchen[[i]]}];,
-	If[Head[teilchen[[i]]]===bar,
-	ferm=conj[Reverse[RE[teilchen[[i]]]/.diracSub[Eigenstates]]];,
-	ferm=teilchen[[i]]/.diracSub[Eigenstates];
-	];
-	PartInv[[1]] = Join[PartInv[[1]],{ferm[[1]]}];
-	PartInv[[2]] = Join[PartInv[[2]],{ferm[[2]]}]; 
-	];
-	 i++;];  
-	lorStructure={PL,PR};,
-	lorStructure={1};
-	PartInv={teilchen};
-	];
-	Lag = LagFFSV[Eigenstates];
-	LorentzNeeded=True;
-	LorentzCond={WithGamma,WithGamma,WithGamma,WithGamma};
-	subVacuum = {};,
-
-(* SSV *)
-210,  
-	Lag = LagSV[Eigenstates];
+_,
 	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	subVacuum = vacuumV;,
- 
-(* SVV *)
-120,
-	Lag = LagSV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	vfactor=I;
-	subVacuum=vacuumS;,
-
-(* SSS *)
-300,
-	Lag = LagSSSS[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=False;
-	vfactor=I;
-	subVacuum = vacuumS;,
-
-(* SSA *)
-10200,
-	Lag = LagSSA[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=False;
-	vfactor=I;
-	subVacuum = vacuumS;,
-
-(* SSSS *)
-400,
-	Lag = LagSSSS[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=False;
-	vfactor=I;
-	subVacuum = vacuumS;,
-
-(* SSVV *)
-220,
-	Lag = LagSV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	vfactor=I;
-	subVacuum = {};,
-
-(* VVV *)
-30,
-	Lag = LagVVV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	subVacuum = {};,
-
-(* VVVV *)
-40,
-	Lag = LagVVVV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = { 1};
-	LorentzNeeded=True;
-	vfactor=I;
-	subVacuum = {};,
-
-(* GGV *)
-12,
-	Lag = LagGGV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	vfactor=1; 
-	subVacuum = {};,
-
-(* GGS *)
-102,
-	Lag = LagGGS[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=False;
-	vfactor=I;
-	subVacuum = {};,
-
-(* FFFF *)
-4000,
-	Lag = LagFFFF[Eigenstates];
-	Fermion=teilchen;
-	Fermion = Fermion  /. bar[x_] -> invO[x]/. diracSub[Eigenstates] /. invO[{x_,y_}]->conj[{y,x}];
-
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],Fermion[[3,1]],Fermion[[4,1]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],Fermion[[3,2]],Fermion[[4,2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],Fermion[[3,1]],Fermion[[4,1]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],Fermion[[3,2]],Fermion[[4,2]]}}];
-
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],Fermion[[3,2]],Fermion[[4,1]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,2]],Fermion[[3,1]],Fermion[[4,2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,2]],Fermion[[3,2]],Fermion[[4,1]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],Fermion[[3,1]],Fermion[[4,2]]}}];		
-	lorStructure={LorentzProduct[PL,PL], LorentzProduct[PR,PL],LorentzProduct[PL,PR],LorentzProduct[PR,PR],LorentzProduct[PL,PL], LorentzProduct[PR,PL],LorentzProduct[PL,PR],LorentzProduct[PR,PR]};
-	LorentzNeeded=True;
-	LorentzCond={NoGamma,NoGamma,NoGamma,NoGamma,WithGamma,WithGamma,WithGamma,WithGamma};
-	subVacuum={};,
-
-(* FFVV *)
-2020,
-	Lag = LagFFVV[Eigenstates];
-	Fermion=Cases[teilchen,x_?FermionQ];
-	NoFermion= DeleteCases[teilchen,x_?FermionQ];
-	Fermion = Fermion  /. bar[x_] -> invO[x]/. diracSub[Eigenstates] /. invO[{x_,y_}]->conj[{y,x}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-		PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-	lorStructure={PL,PR};
-	LorentzCond={NoGamma,NoGamma};
-	subVacuum = {};, 
-
-(* FFSS *)
-2200,
-	Lag = LagFFSS[Eigenstates];
-	Fermion=Cases[teilchen,x_?FermionQ];
-	NoFermion= DeleteCases[teilchen,x_?FermionQ];
-	Fermion = Fermion  /. bar[x_] -> invO[x]/. diracSub[Eigenstates] /. invO[{x_,y_}]->conj[{y,x}];
-	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-		PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
-		LorentzNeeded=True;
-		lorStructure={PL,PR};
-	LorentzCond={NoGamma,NoGamma};
-		subVacuum = {};,
-
-
-(* SSSSSS *)
-600,
-	Lag = LagSSSSSS[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=False;
-	subVacuum = {};,
-
-(* SSSSVV *)
-420,
-	Lag = LagSSSSVV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	subVacuum = {vacuumV};,
-
-(* SSVVVV *)
-240,
-	Lag = LagSSSVVV[Eigenstates];
-	PartInv = {teilchen};
-	lorStructure = {1};
-	LorentzNeeded=True;
-	subVacuum = {vacuumS};
 ];
-Return[PartInv];
+SA`Doc`Return[PartInv];
 ];
 
 

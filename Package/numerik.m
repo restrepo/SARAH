@@ -19,8 +19,11 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* Begin["`Numerik`"] *)
 
+SA`Doc`ToDo="COMPLETELY OUTDATED!! FILE CAN/SHOULD BE REMOVED AT SOME POINT! \n
+Because of that, I also won't add any comments here. FS, 17/05/19 "
 
 (*----------------------------------------*)
 (* Numerical Values  *)
@@ -286,6 +289,7 @@ i++;];
 
 
 
+(* ::Input::Initialization:: *)
 (* -------- Functions for Changing Numerical Value -------*)
 
 NumericValQ[x_List]:=NumericValQ/@ x;
@@ -368,6 +372,7 @@ Return[NaN];
 NoNumericValQ[x_]:=If[NumericQ[x]==True, Return[False];,Return[True];];
 
 
+(* ::Input::Initialization:: *)
 SetParameterValue[x_,y_]:=Block[{},
 If[MemberQ[subNum,x->_],
 subNum=DeleteCases[subNum, x->_];
@@ -382,6 +387,7 @@ subNum=DeleteCases[subN, x->_];
 
 
 
+(* ::Input::Initialization:: *)
 
 
 (* ---------- Calc Eigensystem ------------*)
@@ -446,6 +452,7 @@ If[Length[Cases[EV,x_?Negative]]>0, Return[False];,Return[True];];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 (* ------- Non Symmetric Matrix ------- *)
 
@@ -471,6 +478,7 @@ Set[V,Vtemp];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 (* ----------- Symmetric Matrix ---------- *)
 

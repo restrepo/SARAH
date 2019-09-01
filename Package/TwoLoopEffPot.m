@@ -19,29 +19,16 @@
 
 
 
-(*getColorFactorEffPot[fields_]:=Block[{pos,i,j,fieldsordered,vertex,colorFunction,colorIndizes,res,ind,IND,sub4},pos=Position[VerticesInv[All],C@@fields]/.Cp\[Rule]C;
-fieldsordered=VerticesOrg[All][[pos[[1,1]]]];
-vertex=VerticesVal[All][[pos[[1,1]]]];
-colorFunction=ExtractStructure[vertex,color]/.Lam[a__]\[Rule]1/2 Lam[a];
-colorIndizes=getIndizesWI/@fieldsordered;
-colorIndizes=Select[#,FreeQ[#,color]\[Equal]False&]&/@colorIndizes/.{color,a_Integer}\[Rule]a;
-If[Length[fields]===4,sub4={ct3\[Rule]ct1,ct4\[Rule]ct2};,sub4={}];
-colorFunction=Select[colorFunction,#[[2,1]]=!=0&];
-res=Table[{},{Length[colorFunction]}];
-For[i=1,i\[LessEqual]Length[colorFunction],
-res[[i]]=colorFunction[[i,1]]*conj[colorFunction[[i,1]]]//.sub4//.sum[a_,b_,c_,d_]\[RuleDelayed]Sum[d,{a,b,c}];
-For[j=1,j\[LessEqual]Length[colorIndizes],
-If[colorIndizes[[j]]=!={}&&(Length[fields]<4||j<3),
-ind={ToExpression["ct"<>ToString[j]],1,colorIndizes[[j,1]]};
-res[[i]]=ReleaseHold[Hold[Sum[res[[i]],IND]] /. IND\[Rule]ind];
-];
-j++;];
-i++;];
-Return[res //. sum\[Rule]Sum];];
+(* ::Input::Initialization:: *)
+getColorFactorEffPot[fields_]:=Block[{i,j,k,pos,unbroken,uc,ucname,Indices,IndexRanges,ucIndices,ucFunction,totalgfunc,toprocess,ind,tempf,namestub,nind,Res},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "getColorFactorEffPot";
+SA`Doc`Info = "Calculates the colour factor of a two-loop diagram without external legs. Written by K. Nickel.";
+SA`Doc`Input = {"fields"->"Involved particles in diagram"};
+SA`Doc`GenerateEntry[];
 
-*)
 
-getColorFactorEffPot[fields_]:=Block[{i,j,k,pos,unbroken,uc,ucname,Indices,IndexRanges,ucIndices,ucFunction,totalgfunc,toprocess,ind,tempf,namestub,nind,Res},pos=Position[VerticesInv[All],C@@fields]/.Cp->C;
+pos=Position[VerticesInv[All],C@@fields]/.Cp->C;
 fieldsordered=VerticesOrg[All][[pos[[1,1]]]];
 vertex=VerticesVal[All][[pos[[1,1]]]];
 If[Length[vertex]==0,Return[0]];
@@ -65,31 +52,51 @@ If[Length[fields]==4,totalgfunc=totalgfunc/.sub4];
 nind=ind/.{{a__}->a};
 Res={};
 If[ind!={},AppendTo[Res,ReleaseHold[Hold[Sum[totalgfunc,IND]]/.IND->nind]],AppendTo[Res,totalgfunc]];
-Return[Res]];
+SA`Doc`Return[Res]];
 
 
 
 
+(* ::Input::Initialization:: *)
 DiracQ[p_]:=Block[{temp},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "getColorFactorEffPot";
+SA`Doc`Info = "Checks if a particle is a Dirac fermion. Written by K. Nickel";
+SA`Doc`Input = {"p"->"considered particle"};
+SA`Doc`GenerateEntry[];
+
 temp=Select[DiracList,#[[1]]===(p/.{conj[a_]->a,bar[a_]->a})&];
 If[!temp==={},
 If[temp[[1,2]]===2,Return[True]];
 ];
-Return[False];
+SA`Doc`Return[False];
 ];
 
 
+(* ::Input::Initialization:: *)
 ConjugateDiagramsQ[diag1_,diag2_]:=Block[{type},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "ConjugateDiagramsQ";
+SA`Doc`Info = "Checks if two two-loop Diagram are related by a conjugation. Written by K. Nickel";
+SA`Doc`Input = {"diag1"->"First Diagram", "diag2"->"Second Diagram"};
+SA`Doc`GenerateEntry[];
+
 (*type=3: Hemisphere topology, type=2: Balls topology*)
 type=Length[diag1[[2]]];
 If[type===3,
-Return[diag1[[1,1]]===diag2[[1,1]]||diag1[[1,2]]===diag2[[1,1]]];,
-Return[diag1[[1,1]]===diag2[[1,1]]];
+SA`Doc`Return[diag1[[1,1]]===diag2[[1,1]]||diag1[[1,2]]===diag2[[1,1]]];,
+SA`Doc`Return[diag1[[1,1]]===diag2[[1,1]]];
 ];
 ];
 
 
+(* ::Input::Initialization:: *)
 getDiracFermionList:=Block[{i,fermionlist={},ListSubstituteBack={},AllDiracFermions,name},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "getDiracFermionList";
+SA`Doc`Info = "Returns a list with all Fermions in Dirac notation. Written by K. Nickel";
+SA`Doc`GenerateEntry[];
+
 (*gives a list of Dirac spinors, neglect conjugates*)
 fermionlist={#[[1]],#[[2]]}&/@DEFINITION[EWSB][DiracSpinors]//.{conj[a_]->a};
 (*remove duplicates among Weyl spinors*)
@@ -103,29 +110,47 @@ AllDiracFermions=Intersection[AllFermions/.ListSubstituteBack];
 For[i=1,i<=Length[AllDiracFermions],i++;,
 AllDiracFermions[[i]]=Append[AllDiracFermions[[i]],fermionlist[[i,3]]];
 ];
-Return[AllDiracFermions];
+SA`Doc`Return[AllDiracFermions];
 ];
 
 
+(* ::Input::Initialization:: *)
 Generate2LoopDiagramsHemisphere:=Block[{top2LoopHemispheres,insHemispheres,reducedHemispheres},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "Generate2LoopDiagramsHemisphere";
+SA`Doc`Info = "Generates all two-loop diagrams without external legs and two  cubic couplings. Written by K. Nickel ";
+SA`Doc`GenerateEntry[];
+
 (* there are two topologies, called "Hemispheres" and "Balls" *)
 top2LoopHemispheres={{C[FieldToInsert[1],FieldToInsert[2],FieldToInsert[3]],C[AntiField@FieldToInsert[1],AntiField@FieldToInsert[2],AntiField@FieldToInsert[3]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3]}};
 (* Insert Fields *)
 insHemispheres=InsFields[top2LoopHemispheres];
 (* remove conjugate diagrams to avoid double counting *)
 reducedHemispheres=Intersection[insHemispheres,SameTest->ConjugateDiagramsQ];
-Return[reducedHemispheres];
+SA`Doc`Return[reducedHemispheres];
 ];
 Generate2LoopDiagramsBalls:=Block[{top2LoopBalls,insBalls},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "Generate2LoopDiagramsBalls";
+SA`Doc`Info = "Generates all two-loop diagrams without external legs and a single quartic coupling. Written by K. Nickel ";
+SA`Doc`GenerateEntry[];
+
 (* there are two topologies, called "Hemispheres" and "Balls" *)
 top2LoopBalls={{C[FieldToInsert[1],FieldToInsert[2],AntiField[FieldToInsert[1]],AntiField[FieldToInsert[2]]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2]}};
 (* Insert Fields *)
 insBalls=InsFields[top2LoopBalls];
-Return[insBalls];
+SA`Doc`Return[insBalls];
 ];
 
 
+(* ::Input::Initialization:: *)
 getType2LoopDiagram[diagram_]:=Block[{NrCoupParticles,p1,p2,p3,type={}},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "getType2LoopDiagram";
+SA`Doc`Info = "Returns the type of a two-loop diagrams without external legs. Written by K. Nickel.";
+SA`Doc`Input = {"diagram"->"Considered Diagram"};
+SA`Doc`GenerateEntry[];
+
 NrCoupParticles=Length/@diagram;
 Switch[NrCoupParticles,
 {2,3},
@@ -189,11 +214,18 @@ type=VV;
 ];
 ];
 ];
-Return[type];
+SA`Doc`Return[type];
 ];
 
 
+(* ::Input::Initialization:: *)
 Classify2LoopDiagrams[diagrams_]:=Block[{diagram,temp,bare,listSSS,listSS,listFFS,listFFSbar,listSSV,listVS,listVVS,listFFV,listFFVbar,listVV,listVVV,listggV},
+SA`Doc`File = "Package/TwoLoopEffPot.nb";
+SA`Doc`Name = "Classify2LoopDiagrams";
+SA`Doc`Info = "Creates lists with all diagrams containing to a generic class. Written by K. Nickel.";
+SA`Doc`Input = {"diagrams"->"List of all existing diagrams"};
+SA`Doc`GenerateEntry[];
+
 listSSS={SSS,Select[diagrams,getType2LoopDiagram[#]===SSS&]};
 listSS={SS,Select[diagrams,getType2LoopDiagram[#]===SS&]};
 listFFS={FFS,Select[diagrams,getType2LoopDiagram[#]===FFS&]};
@@ -207,8 +239,5 @@ listVV={VV,Select[diagrams,getType2LoopDiagram[#]===VV&]};
 listVVV={VVV,Select[diagrams,getType2LoopDiagram[#]===VVV&]};
 listggV={ggV,Select[diagrams,getType2LoopDiagram[#]===ggV&]};
 temp={listSSS,listSS,listFFS,listFFSbar,listSSV,listVS,listVVS,listFFV,listFFVbar,listVV,listVVV,listggV};
-Return[temp];
+SA`Doc`Return[temp];
 ];
-
-
-

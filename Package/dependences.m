@@ -19,7 +19,15 @@
 
 
 
+(* ::Input::Initialization:: *)
 addNewSym[par_,dep_]:=Block[{i,j,newSym,pos,pos2},
+SA`Doc`File = "Package/dependences.nb";
+SA`Doc`Name = "addNewSym";
+SA`Doc`Info = "This routine takes an existing parameter of the model which depends on other parameters. It adds all the parameters needed to calculate the model parameter to the list of parameters. For instance, g1 is fundamental parameter of the model. Because of the defined dependence g1=e/Cos[ThetaW], also e and ThetaW are added to the list of parameters. \n
+Moreover, all angles showing up in field rotations in the gauge sector are added to the list 'AssociatedMixingAngles'.";
+SA`Doc`Input={"par"->"Considered Parameter", "dep"->"Defined dependence of this parameter"};
+SA`Doc`GenerateEntry[];
+
 newSym = DeleteCases[Intersection[Cases[dep /. Mass[a__]:>Random[],x_Symbol,99]],_?(MemberQ[{index1,index2,index3,i001,i002,i003,i004,i005,i006,i007,i008,i009,i010,sum,Pi},#]&)];
 pos=Position[parameters,par][[1,1]];
 For[j=1,j<=Length[newSym],
@@ -43,11 +51,19 @@ If[(FreeQ[dep,Sin]==False || FreeQ[dep,Cos] ==False || FreeQ[dep,Tan] ==False) &
 SA`RotationMatricesGaugeSector=Join[SA`RotationMatricesGaugeSector,{par}];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 MakeParameterDependenceList :=Block[{i,j,temp},
+SA`Doc`File = "Package/dependences.nb";
+SA`Doc`Name = "MakeParameterDependenceList";
+SA`Doc`Info = "This routines loops over all existing parameter in the model and checks if dependences (DependenceSPheno,DependenceNum) are defined in the model implementation. These dependences are then stored in replacement rules 'subDependencesSPheno' and 'subNumDependences' for later usage.";
+SA`Doc`GenerateEntry[];
+
 subDependences =MakeEntryDependences[DependenceOptional];
 temp=MakeEntryDependences[Dependence];
 For[i=1,i<=Length[temp],
@@ -126,12 +142,19 @@ SA`ListGaugeMixedAll = Select[SA`ListGaugeMixedAll,((#[[2,2]] /. subAlways)=!=0)
 SA`ListGauginoMixed = Select[SA`ListGauginoMixed,((#[[2,2]] /. subAlways)=!=0)&];
 SA`ListGaugeMixed = Select[SA`ListGaugeMixed,((#[[2,2]] /. subAlways)=!=0)&];
 
-
+SA`Doc`EndEntry[];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 MakeEntryDependences[Condition_]:=Block[{list={}},
+SA`Doc`File = "Package/dependences.nb";
+SA`Doc`Name = "MakeEntryDependences";
+SA`Doc`Info = "This routine takes a given kind of dependence (e.g. 'Dependence') and rewrites the condition to carry explicitly the correct number of indices. ";
+SA`Doc`Input={"Condition"->"Considered type of dependence"};
+SA`Doc`GenerateEntry[];
+
 For[i=1, i<=Length[ParameterDefinitions],
 If[((Condition /. ParameterDefinitions[[i,2]])=!= None) &&
 ((Condition /. ParameterDefinitions[[i,2]])=!= Condition), 
@@ -163,14 +186,20 @@ addNewSym[ParameterDefinitions[[i,1]], Condition/. ParameterDefinitions[[i,2]]];
 ];
 ];
 i++;];
-Return[list];
 
-
+SA`Doc`Return[list];
 ];
 
 
 
 MakeDepParList[ES_]:=Block[{i,j,k,temp,parNum,parDep,tempOld,tempNew,remaining, add, par,parNames,iterations},
+SA`Doc`File = "Package/dependences.nb";
+SA`Doc`Name = "MakeDepParList";
+SA`Doc`Info = "This routine takes all defined dependences and brings them into the correct order to calculate them step by step. For instance {A=B+C, C=X, B=C+Y} is order as {C=X, B=C+Y, A=B+C}. Note, not only depdences are included in this ordering, but also explicit numerical values which might be defined in parameters.m. \n
+Moreover, the routine checks which parameters show up as argument of trigonometrix function and stores them in the list of involved angles ('SA`Angles').";
+SA`Doc`Input={"ES"->"Considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 SA`Angles = Select[Intersection[DeleteCases[Flatten[{Cases[VertexListNonCC,x_Sin,99],Cases[VertexListNonCC,x_Cos,99],Cases[VertexListNonCC,x_Tan,99],Cases[VertexListNonCC,x_Sec,99],Cases[VertexListNonCC,x_Sec,99],Cases[VertexListNonCC,x_Cot,99],Cases[subNumDependences,x_Cot,99],Cases[subNumDependences,x_Cos,99],Cases[subNumDependences,x_Csc,99],Cases[subNumDependences,x_Sec,99],Cases[subNumDependences,x_Sin,99],Cases[subNumDependences,x_Tan,99],Cases[subAlways,x_Cot,99],Cases[subAlways,x_Cos,99],Cases[subAlways,x_Csc,99],Cases[subAlways,x_Sec,99],Cases[subAlways,x_Sin,99],Cases[subAlways,x_Tan,99],Cases[subDependences,x_Cot,99],Cases[subDependences,x_Cos,99],Cases[subDependences,x_Csc,99],Cases[subDependences,x_Sec,99],Cases[subDependences,x_Sin,99],Cases[subDependences,x_Tan,99]}] /. Sec[x_]->x /. Cos[x_]-> x /. Tan[x_]->x /. Cot[x_]->x /. Sin[x_]-> x /. Csc[x_]->x,_Integer,5]],(Head[#]==Symbol)&];
 
 parDep=Select[Table[subNumDependences[[i,1]],{i,1,Length[subNumDependences]}],(FreeQ[#,Integer])&];
@@ -259,7 +288,7 @@ temp=tempNew;
  While[temp=!={} && iterations <=1000,
 tempNew={};
 For[i=1,i<=Length[temp],
-(* par=Cases[{temp[[i]]} /. subAlways/. subNumDependences /. subDependences /. subMassTemp/. Mass[a__]:>Random[] /. A_[b__Pattern]->A,x_Symbol,99]; *)
+(* par=Cases[{temp[[i]]} /. subAlways/. subNumDependences /. subDependences /. subMassTemp/. Mass[a__]:>Random[] /. A_[b__Pattern]\[Rule]A,x_Symbol,99]; *)
 par=Cases[{temp[[i]]} /.(allDep /. A_[b__Pattern]->A   /. Part ->PART /. PART[a_,b__]->a  /. subMassTemp) /. subMassTemp/. Mass[a__]:>Random[] /. A_[b__Pattern]->A,x_Symbol,99];
 remaining=Join[tempNew,Table[temp[[k]]/. Mass[a__]->Random[],{k,i+1,Length[temp]}]];
 add=True;
@@ -288,5 +317,6 @@ Message [SortParameters::Error];
 
 SA`ParDep = SA`ParDep /. subMassTempRe;
 
+SA`Doc`EndEntry[];
 ];
 

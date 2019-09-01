@@ -21,6 +21,13 @@
 
 (* ::Input::Initialization:: *)
 InitUnitarity[approx_:{}]:=Block[{},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "InitUnitarity";
+SA`Doc`Info = "Calculates the unitarity constraints: all possible amplitudes with four external scalars as well as a scalar exchange are included.";
+SA`Doc`Input={"approx"->"Approximations which should be applied"};
+SA`Doc`GenerateEntry[];
+
+
 (* get all scalars (inlcuding the complex conjugated ones) *)
 partS=Transpose[Select[Particles[EWSB],#[[4]]===S&]][[1]];
 partS=Intersection[Join[partS,conj/@partS]];
@@ -46,11 +53,18 @@ scattering22=Select[Intersection[Tuples[partS,{4}] /. {a_,b_,c_,d_}:>{Sort[{a,b}
 (* get all pairs for initial/final states *)
 scatteringPairs=Intersection[Tuples[partS,{2}]/. {a_,b_}:>Sort[{a,b}]] ;
 
+SA`Doc`EndEntry[];
 
 ];
 
 
 getVertices[list_,approx_]:=Block[{res,i},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "getVertices";
+SA`Doc`Info = "Calculates the vertices for a given list of field combinations";
+SA`Doc`Input={"list"->"The list of field combinations for which the vertices are needed","approx"->"Approximations which should be applied"};
+SA`Doc`GenerateEntry[];
+
 vertexlist={};
 For[i=1,i<=Length[list],
 res=Vertex[list[[i]]][[2,1]] /.approx; 
@@ -58,12 +72,18 @@ If[res=!=0,
 vertexlist=Join[vertexlist,{{list[[i]],res}}];
 ];
 i++;];
-Return[vertexlist];
+SA`Doc`Return[vertexlist];
 ];
 
 
 (* generate quartic diagram *)
 Qchannel[s1_,s2_,s3_,s4_,inds_]:=Block[{outlist,i},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "Qchannel";
+SA`Doc`Info = "Contribution to the scattering amplitude from a point interaction.";
+SA`Doc`Input={"s1..s4"->"The four external states","index"->"The indices of the external particles"};
+SA`Doc`GenerateEntry[];
+
 outlist=0;
 (* check if vertex exists *)
 If[FreeQ[vertexlist4,Sort[{s1,s2,s3,s4}]]==False,
@@ -79,10 +99,16 @@ pos1d=Position[ReplacePart[ReplacePart[ReplacePart[Select[vertexlist4,#[[1]]==So
 outlist+=QC[mout1,mout2,mout3,mout4,Select[vertexlist4,#[[1]]==Sort[{s1,s2,s3,s4}]&][[1,2]]/.{ToExpression["gt"<>ToString[pos1d]]\[Rule]inds[[4]],ToExpression["gt"<>ToString[pos1c]]\[Rule]inds[[3]],ToExpression["gt"<>ToString[pos1b]]\[Rule]inds[[2]],ToExpression["gt"<>ToString[pos1a]]\[Rule]inds[[1]]}]; *)
 outlist+= -2 I Select[vertexlist4,#[[1]]==Sort[{s1,s2,s3,s4}]&][[1,2]]/.{ToExpression["gt"<>ToString[pos1d]]->inds[[4]],ToExpression["gt"<>ToString[pos1c]]->inds[[3]],ToExpression["gt"<>ToString[pos1b]]->inds[[2]],ToExpression["gt"<>ToString[pos1a]]->inds[[1]]};
 ];
-Return[outlist];
+SA`Doc`Return[outlist];
 ];
 (* generate S-channel diagram for external states *)
 Schannel[s1_,s2_,s3_,s4_,inds_]:=Block[{outlist,i,sign},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "Schannel";
+SA`Doc`Info = "Contribution to the scattering amplitude from a s-channel exchange.";
+SA`Doc`Input={"s1..s4"->"The four external states","index"->"The indices of the external particles"};
+SA`Doc`GenerateEntry[];
+
 outlist=0;
 (* check for all scalars in the propagator *)
 For[i=1,i<=Length[partS],
@@ -127,19 +153,37 @@ outlist+=sign (* SCV[pmass[s1[inds[[1]]]],pmass[s2[inds[[2]]]],pmass[s3[inds[[3]
 Select[vertexlist3V,#[[1]]==Sort[{s3,s4,conj[partV[[i]]]}]&][[1,2]]/.{ToExpression["gt"<>ToString[pos2c]]\[Rule]propInd,ToExpression["gt"<>ToString[pos2b]]\[Rule]inds[[4]],ToExpression["gt"<>ToString[pos2a]]\[Rule]inds[[3]]}];
 ];
 i++;];*)
-Return[outlist];
+SA`Doc`Return[outlist];
 ];
 (* generate T-channel diagram for external states *)
 Tchannel[s1_,s2_,s3_,s4_,{ind1_,ind2_,ind3_,ind4_}]:=Block[{},
-Return[Schannel[s1,s3,s2,s4,{ind1,ind3,ind2,ind4}]] /.SC->TC /.SCV->TCV;
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "Tchannel";
+SA`Doc`Info = "Contribution to the scattering amplitude from a t-channel exchange.";
+SA`Doc`Input={"s1..s4"->"The four external states","ind1..ind4"->"The indices of the external particles"};
+SA`Doc`GenerateEntry[];
+
+SA`Doc`Return[Schannel[s1,s3,s2,s4,{ind1,ind3,ind2,ind4}]] /.SC->TC /.SCV->TCV;
 ];
 
 (* generate U-channel diagram for external states *)
 Uchannel[s1_,s2_,s3_,s4_,{ind1_,ind2_,ind3_,ind4_}]:=Block[{},
-Return[Schannel[s1,s4,s2,s3,{ind1,ind4,ind2,ind3}]]/.SC->UC /.SCV->UCV;
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "Uchannel";
+SA`Doc`Info = "Contribution to the scattering amplitude from a u-channel exchange.";
+SA`Doc`Input={"s1..s4"->"The four external states","ind1..ind4"->"The indices of the external particles"};
+SA`Doc`GenerateEntry[];
+
+SA`Doc`Return[Schannel[s1,s4,s2,s3,{ind1,ind4,ind2,ind3}]]/.SC->UC /.SCV->UCV;
 ];
 
 GetScatteringDiagrams[{inf1_,inf2_}->{outf1_,outf2_}]:=Block[{indices={}},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "GetScatteringDiagrams";
+SA`Doc`Info = "Wrapper function to generates the scattering diagrams for four external states.";
+SA`Doc`Input={"inf1, inf2"->"Initial fields","outf1,outf1"->"Final fields"};
+SA`Doc`GenerateEntry[];
+
 If[Depth[RE[inf1]]==1,
 indices=Join[indices,{in1}];,
 indices=Join[indices,{RE[inf1][[1]]}];
@@ -156,30 +200,49 @@ If[Depth[RE[outf2]]==1,
 indices=Join[indices,{out2}];,
 indices=Join[indices,{RE[outf2][[1]]}];
 ];
-Return[GetDiagrams[inf1/.A_[b_Integer]->A,inf2/.A_[b_Integer]->A,outf1/.A_[b_Integer]->A,outf2/.A_[b_Integer]->A,indices]/.SC->SCfunc /. TC->TCfunc /.UC->UCfunc];
+SA`Doc`Return[GetDiagrams[inf1/.A_[b_Integer]->A,inf2/.A_[b_Integer]->A,outf1/.A_[b_Integer]->A,outf2/.A_[b_Integer]->A,indices]/.SC->SCfunc /. TC->TCfunc /.UC->UCfunc];
 ];
 
 (* get all diagrams (with a propagator so far)  *)
 GetDiagrams[s1_,s2_,s3_,s4_,ind_]:=Block[{res},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "GetDiagrams";
+SA`Doc`Info = "Generates all possible tree-level diagrams for four external fields.";
+SA`Doc`Input={"s1..s4"->"The four external states","ind"->"The indices of the external particles"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[scattering22,{Sort[{s1,s2}],Sort[{s3,s4}]}],Return[0]];
 res=sChan Schannel[s1,s2,s3,s4,ind];
 res+=tChan Tchannel[s1,s2,s3,s4,ind];
 res+=uChan Uchannel[s1,s2,s3,s4,ind];
 res+=qChan Qchannel[s1,s2,s3,s4,ind];
 res=1/(32Pi) (KL[s,mout1^2,mout2^2]KL[s,mout3^2,mout4^2])^(1/4)/s res;
-Return[If[s1===s2,If[getGen[s1]>1,Sqrt2[ind[[1]],ind[[2]]],1/Sqrt[2]],1]If[s3===s4,If[getGen[s3]>1,Sqrt2[ind[[3]],ind[[4]]],1/Sqrt[2]],1]res/.{mout1->pmass[s1[ind[[1]]]],mout2->pmass[s2[ind[[2]]]],mout3->pmass[s3[ind[[3]]]],mout4->pmass[s4[ind[[4]]]]}];
+SA`Doc`Return[If[s1===s2,If[getGen[s1]>1,Sqrt2[ind[[1]],ind[[2]]],1/Sqrt[2]],1]If[s3===s4,If[getGen[s3]>1,Sqrt2[ind[[3]],ind[[4]]],1/Sqrt[2]],1]res/.{mout1->pmass[s1[ind[[1]]]],mout2->pmass[s2[ind[[2]]]],mout3->pmass[s3[ind[[3]]]],mout4->pmass[s4[ind[[4]]]]}];
 ];
 (* expression after phase space integration for T-channel diagrams *)
 TCfunc[m1_,m2_,m3_,m4_,prop_,c1_,c2_]:=Block[{res,i},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "TCfunc";
+SA`Doc`Info = "The generic T-channel function.";
+SA`Doc`Input={"m1..m4"->"The masses of the external states", "prop"->"The propagator mass","c1,c2"->"The involved couplings"};
+SA`Doc`GenerateEntry[];
+
 res=0;
 For[i=1,i<=getGen[prop],
 res+= c1 c2 intT[m1,m2,m3,m4,pmass[prop[i]]] /.propInd->i;
 i++;];
-Return[res];
+SA`Doc`Return[res];
 ];
 
 (* expression after phase space integration for S-channel diagrams *)
 SCfunc[m1_,m2_,m3_,m4_,prop_,c1_,c2_]:=Block[{res,i},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "SCfunc";
+SA`Doc`Info = "The generic S-channel function.";
+SA`Doc`Input={"m1..m4"->"The masses of the external states", "prop"->"The propagator mass","c1,c2"->"The involved couplings"};
+SA`Doc`GenerateEntry[];
+
+
 res=0;
 For[i=1,i<=getGen[prop],
 res+=c1 c2 intS[m1,m2,m3,m4,pmass[prop[i]]]/.propInd->i;
@@ -189,6 +252,12 @@ Return[res];
 
 (* expression after phase space integration for U-channel diagrams *)
 UCfunc[m1_,m2_,m3_,m4_,prop_,c1_,c2_]:=Block[{res,i},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "UCfunc";
+SA`Doc`Info = "The generic U-channel function.";
+SA`Doc`Input={"m1..m4"->"The masses of the external states", "prop"->"The propagator mass","c1,c2"->"The involved couplings"};
+SA`Doc`GenerateEntry[];
+
 res=0;
 For[i=1,i<=getGen[prop],
 res+=c1 c2 intU[m1,m2,m3,m4,pmass[prop[i]]]/.propInd->i;
@@ -250,6 +319,13 @@ pmass[a_[b_]]:=pmass[a]/;getGen[a]==1;
 
 
 BuildScatteringMatrix:=Block[{i,j,x1,x2,x3,x4},
+SA`Doc`File = "Package/Unitarity.nb";
+SA`Doc`Name = "TCfunc";
+SA`Doc`Info = "This function constructs the full scattering matrix for 2->2 scalar processes.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
 matrix={};
 For[i=1,i<=Length[scatteringPairs],
 For[x1=1,x1<=getGen[scatteringPairs[[i,1]]],
@@ -272,7 +348,7 @@ x1++;];
 i++;];
 
 
-Return[matrix/.SC->SCfunc /. TC->TCfunc /. UC->UCfunc];
+SA`Doc`Return[matrix/.SC->SCfunc /. TC->TCfunc /. UC->UCfunc];
 ];
 
 

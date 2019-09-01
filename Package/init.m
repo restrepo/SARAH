@@ -28,6 +28,12 @@
 InitFields:= Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
 (* PrintAll["Generate all Superfields"]; *)
 
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "InitFelds";
+SA`Doc`Info = "Initialises all fields for SUSY and non-SUSY models. That means: names for component fields are generated; lists with the information about all fields are stored; group theory for the needed representation is done;";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintAll[StyleForm["Initialization","Section",FontSize->12]];
 PrintDebug["Initialization"];
 
@@ -97,8 +103,8 @@ SuperPotential=MakeSuperpotentialAsList[Expand[SuperPotentialTemp]];
 
 InitalizeDiracSpinors;
 
-CreateParameterFile;
-CreateParticleFile;
+CreateParameterList;
+CreateParticlesList;
 
 CheckModelFile;
 
@@ -135,9 +141,16 @@ DeleteFields;
 
 CheckForU1mixing;
 DynamicInitMisc="All Done";
+SA`Doc`EndEntry[];
 ];
 
 InitAuxGroups:=Block[{i,j,k,l,pos,temp,nrInd,dim,vb,name,rep,posGauge,nr,dimGroup,dimSub,nameSub,gh},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "InitAuxGroups";
+SA`Doc`Info = "Initialises auxiliary gauge groups, i.e. 'AuxGauge'. These are needed if unbroken sub-groups are left after the breaking of a bigger group. For instance, SU(4)->SU(3). For instance, replacement rules for the involved gauge bosons and ghosts as well as for the generators and structure constants of the bigger gauge group are generated.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 (* check if auxiliary gauge groups are present *)
 If[Head[UnbrokenSubgroups]===List &&UnbrokenSubgroups=!={},
 AuxGaugesPresent=True;,
@@ -291,10 +304,16 @@ i++;];
 
 ];
 
-
+SA`Doc`EndEntry[];
 ];
 
 InitalizeDiracSpinors:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "InitalizeDiracSpinors";
+SA`Doc`Info = "Generates all information to translate Weyl in Dirac spinors and back.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 diracSub={};
 diracSubBack={};
 diracSubBack1={};
@@ -389,10 +408,16 @@ weylFermions[NameOfStates[[j]]] = Join[weylFermions[NameOfStates[[j]]],weylFermi
 
 j++;];
 
-
+SA`Doc`EndEntry[];
 ];
 
 InitMatterFields:=Block[{i},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "InitMatterFields";
+SA`Doc`Info = "Initialises lists for all fermions and scalars in the case of a non-supersymmetric model. The main purpose is to join the ScalarFields and FermionFields array used in the definition of non-supersymmetric model to get the array 'Fields' used for SUSY models. In that way, many routines originally written for SUSY models can be used.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 AnzahlChiral=Length[FermionFields]+Length[ScalarFields];
 SFields = Table[{}, {AnzahlChiral}];
 SFieldsNoTensor = Table[{}, {AnzahlChiral}];
@@ -415,9 +440,22 @@ i++;];
 For[i=1,i<=Length[FermionFields],
 Fields=Join[Fields,{Join[FermionFields[[i]],{F}]}];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 CreateMatterFields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp,namefield},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "CreateMatterFields";
+SA`Doc`Info = "Creates all fermions and scalars in the case of a non-supersymmetric model: \n
+1) The gauge and generations indices for the fields are generated \n
+2) The gauge properties (Dynkin index, Casmimir index,..) of all fields are calculated and stored in dedicated variables \n
+3) Replacement rules for multiplets under gauge groups which get broken are generated \n
+4) The definition of the fiels are extended in a way that the replacement of the multiplets is automatically done, e.g.
+(qL[{gen,left}] /. left->1) will automatially result in by uL[{gen}]";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["   matter fields: "];
 DynamicInitFields="matter fields";
 RealScalarsMul={};
@@ -684,10 +722,21 @@ For[i=1,i<=Length[Gauge],If[Gauge[[i,2]]=!=U[1],temp=Intersection[Abs/@Select[Tr
 ind=Join[ind,Table[{Gauge[[i,2]],temp[[j]]},{j,1,Length[temp]}]];];
 i++;];
 
-
+SA`Doc`EndEntry[];
 ];
 
 CreateChiralSuperfields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "CreateChiralSuperfields";
+SA`Doc`Info = "Creates all chiral superfields in the case of a supersymmetric model: \n
+1) The gauge and generation indices for all fields are obtained\n
+2) The names of the component fields (femrion,scalar,aux) are generated\n
+3) The gauge properties of all fields are calculated and stored \n
+4) Replacement rules for multiplets under gauge groups which get broken are generated \n
+5) The definition of the fiels are extended in a way that the replacement of the multiplets is automatically done, e.g.
+(FqL[{gen,left}] /. left->1) will automatially result in by FuL[{gen}]";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintDebug["   chiral superfields"];
 DynamicInitFields="chiral superfields";
@@ -780,64 +829,6 @@ SetGroupConstants[auxiliary,Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerato
 SetGroupConstants[Fields[[i,3]],Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDyn,False,False];
 SetGroupConstants[scalarSF,Gauge[[j2,3]],valueCasimir,valueDynkin,valueGenerator,valueMulFactor,valueDimensions,valueDynSF,If[Length[FieldNames]===1,True,False],True];
 
-(*
-SA`Casimir[scalar,Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[scalar[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[scalarSF,Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[fermion,Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[fermion[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Casimir[auxiliary,Gauge[[j2,3]]]=valueCasimir; 
-SA`Casimir[Fields[[i,3]],Gauge[[j2,3]]]=valueCasimir;
-
-SA`Dynkin[scalarSF,Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[scalar,Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[fermion,Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[scalar[a__],Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[fermion[a__],Gauge[[j2,3]]]=valueDynkin;
-SA`Dynkin[auxiliary,Gauge[[j2,3]]]=valueDynkin; 
-SA`Dynkin[Fields[[i,3]],Gauge[[j2,3]]]=valueDynkin;
-
-SA`MulFactor[scalarSF,Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[scalar,Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[fermion,Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[scalar[a__],Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[fermion[a__],Gauge[[j2,3]]]=valueMulFactor;
-SA`MulFactor[auxiliary,Gauge[[j2,3]]]=valueMulFactor; 
-SA`MulFactor[Fields[[i,3]],Gauge[[j2,3]]]=valueMulFactor;
-
-Generator[scalarSF,Gauge[[j2,3]]]=valueGenerator;
-Generator[scalar,Gauge[[j2,3]]]=valueGenerator;
-Generator[fermion,Gauge[[j2,3]]]=valueGenerator;
-(* Generator[auxiliary,Gauge[[j2,3]]]=valueGenerator; *)
-*)
-
-(*
-If[Length[FieldNames]===1,
-SA`Casimir[scalarSF[a__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF[a__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF[a__],Gauge[[j2,3]]]=valueMulFactor;
-SA`Casimir[scalarSF[a__][b__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF[a__][b__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF[a__][b__],Gauge[[j2,3]]]=valueMulFactor;,
-SA`Casimir[scalarSF[a__][b__],Gauge[[j2,3]]]=valueCasimir;
-SA`Dynkin[scalarSF[a__][b__],Gauge[[j2,3]]]=valueDynkin;
-SA`MulFactor[scalarSF[a__][b__],Gauge[[j2,3]]]=valueMulFactor;
-];
-
-SA`DimensionGG[scalar,j2] = If[Gauge[[j2,2]]===U[1],1,Abs[Fields[[i,j2+3]]]];
-SA`DimensionGG[fermion,j2] = If[Gauge[[j2,2]]===U[1],1,Abs[Fields[[i,j2+3]]]];
-SA`DimensionGG[auxiliary,j2] = If[Gauge[[j2,2]]===U[1],1,Abs[Fields[[i,j2+3]]]];
-*)
-
-(*
-If[Gauge[[j2,2]]=!=U[1],
-SA`DynL[scalar,j2]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];
-SA`DynL[scalarSF,Gauge[[j2,3]]]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];
-SA`DynL[Fields[[i,3]],Gauge[[j2,3]]]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];
-SA`DynL[fermion,j2]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];
-SA`DynL[auxiliary,j2]=getDynkinLabels[Fields[[i,j2+3]],Gauge[[j2,2]]];
-];
-*)
 If[Gauge[[j2,2]]===U[1],
 SA`ChargeGG[scalar,j2] = Fields[[i,j2+3]];
 SA`ChargeGG[fermion,j2] = Fields[[i,j2+3]];
@@ -935,23 +926,6 @@ SFields[[i]]=ToExpression["S"<>ToString[Fields[[i,3]]]][absE][absI];
 FFields[[i]]=ToExpression["F"<>ToString[Fields[[i,3]]]][absE][absI];
 AFields[[i]]=ToExpression["A"<>ToString[Fields[[i,3]]]][absE][absI];
 
-(* TO CHECK !! *)
-(*
-Set[ToExpression["S"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR\[Rule]i];
-
-Set[ToExpression["F"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[FFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}][d]] /. NR\[Rule]i];
-
-Set[ToExpression["A"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[AFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[AFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[AFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}]] /. NR\[Rule]i]; 
-*)
-(*
-Set[ToExpression["S"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]) /.((SFieldList /. conj[y_]\[Rule]y) /. A_[{b___}]\[Rule](A\[Rule]A[{c}])) ]/. NR\[Rule]i];
-
-Set[ToExpression["F"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]) /.((FFieldList /. conj[y_]\[Rule]y) /. A_[{b___}]\[Rule](A\[Rule]A[{c}][d])) ]/. NR\[Rule]i];
-
-Set[ToExpression["A"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[AFieldsMultiplets [[NR]],{x}]) /.((AFieldList /. conj[y_]\[Rule]y) /. A_[{b___}]\[Rule](A\[Rule]A[{c}])) ]/. NR\[Rule]i];
-*)
-
-
 Set[ToExpression["S"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]) /.SFieldListRep]/. NR->i /. SFieldListRep->((SFieldList /. conj[y_]->y) /. A_[{b___}]:>(A->A[{c}])) ];
 
 Set[ToExpression["F"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}][d_],Hold[(Extract[FFieldsMultiplets [[NR]],{x}]) /.FFieldListRep]/. NR->i/. FFieldListRep->((FFieldList /. conj[y_]->y) /. A_[{b___}]:>(A->A[{c}][d])) ];
@@ -991,11 +965,17 @@ For[i=1,i<=Length[Gauge],If[Gauge[[i,2]]=!=U[1],temp=Intersection[Abs/@Select[Tr
 ind=Join[ind,Table[{Gauge[[i,2]],temp[[j]]},{j,1,Length[temp]}]];];
 i++;];
 
-
+SA`Doc`EndEntry[];
 ];
 
 
 CheckForU1mixing:=Block[{i,j},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "CheckForU1mixing";
+SA`Doc`Info = "Checks if two (non-orthogonal) Abelian gauge groups are present. Also the GUT normalization as defined in parameters.m is added here to the corresponding gauge couplings (via the parameter 'GUTren')";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 DynamicInitMisc="Check for gauge kinetic mixing";
 For[i=1,i<=AnzahlGauge,
 If[Gauge[[i,2]]=!=U[1],
@@ -1044,10 +1024,16 @@ SA`ListGaugeMixedAll = Join[SA`ListGaugeMixedAll,SA`ListGaugeMixed2];
 
 (* TODO: Initialize unfixed charges *)
 
-
+SA`Doc`EndEntry[];
 ];
 
 CreateTensorSuperfields:=Block[{i},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "CreateTensorSuperfields";
+SA`Doc`Info = "Creates gravitino fields. BE CAREFUL: implementation in a very early stage and never tested!!";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["  gravitino superfields"];
 DynamicInitFields="gravitino superfields";
 TFields={Gmu[{lorentz}],Gol};
@@ -1067,10 +1053,21 @@ diracFermions[NameOfStates[[i]]]=Join[diracFermions[NameOfStates[[i]]],{GOL}];
 i++;];
 parameters=Join[parameters,{{MP,{},{}},{m32,{},{}}}];
 realVar=Join[realVar,{MP,m32}];
+
+
+SA`Doc`EndEntry[];
 ];
 
 
 CreateVectorSuperfields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp,nameBasis},
+SA`Doc`Name = "CreateVectorSuperfields";
+SA`Doc`Info = "Creates the gauge sector for a given field. Note, even if this routine was orignally written for vector superfields in the case of a SUSY theory, it is also used for non-SUSY models (see the occurence of the Boolean variable 'SupersymmetricModel')! \n
+The following steps are performed: \n
+1) The names of the vectors, ghosts, gauginos and aux fields are generated \n
+2) The indices are attached
+3) The Casimir and Dynkin as well as global charges for each field stored ";
+SA`Doc`GenerateEntry[];
+
 PrintDebug["   vector superfields"];
 DynamicInitFields="vector superfields";
 
@@ -1257,9 +1254,26 @@ SA`Dynkin[ToExpression["S"<>ToString[Fields[[SA`CasimirList[[i,1]],3]]]],SA`Casi
 i++;];
 *)
 
+SA`Doc`EndEntry[];
 ];
 
 CreateSubstitutions:= Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "CreateSubstitutions";
+SA`Doc`Info = "Creates many different lists containing substitutions for the indices carried by particles/parameters and the necessary functions to use them. For instance \n
+generation/. subGC[1] reutrns gen1 \n
+The main important lists are \n:
+- subIndizes / subGC: used to replace a generic index (e.g. generation, color) by a numbered one (e.g. gen1,col2) \n
+- subIndizesRE / subGCRE: re-defines an index, e.g. (gen1,col1) -> (gen2,col2) \n
+- subIndizesFinal / subIndFinal: replaces 'Lagrangian indices' (e.g. gen1,col2) by 'Final indices' used in vertices (e.g. gt1,ct2) \n
+- subIndixesFinalX / subIndFinalX: replaces 'Lagrangian indices' (e.g. gen1,col2) by 'Final indices' with a self-chosen letter (e.g. gX1, cX2)
+- subIndizesRule / subGCRule: replaces a generic index by a pattern, e.g. (generations, color) -> (gen1_, col2_) \n
+- subGCInt / subGCInt: replaces a Lagrangian index my an internal index, e.g. (gen1, col2) -> (aaIgen1,aaIcol2)
+- subIndizesValue / subValue: replaces a Lagrangian index by a number, e.g. (col1, col2) -> (1,2) \n ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
 PrintDebug["    Create Substitution rules"];
 DynamicInitMisc="Create substitution rules";
 subIndizes={};
@@ -1324,11 +1338,18 @@ subValue[nr1_,nr2_]:=Return[ReleaseHold[subIndizesValue /. {number1 ->nr1, numbe
 makeSubFinalIndizes;
 Gauge=GaugeTemp;
 
+SA`Doc`EndEntry[];
 ];
 
 
 
 CheckForMajoranas:=Block[{i},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "CheckForMajoranas";
+SA`Doc`Info = "Checks which fermions are Majorana and stores that information in the list 'MajoranaPart'";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 MajoranaPart={};
 
 For[i=1,i<=Length[diracSub[ALL]],
@@ -1336,9 +1357,16 @@ If[{conj[diracSub[ALL][[i,2,2]]],conj[diracSub[ALL][[i,2,1]]]}==={diracSub[ALL][
 MajoranaPart = Join[MajoranaPart,{diracSub[ALL][[i,1]]}];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 DeleteFields:=Block[{i},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "DeleteFields";
+SA`Doc`Info = "Deletes fields, i.e. fields declared to be deleted in the model file are removed from the (low-energy) Lagrangian.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 deleteTemp= DeleteParticles;
 DeleteParticles={};
@@ -1361,10 +1389,16 @@ For[i=1,i<=Length[NameOfStates],
 InitSMParameters[NameOfStates[[i]]];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 
  InitParameters := Block[{i,k,max},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "InitParameters";
+SA`Doc`Info = "Initialises the parameters in the model and stores dependences among them.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintDebug["Generate Parameter Dependences"];
 DynamicInitMisc="Generate parameter dependences";
@@ -1418,6 +1452,8 @@ parameters = Join[parameters,{{FieldRotations[[i,2]],{generation,generation},{ge
 i++;];
 
 DynamicInitMisc="All Done";
+
+SA`Doc`EndEntry[];
 ];
 
 (*-------------------------------------------*)
@@ -1425,6 +1461,16 @@ DynamicInitMisc="All Done";
 (*-------------------------------------------*)
 
 GenerateVEVs[type_] := Block[{i,j,i2,vev,pos,form,scalarform,alignment},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "GenerateVEVs";
+SA`Doc`Info = "Responsible for re-writing (complex) scalars into CP-eigenstates and a VEV. Optionally, the VEV can be also complex or a phase can be included. Moreoever, in the case that the particle, which gets a VEV, is a multiplet, the VEVs can be aligned with a specific entry of the field. The following steps are performed: \n
+1) Checking if an alignment or CP phases are defined \n
+2) Creating lists to replace the complex field by the CP components and the VEV
+3) Creating lists for the inverse replacement (needed for gauge fixing terms) \n
+4) Checking the global and local charges of the CP eigenstates \n 
+5) Storing all information about the replacements";
+SA`Doc`Input={"type"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 title=ToString[type];
 
@@ -1631,13 +1677,19 @@ UpdateGaugeTransformations[vevSub,vevSubInverse,UGTvev[rotNr]];
 ];
 
 
+SA`Doc`EndEntry[];
 ];
 
 
 
 InitSMParameters[Eigenstates_] :=Block[{i,j,k,tempName},
+SA`Doc`File = "Package/init.nb";
+SA`Doc`Name = "InitSMParameters";
+SA`Doc`Info = "Checks the definition in the parameters and particles file if the 'Description' statement refers to known parameters and particles. When this is the case it assign the internal SARAH name of the particle/parameter to  a new Symbol which can be used in the following to refer to that particle/parameter without the need to know how it is called in the model under consideration. In addition, special list are created to save the name of non-SM particles. That make life easier when the decay routine with SPheno are written. ";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
-(* Checks the definition in the parameters and particles file if the 'Description' statement refers to known parameters and particles. When this is the case it assign the internal SARAH name of the particle/parameter to  a new Symbol which can be used in the following to refer to that particle/parameter without the need to know how it is called in the model under consideration. In addition, special list are created to save the name of non-SM particles. That make life easier when the decay routine with SPheno are written. *)
+(* *)
 
 AllScalarNonSM={};
 AllFermionNonSM={};
@@ -1886,6 +1938,7 @@ AllScalarNonSM=DeleteCases[AllScalarNonSM,x_?SMQ,3];
 AllVectorNonSM=DeleteCases[AllVectorNonSM,x_?SMQ,3];
 
 
+SA`Doc`EndEntry[];
 ];
 
 
