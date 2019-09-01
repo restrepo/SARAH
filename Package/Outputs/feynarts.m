@@ -31,11 +31,28 @@
 
 (* ::Input::Initialization:: *)
 
-Options[MakeFeynArts]={Eigenstates->FinalStates,AddCounterTerms->False};
+Options[MakeFeynArts]={
+Eigenstates->FinalStates,
+AddCounterTerms->False,
+CounterTermList->{},
+IncludeWFRConstants->False,
+CTDependencesPreExand->{},
+CTDependencesPostExand->{},
+PerformSums->True,
+ReadLists->False
+};
 
-MakeFeynArts[opt___]:=MakeFeynArtsFunc[AddCounterTerms /. {opt} /. Options[MakeFeynArts],Eigenstates /. {opt} /. Options[MakeFeynArts]];
+MakeFeynArts[opt___]:=MakeFeynArtsFunc[
+AddCounterTerms /. {opt} /. Options[MakeFeynArts],
+CounterTermList/. {opt} /. Options[MakeFeynArts],
+IncludeWFRConstants/. {opt} /. Options[MakeFeynArts],
+CTDependencesPreExand/. {opt} /. Options[MakeFeynArts],
+CTDependencesPostExand/. {opt} /. Options[MakeFeynArts],
+PerformSums/. {opt} /. Options[MakeFeynArts],
+Eigenstates /. {opt} /. Options[MakeFeynArts],
+ReadLists/.{opt}/.Options[MakeFeynArts]];
 
-MakeFeynArtsFunc[AddCounterT_,eigS_]:=Block[{i,j,term,startedtime},
+MakeFeynArtsFunc[AddCounterT_,CTList_,IncludeWFRs_,CTdepPre_,CTdepPost_,dosums_,eigS_,read_]:=Block[{i,j,term,startedtime},
 (*
 Print["------------------------------"];
 Print[" Creating FeynArts Model File "];
@@ -44,11 +61,16 @@ Print["------------------------------"];
 startedtime=TimeUsed[];
 Print[StyleForm["Generate FeynArts model files","Section"]];
 
-SA`subParameterNames={};
+SA`IncludeWFRs=IncludeWFRs;
+SA`CTList=CTList;
+SA`CTDependencesPre=CTdepPre;
+SA`CTDependencesPost=CTdepPost;
+SA`CTSums=dosums;
 
+SA`subParameterNames={};
 For[i=1,i<=Length[parameters],
 If[parameters[[i,1]]=!=getOutputNameParameter[parameters[[i,1]]],
-SA`subParameterNames=Join[SA`subParameterNames,{parameters[[i,1]]->getOutputNameParameter[parameters[[i,1]]]}];
+SA`subParameterNames=DeleteDuplicates[Join[SA`subParameterNames,{parameters[[i,1]]->getOutputNameParameter[parameters[[i,1]]]},SA`subParameterNames/.subGreek]];
 ];
 i++;];
 
@@ -58,13 +80,12 @@ subGenInd={};
 Message[ModelFile::NoVertices];,
 *)
 
-If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
-Print["Have to calculate the vertices first..."];
-If[eigS===FinalStates,ModelOutput[Last[NameOfStates]];,ModelOutput[eigS];];
-];
+If[eigS===FinalStates,eigS=Last[NameOfStates];];
+ModelOutput[eigS,VerticesForLoops->True,ReadLists->read];
+MakeCouplingLists;
 
 ClearAttributes[C,Orderless];
-subFA={ThetaStep[a__]->1, Mass[a_[b_]]:>ToExpression["Mass"<>ToString[a]][b],Mass[a_]:>ToExpression["Mass"<>ToString[a]]};
+subFA=Join[{ThetaStep[a__]->1, Mass[a_[b_]]:>ToExpression["Mass"<>ToString[a]][b],Mass[a_]:>ToExpression["Mass"<>ToString[a]]},SA`subParameterNames];
 
 
 
@@ -73,13 +94,14 @@ CreateDirectory[$sarahCurrentFeynArtsDir];
 ];
 
 InitFA[InitalizedVertexCalculaton];
+InitTrig;
 
-If[AddCounterT==True, 
+If[AddCounterT==True ,
 CreateFACounterTerms;
 ];
 SA`subCounterTerms = {};
 
-InitTrig;
+
 
 CreateClassesFA[False];
 FeynArtsVertices[AddCounterT];
@@ -100,19 +122,15 @@ SetAttributes[C,Orderless];
 ];
 
 
-MakeNameTrig[x_,start_]:=Block[{temp,sub},
-temp=Intersection[Cases[x,y_Symbol,5]];
-sub=Table[temp[[i]]->getOutputNameParameter[temp[[i]]],{i,1,Length[temp]}];
-Return[ToExpression[start<>StringReplace[ToString[x[[1]] /. SA`subParameterNames /. subGreek],{"-"->"m","+"->"p"," "->""," "->"",")"->"","("->""}]]];
-];
+MakeNameTrig[x_,start_]:=Return[ToExpression[start<>StringReplace[ToString[x[[1]] /. SA`subParameterNames /. subGreek],{"-"->"m","+"->"p"," "->""," "->"",")"->"","("->""}]]];
 
 InitTrig:=Block[{i},
-sinL=Intersection[Cases[VertexListNonCC,x_Sin,99]];
-cosL=Intersection[Cases[VertexListNonCC,x_Cos,99]];
-tanL=Intersection[Cases[VertexListNonCC,x_Tan,99]];
-secL=Intersection[Cases[VertexListNonCC,x_Sec,99]];
-cscL=Intersection[Cases[VertexListNonCC,x_Csc,99]];
-cotL=Intersection[Cases[VertexListNonCC,x_Cot,99]];
+sinL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Sin,99]];
+cosL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Cos,99]];
+tanL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Tan,99]];
+secL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Sec,99]];
+cscL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Csc,99]];
+cotL=Intersection[Cases[VertexListNonCC+(VertexListNonCC/.subFA),x_Cot,99]];
 
 TrigRepFA={};
 
@@ -700,25 +718,28 @@ FeynArtsVertices[addCT_]:=Block[{i,j},
 
 SA`subCounterTerms={};
 
-subFA=Join[SA`subParameterNames,subFA];
+subFA=DeleteDuplicates[Join[SA`subParameterNames,subFA]];
 
 Print["Create Coupling Output"];
 
 M$CouplingMatrices={};
 
-VList1=Join[SA`VertexList[SSS],SA`VertexList[SSV], SA`VertexList[SVV],SA`VertexList[SSSS], SA`VertexList[VVV]] //. subFA /. SA`subCounterTerms;
-VList1names=Join[SA`VertexList[SSS],SA`VertexList[SSV], SA`VertexList[SVV],SA`VertexList[SSSS], SA`VertexList[VVV]] ;
-VList2 = Join[SA`VertexList[FFS],SA`VertexList[FFV]] //. subFA/. SA`subCounterTerms;
+VList1=(Join[SA`VertexList[SSS],SA`VertexList[SSV], SA`VertexList[SVV],SA`VertexList[SSSS], SA`VertexList[VVV]]//TrigExpand) //. subFA /. SA`subCounterTerms;
+VList1names=Join[SA`VertexList[SSS],SA`VertexList[SSV], SA`VertexList[SVV],SA`VertexList[SSSS], SA`VertexList[VVV]];
+VList2 = (Join[SA`VertexList[FFS],SA`VertexList[FFV]] //TrigExpand)//. subFA/. SA`subCounterTerms;
 VList2names = Join[SA`VertexList[FFS],SA`VertexList[FFV]];
-
-
+VList3=(SA`VertexList[VVVV]//TrigExpand)//.subFA/. SA`subCounterTerms;
+VList4=(SA`VertexList[SSVV]//TrigExpand)//.subFA/. SA`subCounterTerms;
+PrintTemporary["VVV-Vertices"];
 For[i=1,i<=Length[SA`VertexList[VVVV]],
+FAFields=VList3[[i,1]]//.subFA//. subFAFields;
 If[SA`FAgenericVertices=!=True,
 If[addCT=!=True,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[VVVV][[i,1]]//.subFA //. subFAFields]=={{SA`VertexList[VVVV][[i,2,1]]//. subFA /. SA`subCounterTerms},{SA`VertexList[VVVV][[i,3,1]]//.subFA /. SA`subCounterTerms},{SA`VertexList[VVVV][[i,4,1]]//. subFA/. SA`subCounterTerms}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[VVVV][[i,1]]//.subFA //. subFAFields]=={{SA`VertexList[VVVV][[i,2,1]]//. subFA /. SA`subCounterTerms,ExpandCTfa[SA`VertexList[VVVV][[i,2,1]],getPartInv[SA`VertexList[VVVV][[i,1]]][[1]]]//. subFA},{SA`VertexList[VVVV][[i,3,1]]//.subFA /. SA`subCounterTerms,ExpandCTfa[SA`VertexList[VVVV][[i,3,1]],getPartInv[SA`VertexList[VVVV][[i,1]]][[1]]]//. subFA},{SA`VertexList[VVVV][[i,4,1]]//. subFA/. SA`subCounterTerms,ExpandCTfa[SA`VertexList[VVVV][[i,4,1]],getPartInv[SA`VertexList[VVVV][[i,1]]][[1]]]//. subFA}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={{VList3[[i,2,1]]},{VList3[[i,3,1]]},{VList3[[i,4,1]]}}}];,
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={
+{VList3[[i,2,1]],ExpandCTfa[VList3[[i,2,1]],getPartInv[SA`VertexList[VVVV][[i,1]]][[1]],FAFields,1]},{VList3[[i,3,1]],ExpandCTfa[VList3[[i,3,1]],getPartInv[SA`VertexList[VVVV][[i,1]]][[1]],FAFields,2]},{VList3[[i,4,1]],ExpandCTfa[VList3[[i,4,1]],getPartInv[SA`VertexList[VVVV][[i,1]]][[1]],FAFields,3]}}}];
 ];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[VVVV][[i,1]]//.subFA //. subFAFields]=={{MakeGenericCouplingFA[SA`VertexList[VVVV][[i,1]],"1"]},{MakeGenericCouplingFA[SA`VertexList[VVVV][[i,1]],"2"]},{MakeGenericCouplingFA[SA`VertexList[VVVV][[i,1]],"3"]}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={{MakeGenericCouplingFA[SA`VertexList[VVVV][[i,1]],"1"]},{MakeGenericCouplingFA[SA`VertexList[VVVV][[i,1]],"2"]},{MakeGenericCouplingFA[SA`VertexList[VVVV][[i,1]],"3"]}}}];
 ];
 i++;];
 
@@ -727,58 +748,63 @@ For[i=1,i\[LessEqual]Length[SA`VertexList[SSVV]],
 M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]\[Equal]{{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms}}}];
 i++;];
 *)
-
+PrintTemporary["SSVV-Vertices"];
 For[i=1,i<=Length[SA`VertexList[SSVV]],
+FAFields={VList4[[i,1,1]],VList4[[i,1,2]],VList4[[i,1,3]],VList4[[i,1,4]]}//.subFA//. subFAFields;
 If[SA`FAgenericVertices=!=True,
 If[addCT=!=True,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]=={{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]=={{SA`VertexList[SSVV][[i,2,1]]//. subFA /. SA`subCounterTerms,ExpandCTfa[SA`VertexList[SSVV][[i,2,1]],getPartInv[SA`VertexList[SSVV][[i,1]]][[1]]]//. subFA}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields ]=={{VList4[[i,2,1]]}}}];,
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields ]=={{VList4[[i,2,1]],ExpandCTfa[VList4[[i,2,1]],getPartInv[SA`VertexList[SSVV][[i,1]]][[1]],FAFields,1]//. subFA}}}];
 ];,
 M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[SSVV][[i,1,1]],SA`VertexList[SSVV][[i,1,2]],SA`VertexList[SSVV][[i,1,3]],SA`VertexList[SSVV][[i,1,4]]}//. subFA//. subFAFields ]=={{MakeGenericCouplingFA[SA`VertexList[SSVV][[i,1]],""]}}}];
 ];
 i++;];
 
+PrintTemporary["FFS- and FFV-Vertices"];
 For[i=1,i<=Length[VList2],
+FAFields=VList2[[i,1]]//. subFA//. subFAFields;
 If[SA`FAgenericVertices=!=True,
 If[addCT=!=True,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList2[[i,1]]//. subFA//. subFAFields]=={{VList2[[i,2,1]]},{VList2[[i,3,1]]}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList2[[i,1]]//. subFA//. subFAFields]=={{VList2[[i,2,1]],ExpandCTfa[VList2[[i,2,1]],getPartInv[VList2names[[i,1]]][[1]]]},{VList2[[i,3,1]],ExpandCTfa[VList2[[i,3,1]],getPartInv[VList2names[[i,1]]][[2]]]}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={{VList2[[i,2,1]]},{VList2[[i,3,1]]}}}];,
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={
+{VList2[[i,2,1]],ExpandCTfa[VList2[[i,2,1]],getPartInv[VList2names[[i,1]]][[1]],FAFields,1]},
+{VList2[[i,3,1]],ExpandCTfa[VList2[[i,3,1]],getPartInv[VList2names[[i,1]]][[2]],FAFields,2]}}}];
 ];,
 M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList2[[i,1]]//. subFA//. subFAFields]=={{MakeGenericCouplingFA[VList2names[[i,1]],"L"]},{MakeGenericCouplingFA[VList2names[[i,1]],"R"]}}}];
 ];
 i++;];
 
-
+PrintTemporary["S- and V-Vertices"];
 For[j=1,j<=Length[VList1],
+FAFields=VList1[[j,1]]//. subFA//. subFAFields;
 If[SA`FAgenericVertices=!=True,
 If[addCT=!=True,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList1[[j,1]]//. subFA//. subFAFields]=={{VList1[[j,2,1]]}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList1[[j,1]]//. subFA//. subFAFields]=={{VList1[[j,2,1]],ExpandCTfa[VList1[[j,2,1]],getPartInv[VList1names[[j,1]]][[1]]]}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={{VList1[[j,2,1]]}}}];,
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={{VList1[[j,2,1]],ExpandCTfa[VList1[[j,2,1]],getPartInv[VList1names[[j,1]]][[1]],FAFields,1]}}}];
 ];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[VList1[[j,1]]//. subFA//. subFAFields]=={{MakeGenericCouplingFA[VList1names[[j,1]],""]}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[FAFields]=={{MakeGenericCouplingFA[VList1names[[j,1]],""]}}}];
 ];
 j++;];
-
+PrintTemporary["GGS-Vertices"];
 For[j=1,j<=Length[SA`VertexList[GGS]],
 If[SA`FAgenericVertices=!=True,
 If[addCT=!=True,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[GGS][[j,1,3]],SA`VertexList[GGS][[j,1,1]],SA`VertexList[GGS][[j,1,2]]}//. subFA //. subFAFields]=={{(SA`VertexList[GGS][[j,2,1]] //. subFA /. SA`subCounterTerms)}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[GGS][[j,1,3]],SA`VertexList[GGS][[j,1,1]],SA`VertexList[GGS][[j,1,2]]}//. subFA //. subFAFields]=={{(SA`VertexList[GGS][[j,2,1]] //. subFA /. SA`subCounterTerms)}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[GGS][[j,1,3]],SA`VertexList[GGS][[j,1,1]],SA`VertexList[GGS][[j,1,2]]}//. subFA //. subFAFields]=={{((SA`VertexList[GGS][[j,2,1]] //TrigExpand)//. subFA /. SA`subCounterTerms)}}}];,
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[GGS][[j,1,3]],SA`VertexList[GGS][[j,1,1]],(SA`VertexList[GGS][[j,1,2]]//TrigExpand)}//. subFA //. subFAFields]=={{((SA`VertexList[GGS][[j,2,1]]//TrigExpand) //. subFA /. SA`subCounterTerms)}}}];
 ];,
 M$CouplingMatrices=Join[M$CouplingMatrices,{C[{SA`VertexList[GGS][[j,1,3]],SA`VertexList[GGS][[j,1,1]],SA`VertexList[GGS][[j,1,2]]}//. subFA //. subFAFields]=={{MakeGenericCouplingFA[SA`VertexList[GGS][[j,1]],""]}}}];
 ];
 j++;];
-
+PrintTemporary["GGV-Vertices"];
 For[i=1,i<=Length[SA`VertexList[GGV]],
 If[SA`FAgenericVertices=!=True,
 If[addCT=!=True,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[GGV][[i,1]]//. subFA//. subFAFields]=={{SA`VertexList[GGV][[i,2,1]] //. subFA /. SA`subCounterTerms},{0}}}];,
-M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[GGV][[i,1]]//. subFA//. subFAFields]=={{SA`VertexList[GGV][[i,2,1]] //. subFA /. SA`subCounterTerms},{0}}}];
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[GGV][[i,1]]//. subFA//. subFAFields]=={{(SA`VertexList[GGV][[i,2,1]]//TrigExpand) //. subFA /. SA`subCounterTerms},{0}}}];,
+M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[GGV][[i,1]]//. subFA//. subFAFields]=={{(SA`VertexList[GGV][[i,2,1]]//TrigExpand)//. subFA /. SA`subCounterTerms},{0}}}];
 ];,
 M$CouplingMatrices=Join[M$CouplingMatrices,{C[SA`VertexList[GGV][[i,1]]//. subFA//. subFAFields]=={{MakeGenericCouplingFA[SA`VertexList[GGV][[i,1]],""]},{0}}}];
 ];
 i++;];
-
 
 M$CouplingMatrices=M$CouplingMatrices //. C[{a_,b_,c_}]->C[a,b,c] /.C[{a_,b_,c_,d_}]->C[a,b,c,d] /.Delta[a_,b_]->IndexDelta[a,b] /.conj[a_]-> Conjugate[a] /.RXi[a_] ->GaugeXi[a] //. subGreek /. subGreek;
 
@@ -786,7 +812,6 @@ M$CouplingMatrices=M$CouplingMatrices //. C[{a_,b_,c_}]->C[a,b,c] /.C[{a_,b_,c_,
 While[FreeQ[M$CouplingMatrices,sum]==False,
 M$CouplingMatrices=ReleaseHold[M$CouplingMatrices /.sum[a_,b_,c_,d_]->IndexSum[d,{a,c}]] (* /.sum[a_,b_,c_,d_]\[Rule]Hold[Sum[d,{a,c}]]] *);
 ];
-
 
 ];
 
@@ -1070,65 +1095,59 @@ j++;];
 Return[temp];
 ]; *)
 
-CreateFACounterTerms:=Block[{i,j,k,dim,ct,ctc,ctt,cts},SA`ListCounterTerms={};
+CreateFACounterTerms:=Block[{i,j,k,dim,para},
+If[Head[SA`CTList]==List && Length[SA`CTList]>0,
+FA`subListCounter=((#[[1]]/.{a->a_,b->b_}):>(#[[1]]+deltaCT #[[2]]))&/@SA`CTList;
+,
 FA`subListCounter={};
-FA`subListCounterNames={};
-FA`subListCounterNamesSingle={};
-For[i=1,i<=Length[parameters],If[FreeQ[VertexListNonCC,parameters[[i,1]]]==False||FreeQ[listAllParametersAndVEVs,parameters[[i,1]]]==False,
+For[i=1,i<=Length[parameters],
+para=parameters[[i,1]];
+If[MemberQ[SA`IgnoreCTs,para],i++;Continue[]];
+If[FreeQ[VertexListNonCC+(VertexListNonCC/.subFA),para]==False||FreeQ[listAllParametersAndVEVs,para]==False,
 
-If[FreeQ[Flatten[AssociatedMixingAngles/@SA`RotationMatricesGaugeSector],parameters[[i,1]]],dim=parameters[[i,3]]/.{1}->{};
-ct=CounterTermFA[parameters[[i,1]]];
-SA`ListCounterTerms=Join[SA`ListCounterTerms,{ct}];
-FA`subListCounterNamesSingle=Join[FA`subListCounterNamesSingle,{parameters[[i,1]]->ct}];
+If[FreeQ[Flatten[AssociatedMixingAngles/@SA`RotationMatricesGaugeSector],para],
+dim=parameters[[i,3]]/.{1}->{};
 Switch[Length[dim],
 0,
-FA`subListCounter=Join[FA`subListCounter,{parameters[[i,1]]->parameters[[i,1]]+dd[parameters[[i,1]]]}];
-FA`subListCounterNames=Join[FA`subListCounterNames,{dd[parameters[[i,1]]]->ct}];,
+FA`subListCounter=Join[FA`subListCounter,{parameters[[i,1]]->para+deltaCT dd[para]}];,
 1,
-FA`subListCounter=Join[FA`subListCounter,{parameters[[i,1]][a__]->parameters[[i,1]][a]+dd[parameters[[i,1]][a]]}];
-FA`subListCounterNames=Join[FA`subListCounterNames,{dd[parameters[[i,1]][a__]]->ct[a]}];,
+FA`subListCounter=Join[FA`subListCounter,{para[a__]->para[a]+deltaCT dd[para[a]]}];,
 2,
-FA`subListCounter=Join[FA`subListCounter,{parameters[[i,1]][a__]->parameters[[i,1]][a]+dd[parameters[[i,1]][a]]}];
-FA`subListCounterNames=Join[FA`subListCounterNames,{dd[parameters[[i,1]][a__]]->ct[a]}];,
+FA`subListCounter=Join[FA`subListCounter,{para[a__]->para[a]+deltaCT dd[para[a]]}];,
 3,
-FA`subListCounter=Join[FA`subListCounter,{parameters[[i,1]][a__]->parameters[[i,1]][a]+dd[parameters[[i,1]][a]]}];
-FA`subListCounterNames=Join[FA`subListCounterNames,{dd[parameters[[i,1]][a__]]->ct[a]}];
+FA`subListCounter=Join[FA`subListCounter,{para[a__]->para[a]+deltaCT dd[para[a]]}];
 ];
-If[FreeQ[realVar,parameters[[i,1]]]==False,
-realVar=Join[realVar,{ct}];
-];,
-cts=CounterTerm[Sin[parameters[[i,1]]]];
-ctc=CounterTerm[Cos[parameters[[i,1]]]];
-ctt=CounterTerm[Tan[parameters[[i,1]]]];
-SA`ListCounterTerms=Join[SA`ListCounterTerms,{cts,ctc}];
-realVar=Join[realVar,{cts,ctc}];
-FA`subListCounterNamesSingle=Join[FA`subListCounterNamesSingle,{parameters[[i,1]]->{cts,ctc}}];
-FA`subListCounter=Join[FA`subListCounter,{Sin[parameters[[i,1]]]->Sin[parameters[[i,1]]]+dd[Sin[parameters[[i,1]]]]}];
-FA`subListCounterNames=Join[FA`subListCounterNames,{dd[Sin[parameters[[i,1]]]]->cts}];
-FA`subListCounter=Join[FA`subListCounter,{Cos[parameters[[i,1]]]->Cos[parameters[[i,1]]]+dd[Cos[parameters[[i,1]]]]}];
-FA`subListCounterNames=Join[FA`subListCounterNames,{dd[Cos[parameters[[i,1]]]]->ctc}];];];
+];
+];
 i++;];
+FA`subListCounter=Select[Join[FA`subListCounter,#->#+deltaCT dd[#]&/@(TrigRepFA[[All,2]])]//.SA`subParameterNames//.subFA//.dd[a__ b_]:>(dd[a]b+dd[b]a),Head[#[[1]]]=!=Times&];
+];
+FA`subListCounterNames=(#[[1]]/.a:>a__)->#[[2]]&/@(Cases[Variables[Level[(FA`subListCounter//Values),{-\[Infinity],\[Infinity]}]],dd[__]]/.dd[a_]:>{dd[a],ToExpression["d"<>ToString[a]]});(*realVar=Join[realVar,(FA`subListCounterNames//.F_[a_]\[RuleDelayed]F//Values)];*)
 ];
 
-CounterTermFA[x_]:=Switch[Head[x],
-Sin,Return[ToExpression["dSin"<>ToString[x[[1]]/.subFA]]];,
-Cos,Return[ToExpression["dCos"<>ToString[x[[1]]/.subFA]]];,
-_,Return[ToExpression["d"<>ToString[x/.subFA]]];];
-
-ExpandCTfa[vert_,fields_]:=Block[{coupCT,wv,iii},
-coupCT=Expand[TrigExpand[TrigExpand[vert /. FA`subListCounter ]-vert]]/. conj[dd[a_]]->dd[conj[a]]/. sum->SUM //. SUM[a__, d_ SUM[f__,g_]]->SUM[a,SUM[f,d g]]//. SUM[a_,b_,c_,d_Times]:>SUM[a,b,c,Expand[d]] //.SUM[a_,b_,c_,d_ + e_]:>SUM[a,b,c,d]+SUM[a,b,c,e]//. sum[a_,b_,c_,d_Times]:>sum[a,b,c,Expand[d]] //.sum[a_,b_,c_,d_ + e_]:>sum[a,b,c,d]+sum[a,b,c,e];
-coupCT=Expand[coupCT]//. dd[a__] dd[b__]->0 //.dd[a__]^b__->0//. dd[a_] SUM[___,y___ dd[b_]]->0 //. dd[a_] SUM[__,SUM[___,y___ dd[b_]]]->0//. SUM[__, y___ dd[a_]] SUM[___,w___ dd[b_]]->0 //. SUM[__, dd[a_]] SUM[___,  dd[b_]]->0 //. SUM[__,SUM[__, x_ dd[a_]]] SUM[__,SUM[___,y_  dd[b_]]]->0/. SUM->sum;
-If[Head[coupCT]===Plus,temp=Plus@@(Select[(List@@coupCT),Count[#,dd[x_],99]<2 &]);];
+ExpandCTfa[vert_,fields_,fieldindices_,couplingid_]:=Block[{coupCT,wv,iii},
+If[SA`FAgenericCTs=!=True,
+If[SA`CTSums=!=True,
+coupCT=Expand[(TrigExpand[(TrigExpand[vert//.SA`CTDependencesPre] /.FA`subListCounter)-vert]//.subFA)]/.deltaCT->1/. conj[dd[a_]]->dd[conj[a]]//.SA`CTDependencesPre/. sum->SUM //. SUM[a__, d_ SUM[f__,g_]]->SUM[a,SUM[f,d g]]//. SUM[a_,b_,c_,d_Times]:>SUM[a,b,c,Expand[d]] //.SUM[a_,b_,c_,d_ + e_]:>SUM[a,b,c,d]+SUM[a,b,c,e]//. sum[a_,b_,c_,d_Times]:>sum[a,b,c,Expand[d]] //.sum[a_,b_,c_,d_ + e_]:>sum[a,b,c,d]+sum[a,b,c,e]//.SA`CTDependencesPost;
+coupCT=
+Expand[coupCT]//. dd[a__] dd[b__]->0 //.dd[a__]^b__->0//. dd[a_] SUM[___,y___ dd[b_]]->0 //. dd[a_] SUM[__,SUM[___,y___ dd[b_]]]->0//. SUM[__, y___ dd[a_]] SUM[___,w___ dd[b_]]->0 //. SUM[__, dd[a_]] SUM[___,  dd[b_]]->0 //. SUM[__,SUM[__, x_ dd[a_]]] SUM[__,SUM[___,y_  dd[b_]]]->0/. SUM->sum;
 coupCT=coupCT /.dd[conj[a_]]->conj[dd[a]]/. FA`subListCounterNames;
-
+,
+coupCT=TrigExpand[(vert//.SA`CTDependencesPre/.FA`subListCounter)-vert]//.SA`CTDependencesPre//.subFA//.{conj[x_Times|x_Plus]:>(conj/@x),conj[deltaCT]:>deltaCT}//.sum[a_,b_,c_,d_]:>Sum[d,{a,c}];
+coupCT=(Series[coupCT,{deltaCT,0,1}]//Normal)/.deltaCT->1//.SA`CTDependencesPost;
+];
+,
+coupCT=SACounterTerm[C[fieldindices//.subFA//.subFAFields][couplingid]];
+];
 wv=0;
+If[SA`IncludeWFRs===True,
 For[iii=1,iii<=Length[fields],
 If[getGen[fields[[iii]]]>1,
 wv=wv+IndexSum[1/2(vert /. ToExpression["gt"<>ToString[iii]]->FA`newInd[iii]) FA`Zf[fields[[iii]],ToExpression["gt"<>ToString[iii]],FA`newInd[iii]],{FA`newInd[iii],getGen[fields[[iii]]]}];,
 wv=wv+1/2(vert ) FA`Zf[fields[[iii]],1,1];
 ];
 iii++;];
-
+];
 Return[coupCT+wv];
 ];
 FA`newInd[n_]:=ToExpression["gsum"<>ToString[n]];

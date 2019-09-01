@@ -1682,7 +1682,7 @@ temp=Select[temp,(FreeQ[Transpose[DEFINITION[MatchingConditions]][[1]],#])&];
 
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles /.{re[x_]->x,im[x_]->x,A_[b__Integer]->A},temp[[i]]]==False,
-If[FreeQ[HighscaleMatchingConditions,temp[[i]]] && FreeQ[BoundaryMatchingScaleDown,temp[[i]]]&& FreeQ[BoundaryMatchingScaleUp,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]]  && FreeQ[BoundaryMatchingUV,temp[[i]]]&& FreeQ[BoundaryMatchingScaleDown,temp[[i]]]&& FreeQ[BoundaryMatchingScaleUp,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
 ];
 i++;];
 
@@ -1714,7 +1714,7 @@ temp=Select[temp,(FreeQ[DEFINITION[NonStandardYukawas],#])&];
 
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles /. {re[x_]->x,im[x_]->x},temp[[i]]]==False,
-If[FreeQ[HighscaleMatchingConditions,temp[[i]]]&& FreeQ[BoundaryMatchingScaleDown,temp[[i]]] && FreeQ[BoundaryMatchingScaleUp,temp[[i]]] ,Message[SPheno::NoConditionForParameter,temp[[i]]];];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]]&&FreeQ[BoundaryMatchingUV,temp[[i]]] && FreeQ[BoundaryMatchingScaleDown,temp[[i]]] && FreeQ[BoundaryMatchingScaleUp,temp[[i]]] ,Message[SPheno::NoConditionForParameter,temp[[i]]];];
 ];
 i++;];
 ];,

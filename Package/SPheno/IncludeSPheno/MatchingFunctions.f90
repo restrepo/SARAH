@@ -143,14 +143,14 @@ Complex(dp) Function ScalarQuarticScalarB0Pdiagram(c1,c2,c3,m1,m2,m3)
 Complex(dp), Intent(in) :: c1,c2,c3
 Real(dp), Intent(in) :: m1,m2, m3
 
-ScalarQuarticScalarB0Pdiagram = c1*c2*c3*B0_IR(m1**2,m2**2)/(m3**2)
+ScalarQuarticScalarB0Pdiagram = c1*c2*c3*B0_IR(m1**2,m2**2)/(m3**2)/2._dp 
 End Function ScalarQuarticScalarB0Pdiagram
 
 Complex(dp) Function ScalarQuarticScalarB0P2diagram(c1,c2,c3,m1,m2,m3)
 Complex(dp), Intent(in) :: c1,c2,c3
 Real(dp), Intent(in) :: m1,m2, m3
 
-ScalarQuarticScalarB0P2diagram =c1*c2*c3*B0_IR(m1**2,m2**2)/(m3**2)
+ScalarQuarticScalarB0P2diagram =c1*c2*c3*B0_IR(m1**2,m2**2)/(m3**2)/2._dp 
 End Function ScalarQuarticScalarB0P2diagram
 
 Complex(dp) Function ScalarQuarticScalarC0Pdiagram(c1,c2,c3,c4,m1,m2,m3,m4)

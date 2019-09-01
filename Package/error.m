@@ -354,10 +354,10 @@ The results are saved in: \n
 InitMatching::usage ="InitMatching[options] initializes the matching routines used for the calculation of effective scalar couplings.\n
 The function can be used in two modi controlled by the option InputFile-> False/filename.m
 where filename.m is an input file located in the directory of the currently loaded model.\n
-If an input file is given the matching is performed as described in the file, see WIKILINK.
+If an input file is given the matching is performed as described in the file, see http://stauby.de/sarah_wiki/index.php?title=One-Loop_Threshold_Corrections_in_Scalar_Sectors.
 If InputFile->False, the following options can be used:\n
- - Simplifications -> {vu->Sin[\[Beta]] epsUV, ...} : list of simplifications used for the analytic diagonalization of mass matrices as well as all other calculations.\n
- - Approximations -> {\[Beta]>0,\[Beta]<Pi/2} : assumptions used to simplify expressions\n
+ - Parametrisation -> {vu->Sin[\[Beta]] epsUV, ...} : list of simplifications used for the analytic diagonalization of mass matrices as well as all other calculations.\n
+ - Assumptions -> {\[Beta]>0,\[Beta]<Pi/2} : assumptions used to simplify expressions\n
  - SolveTadpoles -> {mHu2,mHd2} : parameters to solve tadpoles for\n
 After the initialization (no input file given) use the functions ?EFTcoupNLO and ?EFTcoupLO to calculate effective couplings.
 See also Options[InitMatching].";
@@ -366,7 +366,7 @@ EFTcoupNLO::usage="EFTcoupNLO[{field1[index1],field2[index2]},...,options] calcu
 The most important options and there default values are:\n
 - ExcludeFields -> {}  : fields contained in this list do not enter the calculation of the effective coupling i.e. diagrams with internal propagators of these fields are excluded. Example: {Chi, Cha}.\n
 - InternalPatterns -> {} : compute only diagrams with certain internal field-type patterns e.g. two internal scalars/fermions {SS,FF} etc. For an empty list all patterns are computed. Example: {S,SS,SSS,SSSS} computes corrections from heavy scalars only.\n
-- Topologies -> {} : restrict the calculation to a subset of topologies described in WIKILINK. For an empty list, all topologies are considered. Example: Topologies -> {D} computes box diagrams only. Also a group of topologies e.g.  {B} can be given which includes all topologies that contain a two-point function.\n
+- Topologies -> {} : restrict the calculation to a subset of topologies described in 1810.12326. For an empty list, all topologies are considered. Example: Topologies -> {D} computes box diagrams only. Also a group of topologies e.g.  {B} can be given which includes all topologies that contain a two-point function.\n
 - ExcludeTopologies -> {OffdiagonalWFRs} : excludes topologies from the calculation. The filtering of ExcludeTopologies is also applied on the topology groups given in the Topology list.\n
 - Debug -> False : If set to True, all amplitudes are multiplied with a term debug[<topology>][<fieldinsertions>] that identifies the topology and the internal fields.
 - ShiftMSDR -> Automatic : includes the \!\(\*OverscriptBox[\(MS\), \(_\)]\)-\!\(\*OverscriptBox[\(DR\), \(_\)]\) conversion in the calculation. If set to 1, the conversion is computed even in a non-SUSY model, if set to 1, the conversion is computed exclusively.\n

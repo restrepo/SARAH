@@ -610,18 +610,20 @@ getColorRep[x_]:=Block[{temp,pos,posC},
 temp=getIndizesWI[getBlank[x]];
 If[FreeQ[temp,color],Return[S];];
 pos=Position[temp,color][[1,1]];
+(*
 If[FreeQ[Gauge,color]===False,
 posC=Position[Gauge,color][[1,1]];,
 posC=Position[AuxGauge,color][[1,1]];
 ];
+*)
 Switch[temp[[pos,2]],
 3,
-	If[SA`DynL[getBlank[x],posC]==={1,0},
+	If[SA`DynL[getBlank[x],color]==={1,0},
 	Return[T];,
 	Return[-T];
 	];,
 6,
-	If[SA`DynL[getBlank[x],posC]==={2,0},	
+	If[SA`DynL[getBlank[x],color]==={2,0},	
 	Return[Six];,
 	Return[-Six];
 	];,

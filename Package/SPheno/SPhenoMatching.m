@@ -47,7 +47,7 @@ WriteString[file,"Use Tadpoles_"<>ModelName<>" \n \n"];
 ];
 
 WriteString[file,"Real(dp) :: MatchingThreshold = 1000._dp ! need to put reasonable value \n \n"];
-WriteString[file,"Logical :: Debug_Matching = .True. \n"];
+WriteString[file,"Logical :: Debug_Matching = .False. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_ScalarD0 = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_ScalarC0 = .True. \n"];
 WriteString[file,"Logical :: Include_in_Thresholds_ScalarB0 = .True. \n"];
@@ -783,8 +783,8 @@ If[Length[diagrams]>0,
 WriteString[file,"\n! "<>ToString[i]<>".th Topology \n"];
 Switch[i,
 1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
-2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt4 \n"];WriteString[file,"ex4=gt3 \n"];,
-3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];
+2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];,
+3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt4 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt3 \n"];
 ];
 ];
 For[j=1,j<=Length[diagrams],
@@ -856,8 +856,8 @@ If[Length[diagrams]>0,
 WriteString[file,"\n! "<>ToString[i]<>".th Topology \n"];
 Switch[i,
 1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
-2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt4 \n"];WriteString[file,"ex4=gt3 \n"];,
-3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];
+2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];,
+3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt4 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt3 \n"];
 ];
 ];
 For[j=1,j<=Length[diagrams],
@@ -1409,11 +1409,17 @@ Switch[top,
 "D",
 perfields={fields,{fields[[1]],fields[[2]],fields[[4]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
 nrint=4;,
-"C" | "CP"|"BP2",
+"BP2",
+perfields={{fields[[1]],fields[[2]],fields[[3]],fields[[4]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]},{fields[[1]],fields[[4]],fields[[3]],fields[[2]]},
+{fields[[1]],fields[[2]],fields[[4]],fields[[3]]},{fields[[1]],fields[[3]],fields[[4]],fields[[2]]},{fields[[1]],fields[[4]],fields[[2]],fields[[3]]},
+{fields[[3]],fields[[4]],fields[[1]],fields[[2]]},{fields[[2]],fields[[4]],fields[[1]],fields[[3]]},{fields[[3]],fields[[2]],fields[[1]],fields[[4]]},
+{fields[[3]],fields[[4]],fields[[2]],fields[[1]]},{fields[[2]],fields[[4]],fields[[3]],fields[[1]]},{fields[[3]],fields[[2]],fields[[4]],fields[[1]]}};
+If[top==="CP",nrint=4;,nrint=3;];,
+"C" | "CP"| "BP",
 perfields={fields,{fields[[1]],fields[[3]],fields[[2]],fields[[4]]},{fields[[1]],fields[[4]],fields[[3]],fields[[2]]},
 {fields[[3]],fields[[4]],fields[[1]],fields[[2]]},{fields[[2]],fields[[4]],fields[[1]],fields[[3]]},{fields[[3]],fields[[2]],fields[[1]],fields[[4]]}};
 If[top==="CP",nrint=4;,nrint=3;];,
-"B" | "BP"|"BPP",
+"B"| "BPP",
 perfields={fields,{fields[[1]],fields[[4]],fields[[2]],fields[[3]]},{fields[[1]],fields[[3]],fields[[2]],fields[[4]]}};
 If[top==="B",nrint=2;,If[top==="BP",nrint=3;,nrint=4;]];,
 "APP",
@@ -1426,7 +1432,7 @@ If[top==="MSDR",nrint=2;,nrint=3;];
 3,
 Switch[top,
 "C",
-perfields=fields;
+perfields={fields};
 nrint=3;,
 "B",
 perfields={fields,{fields[[2]],fields[[1]],fields[[3]]},{fields[[3]],fields[[1]],fields[[2]]}};
@@ -1452,7 +1458,22 @@ Switch[i,
 2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt4 \n"];WriteString[file,"ex4=gt3 \n"];,
 3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];
 ];,
-{4,"C"} |  {4,"CP"}| {4,"BP2"} ,
+{4,"BP2"},
+Switch[i,
+1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
+2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];,
+3,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt4 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt2 \n"];,
+4,WriteString[file,"ex1=gt2 \n"];WriteString[file,"ex2=gt1 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
+5,WriteString[file,"ex1=gt3 \n"];WriteString[file,"ex2=gt1 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];,
+6,WriteString[file,"ex1=gt4 \n"];WriteString[file,"ex2=gt1 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt2 \n"];,
+7,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt2 \n"];WriteString[file,"ex1=gt3 \n"];WriteString[file,"ex2=gt4 \n"];,
+8,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt3 \n"];WriteString[file,"ex1=gt2 \n"];WriteString[file,"ex2=gt4 \n"];,
+9,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt4 \n"];WriteString[file,"ex1=gt3 \n"];WriteString[file,"ex2=gt2 \n"];,
+10,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt2 \n"];WriteString[file,"ex1=gt4 \n"];WriteString[file,"ex2=gt3 \n"];,
+11,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt3 \n"];WriteString[file,"ex1=gt4 \n"];WriteString[file,"ex2=gt2 \n"];,
+12,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt4 \n"];WriteString[file,"ex1=gt2 \n"];WriteString[file,"ex2=gt3 \n"];
+];,
+{4,"C"} |  {4,"CP"}|{4,"BP"},
 Switch[i,
 1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
 2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt3 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt4 \n"];,
@@ -1461,7 +1482,7 @@ Switch[i,
 5,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt3 \n"];WriteString[file,"ex1=gt2 \n"];WriteString[file,"ex2=gt4 \n"];,
 6,WriteString[file,"ex3=gt1 \n"];WriteString[file,"ex4=gt4 \n"];WriteString[file,"ex1=gt3 \n"];WriteString[file,"ex2=gt2 \n"];
 ];,
-{4,"B"} | {4,"BP"}| {4,"BPP"}| {4,"MSDR"}|{4,"APP"},
+{4,"B"}|  {4,"BPP"}| {4,"MSDR"}|{4,"APP"},
 Switch[i,
 1,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt2 \n"];WriteString[file,"ex3=gt3 \n"];WriteString[file,"ex4=gt4 \n"];,
 2,WriteString[file,"ex1=gt1 \n"];WriteString[file,"ex2=gt4 \n"];WriteString[file,"ex3=gt2 \n"];WriteString[file,"ex4=gt3 \n"];,
