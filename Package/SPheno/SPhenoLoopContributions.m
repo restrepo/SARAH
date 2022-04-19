@@ -58,6 +58,7 @@ GetGenerationFlag[particle_]:=getGenSPheno[particle];
 (* ::Input::Initialization:: *)
 AddPenguinContributions2[list_,resFFVscalar_,resFFVvector_,resSSV_,resFFSscalar_,resFFSvector_,resSSS_,resVVV_,resSVV_,initial_,final_,V3Needed_,mb_,goldstones_,file_]:=Block[{i,j,k,cfactor,i1,i2,i3},
 
+
 (* This function take a list of diagrams and uses known, analytical expression to write the ampltiude to the Fortran code. The 'names' of the expression for the amplitudes have to agree with the names used in the function 'AddPenguinResult' below. Note, it is assumed that two external particles are always fermions (that's the only case we need for the low-energy observables!). *)
 (* The input parameters are the following: *)
 (* - list: the list of diagrams (created by InsertFields) *)
@@ -2219,35 +2220,84 @@ WriteString[file,"fun1=2._dp*C00_3m("<>SPhenoMassSq[currentFermion1,IndexFermion
 
 (* ---------- Contributions to g-2 ------------ *)
 
-PenguinGm2SSV,
+PenguinGm2SSF,
 	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"chargefactor = chargefactor*"<>"("<>SPhenoForm[-1.getElectricCharge[currentScalar1]/getElectricCharge[Electron]]<>")\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
-	WriteString[file,"a_mu = a_mu - 2._dp*Real(coup1L*Conjg(coup1R),dp)*F4(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
-	WriteString[file,"      & - ("<>SPhenoForm[-1.getElectricCharge[currentScalar1]/getElectricCharge[Electron]]<>")*2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F1(ratio)/" <>
-SPhenoMassSq[currentFermion1,IndexFermion1] <>" \n"];
+	WriteString[file,"a_mu = a_mu - chargefactor*(2._dp*Real(coup1L*Conjg(coup1R),dp)*F4(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
+	WriteString[file,"      & +2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F1(ratio)/" <>
+SPhenoMassSq[currentFermion1,IndexFermion1] <>") \n"];
+WriteString[file,"End if \n \n"];,
+
+PenguinGm2FFS,
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")\n "];
+	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
+	WriteString[file,"a_mu = a_mu - chargefactor*(Real(coup1L*Conjg(coup1R),dp)*F3gamma(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
+	WriteString[file,"      & - 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F2(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>") \n"];
+	WriteString[file,"End if \n \n"];,
+
+PenguinGm2VVF,
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentVector1,IndexVector1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentVector1]/getElectricCharge[Electron]]<>")\n "];
+	WriteString[file,"ratio = 1._dp/ratio ! conventions in 1402.7065 are different \n "];
+	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
+	WriteString[file,"a_mu = a_mu - 4._dp*chargefactor*(Real(coup1L*Conjg(coup1R),dp)*gVVF(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
+	WriteString[file,"      & + 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*fVVF(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>") \n"];
 WriteString[file,"End if \n \n"];,
 
 PenguinGm2FFV,
-	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentVector1,IndexVector1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"ratio = 1._dp/ratio ! conventions in 1402.7065 are different \n "];
+	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
-	WriteString[file,"a_mu = a_mu - Real(coup1L*Conjg(coup1R),dp)*F3gamma(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
-	WriteString[file,"      & + ("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")*2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*F2(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>" \n"];
+	WriteString[file,"a_mu = a_mu - 8._dp*chargefactor*(Real(coup1L*Conjg(coup1R),dp)*gFFV(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>"& \n"];
+	WriteString[file,"      & + 2._dp*"<>SPhenoMass[Electron,Ifermion]<>"*(Abs(coup1L)**2 + Abs(coup1R)**2)*fFFV(ratio)/" <>SPhenoMassSq[currentFermion1,IndexFermion1] <>") \n"];
 WriteString[file,"End if \n \n"];,
 
 
 (* ---------- Contributions EDM ------------ *)
 
-PenguinEDMFFV,
+PenguinEDMFFS,
 	 sign = "-("<>SPhenoForm[RelativeCoupling[VectorP,getBlank[currentFermion2]]]<>")*"; feynfun="A";
-	WriteString[file,"ratio = "<>SPhenoMassSq[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1]<> "\n "];
+	WriteString[file,"!ratio = "<>SPhenoMassSq[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1]<> "\n "];
+	WriteString[file,"!If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
+	WriteString[file,"!EDM = EDM "<>sign<>" chargefactor*Aimag(coup1R*Conjg(coup1L))*FeynFunction"<>feynfun<>"(ratio)*"<>SPhenoMass[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1] <>" \n"];
+	WriteString[file,"!End if \n \n"];
+	
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
-	WriteString[file,"EDM = EDM "<>sign<>" Aimag(coup1R*Conjg(coup1L))*FeynFunction"<>feynfun<>"(ratio)*& \n    &"<>SPhenoMass[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1] <>" \n"];
+	WriteString[file,"EDM = EDM - 0.5_dp*chargefactor*(Aimag(coup1L*Conjg(coup1R))*F3gamma(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>") \n"];
 	WriteString[file,"End if \n \n"];,
-PenguinEDMSSV,
+
+PenguinEDMSSF,
 	 sign = "+("<>SPhenoForm[RelativeCoupling[VectorP,getBlank[currentScalar2]]]<>")*"; feynfun="B";
-	WriteString[file,"ratio = "<>SPhenoMassSq[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1]<> "\n "];
+	WriteString[file,"!ratio = "<>SPhenoMassSq[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1]<> "\n "];
+	WriteString[file,"!If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
+	WriteString[file,"!EDM = EDM "<>sign<>" chargefactor*Aimag(coup1L*Conjg(coup1R))*FeynFunction"<>feynfun<>"(ratio)*"<>SPhenoMass[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1] <>" \n"];
+	WriteString[file,"!End if \n \n"];
+
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentScalar1,IndexScalar1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"chargefactor = chargefactor*"<>"("<>SPhenoForm[-1.getElectricCharge[currentScalar1]/getElectricCharge[Electron]]<>")\n "];
 	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
-	WriteString[file,"EDM = EDM "<>sign<>" Aimag(coup1L*Conjg(coup1R))*FeynFunction"<>feynfun<>"(ratio)*& \n    &"<>SPhenoMass[currentFermion1,IndexFermion1]<>"/"<>SPhenoMassSq[currentScalar1,IndexScalar1] <>" \n"];
+	WriteString[file,"EDM = EDM - chargefactor*(Aimag(coup1L*Conjg(coup1R))*F4(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>") \n"];
+	WriteString[file,"End if \n \n"];,
+
+PenguinEDMVVF,
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentVector1,IndexVector1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentVector1]/getElectricCharge[Electron]]<>")\n "];
+	WriteString[file,"ratio = 1._dp/ratio ! conventions in 1402.7065 are different \n "];
+	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
+	WriteString[file,"EDM = EDM - 2._dp*chargefactor*(Aimag(coup1L*Conjg(coup1R))*gVVF(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>") \n"];
+	WriteString[file,"End if \n \n"];,
+
+PenguinEDMFFV,
+	WriteString[file,"ratio = "<>SPhenoMassSq[currentVector1,IndexVector1]<>"/"<>SPhenoMassSq[currentFermion1,IndexFermion1]<> "\n "];
+	WriteString[file,"ratio = 1._dp/ratio ! conventions in 1402.7065 are different \n "];
+	WriteString[file,"chargefactor = chargefactor*("<>SPhenoForm[-1.getElectricCharge[currentFermion1]/getElectricCharge[Electron]]<>")\n "];
+	WriteString[file,"If ((ratio.eq.ratio).and.(ratio.lt.1.0E+30_dp).and.(ratio.gt.1.0E-30_dp)) Then \n"];
+	WriteString[file,"EDM = EDM - 4._dp*chargefactor*(Aimag(coup1L*Conjg(coup1R))*gFFV(ratio)/"<>SPhenoMass[currentFermion1,IndexFermion1] <>") \n"];
 	WriteString[file,"End if \n \n"];,
 
 

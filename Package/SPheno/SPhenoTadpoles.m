@@ -268,7 +268,7 @@ i++;];,
 For[j=1,j<=Length[list],
 For[i=1,i<=Length[list[[j,i]]],
 If[FreeQ[NewParametersFromTadpoles,list[[j,i,1]]],
-If[Head[list[[i,j,1]]]===im || Head[list[[i,j,1]]]===re,
+If[Head[list[[j,i,1]]]===im || Head[list[[j,i,1]]]===re,
 WriteString[file,FortranLineBreak[SPhenoForm[list[[j,i,1,1]]]<>" = 0._dp \n"]];,
 WriteString[file,FortranLineBreak[SPhenoForm[list[[j,i,1]]]<>" = 0._dp \n"]];
 ];
@@ -306,7 +306,7 @@ WriteCopyRight[sphenoTad];
 WriteString[sphenoTad,"Module Tadpoles_"<>ModelName<>" \n \n"];
 WriteString[sphenoTad,"Use Model_Data_"<>ModelName<>" \n"];
 WriteString[sphenoTad,"Use TreeLevelMasses_"<>ModelName<>" \n"];
-WriteString[sphenoTad,"Use RGEs_"<>ModelName<>" \n"];
+(* WriteString[sphenoTad,"Use RGEs_"<>ModelName<>" \n"]; *)
 WriteString[sphenoTad,"Use Control \n"];
 WriteString[sphenoTad,"Use Settings \n"];
 WriteString[sphenoTad,"Use Mathematics \n\n"];

@@ -284,7 +284,7 @@ If[IgnoreGaugeFixing=!=True,
 CalcGhostLagrangian2[testAutomaticGF];,
 LGhostSS=0;
 ];
-Potential = Potential+LGhostSS;
+Potential = (Potential/. RXi[_]->0)+LGhostSS;
 
 PrintAll["Calc Mixings of Matter Fields"];
 

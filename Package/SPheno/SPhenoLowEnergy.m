@@ -2172,7 +2172,7 @@ GenerateGminus2:=Block[{i},
 Print["Write Function for g-2"];
 
 list=GeneratePenguinDiagrams[bar[Electron],Electron,VectorP];
-list=Select[GeneratePenguinDiagrams[bar[Electron],Electron,VectorP],(FreeQ[getVertexType/@#[[1]],SVV]==True  && getVertexType[#[[1,1]]]=!=FFV)&];
+list=Select[GeneratePenguinDiagrams[bar[Electron],Electron,VectorP],(FreeQ[getVertexType/@#[[1]],SVV]==True  && (SMQ[Internal[1]/.#[[2]]]==False || SMQ[Internal[2]/.#[[2]]]==False ))&];
 res=MakeMassesCouplingLists[list,True];
 ListOfDiagrams = res[[1]];
 NeededMasses=res[[2]];
@@ -2202,7 +2202,7 @@ WriteString[sphenoLow,"a_mu = 0._dp \n"];
 WriteString[sphenoLow,"gt1 = Ifermion \n"];
 WriteString[sphenoLow,"gt2 = Ifermion \n \n"];
 
-AddPenguinContributions2[ListOfDiagrams,PenguinGm2FFV,None,PenguinGm2SSV,None,None,None,None,None,None,None,False,"mz2",False,sphenoLow];
+AddPenguinContributions2[ListOfDiagrams,PenguinGm2FFS,PenguinGm2FFV,PenguinGm2SSF,None,None,None,PenguinGm2VVF,None,None,None,False,"mz2",False,sphenoLow];
 
 WriteString[sphenoLow,"a_mu = a_mu*"<>SPhenoMass[Electron,Ifermion]<>"*oo16pi2 \n"];
 WriteString[sphenoLow,"Iname = Iname -1 \n \n"];
@@ -2243,7 +2243,7 @@ WriteString[sphenoLow,"EDM = 0._dp \n"];
 WriteString[sphenoLow,"gt1 = Ifermion \n"];
 WriteString[sphenoLow,"gt2 = Ifermion \n \n"];
 
-AddPenguinContributions2[ListOfDiagrams,PenguinEDMFFV,None,PenguinEDMSSV,None,None,None,None,None,None,None,False,"mz2",False,sphenoLow];
+AddPenguinContributions2[ListOfDiagrams,PenguinEDMFFS,PenguinEDMFFV,PenguinEDMSSF,None,None,None,PenguinEDMVVF,None,None,None,False,"mz2",False,sphenoLow];
 
 WriteString[sphenoLow,"EDM = ecmfactor*EDM*oo16pi2 \n"];
 WriteString[sphenoLow,"Iname = Iname -1 \n \n"];

@@ -1498,7 +1498,8 @@ Switch[Length[listPGen],
 0,  CheckSymmetry[Opc,listP,sameIndices];
 ];
 
-If[FreeQ[Fields,RE[listP[[1]]]]==False,
+(* If[FreeQ[Fields,RE[listP[[1]]]]\[Equal]False, *)
+If[Select[RE/@listP,FreeQ[Fields,#]&]==={},
 gens = Table[Extract[Fields,Position[Fields,RE[listP[[i]]]][[1,1]]][[2]],{i,1,Length[listP]}];,
 gens = Table[getGen[listP[[i]]],{i,1,Length[listP]}];
 ];

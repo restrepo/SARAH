@@ -1250,6 +1250,7 @@ Return[Select[sums,FreeQcoups[#,coups]=={}&]];
 FreeQcoups[list_,coups_]:=Select[coups,FreeQ[list,#]==False&];
 
 CheckForNecessarySuperpositions:=Block[{i,j,temp,quartics,res},
+If[SA`SSSSlist=!={},
 quartics=Transpose[SA`SSSSlist][[2]]/.{Delta[a__]->1,epsTensor[a__]->1,CG[a__][b__]->1,InvMat[a__][b__]->1,gt1->i1,gt2->i2,gt3->i3,gt4->i4}/.x_?NumericQ->1;
 lA4oneNew={};
 For[i=1,i<=Length[quartics],
@@ -1275,7 +1276,11 @@ j++;];
 ];
 i++;];
 lA4oneNewFlat;
-lA4oneBeta=lA4oneNew;
+lA4oneBeta=lA4oneNew;,
+lA4oneNew={};
+lA4oneBeta={};
+lA4oneNewFlat={};
+];
 ];
 
 

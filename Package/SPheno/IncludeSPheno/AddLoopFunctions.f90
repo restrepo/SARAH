@@ -1748,7 +1748,63 @@ End Function DerVVVloop
  End Function SetDivonlyAdd
  
 !  
+!---------------------------------------
+! Loop functions for g-2 with vectors
+! based on 1402.7065
+!---------------------------------------
 
- 
+
+ Real(dp) Function fFFV(x)
+ Implicit None
+  Real(dp), Intent(in) :: x 
+  If (x.Eq.0._dp) Then
+   fFFV = -4._dp/3._dp
+  Else If (x.Eq.1._dp) Then
+   fFFV =-13._dp/12._dp
+   Else
+   fFFV = (-8._dp + 38._dp*x - 39._dp*x**2 + 14._dp*x**3 - &
+   & 5._dp*x**4 + 18._dp*x**2*Log(x))/(6._dp*(-1._dp + x)**4)
+  End If
+End Function fFFV
+
+ Real(dp) Function gFFV(x)
+ Implicit None
+  Real(dp), Intent(in) :: x 
+  If (x.Eq.0._dp) Then
+   gFFV = 4._dp
+  Else If (x.Eq.1._dp) Then
+   gFFV =2._dp
+   Else
+   gFFV =(-4._dp + 3._dp*x + x**3 - 6._dp*x*Log(x))/(-1._dp + x)**3
+  End If
+End Function gFFV
+
+ Real(dp) Function fVVF(x)
+ Implicit None
+  Real(dp), Intent(in) :: x 
+  If (x.Eq.0._dp) Then
+   fVVF = 5._dp/3._dp
+  Else If (x.Eq.1._dp) Then
+   fVVF =17._dp/12._dp
+   Else
+   fVVF =(10._dp - 43._dp*x + 78._dp*x**2 - 49._dp*x**3 +  &
+    & 4._dp*x**4 + 18._dp*x**3*Log(x))/(6._dp*(-1._dp + x)**4)
+  End If
+End Function fVVF
+
+
+ Real(dp) Function gVVF(x)
+ Implicit None
+  Real(dp), Intent(in) :: x 
+  If (x.Eq.0._dp) Then
+   gVVF = -4._dp
+  Else If (x.Eq.1._dp) Then
+   gVVF =-3._dp
+   Else
+   gVVF =(4._dp - 15._dp*x + 12._dp*x**2 - x**3 - 6._dp*x**2*Log(x))/(-1._dp + x)**3
+  End If
+End Function gVVF
+
+
  
 End Module AddLoopFunctions

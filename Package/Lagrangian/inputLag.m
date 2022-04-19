@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 CreateLagrangian[terms_,HC_,Overwrite_]:=Block[{i,j,pos,temp,fields,list={},coup,numerical,res,lVVV,lVVVV,rVVV,rVVVV,rPot,rKin},
 DynamicStatusAddTerms[terms]="initializing";
 If[SupersymmetricModel===False,InitChargeFactors;];
@@ -31,10 +32,10 @@ LagInputIncludeHC = HC;
 
 lVVV = Select[TermList,(getPartCode[#[[3]]]==30)&];
 lVVVV = Select[TermList,(getPartCode[#[[3]]]==40)&];
-pCodeKin={20,2010,210,220,120};
+pCodeKin={110,20,2010,210,220,120};
 pCodePot={2000,100,200,300,400,2100};
-lKin = Select[TermList,(FreeQ[pCodeKin,getPartCode[#[[3]]]]==False)&];
-lPot = Select[TermList,(FreeQ[pCodePot,getPartCode[#[[3]]]]==False)&];
+lKin = Select[TermList,(FreeQ[pCodeKin,getPartCode[#[[3]]/.Der[a_,b_]->a]]==False)&];
+lPot = Select[TermList,(FreeQ[pCodePot,getPartCode[#[[3]]/.Der[a_,b_]->a]]==False)&];
 DynamicStatusAddTerms[terms]="checking charge conservation";
 rVVV=Plus@@( MakeTerms/@lVVV);
 rVVVV=Plus@@(MakeTerms/@lVVVV);
@@ -50,6 +51,7 @@ Return[{0,rVVV,rVVVV,rPot,rKin}];
 ];
 
 
+(* ::Input::Initialization:: *)
 (*
 CreateTermList[terms_]:=Block[{i,j,pos,temp,fields,list={},coup,numerical,potenz,structure},
 If[Head[terms]===Plus,
@@ -147,7 +149,6 @@ i++;];
 PrintDebug["Checking charge Conservation of ", Dot@@entry[[3]]];
 
 SA`LagTermsNonSUSY=Join[SA`LagTermsNonSUSY,{withHead}];
-
 CheckLagTermChargeConservation[withHead];
 
 For[i1=1,i1<=Length[Global],
@@ -157,15 +158,12 @@ Message[Lagrange::ViolationGlobal ,Global[[i1,2]]];
 ];
 SA`CheckGlobalLagLevel=False;
 i1++;];
-
-
 If[FreeQ[entry[[1]],Delta] && FreeQ[entry[[1]],epsTensor] && FreeQ[entry[[1]],CG],
 temp=MakeIndexStructure[withHead] /. subFieldsOne;,
 temp=entry[[1]]/. subFieldsOne;
 ];
-coup = genTest[entry[[2]],fields,False]^entry[[4]];
-
-If[SupersymmetricModel===False,
+coup = genTest[entry[[2]],fields/.Der[a_,b_]->a,False]^entry[[4]];
+If[SupersymmetricModel===False && FreeQ[getType/@getBlank/@fields,V],
 GenerateCGCsForBrokenGroups[temp,fields,particles,invFields,withHead]; 
 If[Head[ContractionRGE[entry[[2]]]]===ContractionRGE,
 IndStructure=MakeIndexStructureRGEnonSUSY[withHead] /.subCGCBroken;,
@@ -175,7 +173,6 @@ ExtractSymmetryOfParametersNS[entry[[2]],withHead,IndStructure];
 (*
 IndStructure=temp*GetNormalizationFactors[invFields];
 *)
-
 (* adapted sign *)
 Switch[Plus@@(getPartCode[getBlank[#]&/@fields]),
 2100,
@@ -201,7 +198,6 @@ AdditionalParametersLagrange = DeleteCases[AdditionalParametersLagrange,entry[[2
 ];
 ];
 ];
-
 If[FreeQ[entry[[1]],Delta] && FreeQ[entry[[1]],epsTensor] && FreeQ[entry[[1]],CG],
 temp=entry[[1]]*coup*particles*MakeIndexStructure[withHead] /. subFieldsOne;,
 temp=entry[[1]]*coup*particles /. subFieldsOne;

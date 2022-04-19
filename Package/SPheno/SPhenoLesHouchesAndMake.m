@@ -164,6 +164,7 @@ WriteString[filenames[[l]]," 75 1               # Write WHIZARD files \n"];
 WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file   \n"];
 WriteString[filenames[[l]]," 77 0               # Output for MicrOmegas (running masses for light quarks; real mixing matrices)   \n"];
 WriteString[filenames[[l]]," 78 0               # Output for MadGraph (writes also vanishing blocks)   \n"];
+WriteString[filenames[[l]]," 79 1               # Write WCXF files (exchange format for Wilson coefficients) \n"];
 WriteString[filenames[[l]]," 86 0.              # Maximal width to be counted as invisible in Higgs decays; -1: only LSP \n"];
 If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          # Maximal mass of particles taken into account in loops \n"];
 ];
@@ -311,7 +312,7 @@ GenerateSSPtemplate;
 
 (* ::Input::Initialization:: *)
 
-GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i},
+GenerateMakeFile[NameForModel_,StandardCompiler_] :=Block[{i,matchname},
 Print["  Writing Makefile"];
 
 sphenoMake=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Makefile"]];
@@ -326,7 +327,11 @@ WriteString[sphenoMake,"PreDef = -DGENERATIONMIXING -DONLYDOUBLE\n"];
 WriteString[sphenoMake,"# setting various paths  \n"];
 WriteString[sphenoMake,"InDir = ../include\n"];
 WriteString[sphenoMake,"Mdir = ${InDir}\n"];
+If[HighscaleMatching===True,
+matchname=MatchingToModel<>"To"<>ModelName;
+WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables:SM:"<>matchname<>" \n"];,
 WriteString[sphenoMake,"VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables:SM \n"];
+];
 WriteString[sphenoMake,"name = ../lib/libSPheno"<>NameForModel<>".a\n \n"];
 WriteString[sphenoMake,"# check if SARAH module and SPheno are compatibel  \n"];
 WriteString[sphenoMake,"minV=330.00 \n"];
@@ -455,6 +460,10 @@ If[AddLowEnergyConstraint ===True,
 WriteString[sphenoMake," ${name}(LowEnergy_"<>ModelName<>".o) \\\n"];
 If[SkipFlavorKit=!=True,WriteString[sphenoMake,"${name}(FlavorKit_LFV_"<>ModelName<>".o) ${name}(FlavorKit_QFV_"<>ModelName<>".o) ${name}(FlavorKit_Observables_"<>ModelName<>".o)\\\n"];
 ];
+];
+
+If[HighscaleMatching===True,
+WriteString[sphenoMake," ${name}(Model_Data_"<>matchname<>".o) ${name}(Couplings_"<>matchname<>".o) ${name}(TreeLevelMasses_"<>matchname<>".o) ${name}(TadpoleEquations_"<>matchname<>".o) ${name}(Matching_"<>matchname<>".o)\\\n"];
 ];
 
 (* If[OnlyLowEnergySPheno=!=True, *)

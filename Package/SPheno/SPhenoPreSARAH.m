@@ -1412,6 +1412,8 @@ temp=Join[temp,InsFields[currentTop]];
 currentTop={{C[prop,AntiField[FieldToInsert[3]],f2],C[FieldToInsert[2],AntiField[FieldToInsert[1]],FieldToInsert[3]],C[f3,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f4,f1,AntiField[prop]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],External[1]->f2,External[2]->f3,External[3]->f4,External[4]->f1,Propagator->prop, Index[1]->gt2,Index[2]->gt3,Index[3]->gt4,Index[4]->gt1,InsertionOrder->12}};
 temp=Join[temp,InsFields[currentTop]];
 
+temp=Select[temp,Intersection[{Internal[1],Internal[2],Internal[3],Internal[4]}/.#[[2]],{VectorP,VectorG}]==={}&];
+
 
 Return[temp];
 ];
@@ -1423,6 +1425,8 @@ temp=InsFields[currentTop];
 
 currentTop={{C[prop,AntiField[FieldToInsert[3]],f1],C[FieldToInsert[2],AntiField[FieldToInsert[1]],FieldToInsert[3]],C[f2,AntiField[FieldToInsert[2]],FieldToInsert[1]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],External[1]->f1,External[2]->f2,External[3]->prop, Index[1]->gt1,Index[2]->gt2,Index[3]->gt3,InsertionOrder->2}};
 temp=Join[temp,InsFields[currentTop]];
+
+temp=Select[temp,Intersection[{Internal[1],Internal[2],Internal[3],Internal[4]}/.#[[2]],{VectorP,VectorG}]==={}&];
 
 Return[temp];
 ];
@@ -1471,12 +1475,16 @@ temp=Join[temp,InsFields[currentTop]];
 currentTop={{C[f2,FieldToInsert[1],AntiField[FieldToInsert[2]]],C[f3,AntiField[FieldToInsert[1]],FieldToInsert[3]],C[prop,FieldToInsert[2],AntiField[FieldToInsert[3]]],C[AntiField[prop],f4,f1]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f2,External[2]->f3,External[3]->f4,External[4]->f1,Propagator->prop, InsertionOrder->6, Index[1]->gt2,Index[2]->gt3,Index[3]->gt4,Index[4]->gt1}}; 
 temp=Join[temp,InsFields[currentTop]];
 
+temp=Select[temp,Intersection[{Internal[1],Internal[2],Internal[3],Internal[4]}/.#[[2]],{VectorP,VectorG}]==={}&];
+
 Return[temp];
 ];
 
 GeneratePenguinDiagramsPreSARAH[f1_,f2_,prop_]:=Block[{temp},
 currentTop={{C[f1,FieldToInsert[1],AntiField[FieldToInsert[2]]],C[f2,AntiField[FieldToInsert[1]],FieldToInsert[3]],C[prop,FieldToInsert[2],AntiField[FieldToInsert[3]]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],External[1]->f1,External[2]->f2,External[3]->prop,  Index[1]->gt1,Index[2]->gt2,Index[3]->gt3, InsertionOrder->1}};
 temp=InsFields[currentTop];
+
+temp=Select[temp,Intersection[{Internal[1],Internal[2],Internal[3],Internal[4]}/.#[[2]],{VectorP,VectorG}]==={}&];
 
 Return[temp];
 ];
@@ -1498,6 +1506,8 @@ temp=Join[temp,InsFields[currentTop]];
 
 currentTop={{C[f1,FieldToInsert[4],AntiField[FieldToInsert[1]]],C[f4,AntiField[FieldToInsert[2]],FieldToInsert[1]],C[f3,AntiField[FieldToInsert[4]],FieldToInsert[3]],C[f2,AntiField[FieldToInsert[3]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],Internal[3]->FieldToInsert[3],Internal[4]->FieldToInsert[4],External[1]->f1,External[2]->f4,External[3]->f3,External[4]->f2,Index[1]->gt1,Index[2]->gt4,Index[3]->gt3,Index[4]->gt2, InsertionOrder ->3}}; 
 temp=Join[temp,InsFields[currentTop]]; 
+
+temp=Select[temp,Intersection[{Internal[1],Internal[2],Internal[3],Internal[4]}/.#[[2]],{VectorP,VectorG}]==={}&];
 
 SA`CheckSameVertices=True;
 

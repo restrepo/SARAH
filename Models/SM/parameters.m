@@ -25,12 +25,14 @@ ParameterDefinitions = {
              									{0, 0, Mass[Fe,3]}}}}, 
                                                                             
                                                                            
-{mu2,         { Description -> "SM Mu Parameter"}},                                        
+{mu2,         { Description -> "SM Mu Parameter",
+                OutputName->m2SM}},                                        
 {\[Lambda],  { Description -> "SM Higgs Selfcouplings",
                DependenceNum -> Mass[hh]^2/(v^2)}},
 {v,          { Description -> "EW-VEV",
                DependenceNum -> Sqrt[4*Mass[VWp]^2/(g2^2)],
-               DependenceSPheno -> None  }},
+               DependenceSPheno -> None,
+               OutputName -> vvSM}},
 {mH2,        { Description -> "SM Higgs Mass Parameter"}},
 
 {ThetaW,    { Description -> "Weinberg-Angle",

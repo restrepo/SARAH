@@ -58,8 +58,8 @@ DEFINITION[MatchingConditions]=Default[THDMII];
 QuadruplePrecision = {Fv};
 
 BoundaryLowScaleInput={
- {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]},
- {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]}
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]},
+ {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]}
 };
 
 ListDecayParticles = Automatic;

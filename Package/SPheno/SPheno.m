@@ -55,11 +55,13 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 
 <<SPhenoEffPot`;
 <<SPheno2LPole`;
+
+<<SPhenoMatching`;
 ];
 
 Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran",IncludeFlavorKit->True,IncludeLoopDecays->True,Include2loopMasses->True};
 
-MakeSPhenoFast[opt___]:=MakeSPheno[IncludeLoopDecays->False,IncludeFlavorKit->False,ReadLists->True];
+MakeSPhenoFast[opt___]:=MakeSPheno[IncludeLoopDecays->False,IncludeFlavorKit->False,ReadLists->True,opt];
 MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno],IncludeFlavorKit/.{opt}/.Options[MakeSPheno],IncludeLoopDecays/.{opt}/.Options[MakeSPheno],Include2loopMasses/.{opt}/.Options[MakeSPheno]];
 
 MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_,flavorkit_,loopdecays_,inc2Lcorrections_]:=Block[{i,i1,i2,temp,startedtime},
@@ -122,9 +124,15 @@ If[AlwaysInclude2Loop===True,
 Include2LoopCorrections=True;
 ];
 
+If[SA`Add2LoopCorrections===False,
+Include2LoopCorrections=False;
+];
+
+(*
 If[inc2Lcorrections===False,
 Include2LoopCorrections=False;
 ];
+*)
 
 If[UseHiggs2LoopMSSM===True || Use2LoopFromLiterature===True,
 UseHiggs2LoopMSSM=True;
@@ -358,10 +366,15 @@ AdditionalFortranForm;
 ];
 
 
+
 CheckDefinitionParameters;
 
 InitInputOutput;
 GenerateSPhenoRGEs; 
+
+If[HighscaleMatching===True,
+RunHighScaleModel[ReadL];
+];
 
 
 GenerateSPhenoTreeMasses[Eigenstates];
@@ -402,12 +415,12 @@ MakeModelData;
 GenerateBoundaries;
 (* ]; *)
 
-If[SPhenoOnlyForHM=!=True,
 If[SPhenoLowEnergyIncluded =!=True, AddLowEnergyConstraint=False;];
 If[AddLowEnergyConstraint ===True, 
 GenerateSPhenoLowEnergy;
 ];
-];
+
+If[AddMatchingRoutines===True,GenerateMatching;];
 
 GenerateInOut;
 ];
@@ -738,6 +751,11 @@ neededParameterNames=DeleteCases[neededParameterNames,"EW-VEV"|"Down-VEV"|"Up-VE
 
 neededParameters={ElectronMatrixL,ElectronMatrixR,DownMatrixL,DownMatrixR,UpMatrixL,UpMatrixR,HiggsMixingMatrix};
 neededParameterNames={"Left-Lepton-Mixing-Matrix","Right-Lepton-Mixing-Matrix","Left-Down-Mixing-Matrix","Right-Down-Mixing-Matrix","Left-Up-Mixing-Matrix","Right-Up-Mixing-Matrix","Scalar-Mixing-Matrix"};
+
+If[getGen[HiggsBoson]==1,
+neededParameters=Drop[neededParameters,{-1}];
+neededParameterNames=Drop[neededParameterNames,{-1}];
+];
 
 For[i=1,i<=Length[neededParameters],
 If[FreeQ[parameters,neededParameters[[i]]],
@@ -1624,7 +1642,7 @@ temp=Select[HighScaleParameter,(MemberQ[TransposeChecked[BoundaryHighScale[[k]]]
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles,temp[[i]]],
 BoundaryHighScale[[k]] = Join[BoundaryHighScale[[k]],{{temp[[i]],0}}];,
-Message[SPheno::NoBoundaryGUT,temp[[i]]];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoBoundaryGUT,temp[[i]]];];
 ];
 i++;];
 
@@ -1642,7 +1660,7 @@ temp=Select[temp,(FreeQ[Transpose[DEFINITION[MatchingConditions]][[1]],#])&];
 
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles /.{re[x_]->x,im[x_]->x,A_[b__Integer]->A},temp[[i]]]==False,
-Message[SPheno::NoConditionForParameter,temp[[i]]];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
 ];
 i++;];
 
@@ -1659,7 +1677,7 @@ If[MemberQ[ParametersToSolveTadpoles,temp[[i]]] || MemberQ[ParametersToSolveTadp
 BoundaryHighScale = Join[BoundaryHighScale,{{temp[[i]],0}}];,
 If[MemberQ[down,temp[[i]]],
 BoundaryHighScale = Join[BoundaryHighScale,{{temp[[i]],0}}];,
-Message[SPheno::NoBoundaryGUT,temp[[i]]];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoBoundaryGUT,temp[[i]]];];
 ];
 ];
 i++;];
@@ -1674,7 +1692,7 @@ temp=Select[temp,(FreeQ[DEFINITION[NonStandardYukawas],#])&];
 
 For[i=1,i<=Length[temp],
 If[MemberQ[ParametersToSolveTadpoles /. {re[x_]->x,im[x_]->x},temp[[i]]]==False,
-Message[SPheno::NoConditionForParameter,temp[[i]]];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[i]]];];
 ];
 i++;];
 ];,
@@ -1699,7 +1717,7 @@ temp = Select[pRunningDown[[i]],(MemberQ[Flatten[Table[pRunningDown[[j]],{j,1,i-
 ];
 For[j=1,j<=Length[temp],
 If[MemberQ[Flatten[ParametersToSolveTadpolesAllRegimes],temp[[j]]]==False,
-Message[SPheno::NoConditionForParameter,temp[[j]]];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[j]]];];
 ];
 j++;];
 i++;];
@@ -1712,7 +1730,7 @@ temp=Select[temp,(FreeQ[{UpYukawa,DownYukawa,ElectronYukawa,hyperchargeAuxParame
 ];
 For[j=1,j<=Length[temp],
 If[MemberQ[Flatten[ParametersToSolveTadpolesAllRegimes],temp[[j]]]==False,
-Message[SPheno::NoConditionForParameter,temp[[j]]];
+If[FreeQ[HighscaleMatchingConditions,temp[[i]]],Message[SPheno::NoConditionForParameter,temp[[j]]];];
 ];
 j++;];
 i++;];

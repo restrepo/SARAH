@@ -1,10 +1,8 @@
 MINPAR={{1,m0},
         {2,m12},
         {3,TanBeta},
-        {4,SignumMu},
         {5,Azero},
-        {6,Bzero},
-        {7,Lzero}};
+        {6,Bzero}};
 
 EXTPAR = {
    {61,LambdaInput},
@@ -18,7 +16,7 @@ EXTPAR = {
 
 RealParameters = {TanBeta,m0};
 
-ParametersToSolveTadpoles =  {\[Mu],B[\[Mu]],ms2};
+ParametersToSolveTadpoles =  {\[Mu],B[\[Mu]],L[L1]};
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
@@ -26,7 +24,9 @@ RenormalizationScale = MSu[1]*MSu[6];
 ConditionGUTscale = g1 == g2;
 
 BoundarySUSYScale = {
-{vS, vSInput}
+{vS, vSInput},
+{\[Kappa], KappaInput},
+{\[Lambda], LambdaInput}
 };
 
 DEFINITION[MatchingConditions]=Default[THDMII];
@@ -43,12 +43,10 @@ BoundaryHighScale={
 {me2, DIAGONAL m0^2},
 {mHd2, m0^2},
 {mHu2, m0^2},
-{\[Kappa], KappaInput},
-{\[Lambda], LambdaInput},
+{ms2, m0^2},
 {T[\[Kappa]], AKappaInput*KappaInput},
 {T[\[Lambda]], ALambdaInput*LambdaInput},
 {L1, TadInput},
-{L[L1], Lzero*TadInput},
 {MS, MSInput},
 {B[MS],Bzero*MSInput},
 {MassB, m12},
@@ -65,7 +63,13 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 
-DefaultInputValues = {m0 -> 1500, m12 -> 1500, TanBeta -> 20, SignumMu->1, Azero -> -2500, Bzero->100, Lzero->0, LambdaInput -> 0.1, KappaInput -> 0.3,  ALambdaInput -> -300,  AKappaInput -> 650,  vSInput -> 300, MSInput->800};
+DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta -> 10,  Azero -> -3000, Bzero->-1000, LambdaInput -> 0.1, KappaInput -> 0.6,  ALambdaInput -> 10^4,  AKappaInput -> 7000,  vSInput -> 10^4, MSInput->1000};
+
+IncludeFineTuning = True;
+FineTuningParameters={
+{m0,1/2},{m12,1},{Azero,1},{Bzero,1},{\[Mu],1},{B[\[Mu]],1},
+{L[L1],1},{MSInput,1},{AKappaInput,1},{ALambdaInput,1},{TadInput,1}
+};
 
 
 RenConditionsDecays={

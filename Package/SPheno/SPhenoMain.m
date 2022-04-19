@@ -427,7 +427,7 @@ WriteString[spheno,"End If \n \n "];
 If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
 
 WriteString[spheno,"If (CalculateLowEnergy) then \n"];
-MakeCall["CalculateLowEnergyConstraints",Join[listAllParametersAndVEVs,Transpose[ListOfLowEnergyNames][[1]]],{},{},spheno]; 
+MakeCall["CalculateLowEnergyConstraints",Join[Join[listAllParameters,listVEVs],Transpose[ListOfLowEnergyNames][[1]]],{},{},spheno]; 
 WriteString[spheno, SPhenoForm[SPhenoMass[VectorZ]]<>" = mz \n"];
 WriteString[spheno, SPhenoForm[SPhenoMassSq[VectorZ]]<>" = mz2 \n"];
 WriteString[spheno, SPhenoForm[SPhenoMass[VectorW]]<>" = mW \n"];
@@ -680,20 +680,20 @@ If[Length[UseParameterAsGUTscale]>0,
 If[FreeQ[MINPAR,UseParameterAsGUTscale[[1]]]===False,
 If[Head[MINPAR[[1,1]]]=!=List,
 temp=Select[Transpose[MINPAR][[2]],(FreeQ[UseParameterAsGUTscale,#]==False)&];
-If[temp=!={},WriteString[spheno,"Call SetGUTscale("<>SPhenoForm[temp[[1]]]<>") \n"];];,
+If[temp=!={},WriteString[spheno,"Call SetGUTscale(abs("<>SPhenoForm[temp[[1]]]<>")) \n"];];,
 WriteString[spheno,"Select Case(BoundaryCondition) \n"];
 For[j=1,j<=Length[MINPAR],
 WriteString[spheno,"Case ("<>ToString[j]<>") \n"];
 temp=Select[Transpose[MINPAR[[j]]][[2]],(FreeQ[UseParameterAsGUTscale,#]==False)&];
 If[temp=!={},
-WriteString[spheno,"  Call SetGUTscale("<>SPhenoForm[temp[[1]]]<>") \n"];,
+WriteString[spheno,"  Call SetGUTscale(abs("<>SPhenoForm[temp[[1]]]<>")) \n"];,
 WriteString[spheno,"  ! Free GUT scale \n"];
 ];
 j++;];
 WriteString[spheno,"End Select \n\n"];
 ];,
 temp=Select[Transpose[EXTPAR][[2]],(FreeQ[UseParameterAsGUTscale,#]==False)&];
-WriteString[spheno,"Call SetGUTscale("<>SPhenoForm[temp[[1]]]<>") \n"];];
+WriteString[spheno,"Call SetGUTscale(abs("<>SPhenoForm[temp[[1]]]<>")) \n"];];
 ];
 
 If[Head[SetParametersAt]===List && SetParametersAt=!={},
@@ -769,7 +769,7 @@ i++;
 ];
 *)
 
-temp=ToExpression[SPhenoForm[#]<>"input"]&/@listAllParametersAndVEVs;
+temp=ToExpression[SPhenoForm[#]<>"input"]&/@Join[listAllParameters,listVEVs];
 
 Print["  Write 'CalculateLowEnergy'"];
 
@@ -782,7 +782,7 @@ MakeVariableList[temp,",Intent(inout)",spheno];
 MakeVariableList[NewMassParameters,"",spheno];
 (* MakeVariableList[NewParametersFromTadpoles,"",spheno]; *)
 
-MakeVariableList[listAllParametersAndVEVs,"",spheno];
+MakeVariableList[Join[listAllParameters,listVEVs],"",spheno];
 
 PreSARAHoperatorsQFV=Join[Select[PreSARAHoperatorsQFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=="Tree"&],Select[PreSARAHoperatorsQFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=!="Tree"&]];
 PreSARAHoperatorsLFV=Join[Select[PreSARAHoperatorsLFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=="Tree"&],Select[PreSARAHoperatorsLFV,StringTake[ToString[#[[1]]],{1,Min[{4,StringLength[ToString[#[[1]]]]}]}]=!="Tree"&]];
@@ -1043,6 +1043,17 @@ If[SkipFlavorKit=!=True,
 For[i=1,i<=Length[FLHA`WilsonCoefficients],
 WriteString[spheno,ToString[FLHA`WilsonCoefficients[[i,5]]]<>" = "<>SPhenoForm[FLHA`WilsonCoefficients[[i,6]]]<>"\n"];
 i++;];
+
+(* For[j=1,j<=WCXF`Outputs, *)
+j=1;
+For[i=1,i<=Length[WCXF`Values[j]],
+If[WCXF`Values[j][[i,3]]===Complex,
+WriteString[spheno,ToString[WCXF`Values[j][[i,1]]]<>" = "<>SPhenoForm[WCXF`Values[j][[i,2]]]<>"\n"];,
+WriteString[spheno,ToString[WCXF`Values[j][[i,1]]]<>" = Real("<>SPhenoForm[WCXF`Values[j][[i,2]]]<>",dp) \n"];
+];
+i++;];
+(* j++;]; *)
+
 ];
 
 
@@ -1140,7 +1151,7 @@ WriteString[spheno, SPhenoForm[UpYukawa]<> " =Transpose(Matmul(Transpose(CKM),Tr
 WriteString[spheno, "End If \n"];
 
 *)
-
+WriteString[spheno, "scalein=SetRenormalizationScale(scale_save**2) \n"];
 MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,listAllParametersAndVEVs],listAllParametersAndVEVs],{"mz"},{"CKM_MZ", "sinW2_MZ", "Alpha_MZ","AlphaS_MZ",".true."},spheno];
 (* ]; *)
 
@@ -1298,6 +1309,14 @@ If[Head[NormalizationOperators[WrappersLFV[[i,1]]]]===List,
 For[j=1,j<=Length[NormalizationOperators[WrappersLFV[[i,1]]]],
 WriteString[spheno,NormalizationOperators[WrappersLFV[[i,1]]][[j]]<>"\n"];
 j++;];
+];
+i++;];
+
+j=2;
+For[i=1,i<=Length[WCXF`Values[j]],
+If[WCXF`Values[j][[i,3]]===Complex,
+WriteString[spheno,ToString[WCXF`Values[j][[i,1]]]<>" = "<>SPhenoForm[WCXF`Values[j][[i,2]]]<>"\n"];,
+WriteString[spheno,ToString[WCXF`Values[j][[i,1]]]<>" = Real("<>SPhenoForm[WCXF`Values[j][[i,2]]]<>",dp) \n"];
 ];
 i++;];
 
