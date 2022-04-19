@@ -551,16 +551,22 @@ V,
 i++;];
 
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False && FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Pseudo-Scalar Higgs"]===False,
-If[getGen[HiggsBoson]>1 && getGen[PseudoScalar]>1,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")  =0._dp \n "];,
-If[getGen[HiggsBoson]>1,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>")  =0._dp \n "];,
-If[getGen[PseudoScalar]>1,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>")  =0._dp \n "];,
-WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z  =0._dp \n "];
-];
-];
-];
+
+
+	If[getGen[HiggsBoson]>1 && getGen[PseudoScalar]>1,
+		WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")  =0._dp \n "];,
+		If[getGen[HiggsBoson]>1,
+			WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>")  =0._dp \n "];,
+			If[getGen[PseudoScalar]>1,
+				WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>")  =0._dp \n "];,
+				WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z  =0._dp \n "];
+			];
+		];
+	];
+(* attempt to get rid *)
+(*
+	WriteString[ModelData, "Complex(dp) :: CPL_A_H_Z("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") =0._dp \n "];
+	*)
 ];
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
 WriteString[ModelData, "Complex(dp) :: CPL_H_H_Z("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") =0._dp \n "];

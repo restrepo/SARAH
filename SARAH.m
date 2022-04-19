@@ -50,7 +50,7 @@ $sarahRGEsDir=ToFileName[{$sarahDir,"RGEs"}]
 $sarahInputDir=ToFileName[{$sarahDir,"Input"}]
 $sarahSusynoDir=ToFileName[{$sarahDir,"Susyno"}]
 
-SA`Version = "4.14.3";
+SA`Version = "4.14.4";
 
 
 
@@ -59,14 +59,20 @@ If[NumericQ[ToExpression[SA`Version]],
 Print[StyleForm["SARAH ","Section",FontSize->14],StyleForm[SA`Version ,"Section",FontSize->14] ],
 Print[StyleForm["SARAH ","Section",FontSize->14],StyleForm["(Private Version)","Section",FontSize->14] ]
 ]
-Print["by Florian Staub, 2018"]
-Print[StyleForm["contributions by M. Gabelmann, M. D. Goodsell, K. Nickel",FontSize->10] ];
+Print["by Florian Staub, Mark Goodsell and Werner Porod, 2020"]
+Print[StyleForm["contributions by M. Gabelmann, K. Nickel",FontSize->10] ];
 Print[""];
 Print[StyleForm["References:","Section",FontSize->10]]
-Print["  Comput.Phys.Commun.181 (2010) 1077-1086. (arXiv:0909.2863[hep-ph])"]
-Print["  Comput.Phys.Commun.182 (2011) 808-833. (arXiv:1002.0840[hep-ph])"]
-Print["  Comput.Phys.Commun.184 (2013) 1792-1809. (arXiv:1207.0906[hep-ph])"]
-Print["  Comput.Phys.Commun.185 (2014) 1773-1790. (arXiv:1309.7223[hep-ph])"]
+Print["  Comput.Phys.Commun.181 (2010) 1077-1086. (arXiv:0909.2863)"]
+Print["  Comput.Phys.Commun.182 (2011) 808-833. (arXiv:1002.0840)"]
+Print["  Comput.Phys.Commun.184 (2013) 1792-1809. (arXiv:1207.0906)"]
+Print["  Comput.Phys.Commun.185 (2014) 1773-1790. (arXiv:1309.7223)"]
+Print["  Eur.Phys.J.C 74 (2014) 8, 2992 (arXiv:1405.1434)"]
+Print["  Eur.Phys.J.C 75 (2015) 1, 32 (arXiv:1411.0675)"]
+Print["  Eur.Phys.J.C 75 (2015) 6, 290 (arXiv:1503.03098)"]
+Print["  Eur.Phys.J.C 77 (2017) 11, 758 (arXiv:1703.09237"]
+Print["  Eur.Phys.J.C 77 (2017) 11, 757 (arXiv:1706.05372)"]
+Print["  Eur.Phys.J.C 78 (2018) 8, 649 (arXiv:1805.07306)"]
 Print[StyleForm["Download and Documentation:","Section",FontSize->10]]
 Print["  http://sarah.hepforge.org"]
 Print[""]
@@ -148,7 +154,8 @@ Block[{$Path={$sarahDir}},
 <<SARAH.config;
 ]
 
-Start[model_,sub___]:=Block[{i,startedtime},
+(*Start[model_,sub___]:=Block[{i,startedtime}, 2020-12-17 need to have a definition of sub*)
+Start[model_,sub__:Null]:=Block[{i,startedtime},
 SA`Doc`Name = "Start";
 SA`Doc`Info="This is the main command to run and initialise a model";
 SA`Doc`Input={"model" ->"Name of the Model","sub" -> "Subdirectory in which the model is located"};
@@ -187,7 +194,8 @@ If[StringFreeQ[model,"/"]==False,
 splitted=StringSplit[model,"/"];
 modelDir=splitted[[1]]; submodeldir=splitted[[2]];,
 modelDir = model;
-If[ValueQ[sub]=!=ValueQ[],
+(*If[ValueQ[sub]=!=ValueQ[], WtF? newer versions of Mathematica return an error here. Edited MDG 2020-12-16*)
+If[ValueQ[sub]=!=False, 
 submodeldir=sub;,
 submodeldir=False;
 ];

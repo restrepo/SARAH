@@ -2399,19 +2399,19 @@ WriteString[sphenoLow,"mu_old = SetRenormalizationScale(mu_old) \n \n"];
 
 
 WriteString[sphenoLow,"! T-parameter \n"];
-WriteString[sphenoLow,"Tpar= PiZZ/mz2 - PiWW/mW2  \n "];
+WriteString[sphenoLow,"Tpar= PiWW/mW2 - PiZZ/mz2   \n "]; (* FIXED 2020-12-2, SARAH uses opposite signs to pdg *)
 WriteString[sphenoLow,"Tpar= -Tpar/alpha \n\n\n"];
 
 
 WriteString[sphenoLow,"! S-parameter \n"];
 WriteString[sphenoLow,"Spar= (PiZZ_mz2-PiZZ)/mz2 - (cw2-sw2)/(sqrt(cw2*sw2))*PiZg_mz2/mz2 - Pigg_mz2/mz2\n"];
 (* WriteString[sphenoLow,"Spar= DerPiZZ - (cw2-sw2)/(sqrt(cw2*sw2))*DerPiZg - DerPigg\n"]; *)
-WriteString[sphenoLow,"Spar= 4._dp*sw2*cw2/alpha*Spar \n\n\n"];
+WriteString[sphenoLow,"Spar= -4._dp*sw2*cw2/alpha*Spar \n\n\n"]; (* FIXED 2020-12-2 *)
 
 WriteString[sphenoLow,"! U-parameter \n"];
 WriteString[sphenoLow,"Upar= (PiWW_mw2-PiWW)/mw2 -cw2*(PiZZ_mz2-PiZZ)/mz2 - 2._dp*(sqrt(cw2*sw2))*PiZg_mz2/mz2 - sw2*Pigg_mz2/mz2\n"];
 (* WriteString[sphenoLow,"Upar= DerPiWW -cw2*DerPiZZ - 2._dp*(sqrt(cw2*sw2))*DerPiZg - sw2*DerPigg\n"]; *)
-WriteString[sphenoLow,"Upar= 4._dp*sw2/alpha*Upar \n\n\n"];
+WriteString[sphenoLow,"Upar= -4._dp*sw2/alpha*Upar \n\n\n"]; (* FIXED 2020-12-2 *)
 
 WriteString[sphenoLow,"End subroutine STUparameter \n \n \n"];
 

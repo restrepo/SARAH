@@ -161,11 +161,11 @@ WriteString[filenames[[l]]," 66 1               # Two-Scale Matching \n"];,
 WriteString[filenames[[l]]," 66 0               # Two-Scale Matching \n"];
 ];
 WriteString[filenames[[l]]," 67 1               # effective Higgs mass calculation \n"];
-WriteString[filenames[[l]]," 75 1               # Write WHIZARD files \n"];
-WriteString[filenames[[l]]," 76 1               # Write HiggsBounds file   \n"];
+WriteString[filenames[[l]]," 75 0               # Write WHIZARD files \n"];
+WriteString[filenames[[l]]," 76 2               # Write HiggsBounds file: 2 for HiggsBounds5, 1 for HiggsBounds4 and below   \n"];
 WriteString[filenames[[l]]," 77 0               # Output for MicrOmegas (running masses for light quarks; real mixing matrices)   \n"];
 WriteString[filenames[[l]]," 78 0               # Output for MadGraph (writes also vanishing blocks)   \n"];
-WriteString[filenames[[l]]," 79 1               # Write WCXF files (exchange format for Wilson coefficients) \n"];
+WriteString[filenames[[l]]," 79 0               # Write WCXF files (exchange format for Wilson coefficients) \n"];
 WriteString[filenames[[l]]," 86 0.              # Maximal width to be counted as invisible in Higgs decays; -1: only LSP \n"];
 If[AddCheckMaxMassInLoops==True,WriteString[filenames[[l]]," 88 1.0E4          # Maximal mass of particles taken into account in loops \n"];
 ];
@@ -182,7 +182,7 @@ WriteString[filenames[[l]]," 515 0               # Write parameter values at GUT
 WriteString[filenames[[l]]," 520 1.              # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! \n"];
 WriteString[filenames[[l]]," 521 1.              # Diphoton/Digluon widths including higher order \n"];
 WriteString[filenames[[l]]," 525 0.              # Write loop contributions to diphoton decay of Higgs \n"];
-WriteString[filenames[[l]]," 530 1.              # Write Blocks for Vevacious \n"];
+WriteString[filenames[[l]]," 530 0.              # Write Blocks for Vevacious \n"];
 If[IncludeFineTuning===True,
 WriteString[filenames[[l]]," 550 1.             # Calculate Fine-Tuning \n"];
 ];

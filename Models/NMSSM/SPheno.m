@@ -155,4 +155,7 @@ RenConditionsDecays={
 };
 
 AddTreeLevelUnitarityLimits=True;
-RemoveParticlesFromScattering={Su,Sd,Se,Sv};
+(*RemoveParticlesFromScattering={Su,Sd,Se,Sv};*)
+
+RemoveParticlesFromScattering={Se,Sv};
+UNITARITYCP=True;

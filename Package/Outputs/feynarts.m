@@ -380,7 +380,7 @@ SA`Doc`Info = "Returns the FeynArts number (=particle number) of a given particl
 SA`Doc`Input={"x"->"The considered particle"};
 SA`Doc`GenerateEntry[];
 
-pos = Position[partDefinition,x];
+pos = Position[partDefinition,x]// Cases[#, {_Integer, 1}] &; (* 2020-12-03 FIX suggested by  Sho Iwamoto, makes sure it's really the first part *)
 
 If[pos==={} ,
 Message[FeynArts::NoNumber,x];
@@ -912,8 +912,8 @@ abbrfile = OpenWrite[ToFileName[$sarahCurrentFeynArtsDir,"Substitutions-"<>Model
 
 WriteString[outputfile, "(* ----------------------------------------------------------------------------- *) \n"];
 WriteString[outputfile, "(* This model file was automatically created by SARAH version"<>SA`Version<>"  *) \n"];
-WriteString[outputfile, "(* SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223 *) \n"];
-WriteString[outputfile, "(* (c) Florian Staub, 2013  *) \n"];
+WriteString[outputfile, "(* SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223, 1405.1434, 1411.0675, 1503.03098, 1703.09237, 1706.05372, 1805.07306 *) \n"];
+WriteString[outputfile, "(* (c) Florian Staub, Mark Goodsell and Werner Porod, 2020  *) \n"];
 WriteString[outputfile, "(* ----------------------------------------------------------------------------- *) \n"];
 Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
 WriteString[outputfile, "(* File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  *) \n"];

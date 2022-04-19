@@ -57,14 +57,14 @@ MakeDeltaNS[x_,y_]:=makeDeltaNS[x,y]/. Reverse/@subIndFinalX[2,1,"t"] /.Delta->K
 betaFuncVEV1Lns[p1_]:=ExpandTermNS[VEVi[pS] GammaSij1L[pS,p1]+VEVi[pS] GammaSijHat1L[pS,p1]];
 betaFuncVEV2Lns[p1_]:=ExpandTermNS[VEVi[pS] GammaSij2L[pS,p1]+VEVi[pS] GammaSijHat2L[pS,p1]];
 
-(* Beta functions for Yukawa couplings: eq. (33)+(35) *)
+(* Beta functions for Yukawa couplings: eq. (33)+(35), nb third index of Yijk is the scalar *)
 
 betaFuncYijk1Lns[p1_,p2_,p3_]:=ExpandTermNS[Y2FC[p1,pR]  Yijk[pR,p2,p3]/2+  Yijk[p1,pQ,p3]  Y2F[pQ,p2]/2+2 Yijk[p1,pP,pR] Conj[Yijk[pP,pQ,p3]]Yijk[pQ,p2,pR]+kF 2 Yijk[p1,p2,pP] Y2S[pP,p3]-3  Yijk[p1,p2,p3]*Sum[ SA`CasimirRGE[p1,nr]+ SA`CasimirRGE[p2,nr],{nr,1,Length[Gauge]}]]; 
 betaFuncYijk2Lns[p1_,p2_,p3_]:=Block[{line=Table[0,{16}],xx},
 line[[1]]=2 Yijk[p1,pO,pC] Conj[Yijk[pO,pP,pB]] Yijk[pP,pQ,p3]*(Conj[Yijk[pQ,pR,pC]] Yijk[pR,p2,pB]-Conj[Yijk[pQ,pR,pB]] Yijk[pR,p2,pC]);
 line[[2]]=-Yijk[p1,pQ,pX](Y2F[pQ,pP] Conj[Yijk[pP,pR,p3]]+Conj[Yijk[pQ,pP,p3]] Y2FC[pP,pR])Yijk[pR,p2,pX];
 line[[3]]=-1/8 (Yijk[p1,pO,pX] Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Yijk[pQ,p2,p3]+Yijk[p1,pO,p3] Conj[Yijk[pO,pP,pX]] Y2FC[pP,pQ] Yijk[pQ,p2,pX]) ;
- line[[4]]= -4 kF Y2S[p3,pY] Yijk[p1,pP,pX] Conj[Yijk[pP,pR,pY]] Yijk[pR,p2,pX] - 2 kF Yijk[p1,p2,pX] Hbar2[p3,pX] ; 
+ line[[4]]= -4 kF Y2S[pX,pY] Yijk[p1,pP,pX] Conj[Yijk[pP,pR,p3]] Yijk[pR,p2,pY] - 2 kF Yijk[p1,p2,pX] Hbar2[p3,pX] ; (* fixed 2020-12-02*)
 line[[5]]=-3/2 kF Y2S[pX,pY](Yijk[p1,pO,pX] Conj[Yijk[pO,pP,pY]] Yijk[pP,p2,p3] + Yijk[p1,pO,p3] Conj[Yijk[pO,pP,pY]] Yijk[pP,p2,pX]) ;
 line[[6]]=-3 kF Yijk[p1,p2,pX] H2ab[p3,pX] - 2 Lijkl[p3,pX,pY,pZ] Yijk[p1,pQ,pX] Conj[Yijk[pQ,pR,pY]] Yijk[pR,p2,pZ] + 1/2 Lam2S[p3,pX] Yijk[p1,p2,pX] ;
 line[[7]]=+ 3 Sum[  (SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr]) Yijk[p1,pP,pB] Conj[Yijk[pP,pQ,p3]] Yijk[pQ,p2,pB],{nr,1,Length[Gauge]}]+  5 Sum[Yijk[p1,pO,pB] (SA`CasimirRGE[pO,nr]+SA`CasimirRGE[pP,nr]) Conj[Yijk[pO,pP,p3]] Yijk[pP,p2,pB], {nr,1,Length[Gauge]}] ;
@@ -114,7 +114,7 @@ betaFuncMFij2Lns[p1_,p2_]:=Block[{line=Table[0,{17}],xx},
 line[[1]] = +2 Yijk[p1,pO,pC] Conj[Yijk[pO,pQ,pB]] Muij[pQ,pR](Conj[Yijk[pR,pX,pC]] Yijk[pX,p2,pB]-Conj[Yijk[pR,pX,pB]] Yijk[pX,p2,pC]) ;
 line[[2]]=-Yijk[p1,pO,pX] (Y2F[pO,pP] Conj[Muij[pP,pQ]]+Conj[Muij[pO,pP]] Y2FC[pP,pQ]) Yijk[pQ,p2,pX] ;
 line[[3]]= -1/8 (Yijk[p1,pO,pX] Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,p2] + Muij[p1,pO] Conj[Yijk[pO,pP,pX]] Y2FC[pP,pR] Yijk[pR,p2,pX]) ;
-line[[4]] =0 (* not correct in paper: -2 kF Yijk[p1,pO,pB] Conj[Yijk[pO,pP,pC]] Yijk[pP,p2,pB](Conj[Muij[pX,pY]] Yijk[pY,pX,pC]+Muij[pX,pY] Conj[Yijk[pX,pY,pC]])*);
+line[[4]] =-4 kF Y2S[pX,pY] Yijk[p1,pP,pX] Conj[Muij[pP,pR]] Yijk[pR,p2,pY]; (*0 is wrong, corrected 2020-12-02 *)(* not correct in paper: -2 kF Yijk[p1,pO,pB] Conj[Yijk[pO,pP,pC]] Yijk[pP,p2,pB](Conj[Muij[pX,pY]] Yijk[pY,pX,pC]+Muij[pX,pY] Conj[Yijk[pX,pY,pC]])*);
 line[[5]]=-3/2 kF Y2S[pX,pY] (Yijk[p1,pO,pX]Conj[Yijk[pO,pP,pY]] Muij[pP,p2]+Muij[p1,pO] Conj[Yijk[pO,pP,pY]] Yijk[pP,p2,pX]) ;
 line[[6]]=0 (* not correct in paper: -3/2 kF Yijk[p1,p2,pX] (Y2F[pO,pP] Conj[Yijk[pP,pQ,pX]] Muij[pQ,pO] + Conj[Muij[pO,pP]] Y2FC[pP,pQ] Yijk[pQ,pO,pX]) *);
 line[[7]] = 0 (*not correct in paper:  - kF Yijk[p1,p2,pB] (Yijk[pO,pP,pC] Conj[Muij[pP,pQ]] Yijk[pQ,pR,pC] Conj[Yijk[pR,pO,pB]] + Conj[Yijk[pO,pP,pC]] Muij[pP,pQ] Conj[Yijk[pQ,pR,pC]] Yijk[pR,pO,pB])*) ;

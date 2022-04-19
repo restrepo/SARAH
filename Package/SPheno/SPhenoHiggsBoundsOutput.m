@@ -122,12 +122,12 @@ i++;];
 WriteString[sphenoInOut, "\n \n \n"];
 
 WriteString[sphenoInOut,"Write(92,\"(I1)\",advance=\"No\") 1\n"];
-WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tWb \n"];
+WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tWb/"<>SPhenoWidth[TopQuark,3]<>" \n"];
 If[getGen[ChargedHiggs]>1,
 For[i=getGenSPhenoStart[ChargedHiggs],i<=getGen[ChargedHiggs],
-WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb("<>ToString[i]<>") \n"];
+WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb("<>ToString[i]<>")/"<>SPhenoWidth[TopQuark,3]<>" \n"];
 i++;];,
-WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb \n"];
+WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb/"<>SPhenoWidth[TopQuark,3]<>" \n"];
 ];
 
 WriteString[sphenoInOut,"Write(91,\"(I1)\",advance=\"No\") 1 \n"];
@@ -144,7 +144,7 @@ WriteString[sphenoInOut,"Write(91,\"(3e16.8)\",advance=\"No\") BR_Hcs/"<>SPhenoW
 ];
 ];
 
-
+(* START WRITING TO effC.dat *)
 
 WriteString[sphenoInOut,"Write(89,\"(I1)\",advance=\"No\") 1 \n"];
 
@@ -314,6 +314,8 @@ WriteString[sphenoInOut,"Write(89,\"(3e16.8)\",advance=\"No\") 0._dp \n"];
 i++;];
 
 
+(* CPL HHZ*)
+
 For[j=genhhS,j<=(genhh+genAh+1 -genAhS),
 For[i=genhhS,i<=j,
 If[j<=genhh,
@@ -335,6 +337,26 @@ WriteString[sphenoInOut,  "Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_A_Z("
 i++;];
 j++;];
 
+
+
+(*  simplified version but makes it harder elswhere
+For[i = genhhS, i <= genhh, i++, 
+  For[j = genhhS, j <= i, j++, 
+   WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_H_H_Z(" <> ToString[j] <> "," <> ToString[i] <> "), dp) \n"];
+   ];
+];
+ 
+
+		 
+For[i = genAhS, i <= genAh, i++,
+	For[j = genhhS, j <= genhh, j++, 
+		WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_H_Z("<> ToString[i] <> "," <> ToString[j] <> "), dp) \n"];
+	];
+  	For[j = genAhS, j <= i, j++, 
+    WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Real(CPL_A_A_Z("<> ToString[i] <> "," <> ToString[j] <> "), dp) \n"];
+    ];
+  ];
+*)
 
 
 WriteString[sphenoInOut, "\n \n \n"];
@@ -382,7 +404,9 @@ WriteString[sphenoInOut, "Open(89,file=\"effC.dat\",status=\"unknown\") \n"];
 WriteString[sphenoInOut, "Open(90,file=\"BR_H_NP.dat\",status=\"unknown\") \n"];
 WriteString[sphenoInOut, "Open(91,file=\"BR_Hplus.dat\",status=\"unknown\") \n"];
 WriteString[sphenoInOut, "Open(92,file=\"BR_t.dat\",status=\"unknown\") \n"];
+(*  REMOVING THIS FILE AS WE DON'T ACTUALLY PUT ANYTHING IN IT!
 WriteString[sphenoInOut, "Open(93,file=\"LEP_HpHm_CS_ratios.dat\",status=\"unknown\") \n"];
+*)
 
 If[FreeQ[ParticleDefinitions[SPheno`Eigenstates],"Higgs"]===False,
 genhh=getGenSPheno[HiggsBoson];
@@ -415,7 +439,7 @@ WriteString[sphenoInOut,"Write(88,\"(I1)\",advance=\"No\") 1 \n"];
 
 (* Masses *)
 
-For[i=genhhS,i<=genhh, WriteString[sphenoInOut,"Write(87,\"(2e16.8)\",advance=\"No\") "<>SPhenoMass[HiggsBoson,i]<>"\n"];i++;];
+For[i=genhhS,i<=genhh,WriteString[sphenoInOut,"Write(87,\"(2e16.8)\",advance=\"No\") "<>SPhenoMass[HiggsBoson,i]<>"\n"];i++;];
 For[i=genAhS,i<=genAh,WriteString[sphenoInOut,"Write(87,\"(2e16.8)\",advance=\"No\") "<>SPhenoMass[PseudoScalar,i]<>"\n"];i++;];
 For[i=genHpS,i<=genHp,WriteString[sphenoInOut,"Write(88,\"(2e16.8)\",advance=\"No\") "<>SPhenoMass[ChargedHiggs,i]<>"\n"];i++;];
 
@@ -426,12 +450,14 @@ For[i=genhhS,i<=genhh,WriteString[sphenoInOut,"Write(87,\"(2e16.8)\",advance=\"N
 For[i=genAhS,i<=genAh,WriteString[sphenoInOut,"Write(87,\"(2e16.8)\",advance=\"No\") "<> SPhenoWidth[PseudoScalar,i]<>"\n"];i++;];
 For[i=genHpS,i<=genHp,WriteString[sphenoInOut,"Write(88,\"(2e16.8)\",advance=\"No\") "<> SPhenoWidth[ChargedHiggs,i]<>"\n"];i++;];
 
-
+(* OK DONE WITH 87 and 88, checked! *)
 
 WriteString[sphenoInOut,"Write(90,\"(I1)\",advance=\"No\") 1 \n"];
 For[i=genhhS,i<=genhh,WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRinvH("<>ToString[i]<>")/"<> SPhenoWidth[HiggsBoson,i]<>" \n"];i++;];
 For[j=genAhS,j<=genAh,WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRinvA("<>ToString[j]<>")/"<> SPhenoWidth[PseudoScalar,j]<>" \n"];j++;];
 
+
+(* THIS IS WRONG!!!!! 
 For[i=genhhS,i<=genhh,
 For[j=genhhS,j<=genhh,
 For[k=genhhS,k<=j,
@@ -481,6 +507,64 @@ WriteString[sphenoInOut, "Write(90,\"(e16.8)\",advance=\"No\") BRAAAijk("<>ToStr
 k++;];
 j++;];
 i++;];
+*) 
+
+(* Fix by mark 2020-12-02 *)
+For[i = genhhS, i <= genhh, i++, 
+  For[j = genhhS, j <= genhh, 
+   For[k = genhhS, k <= j, 
+    If[i != j && i =!= k, 
+     WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRHHHijk("<>ToString[i] <> ","<>ToString[j]<> ","<>ToString[k]<>")/"<>SPhenoWidth[HiggsBoson,i]<>" \n"];];
+    k++;];
+    (*
+   For[k = genAhS, k <= genAh, 
+    If[i != j, 
+     WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRHHAijk("<>ToString[i] <> ","<>ToString[j] <> ","<>ToString[k]<>")/"<>SPhenoWidth[HiggsBoson,i]<>" \n"];];
+    k++;];*)
+   j++;
+   ];
+  For[j = genAhS, j <= genAh,
+  	For[k = genhhS, k <= genhh, 
+  	If[i != k,WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRHHAijk("<>ToString[i] <> ","<>ToString[k] <> ","<>ToString[j]<>")/"<>SPhenoWidth[HiggsBoson,i]<>" \n"];];
+    k++;
+  	];  	 	
+   For[k = genAhS, k <= j,
+    WriteString[sphenoInOut,
+     "Write(90,\"(e16.8)\",advance=\"No\") BRHAAijk(" <> ToString[i] <>"," <> ToString[k] <> "," <> ToString[j]<>")/"<>SPhenoWidth[HiggsBoson,i]<>" \n"];
+    k++;];
+   j++;];
+  ];
+
+For[i = genAhS, i <= genAh, i++,
+  For[j = genhhS, j <= genhh,
+   For[k = genhhS, k <= j,
+    WriteString[sphenoInOut,
+     "Write(90,\"(e16.8)\",advance=\"No\") BRAHHijk(" <> ToString[i] <>","<>ToString[j]<>","<>ToString[k]<>")/"<>SPhenoWidth[PseudoScalar,i]<>" \n"];
+    k++;];
+    (*
+   For[k = genAhS, k <= genAh, 
+    If[i != k, 
+    WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRAHAijk("<>ToString[i]<>","<>ToString[j]<>","<>ToString[k]<>")/"<>SPhenoWidth[PseudoScalar,i]<>" \n"];];
+    k++;
+    ];
+    *)
+   j++;
+   ];
+  For[j = genAhS, j <= genAh,j++,
+  	If[i==j,Continue[]];
+  	For[k = genhhS, k <= genhh,
+  		WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRAHAijk("<>ToString[i]<>","<>ToString[k]<>","<>ToString[j]<>")/"<>SPhenoWidth[PseudoScalar,i]<>" \n"];
+  		k++;
+  	];
+  	
+   For[k = genAhS, k <= j, 
+    If[i =!= j && i =!= k, 
+     WriteString[sphenoInOut,"Write(90,\"(e16.8)\",advance=\"No\") BRAAAijk("<>ToString[i]<>","<>ToString[j]<>","<>ToString[k]<>")/"<>SPhenoWidth[PseudoScalar,i]<>" \n"];];
+    k++;];
+   ];
+  ];
+
+
 
 (* hhZ *)
 
@@ -548,12 +632,12 @@ i++;];
 WriteString[sphenoInOut, "\n \n \n"];
 
 WriteString[sphenoInOut,"Write(92,\"(I1)\",advance=\"No\") 1\n"];
-WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tWb \n"];
+WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tWb/"<>SPhenoWidth[TopQuark,3]<>" \n"];
 If[getGen[ChargedHiggs]>1,
 For[i=getGenSPhenoStart[ChargedHiggs],i<=getGen[ChargedHiggs],
-WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb("<>ToString[i]<>") \n"];
+WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb("<>ToString[i]<>")/"<>SPhenoWidth[TopQuark,3]<>" \n"];
 i++;];,
-WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb \n"];
+WriteString[sphenoInOut,"Write(92,\"(e16.8)\",advance=\"No\") BR_tHb/"<>SPhenoWidth[TopQuark,3]<>" \n"]; (* The variable will always be initialised even if there is no charged Higgs *)
 ];
 
 WriteString[sphenoInOut,"Write(91,\"(I1)\",advance=\"No\") 1 \n"];
@@ -581,10 +665,11 @@ WriteString[sphenoInOut,"Write(91,\"(3e16.8)\",advance=\"No\")BR_HpAW("<>ToStrin
 j++;];
 i++;];
 
-
+(* START WRITING TO effC.dat *)
 
 WriteString[sphenoInOut,"Write(89,\"(I1)\",advance=\"No\") 1 \n"];
 
+(* Confusing algorithm but ok*)
 (* Strange Quark *)
 
 For[i=genhhS,i<=(genhh+genAh+1 -genAhS),
@@ -751,6 +836,8 @@ WriteString[sphenoInOut,"Write(89,\"(3e16.8)\",advance=\"No\") 0._dp \n"];
 i++;];
 *)
 
+(* THIS IS OPAQUE BUT WORKS*)
+
 For[j=genhhS,j<=(genhh+genAh+1 -genAhS),
 For[i=genhhS,i<=j,
 If[j<=genhh,
@@ -774,8 +861,49 @@ j++;];
 
 
 
+(*
+For[i = genhhS, i <= genhh, i++, 
+  For[j = genhhS, j <= i, j++, 
+   WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Sqrt(Real(CPL_H_H_Z(" <> ToString[j] <> "," <> ToString[i] <> "), dp)) \n"];
+   ];
+];
+ 
+
+		 
+For[i = genAhS, i <= genAh, i++,
+	For[j = genhhS, j <= genhh, j++, 
+		WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Sqrt(Real(CPL_A_H_Z("<> ToString[i] <> "," <> ToString[j] <> "), dp)) \n"];
+	];
+  	For[j = genAhS, j <= i, j++, 
+    WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Sqrt(Real(CPL_A_A_Z("<> ToString[i] <> "," <> ToString[j] <> "), dp)) \n"];
+    ];
+  ];
+*)
+
+
+(* THIS IS THE UPPER TRIANGULAR FORM
+For[i = genhhS, i <= genhh, i++, 
+  For[j = i, j <= genhh, j++, 
+   WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Sqrt(Real(CPL_H_H_Z(" <>
+       ToString[j] <> "," <> ToString[i] <> "), dp)) \n"];
+   ];
+  For[j = genAhS, j <= genAh, j++, 
+   WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Sqrt(Real(CPL_A_H_Z(" <>
+       ToString[j] <> "," <> ToString[i] <> "), dp)) \n"];
+   ];
+  ];
+For[i = genAhS, i <= genAh, i++, 
+  For[j = i, j <= genAh, j++, 
+    WriteString[sphenoInOut,"Write(89,\"(e16.8)\",advance=\"No\") Sqrt(Real(CPL_A_A_Z(" \
+<> ToString[j] <> "," <> ToString[i] <> "), dp)) \n"];
+    ];
+  ];
+*)
+
+
 WriteString[sphenoInOut, "\n \n \n"];
 
+(* REMOVING THIS OUTPUT SINCE WE ONLY WRITE ZEROS, WHAT'S THE POINT?
 WriteString[sphenoInOut,"Write(93,\"(I1)\",advance=\"No\") 1 \n"];
 If[getGen[ChargedHiggs]>1,
 For[i=getGenSPhenoStart[ChargedHiggs],i<=getGen[ChargedHiggs],
@@ -783,14 +911,14 @@ WriteString[sphenoInOut, "Write(93,\"(e16.8)\",advance=\"No\") 0.0000 \n"];
 i++;];,
 WriteString[sphenoInOut, "Write(93,\"(e16.8)\",advance=\"No\") 0.0000 \n"];
 ];
-
+*)
 
 WriteString[sphenoInOut, "Close(87) \n"];
 WriteString[sphenoInOut, "Close(88) \n"];
 WriteString[sphenoInOut, "Close(90) \n"];
 WriteString[sphenoInOut, "Close(91) \n"];
 WriteString[sphenoInOut, "Close(92) \n"];
-WriteString[sphenoInOut, "Close(93) \n"];
+(* WriteString[sphenoInOut, "Close(93) \n"];*)
 
 
 

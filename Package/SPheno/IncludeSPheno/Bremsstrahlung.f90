@@ -141,8 +141,12 @@ Real(dp) Function IR_2up1safe(m0,m2)
  Implicit None
  Real(dp), Intent(in) :: m0,m2
 
-  IR_2up1safe = (-((m0**2 - m2**2)*(5._dp*m0**2 + m2**2))/4._dp - m0**2*(-m0**2 + 2._dp*m2**2)*Log(m2/m0))/(4._dp*m0**2)
-  
+
+!! This is wrong, found by Stefan Liebler in 2017, only just updating now in 2019 ... 
+!  IR_2up1safe = (-((m0**2 - m2**2)*(5._dp*m0**2 + m2**2))/4._dp - m0**2*(-m0**2 + 2._dp*m2**2)*Log(m2/m0))/(4._dp*m0**2)
+IR_2up1safe = (-((m0**2 - m2**2)*(5._dp*m0**2 + m2**2))/4._dp - m0**2*(m0**2 + 2._dp*m2**2)*Log(m2/m0))/(4._dp*m0**2) 
+
+ 
 End Function IR_2up1safe
 
 

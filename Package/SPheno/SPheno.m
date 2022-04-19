@@ -1426,7 +1426,7 @@ Switch[$OperatingSystem,
 	Run["/Applications/Mathematica.app/Contents/MacOS/MathKernel < SARAH-Intermediate.m > "<>outputfile];,
 _,
 	If[Run["math"]=!=0,
-	unknown::system="Not possible to start second Kernel. Please write a mail to florian.staub@cern.ch.";
+	unknown::system="Not possible to start second Kernel.";
 	Message[unknown::system];
 	];
 ];

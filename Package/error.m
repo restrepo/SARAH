@@ -354,7 +354,7 @@ The results are saved in: \n
 InitMatching::usage ="InitMatching[options] initializes the matching routines used for the calculation of effective scalar couplings.\n
 The function can be used in two modi controlled by the option InputFile-> False/filename.m
 where filename.m is an input file located in the directory of the currently loaded model.\n
-If an input file is given the matching is performed as described in the file, see http://stauby.de/sarah_wiki/index.php?title=One-Loop_Threshold_Corrections_in_Scalar_Sectors.
+If an input file is given the matching is performed as described in the file, see https://gitlab.in2p3.fr/goodsell/sarah/-/wikis/One-Loop_Threshold_Corrections_in_Scalar_Sectors.
 If InputFile->False, the following options can be used:\n
  - Parametrisation -> {vu->Sin[\[Beta]] epsUV, ...} : list of simplifications used for the analytic diagonalization of mass matrices as well as all other calculations.\n
  - Assumptions -> {\[Beta]>0,\[Beta]<Pi/2} : assumptions used to simplify expressions\n
@@ -377,34 +377,20 @@ Example: EFTcoupNLO[{hh[1],hh[1],hh[1],hh[1]}, Topologies->{C}] computes all tri
 EFTcoupLO::usage = " See ?EFTcoupNLO.";
 FieldPermutations::NoTopology = "Topologies option is mandatory!";
 FieldPermutations::MultiTopology="Attention:more than one Topology for field permutations selected."
-(*
-SARAH`FirstSteps:=Block[{},
-Print["Welcome to the SARAH package. SARAH is supposed to give you an easy and quick access to information about supersymmetric, but partly also non-supersymmetric models. This includes mass matrices, vertices, renormalization group equations and one-loop corrections to self-energies and tadpoles. SARAH also creates everything for you what is needed to implement new models in tools like SPheno, WHIZARD/Omega, FeynArts/FormCalc, CalcHep/CompHep and MicrOmegas."];
-Print[""];
-Print["This might be your first steps: "];
-Print[" - To generate the entire output for SPheno, WHIZARD, FeynArts, CalcHep and LaTeX, you can use \"MakeAll[]\""];
-Print[" - If you have recently created the model, you might check the implementation for consistency using \"CheckModel\""];
-Print[" - To take a look at the mass matrices of this model, use \"MassMatrices[",Last[NameOfStates],"]\""];
-Print[" - For an overview about the most important commands use \"SARAH`Commands\""];
-Print[" - Run the examples delivered with the package."];
-Print[""];
-Print["If you have any questions or feedback, please send an eMail to"];
-Print["fnstaub@th.physik.uni-bonn.de"];
-];
-*)
+
 
 SARAH`FirstSteps:=Block[{},
-Print["Welcome to the SARAH package. SARAH is supposed to give you an easy and quick access to information about supersymmetric, but partly also non-supersymmetric models. This includes mass matrices, vertices, renormalization group equations and one-loop corrections to self-energies and tadpoles. SARAH also creates everything for you what is needed to implement new models in tools like SPheno, WHIZARD/Omega, FeynArts/FormCalc, CalcHep/CompHep and MicrOmegas."];
+Print["Welcome to the SARAH package. SARAH is supposed to give you an easy and quick access to information about supersymmetric and non-supersymmetric models. This includes mass matrices, vertices, renormalisation group equations and one-loop corrections to self-energies and tadpoles. SARAH also creates everything for you that is needed to implement new models in tools like SPheno, WHIZARD/Omega, FeynArts/FormCalc, CalcHep/CompHep and MicrOmegas."];
 Print[""];
-Print["This might be your first steps: "];
+Print["These might be your first steps: "];
 Print[" - To generate the entire output for SPheno, WHIZARD, FeynArts, CalcHep and LaTeX, you can use ",StyleForm["MakeAll[]","Section",FontSize->12]];
 Print[" - If you have recently created the model, you might check the implementation for consistency using ",StyleForm["CheckModel","Section",FontSize->12]];
 Print[" - To take a look at the mass matrices of this model, use ",StyleForm["MassMatrices[","Section",FontSize->12],Last[NameOfStates],StyleForm["]","Section",FontSize->12]];
 Print[" - For an overview about the most important commands use ",StyleForm["SARAH`Commands","Section",FontSize->12]];
 Print[" - Run the examples delivered with the package."];
 Print[""];
-Print["If you have any questions or feedback, please send an eMail to"];
-Print["florian.staub@cern.ch"];
+Print["If you have any questions or feedback, please send an email to"];
+Print["goodsell@lpthe.jussieu.fr and porod@physik.uni-wuerzburg.de"];
 ];
 
 

@@ -1727,10 +1727,11 @@ Return[{list,NeededMasses,NeededCouplings,NeededCouplingsInsert}];
 ];
 
 WriteCopyRight[file_]:=Block[{Minutes},
-WriteString[file,"! -----------------------------------------------------------------------------  \n"];
+WriteString[file,"! ------------------------------------------------------------------------------  \n"];
 WriteString[file,"! This file was automatically created by SARAH version "<>SA`Version<>" \n"];
-WriteString[file,"! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  \n"];
-WriteString[file,"! (c) Florian Staub, 2013  \n"];
+WriteString[file,"! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223,\n"];     
+WriteString[file,"!           1405.1434, 1411.0675, 1503.03098, 1703.09237, 1706.05372, 1805.07306  \n"];
+WriteString[file,"! (c) Florian Staub, Mark Goodsell and Werner Porod 2020  \n"];
 WriteString[file,"! ------------------------------------------------------------------------------  \n"];
 Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
 WriteString[file,"! File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>

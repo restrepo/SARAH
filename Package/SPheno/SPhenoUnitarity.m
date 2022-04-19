@@ -295,8 +295,9 @@ MakeSubroutineTitle["ScatteringEigenvaluesWithTrilinears",Flatten[{Map[ToExpress
 WriteString[sphenoUni,"Implicit None \n"];
 WriteString[sphenoUni, "Integer, Intent(inout) :: kont \n"];
 WriteString[sphenoUni, "Integer :: ierr \n"];
-WriteString[sphenoUni, "Logical :: Pole_Present, SPole_Present, TPole_Present, UPole_Present \n"];
+WriteString[sphenoUni, "Logical :: Pole_Present, SPole_Present, TPole_Present, UPole_Present, any_pole_present \n"];
 WriteString[sphenoUni, "Integer :: RemoveTUpoles(99) \n"]; 
+WriteString[sphenoUni, "Integer :: best_submatrix \n"]; 
 MakeVariableList[listAllParameters,"",sphenoUni];
 MakeVariableList[listVEVs,"",sphenoUni];
 (*MakeVariableList[namesAllreallyAll,"",sphenoUni];*)
@@ -367,6 +368,10 @@ WriteString[sphenoUni, "Real(dp) :: tz,dt,q,q2,mudim, max_element_removed  \n"];
 WriteString[sphenoUni, "Real(dp), Intent(in) :: delta0 \n"];
 WriteString[sphenoUni, "Integer :: iter, i, il,ir, count \n"]; 
 
+WriteString[sphenoUni, "best_submatrix = 0 \n"]; 
+
+
+
 If[OnlyLowEnergySPheno===True,
 
 For[i=1,i<=Length[listAllParametersAndVEVs],
@@ -402,6 +407,7 @@ WriteString[sphenoUni, "Else \n"];
 WriteString[sphenoUni,"  unitarity_s=(unitarity_s_min + iter*step_size)**2 \n"];
 WriteString[sphenoUni, "End if \n"]; 
 
+WriteString[sphenoUni, "any_pole_present = .False. \n"]; 
 
 
 If[OnlyLowEnergySPheno=!=True,
@@ -479,9 +485,6 @@ If[FreeQ[scattering22,{scatteringPairsCharges[[k,2,i]],Sort[AntiField/@scatterin
 (* WriteString[sphenoUni,"scatter_matrix"<>ToString[k]<>"("<>ToString[row]<>","<>ToString[column]<>") = 0._dp \n"]; *)nix;,
 pF1=Sort[AntiField/@scatteringPairsCharges[[k,2,j]]][[1]];
 pF2=Sort[AntiField/@scatteringPairsCharges[[k,2,j]]][[2]];
-If[sdim[k]>1,
-ldim=ColourMultiplicities[[k,2,i]];
-rdim=ColourMultiplicities[[k,2,j]];
 
 If[(UNITARITYCP===True)&&Length[Flatten[{getCP[{scatteringPairsCharges[[k,2,i,1]],scatteringPairsCharges[[k,2,i,2]]}],getCP[{scatteringPairsCharges[[k,2,j,1]],scatteringPairsCharges[[k,2,j,2]]}]}]]>2,
 If[scatteringPairsCharges[[k,1,2,1]]==-1,
@@ -493,6 +496,9 @@ addCPflag="1._dp,"
 addCPflag="";
 ];
 
+If[sdim[k]>1,
+ldim=ColourMultiplicities[[k,2,i]];
+rdim=ColourMultiplicities[[k,2,j]];
 
 If[Max[{ldim,rdim}]>1,
 WriteString[sphenoUni,"temp_matrix(:,:) =0._dp\n"];
@@ -526,7 +532,7 @@ WriteString[sphenoUni,addcheckGoldstones[scatteringPairsCharges[[k,2,i]],scatter
 ]; (* end if Max[...*)
 ,
 
-WriteString[sphenoUni,addcheckGoldstones[scatteringPairsCharges[[k,2,i]],scatteringPairsCharges[[k,2,i]],x1,x2,x3,x4]<>"scattering_eigenvalue_trilinears= a0_"<>SPhenoForm[scatteringPairsCharges[[k,2,i,1]]/.conj[x_]:>SPhenoForm[x]<>"c"]<>SPhenoForm[scatteringPairsCharges[[k,2,i,2]]/.conj[x_]:>SPhenoForm[x]<>"c"]<>"_"<>SPhenoForm[pF1/.conj[x_]:>SPhenoForm[x]<>"c"]<>SPhenoForm[pF2/.conj[x_]:>SPhenoForm[x]<>"c"]<>"_"<>(StringJoin@@ToString/@(scatteringPairsCharges[[k,1,-1]]/.{0}->{0,0}))<>"(unitarity_s,"<>ToString[x1]<>","<>ToString[x2]<>","<>ToString[x3]<>","<>ToString[x4]<>","<>ToString[rowcolumncoords[[k,i]]]<>","<>ToString[rowcolumncoords[[k,j]]]<>") \n"];
+WriteString[sphenoUni,addcheckGoldstones[scatteringPairsCharges[[k,2,i]],scatteringPairsCharges[[k,2,i]],x1,x2,x3,x4]<>"scattering_eigenvalue_trilinears= a0_"<>SPhenoForm[scatteringPairsCharges[[k,2,i,1]]/.conj[x_]:>SPhenoForm[x]<>"c"]<>SPhenoForm[scatteringPairsCharges[[k,2,i,2]]/.conj[x_]:>SPhenoForm[x]<>"c"]<>"_"<>SPhenoForm[pF1/.conj[x_]:>SPhenoForm[x]<>"c"]<>SPhenoForm[pF2/.conj[x_]:>SPhenoForm[x]<>"c"]<>"_"<>(StringJoin@@ToString/@(scatteringPairsCharges[[k,1,-1]]/.{0}->{0,0}))<>"("<>addCPflag<>"unitarity_s,"<>ToString[x1]<>","<>ToString[x2]<>","<>ToString[x3]<>","<>ToString[x4]<>","<>ToString[rowcolumncoords[[k,i]]]<>","<>ToString[rowcolumncoords[[k,j]]]<>") \n"];
 WriteString[sphenoUni,"scattering_eigenvalue_trilinears=Abs(scattering_eigenvalue_trilinears) \n"];
 ];(* end if[sdim*)
 ];(* end if FreeQ *)
@@ -585,7 +591,7 @@ WriteString[sphenoUni,"If (UPole_Present) Pole_Present = .true. \n"];
 
 (* WriteString[sphenoUni,"If ((.not.Hard_Cut_Poles).or.(.not.Pole_Present)) Then \n"]; *)
 If[sdim[k]>1,
-WriteString[sphenoUni,"If (.not.pole_present) Then \n"];
+WriteString[sphenoUni,"If ((.not. pole_present) .and. (.not. any_pole_present) ) Then \n"];
 WriteString[sphenoUni, "Call EigenSystem(scatter_matrix"<>ToString[k]<>",eigenvalues_matrix"<>ToString[k]<>",rot_matrix"<>ToString[k]<>",ierr,test)\n"];
 WriteString[sphenoUni, " If ((TUcutLevel.eq.2).and.(AddR)) Then ! Calculate 'R' \n"];
 WriteString[sphenoUni, "  scatter_matrix"<>ToString[k]<>"B = MatMul(scatter_matrix"<>ToString[k]<>"B,Conjg(Transpose(rot_matrix"<>ToString[k]<>"))) \n"];
@@ -613,6 +619,7 @@ WriteString[sphenoUni,"write(*,*) \"Eigenvalues for matrix "<>ToString[k]<>": \"
 WriteString[sphenoUni,"If (scattering_eigenvalue_trilinears.gt.max_scattering_eigenvalue_trilinears) Then \n"];
 WriteString[sphenoUni,"   max_scattering_eigenvalue_trilinears=scattering_eigenvalue_trilinears \n"];
 WriteString[sphenoUni,"   unitarity_s_best=sqrt(unitarity_s)\n"];
+WriteString[sphenoUni,"   best_submatrix="<>ToString[k]<>"\n"];
 WriteString[sphenoUni,"End if \n \n"];
 k++;
 ];
@@ -663,6 +670,7 @@ WriteString[sphenoUni,"End if \n"];
 WriteString[sphenoUni,"End do \n\n"];
 
 WriteString[sphenoUni,"If (max_scattering_eigenvalue_trilinears.gt.0.5_dp) TreeUnitarityTrilinear=0._dp \n \n"];
+WriteString[sphenoUni," Write(*,*) \"Best submatrix: \",best_submatrix \n \n"];
 WriteString[sphenoUni,"! Write(*,*) (max_scattering_eigenvalue_trilinears) \n \n"];
 
 WriteString[sphenoUni,"\n\n Contains \n\n"];
@@ -833,7 +841,9 @@ out1=out1c;
 out2=out2c;
 
 WriteString[sphenoUni,"amp = 0._dp \n"];
+WriteString[sphenoUni,"tempamp2(:,:) = 0._dp \n"];
 WriteString[sphenoUni,"amp_poles = 0._dp \n"];
+
 
 If[manyCP>1,
 WriteString[sphenoUni,"do c2 = 1,c2end\n"];
@@ -1046,6 +1056,8 @@ tcfactor=(Flatten[{cfactor}][[1]])/.{cp1[x_]->unicpl1[x],cp2[x_]->unicpl2[x]};
 (*Print["cfactor: ",tcfactor];*)
 If[tcfactor=!=0,
 WriteString[file,"tempamp2(1,1)= "<>SPhenoForm[tcfactor]<>"*"<>Type<>"channel(m1,m2,m3,m4,"<>SPhenoMass[partS[[i]],iProp]<>",s,(1._dp,0._dp),(1._dp,0._dp)) \n"];
+,
+WriteString[file,"tempamp2(1,1)= 0._dp\n"];
 ];
 
 (*
@@ -1068,6 +1080,7 @@ WriteString[sphenoUni,"tempamp2("<>ToString[myl]<>","<>ToString[myl2]<>") = "<>S
 Switch[Type,
 "S",
 WriteString[file,"If (Abs(1-s/"<>SPhenoMass[partS[[i]],iProp]<>"**2).lt.CutSpole) Then \n"];
+WriteString[file," Any_Pole_Present = .true. \n"];
 WriteString[file," Pole_Present = .true. \n"];,
 "U",
 WriteString[file,"If  (((s.lt.(CheckUpole(m1**2,m2**2,m3**2,m4**2,"<>SPhenoMass[partS[[i]],iProp]<>"**2)))).and.(maxval(Abs(tempamp2)).gt.1.0E-10_dp)) Then \n"];
@@ -1083,6 +1096,8 @@ WriteString[file,"! Write(*,*) \"T\",m1,m2,m3,m4,"<>SPhenoMass[partS[[i]],iProp]
 
 If[Type==="T" || Type==="U",
 WriteString[file,"Select Case (TUcutLevel) \n"];
+WriteString[file," Case (4) \n"];
+WriteString[file,"   Any_Pole_Present = .True. \n"];
 WriteString[file," Case (3) \n"];
 WriteString[file,"   Pole_Present = .True. \n"];
 WriteString[file," Case (2) \n"];
@@ -1349,11 +1364,15 @@ WriteString[sphenoUni,"End Function arccoth \n  \n"];
 *)
 ];
 
+
+	(* Only used in getColorFactorScattering and getColorFactorScattering4, i.e. the old routines *)
 NormalizeState[state_]:=Block[{norm,a,b},
 norm=Sqrt[Expand[state^2]/. {a[_]^2->1,b[_]^2->1} /. a[_]->0/. b[_]->0];
 Return[Simplify[state/norm]]
 ];
 
+
+(* Old routine by FS, not actually used *)
 getColorFactorScattering4[ s1_,s2_,s3_,s4_,colorrep_,vert_,index_]:=Block[{colourconstraint,colournorm,res,inds={},dyn1,dyn2,dyn3,dyn4,i1,i2,i3,i4,temp},
 inds={i1,i2,i3,i4};
 dyn1=SA`DynL[s1,color];
@@ -1418,6 +1437,7 @@ Return[temp];
 
 ];
 
+(* Old routine by FS, not actually used *)
 getColorFactorScattering[ s1_,s2_,s3_,s4_,prop_,Type_,colorrep_]:=Block[{colourconstraint,colournorm,res,inds={},dyn1,dyn2,dyn3,dyn4},
 
 Switch[Type,
@@ -1511,6 +1531,9 @@ rinvos=(If[Head[#]===Plus,List@@#,{#}]&/@Expand[Simplify[normos.invos]])/.{A_*a[
 Return[rinvos];
 ];
 *)
+
+
+
 getConstraints[dyna_,dynb_,rep_,flag_,inds_]:=Block[{invos,ninvos,metric,rotmat,diagentries,res,invorep,rinvos,invorep2,normos,normaliser,coeffs,srinvos,i,j,perm,repr,trep,susynoOctettoGellmann,pos},
 
 If[dyna=={0}||dynb=={0},
@@ -1529,7 +1552,11 @@ If[rep=={0}||rep=={0,0},
 (*
 invos=Invariants[SU3,{dyna,dynb},Conjugations\[Rule]{False,False}];
 *)
+(* removed by MDG on 20/08/05 becuase this is wrong -- we need the trace!
 Return[{{{{inds[[1]]->1,inds[[2]]->1},1/Sqrt[Abs[DimR[SU3,dyna]]]}}}]
+*)
+Return[{Array[{{inds[[1]] -> #, inds[[2]] -> #}, 
+    1/Sqrt[Abs[DimR[SU3,dyna]]]} &, {Abs[DimR[SU3, dyna]]}]}];
 ,
 (* Handle some common cases quickly ... *)
 susynoOctettoGellmann=
@@ -1550,7 +1577,7 @@ trep=rep;
 If[(!FreeQ[{dyna,dynb,trep},{1,0}])&&(!FreeQ[{dyna,dynb,trep},{0,1}]),
 Switch[trep,
 {1,1},
-(* *)
+(* Project onto 1st Gell-Mann matrix *)
 Return[{{{{inds[[1]]->1,inds[[2]]->2},1/Sqrt[2]},{{inds[[1]]->2,inds[[2]]->1},1/Sqrt[2]}}}]
 ,
 {0,1},

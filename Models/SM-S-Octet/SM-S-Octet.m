@@ -49,18 +49,17 @@ DEFINITION[GaugeES][Additional]= {
 (* to speed up the code, let's put them to zero *)
 
 
-(*
+
 Lambda4=0;
 Lambda5=0;
-(*
 Lambda6=0;
 Lambda7=0;
 Lambda8=0;
-Lambda9=0;
+(*Lambda9=0;*)
 Lambda10=0;
 
 Lambda11=0;
-*)
+
 
 (*
 LagNoHC = -(mu2 conj[H].H + MS2/2 s.s + LambdaS s.s.s.s + LambdaH conj[H].H.conj[H].H + Kappa1  conj[H].H.s.s + \
@@ -139,9 +138,9 @@ DEFINITION[EWSB][GaugeES]={
 
 (* Model not supported by CalcHep *)
 SetOptions[MakeAll, IncludeCalcHep->False];
+SetOptions[MakeSPheno, IncludeLoopDecays->False, Include2loopMasses->False];
 
-
-
+(*
 CG[SU[3],{{1,1},{1,1},{1,1}}][a__Integer]:={{{0, 0, 0, 0, 0, 0, 1/Sqrt[3], 1}, {0, 0, -I, 0, 0, -1, 0, 0}, {0, I,    0, 0, -1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, I Sqrt[3], -I}, {0, 0, -1,
    0, 0, I, 0, 0}, {0, -1, 0, 0, -I, 0, 0, 0}, {1/Sqrt[3], 0,   0, -I Sqrt[3], 0, 0, 0, 0}, {1, 0, 0, I, 0, 0, 0, 0}}, {{0, 0, I,   0, 0, -1, 0, 0}, {0, 0, 0, 0, 0, 0, -(2/Sqrt[3]), 0}, {-I, 0,
    0, -1, 0, 0, 0, 0}, {0, 0, -1, 0, 0, -I, 0, 0}, {0, 0, 0, 0, 0, 0,   0, 2 I}, {-1, 0, 0, I, 0, 0, 0, 0}, {0, -(2/Sqrt[3]), 0, 0, 0, 0,   0, 0}, {0, 0, 0, 0, -2 I, 0, 0, 0}}, {{0, -I, 0, 0, -1, 0, 0,
@@ -246,3 +245,4 @@ CG[SU[3],{{1,1},{1,1},{1,1},{1,1}}][a__Integer]:={{{{2, 0, 0, 0, 0, 0, 0, 0}, {0
    {I/Sqrt[3], 0, 0, 1/Sqrt[3], 0, 0, 0, 0}, {0, (-2*I)/Sqrt[3], 0, 0, 0, 0, 0, 0}, {0, 0, (-I)/Sqrt[3], 0, 0, 1/Sqrt[3], 0, 0}, {0, 0, 0, 0, 0, 0, 0, 2/3}, {0, 0, 0, 0, 0, 0, 2/3, 0}},
   {{1, 0, 0, -I, 0, 0, 0, 0}, {0, 2, 0, 0, 0, 0, 0, 0}, {0, 0, -1, 0, 0, -I, 0, 0}, {-I, 0, 0, -1, 0, 0, 0, 0}, {0, 0, 0, 0, -2, 0, 0, 0}, {0, 0, -I, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 2/3, 0},
    {0, 0, 0, 0, 0, 0, 0, 2}}}}[[a]]
+*)

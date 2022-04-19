@@ -120,6 +120,11 @@ Return[readok];
 
 
 Write2LPoleHeader:=Block[{i,ii,j},
+WriteString[spheno2LP,"! ------------------------------------------------------------------------------ \n"];
+WriteString[spheno2LP,"! This file was automatically created by SARAH version "<>SA`Version<>" \n"];
+WriteString[spheno2LP,"! Two Loop diagrammatic calculation of Higgs masses (c) Mark Goodsell 2015-20 \n"];
+WriteString[spheno2LP,"! References: arXiv: 1503.03098, 1604.05335, 1706.05372  \n"];
+WriteString[spheno2LP,"! ------------------------------------------------------------------------------  \n\n"];
 WriteString[spheno2LP,"Module Pole2L_"<>ModelName<>" \n \n"];
 WriteString[spheno2LP,"Use Control \n"];
 WriteString[spheno2LP,"Use Settings \n"];
