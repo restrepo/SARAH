@@ -21,6 +21,13 @@
 
 (* ::Input::Initialization:: *)
 CalcGaugeTransformations:=Block[{i,j},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "CalcGaugeTransformations";
+SA`Doc`Info = "Generates a list with the gauge transformation properties of all fields, i.e. phi -> tilde{D}_mu phi where tilde{D}_mu is the covariant deriative with ghosts instead of vector bosons. The approach to get the ghost interactions in that way is taken from hep-ph/9902340, sec. 3.6 \n
+	  Some special care is needed for unbroken subgroups of larger gauge groups. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 
 PrintDebug["Calc Gauge Transformations"];
 Print["Calculate gauge transformations: ",Dynamic[DynamicGaugeTNr],"/",AnzahlChiral+Length[Gauge]," (",Dynamic[DynamicGaugeTName],")"];
@@ -80,9 +87,18 @@ i++;];
 GaugeTransformation=EleminateSumsOfFields[GaugeTransformation];
 DynamicGaugeTName="All Done";
 GaugeTransformation=DeleteCases[GaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
+SA`Doc`EndEntry[];
 ];
 
+
 EleminateSumsOfFields[list_]:=Block[{i,j,tempNoSum={},tempSum={},res,field1,field2,coeff1,coeff2,pos},
+
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "EleminateSumsOfFields";
+SA`Doc`Info = "For cases in which the gauge transformations are only obtained for the sum of two fields, one needs to work out how the transformation looks for a single field. I.e. we use 'delta(phi_1+phi_2) = delta phi_1 + delta_phi_2 = X' and solve it for 'delta phi_1 = X - delta phi_2' under the assumption that 'delta phi_2' is known.";
+SA`Doc`Input={"list"->"A list with all gauge transformations"};
+SA`Doc`GenerateEntry[];
+
 Print["Eleminate sums"];
 If[Length[list]>1,
 If[FreeQ[Transpose[list][[1]],Plus]===False,
@@ -108,13 +124,21 @@ res=tempNoSum;,
 res=list;];,
 res=list;
 ];
+SA`Doc`EndEntry[];
 Return[res];
 ];
+
 
 
 (* ::Input::Initialization:: *)
 
 UpdateGaugeTransformations[sub_,subInv_,nameUGT_]:=Block[{i,temp},
+
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "UpdateGaugeTransformations";
+SA`Doc`Info = "Updates the gauge transformation properties of fields after changing the basis of the fields (i.e. via rotation to mass eigenstates, CP splitting, etc).";
+SA`Doc`Input={"sub"->"The replacement rules to rotate fields", "subInv"->"the inverse rotation", "namesUGT"->"a name for the considered transformation. (Affects only the screen output)"};
+SA`Doc`GenerateEntry[];
 
 Print["   Update gauge transformations: ",Dynamic[DynamicUGT[nameUGT]],"/",Length[Particles[Current]]," (",Dynamic[DynamicUGTname[nameUGT]],")"];
 PrintDebug["   Update gauge transformations"];
@@ -135,9 +159,16 @@ DynamicUGTname[nameUGT]="All Done";
 GaugeTransformation=DeleteCases[NewGaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 UpdateGaugeTransformationsTensorToVector[sub_]:=Block[{i,j,temp},
+
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "UpdateGaugeTransformationsTensorToVector";
+SA`Doc`Info = "Special routine to handle fields in the adjoint representation of unbroken subgroups of a larger group which gets broken (e.g. SU(4)->SU(3)). The gauge transformations are rewritten from tensor to vector notation. ";
+SA`Doc`Input={"sub"->"A substitution rule to bring the tensor representation into a vector representation. Works only for the adjoint representation so far."};
+SA`Doc`GenerateEntry[];
 
 Print["   Update gauge transformations"];
 PrintDebug["   Update gauge transformations"];
@@ -153,9 +184,16 @@ i++;];
 GaugeTransformation=DeleteCases[NewGaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
 j++;];
 
+SA`Doc`EndEntry[];
 ];
 
 KovariantGhost[fieldNr_,p1_,p2_, LorNr_]:=Block[{i,temp, gauge, gaugeNr,gNr,gNr2},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "KovariantGhost";
+SA`Doc`Info = "Writes down the 'covariant derivative' with ghost fields, i.e .the usually covariant derivative of scalars is used but the vectors are replaced by ghosts. ";
+SA`Doc`Input={"fieldNr"->"The position of the considered particle in the array 'Fields'","p1"->"An index for the first particle", "p2"->"An index for the second particle","LorNr"->"A lorentz index"};
+SA`Doc`GenerateEntry[];
+
 temp=0;
 For[gNr=1,gNr<=AnzahlGauge,
 If[FieldDim[fieldNr,gNr]=!=0 || Gauge[[gNr,2]]===U[1] ,
@@ -172,51 +210,19 @@ gNr2++;
 ];
 ];
 gNr++;];
+
+SA`Doc`EndEntry[];
 Return[temp];
 ];
 
 
-(*
 SumOverIndizesGhost[term_,partList_]:=Block[{j,i,temp, temp1,pos,suffix,nr},
-IndexNames={};
-For[i=1,i\[LessEqual]Length[partList],
-If[partList[[i]]=!=None,
-pos=Position[ListFields,partList[[i]]][[1,1]];
-For[j=1,j\[LessEqual]Length[ListFields[[pos,2]]],
-(* IndexNames = Join[IndexNames,ListFields[[pos,2,2]] /. subGC[i]]; *)
-If[Head[GaugeListAux]===List,
-(* For the case that there is an unbroken Subgroup, one has not to sum over 1..4 for SU(4) instance, but only for 1..2 and 2 contains then the 3 unbroken color charges; that's checked here *)
-IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],If[GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],1]]=!=True,ListFields[[pos,2,2,j,2]],GaugeListAux[[Position[Gauge,getFundamentalIndex[ListFields[[pos,2,1,j]]]][[1,1]],2]]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];,
-IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]];
-];
-(* IndexNames = Join[IndexNames,Table[{ListFields[[pos,2,1,j]],ListFields[[pos,2,2,j,2]]},{j,1,Length[ListFields[[pos,2,2]]]}] /. subGC[i]]; *)
-j++;];
-];
-i++;];
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "SumOverIndizesGhost";
+SA`Doc`Info = "Performs the explicit summation of the gauge indices corresponding to broken gauge groups, i.e. 'sum_i H_i' becomes 'H_1 + H_2' if 'i' s for instance an isospin index. ";
+SA`Doc`Input={"term"->"The considered term","partList"->"A list with particles involved in the considered term"};
+SA`Doc`GenerateEntry[];
 
-temp=term;
-For[i=1, i\[LessEqual]Length[IndexNames],
-If[AuxGaugesPresent===True,
-suffix=If[StringLength[ToString[IndexNames[[i,1]]]]===4,"",StringTake[ToString[IndexNames[[i,1]]],{-1}]];
-If[FreeQ[UnbrokenSubgroups,getIndexFamilyName[ IndexNames[[i,1]]]]===False,
-temp=temp//.ReplacementRuleAux[ IndexNames[[i,1]]];
-];
-temp1=Hold[Table[temp,iter]]/.{iter\[Rule] IndexNames[[Length[IndexNames]-i+1]]};
-(* get the numbering of the field summed over *)
-nr=ToExpression[StringTake[ToString[IndexNames[[i,1]]],{4}]];
-(* temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.  UnbrokenSubgroups[[1,2]]-> (IndexNames[[i,1]] /. subNamesAux); *)
-temp=ReleaseHold[ReleaseHold[ temp1]]/. subGeneratorAux//.   subGC[nr] //. SUFFIX[a_]\[RuleDelayed]ToExpression[ToString[a]<>suffix]/. DELTAaux\[Rule]Delta /. EPSaux\[Rule]epsTensor/.SUMaux\[Rule]sum;,
-temp1=Hold[Table[temp,iter]]/.{iter\[Rule] IndexNames[[Length[IndexNames]-i+1]]};
-temp=ReleaseHold[temp1];
-];
-i++;];
-
-Return[temp];
-
-];
-*)
-
-SumOverIndizesGhost[term_,partList_]:=Block[{j,i,temp, temp1,pos,suffix,nr},
 IndexNames={};
 For[i=1,i<=Length[partList],
 If[partList[[i]]=!=None,
@@ -253,6 +259,7 @@ temp=ReleaseHold[temp1];
 ];
 i++;];
 
+SA`Doc`EndEntry[];
 Return[temp];
 
 ];
@@ -271,23 +278,29 @@ If[Head[x]==conj,erg=List@@x;erg=DeltaGT/@erg;Return[conj@@erg];];
 If[Head[x]==Mom,Return[x];];
 If[Head[x]==Der,Return[Der[DeltaGT[x[[1]]],lor3]];];
 
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "DeltaGT";
+SA`Doc`Info = "Generates a gauge transformation of a given term. ";
+SA`Doc`Input={"x"->"The considered term which should be transformed"};
+SA`Doc`GenerateEntry[];
+
 
 If[MemberQ[vacuum,x] || MemberQ[vacuum,Head[x]],
 If[Length[x]==0,
 If[FreeQ[Transpose[GaugeTransformation][[1]],x],Print[x," not found"];];
 pos=Position[Transpose[GaugeTransformation][[1]],x][[1,1]];
 If[Head[GaugeTransformation[[pos]][[1]]]===conj,
-Return[conj[Extract[GaugeTransformation,pos][[2]]]];,
-Return[Extract[GaugeTransformation,pos][[2]]];
+SA`Doc`Return[conj[Extract[GaugeTransformation,pos][[2]]]];,
+SA`Doc`Return[Extract[GaugeTransformation,pos][[2]]];
 ];,
 If[FreeQ[Transpose[GaugeTransformation][[1]],Head[x]],Print[Head[x]," not found"];];
 pos=Position[Transpose[GaugeTransformation][[1]],Head[x]][[1,1]];
 If[Head[GaugeTransformation[[pos]][[1]]]===conj,
-Return[conj[Extract[GaugeTransformation,pos][[2]]/.gen1->x[[1,1]]]];,
-Return[Extract[GaugeTransformation,pos][[2]]/.gen1->x[[1,1]]];
+SA`Doc`Return[conj[Extract[GaugeTransformation,pos][[2]]/.gen1->x[[1,1]]]];,
+SA`Doc`Return[Extract[GaugeTransformation,pos][[2]]/.gen1->x[[1,1]]];
 ];
 ];,
-Return[x];
+SA`Doc`Return[x];
 ];
 ];
 
@@ -296,6 +309,11 @@ Return[x];
 
 (* ::Input::Initialization:: *)
 CalcGhostLagrangian[GaugeFixing_]:=Block[{i,GaugeFixingTemp},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "CalcGhostLagrangian";
+SA`Doc`Info = "Calculates the ghost interactions from the gauge transformation properties of scalars and the gauge fixing terms in R_xi gauge. The result is stored in the ghost Lagrangian 'LGhost'. Moreover, an list with Goldstone bososn and the corresponding vector bosons is generated (sorry, the name 'GoldstoneGhost' is misleading! It might good to rename it).";
+SA`Doc`Input={"GaugeFixing"->"The gauge fixing terms"};
+SA`Doc`GenerateEntry[];
 
 GaugeFixingTemp = GaugeFixing /. Der[a_]->Der[a,lor2];
 
@@ -340,27 +358,43 @@ i++;
 ];
 
 
-
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 
 makeGhost[x_]:=Block[{temp,ghostp},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "makeGhost";
+SA`Doc`Info = "Returns the ghost particle assoicated with a vector boson appearing in a given term of the kinetic part of the Lagrangian. ";
+SA`Doc`Input={"x"->"The considered Vector boson"};
+SA`Doc`GenerateEntry[];
+
 If[Head[x]===Plus,
 temp=List@@x;,
 temp={x};
 ];
 ghostp=Select[temp,(Head[#]==Der)&,2][[1,1]];
+
+SA`Doc`EndEntry[];
 Return[getGhost[ghostp]];
 ];
 
 ExtractGaugeField[x_]:=Block[{temp,ghostp},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "ExtractGaugeField";
+SA`Doc`Info = "Returns the vector boson appearing in a given term of the kinetic part of the Lagrangian. ";
+SA`Doc`Input={"x"->"The considered term"};
+SA`Doc`GenerateEntry[];
+
 If[Head[x]===Plus,
 temp=List@@x;,
 temp={x};
 ];
 ghostp=Select[temp,(Head[#]==Der)&,2][[1,1]];
+
+SA`Doc`EndEntry[];
 Return[ghostp];
 ];
 
@@ -369,6 +403,14 @@ Return[ghostp];
 
 (* ::Input::Initialization:: *)
 GenerateGaugeFixing[kinetic_,name_,nr_]:=Block[{scalars,gb,temp={}, res,i,j,nameXi,num,un},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "GenerateGaugeFixing";
+SA`Doc`Info = "Generates the gauge fixing terms in R_xi gauge from the kinetic terms for scalars. The gauge fixing terms are obtained by the condition, that the mixing between vector bososn and scalars vanishes at tree-level. \n
+Also here special care is needed to handle unbroken subgroups (i.e. AuxGauge). This has blown up the routine quite a bit.";
+SA`Doc`Input={"kinetic"->"The kinetic terms in the scalar sector", "name"->"The name of the considered eigenstates (e.g. 'EWSB')","nr"->"Position of the current eigenstates in the list 'NameOfStates'"};
+SA`Doc`GenerateEntry[];
+
+
 If[Head[DEFINITION[name][GaugeFixing]]===List,
 GaugeFixing::Defined="Since version 3.1.0 SARAH derives the gauge fixing terms by itself. The given input in the model file is longer necessary and it will be ingored.";
 Message[GaugeFixing::Defined];
@@ -443,11 +485,19 @@ SA`GaugeFixingRXi = Intersection[SA`GaugeFixingRXi];
 temp=temp /. subAlways /.gn2->gn1;
 
 DEFINITION[name][GeneratedGaugeFixing]=temp;
+
+SA`Doc`EndEntry[];
 Return[temp];
 ];
 
 
 CalcGhostLagrangian2[GaugeFixing_]:=Block[{i,Rxi,vb},
+
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "CalcGhostLagrangian2";
+"Calculates the ghost interactions from the gauge transformation properties of scalars and the gauge fixing terms in R_xi gauge. The result is stored in the ghost Lagrangian 'LGhost'. This is a newer version of 'CalcGhostLagrangian'.";
+SA`Doc`Input={"GaugeFixing"->"The gauge fixing terms"};
+SA`Doc`GenerateEntry[];
 
 GaugeFixingTemp = GaugeFixing /. Der[a_]->Der[a,lor2];
 
@@ -484,10 +534,17 @@ i++;];
 
 LGhost = -LGhosttemp;
 
-
+SA`Doc`EndEntry[];
 ];
 
 CheckGoldstoneGhosts[name_]:=Block[{i,GaugeFixing,pos,vb},
+SA`Doc`File = "Package/Lagrangian/ghosts.nb";
+SA`Doc`Name = "CheckGoldstoneGhosts";
+SA`Doc`Info = "Generates a list with the Goldstone bosons associated with a massive vector boson. (Sorry, the name is mistleading because it doesn't involve Ghosts).";
+SA`Doc`Input={"name"->"name of the considered eigenstates (e.g. 'EWSB')"};
+SA`Doc`GenerateEntry[];
+
+
 GoldstoneGhost={};
 
 vb=Select[Particles[name],(#[[4]]==V)&];
@@ -502,4 +559,5 @@ GoldstoneGhost=Join[GoldstoneGhost,{{vb[[i,1]],getEntryField[vb[[i,1]],Goldstone
 ];
 i++;];
 
+SA`Doc`EndEntry[];
 ];

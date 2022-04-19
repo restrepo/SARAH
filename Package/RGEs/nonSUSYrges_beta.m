@@ -20,6 +20,10 @@
 
 
 (* ::Input::Initialization:: *)
+(* This file contains all generic expressions for the one- and two-loop beta functions for non-supersymmetric model *)
+(* The equation numbers refer to hep-ph/0211440 *)
+(* some changes applied because of the mistakes in hep-ph/0211440 pointed out in 1809.06797 *)
+
 (* Beta functions for gauge couplings: eq. (30) *)
 betaFuncGauge1Lns[nr1_,nr2_]:=If[Gauge[[nr1,2]]===U[1],betaFuncGauge1LnsU1[nr1,nr2],betaFuncGauge1LnsNonU1[nr1]];
 betaFuncGauge2Lns[nr1_,nr2_]:=If[Gauge[[nr1,2]]===U[1],betaFuncGauge2LnsU1[nr1,nr2],betaFuncGauge2LnsNonU1[nr1]];

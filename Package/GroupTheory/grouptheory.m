@@ -36,6 +36,11 @@ GINV[G_, D_][a__Integer]:=GINV[G,-D][a] /; D<0;
 
 (* ::Input::Initialization:: *)
 GaugeInteractionMatrix[group_,dim_]:=Block[{i,j,pos,res,res2,nr1,x1,x2,stringName,indname},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GaugeInteractionMatrix";
+SA`Doc`Info = "This routine was an attempt to obtain the gauge interaction matrix. As far as I can see, it's no longer used but replaced by the functionality of Susyno.";
+SA`Doc`Input = {"group"->"Considered gauge group","dim"->"Considered representation"};
+SA`Doc`GenerateEntry[];
 
 pos=Position[Gauge,group][[1,1]];
 nr1=SA`NrIndices[group,dim];
@@ -59,9 +64,16 @@ ReleaseHold[Hold[Set[LHS,RHS]] /. LHS -> GINV[group,dim][a__Integer] /. RHS -> (
 On[Part::"pspec"];
 On[Part::"pkspec1"];
 
+SA`Doc`EndEntry[];
 ];
 
 getInvariantMatrix[fields_,coup_]:=Block[{i,j,k,res=1},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "getInvariantMatrix";
+SA`Doc`Info = "Calculates the invariance matrix (Clebsch-Gordan-Coefficients) for a given combination of fields. That's done by loop over all gauge groups and finding a gauge invariant contraction of the indices of the involved fields. The actual contraction of indices is done in the routine 'GenerateInvariantsTensor'.";
+SA`Doc`Input={"fields"->"List of involved fields","coup"->"Name of the coupling"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[Gauge],
 If[Gauge[[i,2]]=!=U[1],
 Off[Part::"pkspec1"];
@@ -69,17 +81,24 @@ res=res*(GenerateInvariantsTensor[Gauge[[i,2]],Gauge[[i,3]],Table[Fields[[Positi
 On[Part::"pkspec1"];
 ];
 i++;];
-Return[res];
+
+SA`Doc`Return[res];
 ];
 
+(*
 getRepresentationMatrix[field_,nr_]:=Block[{i,j,ind,pos,res={},indFinal={},k},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "getRepresentationMatrix";
+SA`Doc`Info = "";
+SA`Doc`GenerateEntry[];
+
 pos=Position[ListFields,field][[1,1]];
-For[j=1,j<=Length[Gauge],
-ind=Select[ListFields[[pos]],(FreeQ[#,Gauge[[j,3]]]==False)&];
+For[j=1,j\[LessEqual]Length[Gauge],
+ind=Select[ListFields[[pos]],(FreeQ[#,Gauge[[j,3]]]\[Equal]False)&];
 If[ind=!={},
 ind=ind[[1]]; 
 indFinal={};
-For[k=1,k<=Length[ind[[1]]],
+For[k=1,k\[LessEqual]Length[ind[[1]]],
 If[ind[[2,k,1]]===Gauge[[j,3]] || ind[[2,k,1]]===-Gauge[[j,3]],
 indFinal = Join[indFinal,{ind[[1,k]]}];
 ];
@@ -91,11 +110,18 @@ If[Gauge[[j,2]]===U[1],res=Join[res,{IR[nr][1]}];,res=Join[res,{1}];];
 If[Gauge[[j,2]]===U[1],res=Join[res,{IR[nr][1]}];,res=Join[res,{1}];];
 ];
 j++;];
-Return[res];
+
+SA`Doc`Return[res];
 ];
+*)
 
 
 GetCubicDynkin[reps_,N_]:=Block[{known,unknown,iterator=1,i,j,repsDyn={}},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GetCubicDynkin";
+SA`Doc`Info = "Checks for triangle anomalies involving non-fundamental representations. That's done by calculatung the value of the cubic Dynkin Tr(T^a T^b T^c) with help of Susyno.";
+SA`Doc`Input={"reps"->"List of all representation for given gauge group","N"->"The N in SU(N) to define the gauge group"};
+SA`Doc`GenerateEntry[];
 
 For[i=1,i<=Length[reps],
 If[reps[[i]]=!=1,
@@ -110,6 +136,7 @@ For[i=1,i<=Length[repsDyn],
 SA`Dynkin3[repsDyn[[i]],N]=TriangularAnomalyValue[{SusynoForm[SU[N]]},{repsDyn[[i]]}][[1]];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 SA`Dynkin3[a_Integer,dim_]:=SA`Dynkin3[getDynkinLabels[a,dim],dim];
@@ -117,6 +144,12 @@ SA`Dynkin3[{a_Integer,b_List},dim_]:=SA`Dynkin3[b,dim];
 SA`Dynkin3[a_Integer,dim_]:=0 /;(a===1 && dim>1)
 
 GetQuadraticDynkin[reps_,N_]:=Block[{i,j},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GetQuadraticDynkin";
+SA`Doc`Info = "Calculates the quadratic Dynkin index Tr(T^a T^b)";
+SA`Doc`Input={"reps"->"List of all representation for given gauge group","N"->"The N in SU(N) to define the gauge group"};
+SA`Doc`GenerateEntry[];
+
 SA`Dynkin2[N,N]=1;
 SA`Dynkin2[-N,N]=1;
 SA`Dynkin2[0,N]=0;
@@ -128,9 +161,16 @@ SA`Dynkin2[reps[[i]],N]=TestDim[Abs[reps[[i]]],N][[5]];
 ];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 GenerateQuadraticAndCubicDynkins:=Block[{i,j,k,reps,ggroups},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GenerateQuadraticAndCubicDynkins";
+SA`Doc`Info = "Wrapper function to generate all quadratic and cubic Dynkin indices for the gauge groups present in the considered model. The routine loops over the given gauge groups as well as over all representation under these gauge groups.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["Generate cubic Dynkins"];
 DynamicCheckAnomalies="Generate cubic Dynkins"!;
 ggroups=Table[Gauge[[i,2]],{i,1,Length[Gauge]}];
@@ -161,10 +201,17 @@ j++;];
 ];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 
 GetMultiplicites:=Block[{i,j,k},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GetMultiplicites";
+SA`Doc`Info = "This routine calculates the multiplicity of a particle with respect to a specific gauge group. The multiplicity is the product of the dimension of the field under all other gauge groups than the considered one. E.g., left quark has multiplicity 2 under SU(3)_c (=2 isospin states), and multiplicity 3 under SU(2)_L (=3 color).";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[Gauge],
 For[j=1,j<=Length[Fields],
 mfac=Fields[[j,2]];
@@ -177,25 +224,40 @@ MultiplicityFactorSF[Fields[[j,3]],Gauge[[i,3]]]=mfac;
 j++;];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 getDynkinLabels[dim_,group_]:=Block[{},
-If[Abs[dim]===1,Return[{0}]];
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "getDynkinLabels";
+SA`Doc`Info = "This is a wrapper routine to get the Dynkin labels for a given representation of a gauge group. For a singlet, the {0} is returned. Note, it is NOT checked if the dimension is unique. For a SU(N) group, the hand-made implementation using Young tableaus is called, for other groups, Susyno is used.";
+SA`Doc`Input={"dim"->"Dimension of the considered representation", "group"->"considered gauge gorup"};
+SA`Doc`GenerateEntry[];
+
+If[Abs[dim]===1,SA`Doc`Return[{0}]];
 Switch[Head[group],
-SU,Return[getDynkinLabels[dim,group[[1]]]];,
-_,Return[getDynkinLabelsSusyno[SusynoForm[group],dim]];
+SU,SA`Doc`Return[getDynkinLabels[dim,group[[1]]]];,
+_,SA`Doc`Return[getDynkinLabelsSusyno[SusynoForm[group],dim]];
 ];
 ];
 
 
 getDynkinLabels[dim_,N_Integer]:=Block[{},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "getDynkinLabels";
+SA`Doc`Info = "This function searches for the Dynkin lables of a given representation under a specific SU(N) group. For doing it, it looks for the Young Tableaux which corresponds to the dimension and extracts the Dynkin labels from it.";
+SA`Doc`Input={"dim"->"Dimension of the considered representation", "N"->"The N in SU(N) to define the gauge group"};
+SA`Doc`GenerateEntry[];
+
 If[Abs[dim]===1,Return[{0}]];
 (* If[dim\[Equal]-2 && N\[Equal]2,Return[{-1}];]; *)
 If[N===2 && dim < 0,
-Return[-YoungToDynkin[getYoungTableaux[dim,N],N]];,
-Return[YoungToDynkin[getYoungTableaux[dim,N],N]];
+SA`Doc`Return[-YoungToDynkin[getYoungTableaux[dim,N],N]];,
+SA`Doc`Return[YoungToDynkin[getYoungTableaux[dim,N],N]];
 ];
 ];
+
+(* some short function to obtain basic properties *)
 
 DynkinLabels[dim,SU[N]]:=YoungToDynkin[getYoungTableaux[dim,N],N];
 YoungToDynkin[tab_,N_]:=If[Length[DeleteCases[tab,0,2]]>N,NOTAB,Table[If[i<Length[tab],tab[[i]]-tab[[i+1]],If[i==Length[tab],tab[[i]],0]],{i,1,N-1}]];
@@ -235,23 +297,36 @@ CG[a_,{}][b___]=1;
 
 
 ConjugatedRepQ[dyn_,groups_]:=Block[{dim},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "ConjugatedRepQ";
+SA`Doc`Info = "This function checks given Dynkin labels with respect to a given gauge group belong to an conjugated representation or not. The simple cases of 6 and bar(3) of SU(3) are hard-coded. For the general case, Susyno is used: first the dimension N corresponding to the Dynkin labels are calculated. Afterwards, the Dynkin labels for the dimension are obtained. This works because N doesn't carry a sign, i.e. Susyno returns always the Dynkin labels for a non-conjugated representation.";
+SA`Doc`Input={"dyn"->"Considered Dynkin labels","groups"->"Considered gauge group"};
+SA`Doc`GenerateEntry[];
+
 dim=DimR[SusynoForm[groups],dyn];
-If[dyn==={0,2} && groups===SU[3], Return[True];];
-If[dyn==={2,0} && groups===SU[3], Return[False];];
+If[dyn==={0,2} && groups===SU[3], SA`Doc`Return[True];];
+If[dyn==={2,0} && groups===SU[3], SA`Doc`Return[False];];
 If[FreeQ[getDynkinLabelsSusyno[SusynoForm[groups],dim],dyn],
-Return[True];,
-Return[False];
+SA`Doc`Return[True];,
+SA`Doc`Return[False];
 ];
 ];
 
 ConjugatedRep[dyn_,groups_]:=Block[{i,l,r},
-If[dyn==={0},Return[{0}];];
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "ConjugatedRep";
+SA`Doc`Info = "This routine returns the Dynkin labels corresponding to the conjugated Irrep of the one defined by the Dynkin labels given as input.";
+SA`Doc`Input={"dyn"->"The Dynkin labels given as input","groups"->"The considered gauge group"};
+SA`Doc`GenerateEntry[];
+
+If[dyn==={0},SA`Doc`Return[{0}];];
 Switch[Head[groups],
-U,Return[-dyn];,
+U,SA`Doc`Return[-dyn];,
 SU,
 	l=groups[[1]]-1;
-	Return[Table[dyn[[l+1-i]],{i,1,Length[dyn]}]];,
-_,Return[ConjugateIrrep[SusynoForm[groups],dyn]];
+	SA`Doc`Return[Table[dyn[[l+1-i]],{i,1,Length[dyn]}]];,
+_,
+	SA`Doc`Return[ConjugateIrrep[SusynoForm[groups],dyn]];
 ];
 ];
 
@@ -265,6 +340,18 @@ SU,
 ];
 
 InitGaugeGroups:=Block[{i,j,k,l,list,reps,groups,pos,rep,crep},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "InitGaugeGroups";
+SA`Doc`Info = "This routine initialises all gauge theoretical information needed for the given gauge groups and representation: \n
+- quadratic and cubic Dynkin indices \n
+- quadratic Casimir index \n
+- Generators (for the broken and unbroken case) \n
+- Generator matrices \n
+This is done for all gauge groups defined in Gauge. Moreover, also AuxGauge is considered to get that information for unbroken subgroups of a higher group. 
+";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["   Calculate Lie Group constants"];
 DynamicInitGaugeG="Construct gauge group constants";
 For[i=1,i<=Length[Gauge],
@@ -349,35 +436,33 @@ conj[CG[a__]]:=CG[a];
 Generator[_,{0}][___]=0;
 Generator[_,{0},_][___]=0;
 
+SA`Doc`EndEntry[];
 ];
 
 (* CG[A_,{a_,b_,a_,b_}][i1_,i2_,i3_,i4_]:=CG[A,{a,b}][i1,i2] CG[A,{a,b}][i3,i4]; *)
 
 InitStandardSU2:=Block[{},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "InitStandardSU2";
+SA`Doc`Info = "The Clebsch-Gordon-Coefficients for the simplest representations of SU(2) are hardcoded here.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 CG[SU[2],{{1},{1}}][a__]=epsTensor[a];
 CG[SU[2],{{-1},{-1}}][a__]=epsTensor[a];
 CG[SU[2],{{-1},{1}}][a__]=Delta[a];
 CG[SU[2],{{1},{-1}}][a__]=Delta[a];
  CG[SU[2],{{1},{1},{1},{1}}][a_,b_,c_,d_]:=epsTensor[a,b] epsTensor[c,d]; 
 
-(*
-CG[SU[2],{{1},{2},{1}}][a_Integer,b_Integer,c_Integer]:={{{0,0},{0,1/Sqrt[2]},{-1,0}},{{0,-1},{1/Sqrt[2],0},{0,0}}}[[a,b,c]];
-CG[SU[2],{{-1},{2},{1}}][a_Integer,b_Integer,c_Integer]:={{{0,-1},{1/Sqrt[2],0},{0,0}},{{0,0},{0,-(1/Sqrt[2])},{1,0}}}[[a,b,c]];
-SA`KnonwCG=Join[SA`KnonwCG,{CG[SU[2],{{1},{2},{1}}],CG[SU[2],{{-1},{2},{1}}]}];
-*)
-
-(*
-CG[SU[2],{{s1_ },{s2_ },{s3_ },{s4_ }}][a_,b_,c_,d_]:=CG[SU[2],{{s1},{s2}}][a,b]CG[SU[2],{{s3},{s4}}][c,d] /; (Abs[s1]\[Equal]1 && Abs[s2]\[Equal] 1&& Abs[s3]\[Equal]1 && Abs[s4]\[Equal]1);
-
-CG[SU[2],{{2},{2},{2},{2}}][a_,b_,c_,d_]:=InvMat[200][a,b] InvMat[200][c,d];
-CG[SU[2],{{1},{1},{2},{2}}][a_,b_,c_,d_]:=epsTensor[a,b] InvMat[200][c,d];
-CG[SU[2],{{1},{-1},{2},{2}}][a_,b_,c_,d_]:=Delta[a,b]InvMat[200][c,d];
-CG[SU[2],{{-1},{1},{2},{2}}][a_,b_,c_,d_]:=Delta[a,b] InvMat[200][c,d];
-*)
-
+SA`Doc`EndEntry[];
 ];
 
 InitStandardSU3:=Block[{},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "InitStandardSU3";
+SA`Doc`Info = "The Clebsch-Gordon-Coefficients for the simplest representations of SU(3) are hardcoded here.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 CG[SU[3],{{0,1},{0,1},{0,1}}][a_,b_,c_]:=epsTensor[a,b,c];
 CG[SU[3],{{1,0},{1,0},{1,0}}][a_,b_,c_]:=epsTensor[a,b,c];
@@ -386,16 +471,16 @@ CG[SU[3],{{1,0},{0,1}}][a__]=Delta[a];
 CG[SU[3],{{0,1},{1,0}}][a__]=Delta[a];
 CG[SU[3],{{1,0},{1,0},{1,0}}]=epsTensor;
 
-(*
-CG[SU[3],{{0,1},{1,0},{0,1},{1,0}}][a_,b_,c_,d_]=Delta[a,b]Delta[c,d];
-CG[SU[3],{{0,1},{1,0},{1,0},{0,1}}][a_,b_,c_,d_]=Delta[a,b]Delta[c,d];
-CG[SU[3],{{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_]=Delta[a,b]Delta[c,d];
-CG[SU[3],{{1,0},{0,1},{0,1},{1,0}}][a_,b_,c_,d_]=Delta[a,b]Delta[c,d];
-*)
-
+SA`Doc`EndEntry[];
 ];
 
 GenerateDynkinCasimir[group_,dyn_]:=Block[{i,j,k,casimir,dim,dimAdjoint},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GenerateDynkinCasimir";
+SA`Doc`Info = "This routine calculates the quadratic Casimir and Dynkin indices for a given gauge group.";
+SA`Doc`Input={"group"->"Considered gauge group", "dyn"->"Considered Dynkin Labels to define the Irrep"};
+SA`Doc`GenerateEntry[];
+
 If[dyn==={-1} && group===SU[2],
 casimir=Casimir[SusynoForm[group],-dyn];
 dim=DimR[SusynoForm[group],-dyn];
@@ -407,19 +492,34 @@ dimAdjoint=getDimAdjoint[group];
 SA`Casimir[dyn,group]=casimir;
 SA`Dynkin[dyn,group]=casimir*dim/dimAdjoint;
 
+SA`Doc`EndEntry[];
 (* Generator *)
 ];
 
 MakeGenerator[nr_,dyn_,cov_,con_]:=Block[{temp,temp2,i,j,complete,name},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "MakeGenerator";
+SA`Doc`Info = "This routine obtains the generator for a given gauge group with a specific number of upper and lower indices. The result is stored as new variable of the form 'Generator[SU(N),Dyn,Name][indices]' where 'Name' is the name of the gauge group." ;
+SA`Doc`Input={"nr"->"Gives the position in the array 'Gauge' to define the gauge group","dyn"->"Dynkin label to define the considered gauge group","cov"->"Number of covariant indices","con"->"Number of contra-variant indices"};
+SA`Doc`GenerateEntry[];
+
 name=Gauge[[nr,3]];
 complete=cov+con;
 (* dimGauge=Gauge[[gaugeNr,2]]; *)
 temp=Plus@@Table[(Hold[TA[DIMGAUGE,genf[lor],IndexName[GAUGE,NR]/.subGC[p1],IndexName[GAUGE,NR]/.subGC[p2]]]/.NR->i/.GAUGE->name/.DIMGAUGE->Gauge[[nr,2]])Product[If[j==i,1,(Hold[Delta[IndexName[GAUGE,NR]/.subGC[p1],IndexName[GAUGE,NR]/.subGC[p2]]]/.NR->j/.GAUGE->name)],{j,1,complete}],{i,1,cov}]-Plus@@Table[(Hold[TA[DIMGAUGE,genf[lor],IndexName[GAUGE,NR]/.subGC[p2],IndexName[GAUGE,NR]/.subGC[p1]]]/.NR->i/.GAUGE->name/.DIMGAUGE->Gauge[[nr,2]])Product[If[j==i,1,(Hold[Delta[IndexName[GAUGE,NR]/.subGC[p1],IndexName[GAUGE,NR]/.subGC[p2]]]/.NR->j/.GAUGE->name)],{j,1,complete}],{i,cov+1,complete}];
 Generator[Gauge[[nr,2]],dyn,Gauge[[nr,3]]][lor_,p1_,p2_]=temp;
+
+SA`Doc`EndEntry[];
 ];
 
 
 GenerateGeneratorsBrokenGroup[nr_,dyn_]:=Block[{i,j,group,ind1, ind2,dim},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GenerateGeneratorsBrokenGroup";
+SA`Doc`Info = "This is a wrapper routine to generate the generator of a given field (as defined by it's Dynkin labels) and a given gauge group. It checks for the number of indices and calls afterwards the main routine 'MakeGenerator'.";
+SA`Doc`Input={"nr"->"Gives the position in the array 'Gauge' to define the gauge group","dyn"->"Dynkin label to define the considered gauge group"};
+SA`Doc`GenerateEntry[];
+
 group=Gauge[[nr,2]];
 If[Head[group]=!=SU, Print["Only broken SU(N) groups are supported!"]; Return[]];
 dim=DimR[SusynoForm[group],Abs[dyn]];
@@ -433,55 +533,64 @@ _,
 ytab=TestDim[{DimR[SusynoForm[group],dyn],dyn},group[[1]]];
 MakeGenerator[nr,dyn,ytab[[2]],ytab[[3]]];
 ];
+
+SA`Doc`EndEntry[];
 ];
 
 GenerateGeneratorsUnbrokenGroup[nr_,dyn_]:=GenerateGeneratorsUnbrokenGroup[nr,dyn,False];
 GenerateGeneratorsUnbrokenGroup[nr_,dyn_,auxgauge_]:=Block[{i,j,group},
+SA`Doc`File = "Package/GroupTheory/grouptheory.nb";
+SA`Doc`Name = "GenerateGeneratorsUnbrokenGroup";
+SA`Doc`Info = "This routine generators the generator in the basis with unbroken gauge groups. This is needed for the calculation of non-SUSY RGEs because the generators show explicitly up there, not only the group constants as in the case of SUSY RGEs.";
+SA`Doc`Input={"nr"->"Gives the position in the array 'Gauge' (or 'AuxGauge') to define the gauge group","dyn"->"Dynkin label to define the considered gauge group","auxgauge"->"defines, if 'Gauge' (False) or 'AuxGauge' (True) is considered"};
+SA`Doc`GenerateEntry[];
+
 If[auxgauge=!=True,
 group=Gauge[[nr,2]];,
 group=AuxGauge[[nr,2]];
 ];
 If[group==SU[2] && dyn=={1},
 Generator[SU[2],{1}][a__]=Sig[a]/2;
-Return[];
+SA`Doc`Return[];
 ];
 If[group==SU[2] && dyn=={-1},
 Generator[SU[2],{-1}][a_,b_,c_]=-Sig[a,c,b]/2;
-Return[];
+SA`Doc`Return[];
 ];
 If[group==SU[2] && dyn=={2},
 (* CG[group,{dyn,dyn}][a_,b_]:= Delta[a,b];   *)
 Delta3[a_Integer,b_Integer]:={{0,0,1},{0,-1,0},{1,0,0}}[[a,b]];
 (* Generator[SU[2],{2}][a__Integer]:=Normal[RepMatrices[SusynoForm[SU[2]],{2}]][[a]];  *)
 Generator[SU[2],{2}][a__Integer]:={{{0,-(1/Sqrt[2]),1/Sqrt[2]},{-(1/Sqrt[2]),0,0},{1/Sqrt[2],0,0}},{{0,-(I/Sqrt[2]),-(I/Sqrt[2])},{I/Sqrt[2],0,0},{I/Sqrt[2],0,0}},{{0,0,0},{0,1,0},{0,0,-1}}}[[a]];
-Return[];
+SA`Doc`Return[];
 ];
 If[group==SU[3] && dyn=={1,0},
 Generator[SU[3],{1,0}][a__]=Lam[a]/2;
-Return[];
+SA`Doc`Return[];
 ];
 If[group==SU[3] && dyn=={0,1},
 Generator[SU[3],{0,1}][a_,b_,c_]=-Lam[a,c,b]/2;
-Return[];
+SA`Doc`Return[];
 ];
 If[group==SU[3] && dyn=={1,1},
 CG[group,{dyn,dyn}][a_,b_]:=Delta[a,b];
 (* Generator[SU[3],{1,1}][a__Integer]:=Normal[RepMatrices[SusynoForm[SU[3]],{1,1}]][[a]]; *)
 Generator[SU[3],{1,1}][a__]=fSU3[a]/I; (* Check!*)
-Return[];
+SA`Doc`Return[];
 ];
 If[group==SU[3] || group==SU[2],NonFundamentalSU2SU3=True;]; (* to make sure to use the same matrices as Susyno *)
 
 If[Head[group]===SU,
 If[ConjugatedRepQ[dyn,group],
 Generator[group,dyn][a_,b_,c_]=-Generator[group,ConjugatedRep[dyn,group]][a,c,b];
-Return[];,
+SA`Doc`Return[];,
 Off[Part::"pspec"];
 Off[Part::"pkspec1"];
 Generator[group,dyn][a__Integer]=Normal[RepMatrices[SusynoForm[group],dyn]][[a]]; 
 On[Part::"pspec"];
 On[Part::"pkspec1"];
-Return[];
+
+SA`Doc`Return[];
 ];
 ];
 
@@ -500,7 +609,7 @@ ReleaseHold[temp];
 
 SA`SavedGenerators=Join[SA`SavedGenerators,{{Generator[group,dyn],repm}}];
 
-
+SA`Doc`EndEntry[];
 ];
 
 

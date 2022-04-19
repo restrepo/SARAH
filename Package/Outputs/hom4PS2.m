@@ -19,6 +19,9 @@
 
 
 
+(* ::Input::Initialization:: *)
+SA`Doc`ToDo="This file contrains the routine needed for the HOM4PS2 output. This was written before the Vevacious projekt as started as such. Nowadays, this output is no longer used or needed and one might think about removing it. Before that: make sure that the Vevacious output doesn't use any of the routines defined here! \n
+I won't add any comments to the functions below because of obvious reasons! FS, 20/05/2019."
 
 Options[MakeHOM4PS2]={ComplexParameters->{},OffdiagonalParameters->{},IgnoreParameters->{},OutputFile->"tadpoles.in"};
 
@@ -108,6 +111,7 @@ Return[pot /. sub /. conj[delta[a_]]->delta[a]];
 
 
 
+(* ::Input::Initialization:: *)
 ReturnVEVpotential[pot_,kin_,real_, complex_]:=Block[{res,pars,vev,i, nameR,nameI},
 SA`CurrentStates = GaugeES;
 pars=Transpose[parameters][[1]];
@@ -309,7 +313,7 @@ WriteString[outHMpot, "\> \n"];
 (*
 Print["    Writing loop level potential"];
 WriteString[outHMpot,"<shifted_tree-level_potential> \n"];
-WriteString[outHMpot,ToString[InputForm[Expand[SA`PotentialHOM4PS21Loop]]/.delta[a_]*delta[b_]->0/.delta[a_]^2->0/.delta[a_]^3->0 /. delta[a_]:>ToExpression["d"<>ToString[a]]]<>"\n"];
+WriteString[outHMpot,ToString[InputForm[Expand[SA`PotentialHOM4PS21Loop]]/.delta[a_]*delta[b_]\[Rule]0/.delta[a_]^2\[Rule]0/.delta[a_]^3\[Rule]0 /. delta[a_]\[RuleDelayed]ToExpression["d"<>ToString[a]]]<>"\n"];
 WriteString[outHMpot,"</shifted_tree-level_potential>\n\n"]; *)
 (* Close[outHMpot]; *)
 ];
@@ -448,6 +452,7 @@ i++;];];
 Return[res];];
 
 
+(* ::Input::Initialization:: *)
 
 Options[MakeHoTTMiLC]={ComplexParameters->{},OffdiagonalParameters->{},IgnoreParameters->{},ReadLists->False,CreateFortranCode->False};
 

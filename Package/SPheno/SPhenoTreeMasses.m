@@ -49,7 +49,10 @@ WriteTreeMassesHeader;
 MassesForEffpot=False;
 WriteCalcAllTreeMasses;
 
+
+If[IntermediateScale =!= True,
 WriteRunningFermionMasses;
+];
 
 If[IntermediateScale =!= True,
 MassesForEffpot=True;
@@ -69,7 +72,7 @@ If[IntermediateScale =!= True && Head[RegimeNr]===Integer,
 currentRegime = "Regime-"<>ToString[RegimeNr];
 For[i=1,i<RegimeNr,
 readRegime = "Regime-"<>ToString[i];
-AppendSourceCode[ToFileName[StringReplace[$sarahCurrentSPhenoDir,{currentRegime->readRegime,ToString[EigenstateName]->ToString[ListOfRegimeEigenstates[[i]]]}],"TreeMasses_"<>ModelName<>".f90"],sphenoTree];
+AppendSourceCode[ToFileName[StringReplace[$sarahCurrentSPhenoDir,{currentRegime->readRegime,ToString[EigenstateName]->ToString[ListOfRegimeEigenstates[[i]]]}],"TreeLevelMasses_"<>ModelName<>".f90"],sphenoTree];
 i++;];
 ];
 

@@ -403,6 +403,7 @@ int7=SA_Cget("C2  ",Mex2**2,Mex3**2,Mex1**2,ML1**2,ML3**2,ML2**2)
 int8=SA_Cget("C22 ",Mex2**2,Mex3**2,Mex1**2,ML1**2,ML3**2,ML2**2)
 
 
+
 ! Now the full amplitude for the different Lorentz Parts 
 ! Coefficient of Mat[<v1|6,ec[3]|v2>] 
 Amplitude(1)= & 
@@ -553,75 +554,237 @@ AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(4))
 
 Else 
 
-et = Mex1-Mex2
+! et = Mex1-Mex2
 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = (Mex1**2 + Mex2**2)/2._dp 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = (-Mex1*Mex2)
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -Mex2*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -Mex1*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(4)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = (-Mex1*Mex2)
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = (Mex1**2 + Mex2**2)/2._dp  
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -Mex1*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -Mex2*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(4)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = -Mex2*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = -Mex1*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = (Mex1**2 + Mex2**2)/2._dp 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = Mex1*Mex2
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(4)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = -Mex1*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = -Mex2*et
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = Mex1*Mex2
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = (Mex1**2 + Mex2**2)/2._dp 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(4))
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = -(Mex2**2 - Mex1**2)/2._dp 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = (Mex1*Mex2)
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -Mex2*Mex1**2/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -(Mex1**3)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(4)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = (Mex1*Mex2)
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = -(Mex2**2 - Mex1**2)/2._dp  
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -(Mex1**3)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = -(Mex2*Mex1**2)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(4)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = -Mex2*Mex1**2/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = -(Mex1**3)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = (Mex1**2)*(Mex1**2 + Mex2**2)/2._dp 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = (Mex1**3)*Mex2/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(4)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|6,ec[3]|v2>]
+! LorentzFactor = -(Mex1**3)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(1)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|7,ec[3]|v2>]
+! LorentzFactor = -Mex2*(Mex1**2)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(2)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = (Mex2*Mex1**3)/2._dp
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(3)) 
+
+! ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
+! LorentzFactor = Mex1**2*(Mex1**2 + Mex2**2)/2._dp 
+! AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(4))
+   
+
+   
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!! NEW VERSION BY MARK
+!et = Mex1-Mex2
 
 ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|6,ec[3]|v2>]
-LorentzFactor = (Mex1**2 + Mex2**2)/2._dp 
+LorentzFactor = (Mex2**2 + Mex1**2)
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(1)) 
 
 ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|7,ec[3]|v2>]
-LorentzFactor = (-Mex1*Mex2)
+LorentzFactor = -4._dp*(Mex1*Mex2)
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(2)) 
 
 ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
-LorentzFactor = -Mex2*et
+LorentzFactor = Mex2*Mex1**2
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(3)) 
 
 ! Mat[<v1|6,ec[3]|v2>] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
-LorentzFactor = -Mex1*et
+LorentzFactor = (Mex1*(Mex1**2+Mex2**2))/2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(1)*Conjg(AmplitudeC(4)) 
 
+
+
 ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|6,ec[3]|v2>]
-LorentzFactor = (-Mex1*Mex2)
+LorentzFactor = -4._dp*(Mex1*Mex2)
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(1)) 
 
 ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|7,ec[3]|v2>]
-LorentzFactor = (Mex1**2 + Mex2**2)/2._dp  
+LorentzFactor = (Mex2**2 + Mex1**2) 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(2)) 
 
 ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
-LorentzFactor = -Mex1*et
+LorentzFactor = (Mex1*(Mex1**2 + Mex2**2))/2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(3)) 
 
 ! Mat[<v1|7,ec[3]|v2>] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
-LorentzFactor = -Mex2*et
+LorentzFactor = (Mex2*Mex1**2)
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(2)*Conjg(AmplitudeC(4)) 
 
+
+
 ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|6,ec[3]|v2>]
-LorentzFactor = -Mex2*et
+LorentzFactor = Mex2*Mex1**2
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(1)) 
 
 ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|7,ec[3]|v2>]
-LorentzFactor = -Mex1*et
+LorentzFactor = Mex1*(Mex1**2 + Mex2**2)/2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(2)) 
 
 ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
-LorentzFactor = (Mex1**2 + Mex2**2)/2._dp 
+LorentzFactor = -(Mex1**2)*(Mex1**2 + Mex2**2)/2._dp 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(3)) 
 
 ! Mat[<v1|6|v2>] Pair[ec[3], k[1]] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
-LorentzFactor = Mex1*Mex2
+LorentzFactor = -(Mex1**3)*Mex2
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(3)*Conjg(AmplitudeC(4)) 
 
+
+
 ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|6,ec[3]|v2>]
-LorentzFactor = -Mex1*et
+LorentzFactor = (Mex1*(Mex1**2+Mex2**2))/2._dp
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(1)) 
 
 ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|7,ec[3]|v2>]
-LorentzFactor = -Mex2*et
+LorentzFactor = Mex2*(Mex1**2)
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(2)) 
 
 ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|6|v2>] Pair[ec[3], k[1]]
-LorentzFactor = Mex1*Mex2
+LorentzFactor = -(Mex2*Mex1**3)
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(3)) 
 
 ! Mat[<v1|7|v2>] Pair[ec[3], k[1]] x Mat[<v1|7|v2>] Pair[ec[3], k[1]]
-LorentzFactor = (Mex1**2 + Mex2**2)/2._dp 
+LorentzFactor = -Mex1**2*(Mex1**2 + Mex2**2)/2._dp 
 AmpSquared = AmpSquared + LorentzFactor*Amplitude(4)*Conjg(AmplitudeC(4))
+
+!!!!!!!!!!!!!!!!!!!!!!!! CLEAN VERSION 2019-08-07 BY MARK
+
+ampsquared =0.5_dp*ampsquared
+
+!!!!!! GIVE SAFE VERSION INSTEAD, DON'T WANT NEGATIVE VALUES:
+
+AmpSquared=0.5_dp*real((Mex1**2+Mex2**2)*(amplitude(1)*conjg(amplitudeC(1))+amplitude(2)*conjg(amplitudeC(2)))-2._dp*Mex1*Mex2*(amplitude(1)*conjg(amplitudeC(2))+amplitude(2)*conjg(amplitudeC(1))),dp)
+
+
+! write(*,*) "Masses: ",mex1,mex2,mex3
+
+! write(*,*) "Amplitude: ",amplitude
+! write(*,*) "Ward ID 1: ",amplitude(3)," =?= ",-2._dp*(Mex2*amplitude(1)-Mex1*amplitude(2))/(Mex1**2-Mex2**2)
+! write(*,*) "Ward ID 2: ",amplitude(4)," =?= ",-2._dp*(Mex2*amplitude(2)-Mex1*amplitude(1))/(Mex1**2-Mex2**2)
+
+! write(*,*) "Amp squared: ",AmpSquared
+! write(*,*) "alternative amp squared: ",(Mex1**2+Mex2**2)*(amplitude(1)*conjg(amplitudeC(1))+amplitude(2)*conjg(amplitudeC(2)))-2._dp*Mex1*Mex2*(amplitude(1)*conjg(amplitudeC(2))+amplitude(2)*conjg(amplitudeC(1)))
 
 End if
 
 
 End Subroutine SquareAmp_FtoFV
 End Module DecayFFV
+ 

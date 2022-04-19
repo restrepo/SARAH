@@ -19,11 +19,13 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ------------------------------------*)
 (* Complex Conjugation                 *)
 (* ------------------------------------*)
 
 
+(* ::Input::Initialization:: *)
 
 conj[IU]:=-IU;
 conj[x_Rule]:=conj/@x;
@@ -76,6 +78,7 @@ InverseFunction[conj]^=conj;
 
 
 
+(* ::Input::Initialization:: *)
 (* ------------------------------------*)
 (* Derivatives                 *)
 (* ------------------------------------*)
@@ -97,44 +100,50 @@ ADI[x_]:=If[Gauge[[x,5]]===True, Return[generation];,Return[getAdjointIndex[Gaug
 intP=0;
 genMax=4;
 
+(* All kind of derivatives for the different cases *)
 
 DP[term_,particle_]:=Sum[D[term,getFull[particle]/.subGC[i],{i,1,genMax}]];
+
 DPF[term_,particle1_,particle2_,fnr_]:=Sum[(D[term,particle1 /.subGC[i] ]*(particle2[fnr] /. subGC[i]) /. {GetGen[getBlank[particle1]] ->GetGen[getBlank[particle2]],GetGenStart[getBlank[particle1]] ->GetGenStart[getBlank[particle2]]}),{i,1,genMax}]; 
-(*
-DMM[term_,particle_,number__,name_,fnr_]:=Block[{i,j,res, temp, part},
-If[getType[particle]===F,part=getFull[particle][fnr];,part=getFull[particle];];
-Return[Sum[D[term,part /.subGC[i]]  /.Flatten[(Table[sum[UnbrokenSubgroups[[j,2]]/. subGC[i],a_,b_]\[Rule]1,{j,1,Length[UnbrokenSubgroups]}] )]/. subIndFinalX[i,number,name] /.subFinalX /.(Table[sum[Gauge[[j,3]],a_,b_]\[Rule]1,{j,1,Length[Gauge]}] /. subGC[i]),{i,1,genMax}]];
-];
-*)
+
 DMM[term_,particle_,number__,name_,fnr_]:=Block[{i,j,res, temp, part,ind},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "DMM";
+SA`Doc`Info = "Second deriative to get the an entry in a mass matrix for given external fields.";
+SA`Doc`Input={"term"->"The part of the Lagrangian","particle"->"The considered particle","number"->"Numbering the involved states","name"->"a name for the final index","fnr"->"fermion number"};
+SA`Doc`GenerateEntry[];
+
+
 If[getType[particle]===F,part=getFull[particle][fnr];,part=getFull[particle];];
 ind=DeleteCases[getIndizes[particle],generation];
-Return[Sum[D[term,part /.subGC[i]]  /.Flatten[(Table[sum[ind[[j]]/. subGC[i],a_,b_]->1,{j,1,Length[ind]}] )]/.Table[If[FreeQ[ind,AuxGauge[[j,3]]],(AuxGauge[[j,3]]/. subGC[i])->(AuxGauge[[j,3]]/. subGC[i+4]),1->1],{j,1,Length[UnbrokenSubgroups]}]/. subIndFinalX[i,number,name] /.subFinalX /.(Table[sum[ind[[j]],a_,b_]->1,{j,1,Length[ind]}] /. subGC[i]),{i,1,genMax}]];
+SA`Doc`Return[Sum[D[term,part /.subGC[i]]  /.Flatten[(Table[sum[ind[[j]]/. subGC[i],a_,b_]->1,{j,1,Length[ind]}] )]/.Table[If[FreeQ[ind,AuxGauge[[j,3]]],(AuxGauge[[j,3]]/. subGC[i])->(AuxGauge[[j,3]]/. subGC[i+4]),1->1],{j,1,Length[UnbrokenSubgroups]}]/. subIndFinalX[i,number,name] /.subFinalX /.(Table[sum[ind[[j]],a_,b_]->1,{j,1,Length[ind]}] /. subGC[i]),{i,1,genMax}]];
 ];
 
 DPV[term_,particle_,t_,fermpos_]:=Block[{part,i,ind},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "DPV";
+SA`Doc`Info = "A derivative used to get the vertex. It's iterated for all external particles involved in the vertex.";
+SA`Doc`Input={"term"->"The part of the Lagrangian","particle"->"The considered particle","t"->"Numbering the involved states","fermpos"->"fermion position"};
+SA`Doc`GenerateEntry[];
+
+
 ind=getIndizes[particle];
 If[getType[particle]===F,part=getFull[particle][fermpos];,part=getFull[particle];];
 If[Length[getIndizes[particle]]==0 && (OnesChecked==True),
-Return[D[term,part]];,
+SA`Doc`Return[D[term,part]];,
 (* Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]]; *)
-Return[Plus@@Table[D[term,part/. subGC[i]] /. Select[subIndFinal[i,t],FreeQ[ind/.subGC[i],#[[1]]]==False&] ,{i,1,genMax}]];
+SA`Doc`Return[Plus@@Table[D[term,part/. subGC[i]] /. Select[subIndFinal[i,t],FreeQ[ind/.subGC[i],#[[1]]]==False&] ,{i,1,genMax}]];
 ]; 
 ];
-
-(*
-DPTad[term_,particle_,t_]:=Block[{part,i},
-part=getFull[particle];
-If[(Length[getIndizes[particle]]\[Equal]0 && (OnesChecked\[Equal]True)) || Depth[particle[{gen1}]]\[Equal]1,
-Return[D[term,part]];,
-Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
-]; 
-];
-*)
-
-
 
 DFTerms[term_,particle_]:=Block[{i,j,res,temp, fact},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "DFTerms";
+SA`Doc`Info = "A derivative function used to calculate F-Terms";
+SA`Doc`Input={"term"->"The part of the Lagrangian","particle"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
+
 res=0;
 temp=0;
 For[i=1,i<=genMax,
@@ -143,10 +152,17 @@ auxP=D[term,particle /.subGC[i]] (getAuxScalar[particle] /.subGC[i]);
 LagrangianAux -= (auxP +conj[auxP])I;
 i++;];
 res+=temp*(conj[temp] /.Flatten[Table[subGCRE[i,2+i],{i,1,2}]]) ;
-Return[res];
+SA`Doc`Return[res];
 ];
 
 DIntOut[term_,particle_]:=Block[{i,j,res, fact, temp2},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "DIntOut";
+SA`Doc`Info = "A derivative function used to effective operators by integrating out a given particle.";
+SA`Doc`Input={"term"->"The part of the Lagrangian","particle"->"The considered particle"};
+
+SA`Doc`GenerateEntry[];
+
 temp=0;
 effOp=0;
 If[getType[particle]===F,
@@ -170,10 +186,11 @@ effOp = temp*conj[temp2]+(conj[temp]/.{A_[1]->A[2],A_[2]->A[1]})(temp2/.{A_[3]->
 ];
 ];
 
-Return[effOp];
+SA`Doc`Return[effOp];
 ];
 
 
+(* ::Input::Initialization:: *)
 
 (* ------------------------------------ *) 
 (* Special Functions *)
@@ -195,12 +212,14 @@ SetAttributes[Delta,Orderless] ;
 
 
 
+(* ::Input::Initialization:: *)
 (* -------------------------------------- *)
 (* List Manipulation *)
 (* -------------------------------------- *)
 
 
 
+(* ::Input::Initialization:: *)
 
 getList[x_,y_,z_]:=Block[{pos},
 pos=Position[y,x];
@@ -216,42 +235,67 @@ SimplifySARAHnd[x_Plus]:=SimplifySARAHnd/@x;
 SimplifySARAHnd[x_]:=makeSumAll[CalcDelta[x /.DeleteCases[subAlways,y_?((FreeQ[#,sum]==False)&)]]];
 
 LHBlockName[x_]:=Block[{pos,temp},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "LHBlockName";
+SA`Doc`Info = "Returns the block of a parameter in a Les Houches file.";
+SA`Doc`Input={"x"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
 diesisteintest;
 (* If[FreeQ[parameters,x],Return[SPhenoForm[x]]]; *)
 pos=Position[Transpose[SA`LHList][[1]],x];
 If[pos==={}, 
-If[Head[x]===Mass,Return["None"];];
+If[Head[x]===Mass,SA`Doc`Return["None"];];
 If[SkipLHMessage=!=True,Message[Parameter::NoLesHouches,x];];
-Return["None"];
+SA`Doc`Return["None"];
 ];
 temp=SA`LHList[[pos[[1,1]],2]];
 If[Head[temp]===List,
-Return[ToUpperCase[ToString[temp[[1]]]]];,
-Return[ToUpperCase[ToString[temp]]];
+SA`Doc`Return[ToUpperCase[ToString[temp[[1]]]]];,
+SA`Doc`Return[ToUpperCase[ToString[temp]]];
 ];
 ];
 
 LHPos[x_]:=Block[{pos,temp},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "LHPos";
+SA`Doc`Info = "Returns the position of a parameter in its block in a Les Houches file.";
+SA`Doc`Input={"x"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
+
 pos=Position[Transpose[SA`LHList][[1]],x];
-If[pos==={},Return["1"];];
+If[pos==={},SA`Doc`Return["1"];];
 temp=SA`LHList[[pos[[1,1]],2]];
 If[Head[temp]===List,
-Return[ToString[Last[temp]]];,
-Return["1"];
+SA`Doc`Return[ToString[Last[temp]]];,
+SA`Doc`Return["1"];
 ];
 ];
 
-getScalarToVEV[vev_]:=Block[{i,j,temp,pos},
+getScalarToVEV[f_]:=Block[{i,j,temp,pos},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "getScalarToVEV";
+SA`Doc`Info = "Return the VEV associated with a scalar";
+SA`Doc`Input={"f"->"The considered field"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[NameOfStates],
-If[FreeQ[DEFINITION[NameOfStates[[i]]][VEVs],vev]==False,
+If[FreeQ[DEFINITION[NameOfStates[[i]]][VEVs],f]==False,
 temp=DEFINITION[NameOfStates[[i]]][VEVs];
 ];
 i++;];
-pos=Position[temp,vev][[1,1]];
-Return[temp[[pos,4,1]]];
+pos=Position[temp,f][[1,1]];
+SA`Doc`Return[temp[[pos,4,1]]];
 ];
 
 getBasisToVEV[vev_]:=Block[{i,j,temp,scalar},
+SA`Doc`File = "Package/mathFunctions.nb";
+SA`Doc`Name = "getBasisToVEV";
+SA`Doc`Info = "Returns the complex scalar associated with a VEV";
+SA`Doc`Input={"vev"->"The considered VEV"};
+SA`Doc`GenerateEntry[];
+
 scalar=getScalarToVEV[vev];
 For[i=1,i<=Length[NameOfStates],
 If[FreeQ[DEFINITION[NameOfStates[[i]]][MatterSector],scalar]==False,
@@ -259,9 +303,10 @@ temp=DEFINITION[NameOfStates[[i]]][MatterSector];
 ];
 i++;];
 pos=Position[temp,scalar][[1,1]];
-Return[temp[[pos,1]]];
+SA`Doc`Return[temp[[pos,1]]];
 ];
 
+(* Transpose only lists which can be tranposed*)
 TransposeChecked[x_]:=Block[{},
 If[Depth[x]<3,
 Return[{{}}];,

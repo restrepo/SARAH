@@ -1212,7 +1212,7 @@ i++];
 ];
 CloseDoes[sphenoRGE];,
 
-If[ThreeIndexParametersInvolved===True && (FreeQ[OneLoop,a_[i1,b_Integer]]==False || FreeQ[OneLoop,a_[b_Integer,i1]]==False ),
+If[ThreeIndexParametersInvolved===True && (FreeQ[TwoLoop,a_[i1,b_Integer]]==False || FreeQ[TwoLoop,a_[b_Integer,i1]]==False ),
 dim = getDimSPheno[name];
 Switch[Length[getDimSPheno[name]],
 3,

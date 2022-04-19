@@ -29,6 +29,12 @@
 
 GetSuperpotential:=Block[{i,i1,i2,n,m},
 
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "GetSuperpotential";
+SA`Doc`Info = "Initialises lists to store all parts of the superpotential;";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["Calc Superpotential"];
 
 (*------------------------------------------------------*)
@@ -46,6 +52,7 @@ listW4 = {};
 listW4One = {};
 listSMadd = {};
 
+SA`Doc`EndEntry[];
 ];
 
 
@@ -58,6 +65,11 @@ listSMadd = {};
 (*-------------------------------------------------------------*)
 
 CalcSuperpotential:=Block[{i,j,listNew,tempList,pos,parts,finished,i1,i2,i3,i4,i5,term,tempSym,res},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcSuperpotential";
+SA`Doc`Info = "Extracts the pieces of the Lagrangian in component fields from the given superpotential written in terms of superfields. This involves checks for the dimensionality of the parameters as well as finding the correct contraction of gauge indices. Also lists with all information to get the RGEs for the superpotential parameters are written. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Calculate superpotential: ",Dynamic[DynamicTermSuperpotentialNr],"/",Length[SuperPotential],"(",Dynamic[DynamicTermSuperpotential],")"];
 sumUnex=0;
@@ -142,13 +154,18 @@ Superpotential = WSup;
 If[Length[NonSUNindices]==0,
 CheckChargeConservation;
 ];
+SA`Doc`EndEntry[];
 ];
 
 
 
 (* ::Input::Initialization:: *)
 CalcFTerms:=Block[{s,j,i,c},
-
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcFTerms";
+SA`Doc`Info = "Calculates the F-Terms from the given Superpotential.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 (*F-Terms*)
 
@@ -167,12 +184,18 @@ i++;];
 DynamicFTermName="All Done";
 ];
 
-
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 CalcMatter := Block[{s,t,g,c2,i,c1,h,j,k,l,m,Dim5Lag, Dim5FieldsFermion,Dim5FieldsScalar,posls},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcMatter";
+SA`Doc`Info = "Calculates the interactions terms in the Lagrangian stemming from the Superpotential which involve two fermions, i.e 'mu_ij Psi_i Psi_j' and 'Y_ijk phi_i Psi_i Psi_j'. I'm following here closely Steve Martin. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["Calculate Fermion-Scalar"];
 Print["Calculate Matter interactions: ",Dynamic[DynamicMatterNr],"/",Length[SFieldList]^2," (",Dynamic[DynamicMatterName],")"];
 
@@ -195,6 +218,7 @@ WSijkl=0;
 
 Matter = FTerms + (Wij +conj[Wij /. {Ferm_[1]->Ferm[2],Ferm_[2]->Ferm[1]} ])+ (WSijkl + (conj[WSijkl] /. {Ferm_[4]->Ferm[1],Ferm_[3]->Ferm[2], Ferm_[2]->Ferm[3],Ferm_[1]->Ferm[4]}));
 
+SA`Doc`EndEntry[];
 ];
 
 
@@ -205,6 +229,11 @@ Matter = FTerms + (Wij +conj[Wij /. {Ferm_[1]->Ferm[2],Ferm_[2]->Ferm[1]} ])+ (W
 (*------------------------------------------------------*)
 
 CalcSoftBreaking:=Block[{c,j,i,gen1,gen2,gen3,c1,c2,c3,m},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcSoftBreaking";
+SA`Doc`Info = "Generates the general soft breaking terms in the Lagrangian. Note, it also checks if soft-breaking masses for gauginos involving different gaugino fields (in the case of gauge kinetic mixing) or soft-breaking masses for scalars involving different scalar fields (if allowed by local and global symmetries) are allowed. Information about the generated terms is also stored for the RGE calculation.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintDebug["Calc Soft Breaking"];
 Print["Calculate soft-breaking terms: ", Dynamic[DynamicSoftTermsCurrent]];
@@ -454,7 +483,7 @@ SoftDG=0;
  
 DynamicSoftTermsCurrent="All Done";
 
-
+SA`Doc`EndEntry[];
 ];
 
 
@@ -464,6 +493,12 @@ DynamicSoftTermsCurrent="All Done";
 
 (* ::Input::Initialization:: *)
 GetDiracGauginos:=Block[{i,j,k,l,res=0,fields,dim,add,indexB,mName,currentDirac},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb"; 
+SA`Doc`Name = "GetDiracGauginos";
+SA`Doc`Info = "Adding the additional mass terms appearing in models with Dirac Gauginos. SARAH checks for all possible combinations of chiral and vector superfields which are allowed by gauge invariance.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["Adding dirac gaugino soft terms"];
 Print["Calculate Dirac Gaugino masses: ", Dynamic[DynamicDGnr],"/",Length[Gauge]," (",Dynamic[DynamicDGname],")"];
 For[i=1,i<=Length[Gauge],
@@ -518,6 +553,7 @@ res += ((mName /. gen1->gen2) part[FGauge[[i]],1] part[FFields[[fields[[j]]]],2]
 j++;];
 i++;];
 DynamicDGname="All Done";
+SA`Doc`EndEntry[];
 Return[res+conj[res]];
 ];
 
@@ -530,6 +566,11 @@ Return[res+conj[res]];
 
 (* ::Input::Initialization:: *)
 CalcKinetic:=Block[{i,Bg12,gen1,gen2,Bg22,Bg23,a,g, gauge,realF},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcKinetic";
+SA`Doc`Info = "Generates the kinetic parts for fermions and scalars based on the given quantum numbers of all fields.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintAll["Calculate kinetic Terms"];
 
@@ -606,6 +647,7 @@ KinFerm+= SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFields
 i++;];
 DynamicKineticFermionName="All Done";
 
+SA`Doc`EndEntry[];
 ];
 
 (*-----------------------------------------*)
@@ -613,6 +655,12 @@ DynamicKineticFermionName="All Done";
 (*-----------------------------------------*)
 
 CalcGravitino:=Block[{i,j,k,c,w,tempC,tempV,temp,temp1,insGen1,gNr},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcGravitino";
+SA`Doc`Info = "Generates the part of the Lagrangina involving the Gravitino! VERY EARLY STATUS! NEVER USED OR SERIOUSLY TESTED!!!";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintAll["Calculate gravitino interactions"];
 
 tempC=0;
@@ -693,6 +741,8 @@ tempC+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
 gNr++;];
 i++;];
 LgolFFSV=tempC+conj[tempC] /. conj[gamma[a_]]->gamma[a];
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -708,6 +758,11 @@ LgolFFSV=tempC+conj[tempC] /. conj[gamma[a_]]->gamma[a];
 (*------------ D-Terms -------------*)
 
 CalcDTerms:=Block[{i,j,ig,c,w, gNr, structure,tempU1,insGenU1,tempD},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcDTerms";
+SA`Doc`Info = "Generates the D-Terms based on the quantum numbers of all existing fields. Also the impact of gauge kinetic mixing is included here. This routine has blown up because of adding Dirac gauginos and Stuckelberg mechanism. Maybe, one could rewrite it to get a nicer form. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintDebug["Calc D-Terms"];
 DynamicDTermsNr=0;
@@ -842,7 +897,7 @@ DTerms = 1/2 Plus@@Flatten[DTerms] - DTermsDirac;
 
 ];
 
-
+SA`Doc`EndEntry[];
 
 ];
 
@@ -865,6 +920,11 @@ Return[temp];
 
 (* ::Input::Initialization:: *)
 CalcGaugino:=Block[{i,j,k,g,c,a,ai},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcGaugino";
+SA`Doc`Info = "Generates the interaction between a gaugino and a scalar/ferimion pair as well as between two gauginos and a vector boson.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 PrintDebug["Calc Gaugino Interactions"];
 DynamicGauginoMatter=0;
@@ -919,11 +979,19 @@ BosonGaugino -= part[FGauge[[gNr]],1] (Gauge[[gNr,4]] getStructureConstant[gNr,a
 gNr++;
 ];
 DynamicGauginoVectorName= "All Done";
+
+SA`Doc`EndEntry[];
 ];
 
 (* ---------- Gauge Interaction ---------- *)
 
 CalcVectorBoson:=Block[{},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcVectorBoson";
+SA`Doc`Info = "Generates the cubic and quartic interactions between vector bosons.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 PrintDebug["Calculate Vector Boson Self Interactions"];
 Print["Calculate vector self-interactions: ",Dynamic[DynamicVectorNr],"/",AnzahlGauge," (",Dynamic[DynamicVectorName],")"];
 
@@ -958,9 +1026,10 @@ GaugeTri=SplitGaugeBosonsAuxFabc/@Expand[GaugeTri];
 GaugeQuad=SplitGaugeBosonsAuxFabc/@Expand[GaugeQuad];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
-
+(*
 (*-------------------------------*)
 (* Additional Terms *)
 (*-------------------------------*)
@@ -971,17 +1040,17 @@ LagAddVVV = 0;
 LagAddVVVV = 0;
 AddPot = 0;
 AddKin=0;
-For[i=1,i<=Length[def],
+For[i=1,i\[LessEqual]Length[def],
 particles=1;
 fermNr=1;
 particleNr=1;
 sub={};
 temp2={};
-For[j=1,j<=Length[def[[i,1]]],
+For[j=1,j\[LessEqual]Length[def[[i,1]]],
 If[Head[def[[i,1,j]]]===Der,
 newParticle=def[[i,1,j,1]];
 derivative=True;
-sub=Flatten[Table[{genf[k]->genf[k+1]},{k,j,Length[def[[i,1]]]}]];,
+sub=Flatten[Table[{genf[k]\[Rule]genf[k+1]},{k,j,Length[def[[i,1]]]}]];,
 If[Head[def[[i,1,j]]]===conj || Head[def[[i,1,j]]]===bar,
 head=Head[def[[i,1,j]]];,
 head=Evaluate;
@@ -990,24 +1059,24 @@ newParticle=RE[def[[i,1,j]]];
 derivative=False;
 ];
 
-If[FreeQ[SFields,newParticle]==False,
+If[FreeQ[SFields,newParticle]\[Equal]False,
 pos = Position[SFields,newParticle][[1,1]];
 temp2 = Join[temp2,{Fields[[pos,3]]}];
 ];
-If[FreeQ[FFields,newParticle]==False,
+If[FreeQ[FFields,newParticle]\[Equal]False,
 pos = Position[FFields,newParticle][[1,1]];
 temp2 = Join[temp2,{Fields[[pos,3]]}];
 ];
 
 If[getTypeOld[newParticle]===F,
-If[derivative==True,
+If[derivative\[Equal]True,
 particles*=(Deri[RE[getFull2[newParticle][fermNr]/.subGC[particleNr]],(lorentz /. subGC[particleNr+1])]) sum[genf[particleNr],getGenStart[newParticle],getGen[newParticle]];
 particleNr=particleNr+2;,
 particles*=(head[RE[getFull2[newParticle][fermNr]/.subGC[particleNr]]]) sum[genf[particleNr],getGenStart[newParticle],getGen[newParticle]];
 particleNr++;
 ];
 fermNr++;,
-If[derivative==True,
+If[derivative\[Equal]True,
 particles*=Deri[RE[getFull2[newParticle]/.subGC[particleNr]],(lorentz /. subGC[particleNr+1])]sum[genf[particleNr],getGenStart[newParticle],getGen[newParticle]];
 particleNr=particleNr+2;,
 particles*=(head[RE[getFull2[newParticle]/.subGC[particleNr]]]) sum[genf[particleNr],getGenStart[newParticle],getGen[newParticle]];
@@ -1016,14 +1085,14 @@ particleNr++;
 ];
 j++;];
 temp=def[[i,2,1]]*(genTest[def[[i,2,2]],def[[i,1]],False]/.sub)*particles;
-If[FreeQ[def[[i]],NoHC]==True,
-temp=temp+(conj[temp]/.{A_[1]->A[2],A_[2]->A[1],A_[3]->A[4],A_[4]->A[3]});
+If[FreeQ[def[[i]],NoHC]\[Equal]True,
+temp=temp+(conj[temp]/.{A_[1]\[Rule]A[2],A_[2]\[Rule]A[1],A_[3]\[Rule]A[4],A_[4]\[Rule]A[3]});
 ];
 If[temp2=!={},
 temp = SumOverExpandedIndizes[temp,temp2];
 ];
 
-If[FreeQ[def[[i]],Overwrite]==False,
+If[FreeQ[def[[i]],Overwrite]\[Equal]False,
 LagRe+=temp;,
 Switch[getPartCode[def[[i,1]]],
 20,AddKin+=temp;,
@@ -1045,7 +1114,7 @@ Return[{LagRe,LagAddVVV,LagAddVVVV,AddPot,AddKin}];
 
 ];
 
-
+*)
 
 
 
@@ -1057,6 +1126,11 @@ Return[{LagRe,LagAddVVV,LagAddVVVV,AddPot,AddKin}];
 
 (* ::Input::Initialization:: *)
 CalcLagrangian:=Block[{},
+SA`Doc`File = "Package/Lagrangian/lagrange.nb";
+SA`Doc`Name = "CalcLagrangian";
+SA`Doc`Info = "Combines the different pieces of the Lagrangian.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 If[AddGravitino=!=True,
 LgolFFV=0;LgolFFVV=0;LgolFFS=0;LgolFFSV=0;
@@ -1070,21 +1144,24 @@ Potential = Matter + Soft + DTerms + FSGaugino (*- LgravFFS-LgravFFSV*)- LgolFFS
 Lagrangian = Kinetic+LagrangianVVV+LagrangianVVVV - Potential;
 
 LGhost=0;
+
+SA`Doc`EndEntry[];
 ];
 
+(*
 CheckAdjoints:=Block[{i,j,k,l,sub,ai,subF,subS,subgr},
 genMax=10;
-For[i=1,i<=Length[Gauge],
+For[i=1,i\[LessEqual]Length[Gauge],
 If[Gauge[[i,2]]=!=U[1] && Gauge[[i,5]]===False,
-For[j=1,j<=Length[SA`DiracGauginos[[i]]],
+For[j=1,j\[LessEqual]Length[SA`DiracGauginos[[i]]],
 ai=ADI[i];
-subgr = {NAME[{gen_,a_,b_}][i_]->NAME,NAME[{gen_,a_,b_}]->NAME};
-subF={NAME[{gen_,a_,b_}][i_]:>sum[genf[6+ToExpression[StringTake[ToString[gen],{4}]]],GetGenStart[NAME],GetGen[NAME]]Delta[gen,genf[6+ToExpression[StringTake[ToString[gen],{4}]]]]NAME[{genf[6+ToExpression[StringTake[ToString[gen],{4}]]],AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]]}][i]  Sqrt[2]TA[GAUGE,AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],a,b] sum[AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],1,NR]  } /. GAUGE->Gauge[[i,2]] /. NR->Gauge[[i,2,1]]^2-1;
-subS={NAME[{gen_,a_,b_}]:>sum[genf[6+ToExpression[StringTake[ToString[gen],{4}]]],GetGenStart[NAME],GetGen[NAME]]Delta[gen,genf[6+ToExpression[StringTake[ToString[gen],{4}]]]]NAME[{genf[6+ToExpression[StringTake[ToString[gen],{4}]]],AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]]}]  Sqrt[2] TA[GAUGE,AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],a,b] sum[AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],1,NR] } /. GAUGE->Gauge[[i,2]] /. NR->Gauge[[i,2,1]]^2-1;
+subgr = {NAME[{gen_,a_,b_}][i_]\[Rule]NAME,NAME[{gen_,a_,b_}]\[Rule]NAME};
+subF={NAME[{gen_,a_,b_}][i_]\[RuleDelayed]sum[genf[6+ToExpression[StringTake[ToString[gen],{4}]]],GetGenStart[NAME],GetGen[NAME]]Delta[gen,genf[6+ToExpression[StringTake[ToString[gen],{4}]]]]NAME[{genf[6+ToExpression[StringTake[ToString[gen],{4}]]],AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]]}][i]  Sqrt[2]TA[GAUGE,AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],a,b] sum[AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],1,NR]  } /. GAUGE->Gauge[[i,2]] /. NR->Gauge[[i,2,1]]^2-1;
+subS={NAME[{gen_,a_,b_}]\[RuleDelayed]sum[genf[6+ToExpression[StringTake[ToString[gen],{4}]]],GetGenStart[NAME],GetGen[NAME]]Delta[gen,genf[6+ToExpression[StringTake[ToString[gen],{4}]]]]NAME[{genf[6+ToExpression[StringTake[ToString[gen],{4}]]],AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]]}]  Sqrt[2] TA[GAUGE,AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],a,b] sum[AI /. subGC[6+ToExpression[StringTake[ToString[gen],{4}]]],1,NR] } /. GAUGE->Gauge[[i,2]] /. NR->Gauge[[i,2,1]]^2-1;
 
-sub = Flatten[{subF  /. NAME->FFields[[SA`DiracGauginos[[i,j]],0]] /. AI->ai,subS  /. NAME->SFields[[SA`DiracGauginos[[i,j]],0]] /. AI->ai,subS  /. NAME->AFields[[SA`DiracGauginos[[i,j]],0]] /. AI->ai}];
+sub = Flatten[{subF  /. NAME->FFields[[SA`DiracGauginos[[i,j]],0]] /. AI\[Rule]ai,subS  /. NAME\[Rule]SFields[[SA`DiracGauginos[[i,j]],0]] /. AI\[Rule]ai,subS  /. NAME\[Rule]AFields[[SA`DiracGauginos[[i,j]],0]] /. AI\[Rule]ai}];
 
-subgr=Flatten[{subgr /. NAME->FFields[[SA`DiracGauginos[[i,j]],0]],subgr /. NAME->SFields[[SA`DiracGauginos[[i,j]],0]],subgr /. NAME->AFields[[SA`DiracGauginos[[i,j]],0]]}];
+subgr=Flatten[{subgr /. NAME->FFields[[SA`DiracGauginos[[i,j]],0]],subgr /. NAME\[Rule]SFields[[SA`DiracGauginos[[i,j]],0]],subgr /. NAME\[Rule]AFields[[SA`DiracGauginos[[i,j]],0]]}];
 
 subsave=sub;
 
@@ -1092,7 +1169,7 @@ Kinetic = Kinetic //.sub;
 Potential = Potential//.sub;
 Lagrangian = Lagrangian//.sub;
 
-Particles[ALL] = Particles[ALL] //. {FFields[[SA`DiracGauginos[[i,j]],0]],a_,b_,F,{generation,d__}}-> {FFields[[SA`DiracGauginos[[i,j]],0]],a,b,F,{generation,ai}} //. {SFields[[SA`DiracGauginos[[i,j]],0]],a_,b_,S,{generation,d__}}-> {SFields[[SA`DiracGauginos[[i,j]],0]],a,b,S,{generation,ai}}//. {AFields[[SA`DiracGauginos[[i,j]],0]],a_,b_,A,{generation,d__}}-> {AFields[[SA`DiracGauginos[[i,j]],0]],a,b,A,{generation,ai}};
+Particles[ALL] = Particles[ALL] //. {FFields[[SA`DiracGauginos[[i,j]],0]],a_,b_,F,{generation,d__}}\[Rule] {FFields[[SA`DiracGauginos[[i,j]],0]],a,b,F,{generation,ai}} //. {SFields[[SA`DiracGauginos[[i,j]],0]],a_,b_,S,{generation,d__}}\[Rule] {SFields[[SA`DiracGauginos[[i,j]],0]],a,b,S,{generation,ai}}//. {AFields[[SA`DiracGauginos[[i,j]],0]],a_,b_,A,{generation,d__}}\[Rule] {AFields[[SA`DiracGauginos[[i,j]],0]],a,b,A,{generation,ai}};
 
 Particles[Current]=Particles[ALL];
 
@@ -1100,3 +1177,4 @@ j++;];
 ];
 i++;];
  ];
+*)

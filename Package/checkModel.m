@@ -21,17 +21,22 @@
 
 (* ::Input::Initialization:: *)
 CheckModel:=Block[{startedtime},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckModel";
+SA`Doc`Info ="This is the main function to run different checks in order to validate the implementation of the initialised model. Formal checks (e.g. missing definitions) as well as physical checks (e.g. wrong mixing, charge violation) are performed. ";
+SA`Doc`Input ={};
+SA`Doc`GenerateEntry[];
+
 startedtime=TimeUsed[];
-(*
-Print["###########################################################"];
-Print["Perform checks of particle content and (super)potential"];
-Print["###########################################################"]; *)
+
+
+
 Print[StyleForm["Perform checks of particle content and (super)potential","Section",FontSize->14]];
 CheckAnomalies;
-(*Print["***********************************************************"];*)
+
 Print[""];
 CheckChargeConservation;
-(*Print["***********************************************************"];*)
+
 Print[""];
 If[SupersymmetricModel===False,
 CheckPossibleTermsPotential;,
@@ -40,57 +45,68 @@ CheckPossibleTermsSuperPotential;
 
 Print[""];
 Print[""];
-(*Print["###########################################################"];
-Print["Perform checks of particle mixing and VEVs"];
-Print["###########################################################"];*)
 Print[StyleForm["Perform checks of particle mixing and VEVs","Section",FontSize->14]];
 
 CheckParticleMixingAndVEVs;
 
 Print[""];
 Print[""];
-(*Print["###########################################################"];
-Print["Perform checks of mass matrices and eigenstates"];
-Print["###########################################################"];*)
 Print[StyleForm["Perform checks of mass matrices and eigenstates","Section",FontSize->14]];
 
 CheckMassMatrices;
-(*Print["***********************************************************"];*)
 Print[""];
 CheckMissingMixing;
 
 
 Print[""];
 Print[""];
-(*Print["###########################################################"];
-Print["Perform checks of definitions for particles and parameters"];
-Print["###########################################################"];*)
 Print[StyleForm["Perform checks of definitions for particles and parameters","Section",FontSize->14]];
+
 
 CheckDiracSpinors;
 (*Print["***********************************************************"];*)
 Print[""];
+
 CheckParameterDefinitionsFinal;
 (*Print["***********************************************************"];*)
 Print[""];
 CheckParticleDefinitionsFinal;
 
+
 Print[""];
 Print[""];
 Print["All checks finished in ",TimeUsed[]-startedtime,"s"];
+
+SA`Doc`EndEntry[];
 ];
 
 
 CheckMissingMixing:=Block[{i},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckMissingMixing";
+SA`Doc`Info = "This routines checks for missing mixings for the final eigenstates. The check if a mixing is missing is performed by a separate routine, CheckParticleMixing. (This separation is somehow artifical and in principle no longer needed. The origin was a (useless!) loop over all eigenstates in an earlier version.";
+SA`Doc`Input ={};
+SA`Doc`GenerateEntry[];
+
 Print["--------------- Checking, if other particles will also mix ----------------- "];
 Print["Note, only the Lagrangian for the final eigenstates is checked. "];
 For[i=Length[NameOfStates],i<=Length[NameOfStates],
 Print["***   Considered Lagrangian for ",NameOfStates[[i]], "   ***"];
 CheckParticleMixing[NameOfStates[[i]]];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckDiracSpinors:=Block[{i,list,nodirac,partF},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckDiracSpinors";
+SA`Doc`Info = "This routines checks the definition of the Dirac spinors. Two checks are performed: \n
+1) Do all Weyl spinors in the model show up in Dirac spinors? \n
+2) Are the definition of the Dirac spinors in agreement with unbroken charges?";
+SA`Doc`Input ={};
+SA`Doc`GenerateEntry[];
+
 Print["--------------- Checking presence of dirac spinors ----------------- "];
 For[i=1,i<=Length[NameOfStates],
 Print["Checking Dirac spinors of ",NameOfStates[[i]]];
@@ -119,10 +135,17 @@ j++;];
 ];
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 
 CheckParticleMixingAndVEVs:=Block[{i,j,k},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckParticleMixingAndVEVs";
+SA`Doc`Info = "This is the main function to call the routines which perform checks for the definition of field rotations and VEVs in the model file. ";
+SA`Doc`Input ={};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[NameOfStates],
 Print["--------- Considered eigenstates ", NameOfStates[[i]]," --------"];
 If[BrokenGaugeSymmetries[NameOfStates[[i]]]=!={} && Head[BrokenGaugeSymmetries[NameOfStates[[i]]]]===List,
@@ -155,9 +178,17 @@ Print["Done"];
 Print["-----------------------------------------------------------------"];
 Print[""];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckFlavorDecomp[ES_]:=Block[{i,j,list,pos},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckFlavorDecomp";
+SA`Doc`Info = "This routines collects the quantum numbers of the fields which are involved in the definition of a flavoru compostion (via. 'DEFINITION[ES][Flavors]' in the model file). This information is later used to check the charge conservation in Dirac spinors for instance. (I.e. the name of the routine including a 'Check' is not very well chosen and misleading! It doesn't do any checks itself!) ";
+SA`Doc`Input ={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
+
 Print["Checking flavor decomposition of ",ES];
 list = DEFINITION[ES][Flavors];
 For[i=1,i<=Length[list],
@@ -173,9 +204,16 @@ S,
 ];
 j++;];
 i++];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckRotationsGauge[ES_]:=Block[{i,j,charges,list,entry,flist},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckRotationsGauge";
+SA`Doc`Info = "This routine checks of fields which are combined via a rotation in the gauge sector have the same global and local charges. This is only a routine which performs the loop over all necessary entries. The actual check is done in the routine 'CheckConservationMixing' which gets called. ";
+SA`Doc`Input ={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["--------------- Checking rotations in gauge sector ----------------- "];
 
@@ -191,10 +229,17 @@ CheckConservationMixing[ES,charges,getRParity[list[[i,2,j]],ES],flist[[i,1]],lis
 j++;];
 ];
 i++];
+
+SA`Doc`EndEntry[];
 ];
 
 
 CheckRotationsGaugeOld[ES_]:=Block[{i,j,k,charges,list,entry,flist,basis},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckRotationsGaugeOld";
+SA`Doc`Info = "This routine checks of fields which are combined via a rotation in the gauge sector have the same global and local charges. This is only a routine which performs the loop over all necessary entries. The actual check is done in the routine 'CheckConservationMixing' which gets called. NOTE: this version assumes the outdated definition of rotations in the gauge sector in the model file ('DEFINITION[ES][GaugeSectorOld]') and is most likely no longer needed. ";
+SA`Doc`Input ={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["--------------- Checking rotations in gauge sector ----------------- "];
 
@@ -217,10 +262,18 @@ CheckConservationMixing[ES,charges,getRParity[list[[i,2,j]],ES],flist[[i,1]],lis
 j++;];
 ];
 i++];
+
+SA`Doc`EndEntry[];
 ];
 
 
 CheckRotations[ES_]:=Block[{i,j,k,charges, charges2,fs},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckRotations";
+SA`Doc`Info = "This routine loops over all rotation in the matter sector for the different eigenstates and checks if the rotations are in agreement with all unbroken local and global charges. ";
+SA`Doc`Input ={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
+
 Print["--------------- Checking field rotations for Eigenstates ", ES,"-------------------"];
 entry=MixBasis[ES];
 
@@ -239,9 +292,17 @@ CheckConservationMixing[ES,charges,getRParity[MixedNames[ES][[i]],ES] ,entry[[i,
 ];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 ];
 
 CheckConservationMixing[ES_,charges_,finalrpv_,ifields_,ffields_]:=Block[{j,i,temp,charges2},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckConservationMixing";
+SA`Doc`Info = "This routine checks if a given rotation (in terms of initial and final fields) is in agreement with all unbroken global and local charges. Of not, a warning is printed.";
+SA`Doc`Input ={"ES"->"Considered Eigenstates", "charges"->"local and global charges", "finalrpv"->"R-Parity of final particles", "ifields"->"initial fields","ffields"->"final fields"};
+SA`Doc`GenerateEntry[];
+
 charges2 = Table[charges[[i,j]],{j,1,Length[Gauge]+1},{i,1,Length[charges]}]; 
 For[i=1,i<=Length[Gauge],
 If[Gauge[[i,2]]=!=U[1],charges2[[i]] = charges2[[i]] /. -1 ->1 /.{ -(Gauge[[i,2,1]]^2-1)->(Gauge[[i,2,1]]^2-1),-2->2};];
@@ -258,19 +319,6 @@ Print["    ... mixing allowed by quantum number with respect to \"" ,Gauge[[j,3]
 ];
 j++;];
 
-(*
-If[RParityConservation\[Equal]True,
-If[Length[Intersection[charges2[[-1]]]]>1,
-Mixing::DifferentRParity="Particles `` have different R-Parity and can't mix as long as R-Parity is conserved.";
-Message[Mixing::DifferentRParity,ifields];,
-Print["    ... mixing allowed by R-Parity conservation"];
-If[Intersection[charges2[[-1]]][[1]]=!=finalrpv,
-Mixing::RParityDifferent="The given R-parity of the mixed state `` (``) is different than the one for the basis states `` (``)";
-Message[Mixing::RParityDifferent,ffields,finalrpv,ifields,Intersection[charges2[[-1]]][[1]]];
-];
-];
-];
-*)
 
 If[Head[ffields]===conj,
 chargesC={Join[-Take[charges[[1]],{1,3}],{charges[[1,4]]}]};,
@@ -286,9 +334,16 @@ A,
 	SA`QNaux = Join[SA`QNaux,{{RE[ffields],chargesC[[1]]}}];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 getChargesAndRParity[field_]:=Block[{conjQ,temp,res,pos,type,charges},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "getChargesAndRParity";
+SA`Doc`Info = "This routine return the local and global charges of a given field. Note, in older versions of SARAH, the only global charge was R-Parity. This explains the name of the routine. However, it is nowadays more general and returns all global charges.";
+SA`Doc`Input ={"field"->"Considered field"};
+SA`Doc`GenerateEntry[];
+
 If[Head[field]===conj,conjQ=True; temp=field[[1]];, temp = field;];
 Switch[getTypeOld[temp],
 F,
@@ -306,12 +361,18 @@ If[conjQ==True,
 charges = - charges;
 charges[[-1]]=-charges[[-1]];
 ];
-Return[charges];
+SA`Doc`Return[charges];
 
 ];
 
 
 CheckVEVs[ES_]:=Block[{i,j,entry,charges},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckVEVs";
+SA`Doc`Info = "This routine checks if a particle gets a VEV which is charged under an unbroken gauge symmetry. Unbroken gauge symmetries are those which are not contained in 'BrokenGaugeSymmetries'. 'BrokenGaugeSymmetries' includes all gauge symmetries whose vector bosons are rotated/mixed in the model file.";
+SA`Doc`Input ={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
+
 entry=DEFINITION[ES][VEVs];
 
 For[i=1,i<=Length[entry],
@@ -330,15 +391,6 @@ Print["    ... does not break \"",Gauge[[j,3]],"\" "];
 ];
 j++];
 
-(*
-If[entry[[i,2,1]]=!=0 &&  entry[[i,2,2]]=!=0 &&  RParityConservation\[Equal]True,
-If[charges[[-1]]===-1 && RParityConservation\[Equal]True,
-VEV::BreaksRParity="Particle `` has R-parity -1 and receives VEV.";
-Message[VEV::BreaksRParity,entry[[i,1]]];,
-Print["    ... does not break R-Parity"];
-];
-];
-*)
 If[Length[entry[[i]]]===5,
 If[Length[entry[[i,5]]]===2,
 For[j=4,j<=5,
@@ -355,9 +407,15 @@ j++];
 
 i++;];
 
+SA`Doc`EndEntry[];
 ];
 
 CheckParticleDefinitionsFinal:=Block[{i,ES},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckParticleDefinitionsFinal";
+SA`Doc`Info = "This routine performs formal checks of the definitions in particles.m. It checks if all possible entries to define a particle are given and have the correct size. It is also checked if entries are duplicated. ";
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[NameOfStates],
 Print["Checking particle definitions for ", NameOfStates[[i]]];
 ES = NameOfStates[[i]];
@@ -474,14 +532,20 @@ i++;];
 
 
 
-
+SA`Doc`EndEntry[];
 ];
 
 
 
 
 (* ::Input::Initialization:: *)
-CheckParameterDefinitionsFinal:=Block[{i,missingParticle={},missingParameter={},missingPDG={},missingLHparameter={},allParticleNames,allParameterNames,missingOutputNames},Print["Checking parameter definitions"];
+CheckParameterDefinitionsFinal:=Block[{i,missingParticle={},missingParameter={},missingPDG={},missingLHparameter={},allParticleNames,allParameterNames,missingOutputNames},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckParameterDefinitionsFinal";
+SA`Doc`Info = "This routine checks the definition in parameters.m. It checks if all necessary definitions are provided and if the values are correct.";
+SA`Doc`GenerateEntry[];
+
+Print["Checking parameter definitions"];
 allParameterNames=Transpose[parameters][[1]];
 
 Print["    checking for parameters not defined in parameters.m"];
@@ -519,10 +583,17 @@ i++;];
 Print["    checking for OutputNames which are already occupied"];
 SPhenoInternalNames = {RHO, LAMBDA};
 *)
-
+SA`Doc`EndEntry[];
 ];
 
 CheckMassMatrices:=Block[{i,mat},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckMassMatrices";
+SA`Doc`Info = "This routine checks the mass matrices stemming from the definition of the rotations in the model file. Two checks are performed: \n
+1) Does the matrix contain only zeros? (This points most likely towards an error in the implementation) \n
+2) Is the matrix reducible (i.e. can it be brought to a block diagonal form) This means that a mixing is not there which has been assumed in the implementation. ";
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[NameOfStates],
 If[Head[MassMatrices[NameOfStates[[i]]]]===List,
 Print["Checking mass matrices for eigenstates ",NameOfStates[[i]]];
@@ -546,20 +617,21 @@ Print[ "   ...  contains non zero-elements"];
 j++;];
 ];
 i++;];
+SA`Doc`EndEntry[];
 ];
 
 
 CheckParticleMixing[ES_]:=Block[{i,j,temp,pos,partS,partF,partV,vert},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckParticleMixing";
+SA`Doc`Info = "This routine checks if bilinear terms between different fields are present in the Lagrangian for given eigenstates. This would mean that a mixing has been missed. Note, it can happen that SARAH finds such a term, but this term might be zero (for instance after some relations between parameters are taken into account).";
+SA`Doc`Input ={"ES"->"Considered Eigenstates"};
+SA`Doc`GenerateEntry[];
+
 Off[General::stop];
 partS=Flatten[Take[#,1]&/@Select[Particles[ES],(#[[4]]===S)&]];
 partF=Intersection[Flatten[Take[#,1]&/@Select[Particles[ES],(#[[4]]===F)&]]/. diracSubBack[ES] /. bar[x_]->x];
 partV=Flatten[Take[#,1]&/@Select[Particles[ES],(#[[4]]===V)&]];
-
-(*
-partS=Transpose[Select[Particles[ES],(#[[4]]===S)&]][[1]];
-partF=Intersection[Transpose[Select[Particles[ES],(#[[4]]===F)&]][[1]] /. diracSubBack[ES] /. bar[x_]\[Rule]x];
-partV=Transpose[Select[Particles[ES],(#[[4]]===V)&]][[1]];
-*)
 
 Lagrangian::PossibleMixing="Possible mixing between `` and `` induced by the term: ``";
 
@@ -622,11 +694,18 @@ Print["    term :",vert]; *)
 j++;];
 i++;];
 
+SA`Doc`EndEntry[];
 On[General::stop];
 ];
 
 
 CheckReducibility[mat_]:=Block[{i,j,k,l,dim1,dim2,zeroC,zeroR,NZC,NZR,k1,k2,newC, newR,irred=False,startold, startnew,count0=0},
+SA`Doc`File = "Package/checkModel.nb";
+SA`Doc`Name = "CheckReducibility";
+SA`Doc`Info = "This routine checks if a matrix is reducible. ";
+SA`Doc`Input ={"mat"->"Considered matrix"};
+SA`Doc`GenerateEntry[];
+
 (* dim=Length[mat]; *)
 dim1=Dimensions[mat][[1]];
 dim2=Dimensions[mat][[2]];
@@ -670,6 +749,6 @@ irred = True;
 j++;];
 i++;];
 
-Return[irred];
+SA`Doc`Return[irred];
 
 ];

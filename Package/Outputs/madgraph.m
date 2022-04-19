@@ -25,6 +25,13 @@ Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}, IncludeEffectiveHiggsVertices->True,B
 MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeUFO],BSMcouplings/.{opt}/.Options[MakeUFO]];
 
 GenerateUFO[Exclude_,effHiggsV_,bsmcoups_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor,startedtime},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"GenerateUFO\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This is the main function to generate the UFO output. It creates the necessary directories, prepares all necessary information about parameters and particles in the model, expands the vertices and writes the output files.";
+SA`Doc`Input={"Exclude"->"List of generic vertices which shall be excluded in the output","effHiggsV"->"Shall effective Higgs couplings (diphoton/digluon) be included?","bsmcoups"->"A list of BSM couplings for which the 'Coupling Order' in Madgraph shall be available"};
+SA`Doc`GenerateEntry[];
+
 Print[StyleForm["Generate UFO model files","Section"]];
 startedtime=TimeUsed[];
 CurrentEigenstates=Last[NameOfStates];
@@ -121,12 +128,20 @@ Print[""];
 Print["Done. UFO files generated in ",TimeUsed[]-startedtime, "s"];
 Print["Output is saved in ",StyleForm[$sarahCurrentUfoDir,"Section",FontSize->10]];
 
+SA`Doc`EndEntry[];
 (* ]; *)
 ];
 
 
 (* ::Input::Initialization:: *)
 ExtractColor[vertex_]:=Block[{i,j,temp={},temp2,res,CS,diffCol,coeff,current },
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ExtractColor\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Takes a vertex and separates the colour structure from the colour-independent part.";
+SA`Doc`Input={"vertex"->"The considered vertex"};
+SA`Doc`GenerateEntry[];
+
 diffCol={fSU3,dSU3,Delta,Lam, LamHlf,K6,K6Bar,T6,CG,Generator, epsTensor}; (* Possible Headers *)
 diffColQT={ct1,ct2,ct3,ct4}; (* name of color indices *)
 CS = Intersection[Cases[vertex,x_?((FreeQ[diffCol,Head[#]]==False && Head[#]=!=List && (Intersection[List@@#,diffColQT]=!={} || Head[#]===fSU3 || Head[#]===dSU3))&),10]];
@@ -145,15 +160,22 @@ temp=Join[temp,{{current,coeff}}];
 ];
 j++;];
 ];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 ExtractColorCoeff[vertex_,col_]:=Block[{i,temp},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ExtractColorCoeff\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Takes a vertex and a colour structure and returns the coefficient in front of the colour structur in the given vertex";
+SA`Doc`Input={"vertex"->"The considered vertex","col"->"The considered color structure"};
+SA`Doc`GenerateEntry[];
+
 If[Head[col]===Times,
 temp=vertex;
 For[i=1,i<=Length[col],temp=D[temp,col[[i]]];i++;];
-Return[temp];,
-Return[D[vertex,col]];
+SA`Doc`Return[temp];,
+SA`Doc`Return[D[vertex,col]];
 ];
 ];
 
@@ -162,6 +184,13 @@ Return[D[vertex,col]];
 
 (* ::Input::Initialization:: *)
 WriteUfoVertices[Eigenstates_,Exclude_,effHiggsV_]:=Block[{i,j},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoVertices\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Wrapper routine to write the vertices into the UFO files. This generates vertices.py and couplings.py";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates","Exclude"->"List of generic vertices which shall be excluded in the output","effHiggsV"->"Shall effective Higgs couplings (diphoton/digluon) be included?"};
+SA`Doc`GenerateEntry[];
+
 Print["Write Vertex and Couplings file "];
 
 SA`UfoCoupNr=1;
@@ -185,9 +214,18 @@ WriteHiggsEffCouplingsUFO;
 
 Close[UfoVF];
 Close[UfoCF];
+
+SA`Doc`EndEntry[];
 ];
 
 WriteHiggsEffCouplingsUFO:=Block[{i,j,k},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteHiggsEffCouplingsUFO\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine writes the diphoton and digluon vertices for all CP even and odd scalars into vertices.py and couplings.py";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Writing effective diphoton and digluon vertices"];
 If[getGen[HiggsBoson]<99,
 For[i=1,i<=getGen[HiggsBoson],
@@ -251,10 +289,18 @@ SA`UfoCoupNr++;
 i++;];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 WriteUfoVertexList[list_,type_]:=Block[{i,j,k,startedtime},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoVertexList\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine generates the content of vertices.py: a list of all existing couplings together with the colour and lorentz structure as well as a variable which defines the numerical value of the coupling.";
+SA`Doc`Input={"list"->"The list of the currently considered couplings","type"->"The generic type of the considered couplings"};
+SA`Doc`GenerateEntry[];
+
 startedtime=TimeUsed[];
 Print["   ... Generic class: ",StyleForm[type,"Section",FontSize->10],". Writing: ",Dynamic[progressNrUFO[type]] ,"/",Length[list]". (",Dynamic[progressCoupUFO[type]],")"];
 
@@ -278,17 +324,32 @@ j++;];
 ];
 i++;];
 progressCoupUFO[type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
+
+SA`Doc`EndEntry[];
 ];
 
 UfoPartList[fields_]:=Block[{i,res=""},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"UfoPartList\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Takes a list of fields and writes them as string of UFO-particles";
+SA`Doc`Input={"field"->"The list of considered fields"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[fields],
 res = res <> "P."<>ToString[fields[[i,1]]] ;
 If[i<Length[fields],res = res<>", "];
 i++;];
-Return[res];
+SA`Doc`Return[res];
 ];
 
 UfoColor[coup_]:=Block[{i,j,res="",temp={}},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"UfoColor\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Generates a string representing the color structure(s) of a given coupling";
+SA`Doc`Input={"coup"->"The considered coupling"};
+SA`Doc`GenerateEntry[];
 
 For[i=1,i<=Length[coup],
 For[j=1,j<=Length[coup[[i,1]]],
@@ -302,10 +363,17 @@ res = res <>"'"<> UfoForm[temp[[i]]]<>"'";
 If[i<Length[temp],res = res<>", "];
 i++;];
 
-Return[res];
+SA`Doc`Return[res];
 ];
 
 UfoLorentz[coup_,type_]:=Block[{i,res="",temp={},pos,clist},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"UfoLorentz\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Generates a string representing the Lorentz structure(s) of a given coupling";
+SA`Doc`Input={"coup"->"The considered coupling","type"->"The generic type of the coupling"};
+SA`Doc`GenerateEntry[];
+
 clist = Select[SA`UfoLorentzTypes,(#[[3]]===type)&];
 For[i=1,i<=Length[coup],
 If[Sum[Abs[coup[[i,1,j,2]]],{j,1,Length[coup[[i,1]]]}]=!=0,
@@ -321,7 +389,7 @@ res = res <>"L."<> UfoForm[temp[[i]]];
 If[i<Length[temp],res = res<>","];
 i++;];
 
-Return[res];
+SA`Doc`Return[res];
 ];
 
 
@@ -332,6 +400,13 @@ Return[SA`UfoLorentzTypes[[pos[[1,1]]]][[2]]];
 ];
 
 UfoCouplings[coup_]:=Block[{i,res="",start=SA`UfoCoupNr,colornr=1, clist={}, llist={},written=False},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"UfoCouplings\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Generates a string containg the variable names of the coefficients for the different colour and Lorentz structure in a given coupling";
+SA`Doc`Input={"coup"->"The considered coupling"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[coup],
 pos = Position[SA`UfoLorentzTypes,coup[[i,2]] //.subUfoLorentz];
 If[Sum[Abs[coup[[i,1,j,2]]],{j,1,Length[coup[[i,1]]]}]=!=0,llist = Join[llist,{SA`UfoLorentzTypes[[pos[[1,1]],2]]}];];
@@ -358,47 +433,35 @@ j++;];
 i++;];
 
 
-Return[res];
+SA`Doc`Return[res];
 ];
 
 
 WriteUfoCoupling[coup_,type_]:=Block[{i},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoCoupling\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This routine write a coupling into couplings.py";
+SA`Doc`Input={"coup"->"The considerd coupling","type"->"The generic type of the coupling"};
+SA`Doc`GenerateEntry[];
+
 WriteString[UfoCF,"GC_"<>ToString[SA`UfoCoupNr] <>" = Coupling("];
 WriteString[UfoCF, "name = 'GC_"<>ToString[SA`UfoCoupNr]<>"',\n"];
 WriteString[UfoCF,"\t value = '"<>UfoForm[coup]<>"', \n"];
 WriteString[UfoCF,"\t order = {"<>UfoCouplingOrder[coup,type]<>"} ) \n \n"];
 SA`UfoCoupNr++;
-];
 
-(*
-UfoCouplingOrder[coup_,type_]:=Block[{i,j, resC,temp,power},
-temp = coup  /. SA`subEW  /. conj[gEW]\[Rule]gEW;
-If[temp===0,
-If[StringLength[ToString[type]]<4,
-Return["'QED':1"];,
-Return["'QED':2"];
+SA`Doc`EndEntry[];
 ];
-];
-If[FreeQ[temp,gEW]\[Equal]False,
-power = Intersection[Cases[temp,gEW^a_,10]  /. a_^b_\[Rule]b];
-If[power==={} || StringLength[ToString[type]]<4,
-resC = "'QED':1";,
-resC = "'QED':"<>ToString[Min[power]];
-];
-];
-
-If[FreeQ[coup,strongCoupling]\[Equal]False,
-If[Head[res]===String,resC=resC<>",";,resC="";];
-power = Intersection[Cases[temp,strongCoupling^a_,10]  /. a_^b_\[Rule]b];
-If[power==={} || StringLength[ToString[type]]<4,
-resC =resC<> "'QCD':1";,
-resC = resC<>"'QCD':"<>ToString[Min[power]];
-];
-];
-Return[resC];
-]; *)
 
 UfoCouplingOrder[coup_,type_]:=Block[{i,j, resC,temp,power},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"UfoCouplingOrder\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Extracts the coupling order (power of QED, QCD or BSM) of a given coupling";
+SA`Doc`Input={"coup"->"The considerd coupling","type"->"The generic type of the coupling"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[coup,strongCoupling]==False,
 power = Intersection[Cases[coup,strongCoupling^a_,10]  /. a_^b_->b];,
 power=0;
@@ -425,10 +488,17 @@ If[powerQCD>0,res=res<>", "];
 If[powerQCD > 0,
 res=res<> "'QCD':"<>ToString[powerQCD];
 ];
-Return[res];
+SA`Doc`Return[res];
 ];
 
 WriteUfoHeadersCV:= Block[{Minutes},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoHeadersCV\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the header to the main UFO file";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 WriteString[UfoVF,"# ------------------------------------------------------------------------------  \n"];
 WriteString[UfoVF,"# This model file was automatically created by SARAH version"<>SA`Version<>" \n"];
 WriteString[UfoVF,"# SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223   \n"];
@@ -447,11 +517,19 @@ WriteString[UfoCF,"from object_library import all_couplings,Coupling \n"];
 WriteString[UfoCF,"from cmath import exp \n"];
 WriteString[UfoCF,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec \n \n \n"];
 
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 WriteUfoLorentz[Eigenstates_,Exclude_,effHiggsV_]:=Block[{i,temp},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoLorentz\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Generates the content of lorentz.py: a list and definition of all existing lorentz structures.";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates","Exclude"->"List of generic vertices which shall be excluded in the output","effHiggsV"->"Shall effective Higgs couplings (diphoton/digluon) be included?"};
+SA`Doc`GenerateEntry[];
+
 SA`UfoLorentzTypes = {};
 
 UfoLF = OpenWrite[ToFileName[$sarahCurrentUfoDir,"lorentz.py"]];
@@ -491,11 +569,19 @@ WriteString[UfoLF,"structure='P(1,2)*P(2,1)-P(-1,1)*P(-1,2)*Metric(1,2)')\n"];
 ];
 
 Close[UfoLF];
+
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
 WriteUfoParticles[Eigenstates_]:=Block[{i,j},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoParticles\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Generates the content of particles.py: a list of all particles in the UFO format";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["Write particles files"];
 
@@ -566,6 +652,7 @@ i++;];
 
 Close[UfoPF];
 
+SA`Doc`EndEntry[];
 ];
 
 UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling->G /. subGreek/. Mass[A_[{b_,c___}]]:>getMassW[A,b] /. Mass[A_]:>getMassW[A]]],{"^"->"**","conj"->"complexconjugate"}]]; 
@@ -574,6 +661,13 @@ UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongC
 
 (* ::Input::Initialization:: *)
 ExpandUfo4[vlist_,prefac_]:=Block[{i,j,gf1,gf2,gf3,gf4,start1,start2,start3,start4,iter1,iter2,iter3,iter4,ff1,ff2,ff3,ff4,fstart1,fstart2,fstart3,fstart4,fiter1,fiter2,fiter3,fiter4,temp},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ExpandUfo4\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function takes a list of 4-point interactions and expands all generation and flavour indices.";
+SA`Doc`Input={"vlist"->"list of vertices","prefac"->"A prefactor for each vertex (usually a sign to match the UFO conventions)"};
+SA`Doc`GenerateEntry[];
+
 gf1=getGen[vlist[[1,1]]];
 gf2=getGen[vlist[[1,2]]];
 gf3=getGen[vlist[[1,3]]];
@@ -665,12 +759,19 @@ fiter2++;];
 iter2++;];
 fiter1++;];
 iter1++;];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 
 (* ::Input::Initialization:: *)
 ExpandUfo3[vlist_,prefac_]:=Block[{i,j,gf1,gf2,gf3,start1,start2,start3,iter1,iter2,iter3,ff1,ff2,ff3,fstart1,fstart2,fstart3,fiter1,fiter2,fiter3,temp,colorstructures},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"ExpandUfo3\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This function takes a list of 3-point interactions and expands all generation and flavour indices.";
+SA`Doc`Input={"vlist"->"list of vertices","prefac"->"A prefactor for each vertex (usually a sign to match the UFO conventions)"};
+SA`Doc`GenerateEntry[];
+
 gf1=getGen[vlist[[1,1]] /. CC[a_]->a];
 gf2=getGen[vlist[[1,2]]/. CC[a_]->a];
 gf3=getGen[vlist[[1,3]]/. CC[a_]->a];
@@ -747,30 +848,21 @@ fiter2++;];
 iter2++;];
 fiter1++;];
 iter1++;];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
+(* substitutions to match SARAH and UFO conventions*)
 
 subUfoColor={
 ThetaStep[__]->1,
 Lam[a_,b_,c_]->2LamHlf[a,b,c],
  sum[a_,b_,c_,fSU3[d___,x_,e___] fSU3[f___,x_,g___]]-> fSU3[d,-1,e] fSU3[f,-1,g],
-(*
- sum[a_,b_,c_,fSU3[d___,j1,e___] fSU3[f___,j1,g___]]\[Rule] fSU3[d,-1,e] fSU3[f,-1,g],
-sum[a_,b_,c_,fSU3[d___,j2,e___] fSU3[f___,j2,g___]]\[Rule] fSU3[d,-2,e] fSU3[f,-2,g],
-sum[a_,b_,c_,fSU3[d___,j3,e___] fSU3[f___,j3,g___]]\[Rule] fSU3[d,-3,e] fSU3[f,-3,g],
-sum[a_,b_,c_,fSU3[d___,j4,e___] fSU3[f___,j4,g___]]\[Rule] fSU3[d,-4,e] fSU3[f,-4,g],
-*)
+
 sum[a_,b_,c_,epsTensor[d___,x_,e___] epsTensor[f___,x_,g___]]-> epsTensor[d,-1,e] epsTensor[f,-1,g],
 sum[a_,b_,c_,fSU3[x_,d_,e_] fSU3[x_,f_,g_]]-> fSU3[-1,d,e] fSU3[-1,f,g],
 sum[a_,b_,c_,Lam[d___,x_,e___] Lam[f___,x_,g___]]-> Lam[d,-1,e] Lam[f,-1,g],
-(*
- sum[a_,b_,c_,Lam[d___,j1,e___] Lam[f___,j1,g___]]\[Rule] Lam[d,-1,e] Lam[f,-1,g],
-sum[a_,b_,c_,Lam[d___,j2,e___] Lam[f___,j2,g___]]\[Rule] Lam[d,-2,e] Lam[f,-2,g],
-sum[a_,b_,c_,Lam[d___,j3,e___] Lam[f___,j3,g___]]\[Rule] Lam[d,-3,e] Lam[f,-3,g],
-sum[a_,b_,c_,Lam[d___,j4,e___] Lam[f___,j4,g___]]\[Rule] Lam[d,-4,e] Lam[f,-4,g],
-*)
 sum[a_,b_,c_,CG[c1___][d___,x_,e___] CG[c2__][f___,x_,g___]]-> CG[c1][d,-1,e] CG[c2][f,-1,g],
+
 CG[SU[3],{{0,1},{2,0},{0,1}}][a_,b_,c_]->K6[b,a,c],
 CG[SU[3],{{2,0},{0,1},{0,1}}][a_,b_,c_]->K6[a,b,c],
 CG[SU[3],{{0,1},{0,1},{2,0}}][a_,b_,c_]->K6[c,a,b],
@@ -778,15 +870,6 @@ CG[SU[3],{{0,1},{0,1},{2,0}}][a_,b_,c_]->K6[c,a,b],
 CG[SU[3],{{1,0},{0,2},{1,0}}][a_,b_,c_]->K6Bar[b,a,c],
 CG[SU[3],{{0,2},{1,0},{1,0}}][a_,b_,c_]->K6Bar[a,b,c],
 CG[SU[3],{{1,0},{1,0},{0,2}}][a_,b_,c_]->K6Bar[c,a,b],
-
-(*
-conj[CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]]\[Rule]2LamHlf[b,a,c],
-conj[CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]]\[Rule]2LamHlf[b,c,a],
-conj[CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]]\[Rule]2LamHlf[a,b,c],
-conj[CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]]\[Rule]2LamHlf[a,c,b],
-conj[CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]]\[Rule]2LamHlf[c,a,b],
-conj[CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]]\[Rule]2LamHlf[c,b,a],
-*)
 
 conj[CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]]->2LamHlf[b,c,a],
 conj[CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]]->2LamHlf[b,a,c],
@@ -806,59 +889,6 @@ CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->2LamHlf[c,a,b],
 Generator[SU[3],{2,0}][a_,b_,c_]->T6[a,c,b]
 
 };
-
-(*
-subUfoLorentz = {
-fSU3[a__]\[Rule]f[a],
-fSU2[a__]\[Rule]Eps[a],
-Mom[a_[{gt1,c___}],b_]\[Rule]P[b,1],
-Mom[a_[{gt2,c___}],b_]\[Rule]P[b,2],
-Mom[a_[{gt3,c___}],b_]\[Rule]P[b,3],
-Mom[a_[{gt4,c___}],b_]\[Rule]P[b,4],
-
-Mom[a_[{ct1,c___}],b_]\[Rule]P[b,1],
-Mom[a_[{ct2,c___}],b_]\[Rule]P[b,2],
-Mom[a_[{ct3,c___}],b_]\[Rule]P[b,3],
-Mom[a_[{ct4,c___}],b_]\[Rule]P[b,4],
-
-Mom[conj[a_[{gt1,c___}]],b_]\[Rule]P[b,1],
-Mom[conj[a_[{gt2,c___}]],b_]\[Rule]P[b,2],
-Mom[conj[a_[{gt3,c___}]],b_]\[Rule]P[b,3],
-Mom[conj[a_[{gt4,c___}]],b_]\[Rule]P[b,4],
-
-Mom[conj[a_[{ct1,c___}]],b_]\[Rule]P[b,1],
-Mom[conj[a_[{ct2,c___}]],b_]\[Rule]P[b,2],
-Mom[conj[a_[{ct3,c___}]],b_]\[Rule]P[b,3],
-Mom[conj[a_[{ct4,c___}]],b_]\[Rule]P[b,4],
-
-Mom[a_[{lt1,c___}],b_]\[Rule]P[b,1],
-Mom[a_[{lt2,c___}],b_]\[Rule]P[b,2],
-Mom[a_[{lt3,c___}],b_]\[Rule]P[b,3],
-Mom[a_[{lt4,c___}],b_]\[Rule]P[b,4],
-
-Mom[a_[{ct1,c___}],b_]\[Rule]P[b,1],
-Mom[a_[{ct2,c___}],b_]\[Rule]P[b,2],
-Mom[a_[{ct3,c___}],b_]\[Rule]P[b,3],
-Mom[a_[{ct4,c___}],b_]\[Rule]P[b,4],
-
-Mom[conj[a_[{lt1,c___}]],b_]\[Rule]P[b,1],
-Mom[conj[a_[{lt2,c___}]],b_]\[Rule]P[b,2],
-Mom[conj[a_[{lt3,c___}]],b_]\[Rule]P[b,3],
-Mom[conj[a_[{lt4,c___}]],b_]\[Rule]P[b,4],
-
-Mom[a_?AtomQ,b_]\[Rule]P[b,2],
-
-ThetaStep[a__]\[Rule]1,
-
-g[a__]\[Rule]Metric[a],
-gamma[a_]\[Rule] Gamma[a,2,1],  
-Lam[a_,b_,c_]\[Rule]2 T[a,c,b],
-
-LorentzProduct[A_[b___,c_],B_[d_,e__]]\[Rule] A[b,-1] B[-1,e],
-PR\[Rule]ProjP[2,1],
-PL\[Rule]ProjM[2,1],   
-lt1\[Rule]1, lt2\[Rule]2, lt3\[Rule]3, lt4\[Rule]4
-};*)
 
 subUfoLorentz = {
 LorentzProduct[a__]->LorP[a],
@@ -920,6 +950,12 @@ A_Symbol[a1___Integer,a2_Symbol,a3___Integer] B_Symbol[b1___Integer,a2_Symbol,b3
 
 
 CreatePartListUfo:=Block[{i,j,k,temp,temp2,particle,charge},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"CreatePartListUfo\",\nInitializationCell->True]\)";
+SA`Doc`Info = "This creates a list of all particles with the necessary information for the UFO output. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Creating particle List"];
 
@@ -975,10 +1011,17 @@ PartListFR = PartListFR /. {Straight -> S,Sine -> W, ScalarDash->D, GhostDash->C
 MassListFR = Select[MassListFR,(FreeQ[#,0]==True)&] /. {LesHouches -> External, Mass ->External} /. External -> 100;
 WidthListFR = Select[WidthListFR,(FreeQ[#,0]==True)&] /. {Width ->External} /. External ->1;
 
+SA`Doc`EndEntry[];
 ];
 
 
 WriteUfoParameters[ES_,Exclude_,effHiggsV_]:=Block[{i,j,k,depmass,RXiList},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteUfoParameters\",\nInitializationCell->True]\)";
+SA`Doc`Info = "";
+SA`Doc`Input={"ES"->"The considered eigenstates","Exclude"->"List of generic vertices which shall be excluded in the output","effHiggsV"->"Shall effective Higgs couplings (diphoton/digluon) be included?"};
+SA`Doc`GenerateEntry[];
 
 (* renaming Alpha_EW to fit MadGraph conventions *)
 EParamList=EParamList/.aEWinv->aEWM1;
@@ -1151,10 +1194,19 @@ j++;];
 ];
 
 Close[UfoP];
+
+SA`Doc`EndEntry[];
 ];
 
 
 AddStandardFiles :=Block[{},
+SA`Doc`File = "Package/Outputs/madgraph.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"AddStandardFiles\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Copies all files to the UFO output directory which are not model dependent and directly delivered with SARAH";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 file = OpenWrite[ToFileName[$sarahCurrentUfoDir,"function_library.py"]];
 AppendSourceCode["function_library.py",file];
 Close[file];
@@ -1175,6 +1227,7 @@ file = OpenWrite[ToFileName[$sarahCurrentUfoDir,"coupling_orders.py"]];
 AppendSourceCode["coupling_orders.py",file];
 Close[file];
 
+SA`Doc`EndEntry[];
 ];
 
 K6[a_,ct3,ct1]:=K6[a,ct1,ct3];

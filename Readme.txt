@@ -1,15 +1,20 @@
-============================================
+==============================================
 SARAH
 by Florian Staub, 2012
-============================================
+with updates by Mark Goodsell and Werner Porod
+==============================================
 
 1. Introduction
 ----------------
-SARAH is a Mathematica package for building and analyzing supersymmetric models. SARAH just needs the gauge structure, particle content and superpotential to produce all information about the gauge eigenstates of a model. Breaking of gauge symmetries and mixings of particles can easily be added. Also the gauge fixing terms are automatically derived in R_Xi gauge, and the corresponding ghost interactions are calculated.
-In addition, also analytical results for the 1- and 2-loop renormalization group equations for for the parameters of the superpotential, the gauge couplings and the soft breaking parameters can be calculated. Also functions for an automatic calculation for the 1-loop corrections to self energies and the tadpoles are included. In all calculations possible effects due to gauge kinetic mixing are included for models with several Abelian gauge groups.
-SARAH can write all information about the model in LaTeX, or create a model file for FeynArts and CalcHep/CompHep, which can also be used for dark matter studies using MicrOmegas, and in the UFO format which is supported by MadGraph 5. Also all necessary files to implement new models in WHIZARD and OMEGA can be generated.
+SARAH is a Mathematica package for building and analyzing supersymmetric models. SARAH only needs the gauge structure, particle content and superpotential to produce all the information about the gauge eigenstates of a model. Breaking of gauge symmetries and mixings of particles can be easily added. The gauge fixing terms are also automatically derived in R_Xi gauge, and the corresponding ghost interactions are calculated.
+
+In addition, analytical results for the 1- and 2-loop renormalisation group equations for for the parameters of the superpotential, the gauge couplings and the soft breaking parameters can be calculated. Functions for an automatic calculation of the 1-loop corrections to self energies and the tadpoles are included. In all calculations possible effects due to gauge kinetic mixing are included for models with several Abelian gauge groups.
+
+SARAH can write all the information about the model in LaTeX, or create a model file for FeynArts and CalcHep/CompHep, which can also be used for dark matter studies using MicrOmegas, and in the UFO format which is supported by MadGraph 5. All necessary files to implement new models in WHIZARD and OMEGA can be generated.
+
 Beginning with version 3, SARAH is also the first available spectrum-generator-generator: based on the derived, analytical expression it creates source code for SPheno. In that way, it is possible to implement new models in SPheno without the need to write any Fortran code by hand.
-The intention by the development of SARAH was to make it very flexible: there is a big freedom for the matter and gauge sector you can handle. The work with SARAH should be easy: every information SARAH needs are specified in an easy to modify model file. Nevertheless, SARAH is also fast: a existing model can be changed within minutes, and the needed time for doing all necessary calculations and writing a model file is normally less than 10 minutes. 
+
+The intention by the development of SARAH was to make it very flexible: there is a large freedom in the matter and gauge sector that can be handled. The work with SARAH should be easy: all the information SARAH needs is specified in an easy to modify model file. Nevertheless, SARAH is also fast: an existing model can be changed within minutes, and the needed time for doing all necessary calculations and writing a model file is normally less than 10 minutes. 
 
 
 
@@ -17,10 +22,10 @@ The intention by the development of SARAH was to make it very flexible: there is
 ----------------------------
 The package can be downloaded from 
 
-    http://http://sarah.hepforge.org/
+    http://sarah.hepforge.org/
 
-and should be extracted to the application directory of Mathematica. This directory is Linux
-    home/user/.Mathematica/Applications/
+and should be extracted to the application directory of Mathematica. This directory is in Linux
+    ~/.Mathematica/Applications/
 and
     Mathematica-Directory\AddOns\Applications\
 in Windows. The package archive contains the following directories:
@@ -29,7 +34,7 @@ in Windows. The package archive contains the following directories:
   - LaTeX: LaTeX packages, which might be needed for the output of SARAH
 During the work, also the directory
     Output 
-is created. It will contain all files written by SARAH. In addition, the root directory of SARAH contains a comprehensive manual (sarah.pdf), an overview of all models included in the package (models.pdf), this short introduction (Readme.txt) as well as an example for the evaluation of the MSSM (Example.nb). 
+is created. It will contain all files written by SARAH. In addition, the root directory of SARAH contains this short introduction (Readme.txt) as well as an example for the evaluation of the MSSM (Example.nb). A comprehensive wiki, and a forum for getting help, are found online. 
 
 
 3. Evaluation and commands
@@ -71,7 +76,7 @@ In addition, it is possible to include spectrum files in the model directory. Th
    ReadSpectrum["filename"];
 
 
-The following models are contained in the package:
+The following models are contained in the package, among others:
  - MSSM: The minimal-supersymmetric standard models
  - MSSM/CPV: The MSSM with CP violation
  - MSSM/CKM: The MSSM in SCKM basis

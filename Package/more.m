@@ -33,6 +33,13 @@
 
 CheckAnomalies :=Block[{i,j,gaugeNr,gaugeNr2,gauges},
 
+
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckAnomalies";
+SA`Doc`Info = "Checks for gauge anomlies, gaugexgravity anomaly and  witten anomaly.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 gauges=DeleteCases[DeleteCases[Head/@Table[Gauge[[i,2]],{i,1,Length[Gauge]}],U],SU];
 
 (*
@@ -146,6 +153,7 @@ Print["     WARNING!  Odd number of doublets: Witten Anomaly (",Gauge[[gaugeNr,3
 gaugeNr++;];
 CheckU1mixing;
 
+SA`Doc`EndEntry[];
 ];
 
 SymbolQS[x_]:=If[Head[x]===Symbol,Return[True],Return[False]]
@@ -154,6 +162,15 @@ SymbolQS[x_]:=If[Head[x]===Symbol,Return[True],Return[False]]
 (* ::Input::Initialization:: *)
 
 InitChargeFactors:=Block[{i,i1,j,k},
+
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "InitChargeFactors";
+SA`Doc`Info = "Initialses a charge factor of each field under Abelian gauge groups.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
+
 For[i1=1,i1<=Length[Gauge],
 For[i=1,i<=Length[Fields],
 If[Head[SFields[[i]] //.A_[{b__}]->A]===conj,sign=-1;,sign=+1;];
@@ -178,14 +195,23 @@ ChargeFactorField[i1,SFields[[i]]/. conj[x_]->x//.A_[{b__}]->A]=-sign (nrInd[[2]
 i++;];
 i1++;];
 
+SA`Doc`EndEntry[];
 ];
 CheckChargeConservation:=Block[{i,j,i1,sum,violation,sign,rpv=False,violationDiscrete=False},
+
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckChargeConservation";
+SA`Doc`Info = "Checks the conservation of terms in the given superpotential with respect to gauge quantum numbers. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
 violation=False;
 gauges=DeleteCases[DeleteCases[Head/@Table[Gauge[[i,2]],{i,1,Length[Gauge]}],U],SU];
 If[gauges=!={},
 ChargeConservation::NoSUN="Check of charge conservation works so far only for SU(N) groups";
 Message[ChargeConservation::NoSUN];
-Return[];
+SA`Doc`Return[];
 ];
 PrintDebug["  checking charge conservation"];
 Print["  checking charge conservation: ", Dynamic[DynamicCheckingCCSup]];
@@ -239,6 +265,7 @@ PrintDebug["     No violation of a global in superpotential"];
 DynamicCheckingCCSup=DynamicCheckingCCSup<>"global symmetries okay.";
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 CheckLagTermChargeConservation[term_]:=CheckLagTermChargeConservation[term,True];
@@ -278,6 +305,13 @@ Return[True];
 *)
 
 CheckLagTermChargeConservation[term_,printout_]:=Block[{i1,sum=0,j,violation,reps},
+
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckLagTermChargeConservation";
+SA`Doc`Info = "Checks the conservation of a term defined in the model file (e.g. the potential of a non-SUSY model) with respect to gauge quantum numbers. ";
+SA`Doc`Input={"term"->"The considered term","printout"->"Should error messages be printed?"};
+SA`Doc`GenerateEntry[];
+
 violation=False;
 For[i1=1,i1<=Length[Gauge],
 sum=0;
@@ -309,6 +343,8 @@ violation=True;
 ];
 ]; 
 i1++;];
+SA`Doc`EndEntry[];
+
 If[violation==True,
 Return[False];,
 Return[True];
@@ -317,7 +353,14 @@ Return[True];
 
 
 
-CreateParameterFile:=Block[{temp,temp2,i,j,description,pos,initpar={}},
+CreateParameterList:=Block[{temp,temp2,i,j,description,pos,initpar={}},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CreateParameterList";
+SA`Doc`Info = "This creates a list with definitions for all parameters: it combines the local (model specific) parameters.m with the global parameters.m";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
 temp = ParameterDefinitions;
 ParameterDefinitions={};
 
@@ -342,11 +385,18 @@ i++;];
 
 SA`LHList=Select[Table[{ParameterDefinitions[[i,1]],(LesHouches /.ParameterDefinitions[[i,2]])},{i,1,Length[ParameterDefinitions]}],(FreeQ[#,LesHouches])&] ;
 
+SA`Doc`EndEntry[];
 ];
 
 
 
-CreateParticleFile:=Block[{temp,temp2,tempFin,i,j,k,description,pos},
+CreateParticlesList:=Block[{temp,temp2,tempFin,i,j,k,description,pos},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CreateParticlesList";
+SA`Doc`Info = "This creates a list with definitions for all particles: it combines the local (model specific) particles.m with the global particles.m";
+SA`Doc`Input = {};
+SA`Doc`GenerateEntry[];
+
 For[k=1,k<=Length[NameOfStates]+1,
 If[k>Length[NameOfStates],
 temp = WeylFermionAndIndermediate;,
@@ -376,10 +426,19 @@ ParticleDefinitions[NameOfStates[[k]]] = tempFin;
 ];
 ];
 k++;];
+
+SA`Doc`EndEntry[];
 ];
 
 
 CheckU1mixing:=Block[{i,temp,pos,listU1,mulfac,i1,i2,pos1,pos2,sum},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckU1mixing";
+SA`Doc`Info = "Checks if several Abelian gauge groups are present which are not orthogonal. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
 nonDiagonalU1=False;
 mulfac=Table[{0},{Length[Fields]}];
 listU1=Select[Gauge,(#[[2]]===U[1])&];
@@ -408,10 +467,17 @@ i2++;];
 i1++;];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 CheckChargeConservationInteraction[fields_]:=Block[{i,temp,cc=True,sum},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckChargeConservationInteraction";
+SA`Doc`Info = "Checks if a specific term in the superpotential is in agreement with gauge symmertries. ";
+SA`Doc`Input={"fields"->"List of involved fields"};
+SA`Doc`GenerateEntry[];
+
 For[i=1,i<=Length[Gauge],
 (* If[(Head[Gauge[[i,2]]]=== SU || Head[Gauge[[i,2]]]=== U ) , *)
 If[Head[Gauge[[i,2]]]=== U  ,
@@ -422,10 +488,18 @@ cc=False;
 ];
 ];
 i++;];
+
+SA`Doc`EndEntry[];
 Return[cc];
 ];
 
 CheckPossibleTermsSuperPotential:=Block[{i,allfieldCombis,allowed,temp={},singlets,present,notpresent},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckPossibleTermsSuperPotential";
+SA`Doc`Info = "Checks if all terms in the superpotential are present which  are allowd by local and global symmetries. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Checking for additional terms in the superpotential"];
 (* Print["    (Note, additional discrete symmetries are not yet considered)"]; *)
 allfieldCombis=(List@@#)&/@Intersection[(C@@#)&/@Subsets[Flatten[{Transpose[Fields][[3]],Transpose[Fields][[3]],Transpose[Fields][[3]]}],{1,3}]];
@@ -468,10 +542,17 @@ Message[PossibleTerms::IncludeGlobal,(List@@#)&/@notpresent];,
 Print["    All terms allowed by gauge invariance and global symmetries are present"];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 CheckPossibleTermsPotential:=Block[{i,allfieldCombis,allowed,temp={},singlets,present,notpresent},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "CheckPossibleTermsPotential";
+SA`Doc`Info = "Checks if all terms in the potential of a non-SUSY model are present which  are allowd by local and global symmetries. Note, Lorentz invariance is not checked! Needs to be improved.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Checking for additional terms in the potential"];
 allfieldCombisScalars1=(List@@#)&/@Intersection[(C@@#)&/@Subsets[Flatten[{Transpose[ScalarFields][[3]]}],{1}]];
 allfieldCombisScalars2=(List@@#)&/@Intersection[(C@@#)&/@Subsets[Flatten[{Transpose[ScalarFields][[3]],Transpose[ScalarFields][[3]]}],{2}]];
@@ -530,10 +611,18 @@ Print["  Please note: this function is not working perfect for non-susy models. 
 Print["    All terms allowed by gauge invariance are present"];
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 WriteTemplatesParFiles:=Block[{i,j,eig},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "WriteTemplatesParFiles";
+SA`Doc`Info = "Generates template files for parameters.m and particles.m. This is helpful if a new model is written and one wants to see what needs to be changed in particles.m and parameters.m. Moreover, it already makes some proposals for the new entries.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
+
 Print[StyleForm["Generate templates for parameters.m and particles.m for this model","Subsection"]];
 missingPar=Select[Transpose[parameters][[1]],FreeQ[Transpose[DeleteCases[ParameterDefinitions,{a_,{Symmetry->b_}}]][[1]],#]&];
 existingPar=Complement[Transpose[parameters][[1]],missingPar];
@@ -651,6 +740,12 @@ Close[outParFile];
 ];
 
 WriteTemplatePar[par_,existing_]:=Block[{entries,i,j,pos,entry},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "WriteTemplatePar";
+SA`Doc`Info = "Writes the entries to the template file for parameters.m";
+SA`Doc`Input={"par"->"the considered parameter","existing"->"does information about the parameter already exist or is it a new parameter?"};
+SA`Doc`GenerateEntry[];
+
 entries={Description,Dependence,DependenceNum,DependenceOptional,DependenceSPheno,Form,GUTnormalization,Real,Value,LesHouches,LaTeX,OutputName};
 WriteString[outParFile,"{"<>ToString[InputForm[par]]<>",{ \n"];
 For[i=1,i<=Length[entries],
@@ -666,6 +761,12 @@ i++;];
 ];
 
 WriteTemplateParticle[particle_,existing_]:=Block[{entries,i,j,pos,entry},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "WriteTemplatePar";
+SA`Doc`Info = "Writes the entries to the template file for particles.m";
+SA`Doc`Input={"par"->"the considered particle","existing"->"does information about the particle already exist or is it a new particle?"};
+SA`Doc`GenerateEntry[];
+
 entries={Description,Goldstone,FeynArtsNr,LaTeX,Mass,MassDependence,OutputName,PDG,ElectricCharge,Width};
 WriteString[outParFile,"{"<>ToString[InputForm[particle]]<>",{ \n"];
 For[i=1,i<=Length[entries],
@@ -678,9 +779,16 @@ WriteString[outParFile,"     "<>getAutoEntryParticle[particle,entries[[i]],exist
  ];
 ]; 
 i++;];
+SA`Doc`EndEntry[];
 ];
 
 WriteTemplateParticleAux[particle_,existing_]:=Block[{entries,i,j,pos,entry},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "WriteTemplatePar";
+SA`Doc`Info = "Writes the auxiliary entries (Weyl spinors, intermediate states, superfields) to the template file for particles.m";
+SA`Doc`Input={"par"->"the considered particle","existing"->"does information about the particle already exist or is it a new particle?"};
+SA`Doc`GenerateEntry[];
+
 entries={Description,LaTeX};
 WriteString[outParFile,"{"<>ToString[InputForm[particle]]<>",{ \n"];
 For[i=1,i<=Length[entries],
@@ -693,50 +801,63 @@ WriteString[outParFile,"     "<>getAutoEntryParticle[particle,entries[[i]],exist
  ];
 ]; 
 i++;];
+SA`Doc`EndEntry[];
 ];
 
 getAutoEntryPar[par_,name_,existing_]:=Block[{val},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "getAutoEntryPar";
+SA`Doc`Info = "Auto generates a proposal for the definition of a new parameter";
+SA`Doc`Input={"par"->"The considered parameter","name"->"Name of the entry","existing"->"Does information already exist?"};
+SA`Doc`GenerateEntry[];
+
 If[existing,
 val=getEntryParameter[par,name];
-If[val===None && (name===Dependence ||name===DependenceNum || name===DependenceOptional ||name===DependenceSPheno),Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];];,
+If[val===None && (name===Dependence ||name===DependenceNum || name===DependenceOptional ||name===DependenceSPheno),SA`Doc`Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];];,
 val=None
 ];
 
 If[val=!=None,
 Switch[name,
 LaTeX,
-Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];,
+SA`Doc`Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];,
 Dependence|DependenceNum|DependenceOptional|DependenceSPheno,
 If[getDimParameter[par]==Dimensions[val] || Head[val]=!=List,
-Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];,
-Return[ToString[name]<>" -> None    (* Removed dependence with wrong dimensions *)"];
+SA`Doc`Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];,
+SA`Doc`Return[ToString[name]<>" -> None    (* Removed dependence with wrong dimensions *)"];
 ];,
 _,
-Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];
+SA`Doc`Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];
 ];,
 Switch[name,
 LaTeX,
-Return[ToString[name]<>" -> \""<>StringReplace[AutoNameLaTeX[par],"\\"->"\\\\"]<>"\"  (* auto generated LaTeX name *)"];,
+SA`Doc`Return[ToString[name]<>" -> \""<>StringReplace[AutoNameLaTeX[par],"\\"->"\\\\"]<>"\"  (* auto generated LaTeX name *)"];,
 OutputName,
-Return[ToString[name]<>" -> "<>AutoNameOutput[par]<>"  (* auto generated Output name *)"];,
+SA`Doc`Return[ToString[name]<>" -> "<>AutoNameOutput[par]<>"  (* auto generated Output name *)"];,
 LesHouches,
 If[existing===False,
-Return[ToString[name]<>" -> "<>AutoLesHouches[par]<>"  (* auto generated Les Houches entry *)"];,
-Return[False];
+SA`Doc`Return[ToString[name]<>" -> "<>AutoLesHouches[par]<>"  (* auto generated Les Houches entry *)"];,
+SA`Doc`Return[False];
 ];,
 Real,
 If[FreeQ[DEFINITION[NameOfStates[[-1]]][VEVs],par]===False,
-Return[ToString[name]<>" -> True (* Assuming new VEVs to be real \t\t\t\t => CHECK! *)"];,
-Return[ToString[name]<>" -> "<>ToString[MemberQ[realVar,par]]];
+SA`Doc`Return[ToString[name]<>" -> True (* Assuming new VEVs to be real \t\t\t\t => CHECK! *)"];,
+SA`Doc`Return[ToString[name]<>" -> "<>ToString[MemberQ[realVar,par]]];
 ];,
 _,
 (* Return[ToString[name]<>" -> "<>"None"]; *)
-Return[False];
+SA`Doc`Return[False];
 ];
 ];
 ];
 
 getAutoEntryParticle[par_,name_,existing_,auxF_]:=Block[{val},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "getAutoEntryParticle";
+SA`Doc`Info = "Auto generates a proposal for the definition of a new particle";
+SA`Doc`Input={"par"->"The considered parameter","name"->"Name of the entry","existing"->"Does information already exist?","auxF"->"Is it an auxiliary field (Weyl spinor, superfield)?"};
+SA`Doc`GenerateEntry[];
+
 If[existing,
 If[auxF===True,
 val=getEntryFieldAux[par,name];,
@@ -753,50 +874,62 @@ If[val=!=None,
 Switch[name,
 LaTeX | OutputName,
 If[Length[val]===2,
-Return[ToString[name]<>" -> {\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\",\""<>StringReplace[ToString[val[[2]]],"\\"->"\\\\"]<>"\"}"];,
-Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];
+SA`Doc`Return[ToString[name]<>" -> {\""<>StringReplace[ToString[val[[1]]],"\\"->"\\\\"]<>"\",\""<>StringReplace[ToString[val[[2]]],"\\"->"\\\\"]<>"\"}"];,
+SA`Doc`Return[ToString[name]<>" -> \""<>StringReplace[ToString[val],"\\"->"\\\\"]<>"\""];
 ];,
 _,
-Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];
+SA`Doc`Return[ToString[name]<>" -> "<>ToString[InputForm[val]]];
 ];,
 Switch[name,
 LaTeX,
-Return[ToString[name]<>" -> \""<>StringReplace[AutoNameLaTeX[par],"\\"->"\\\\"]<>"\"   (* auto generated LaTeX name *)"];,
+SA`Doc`Return[ToString[name]<>" -> \""<>StringReplace[AutoNameLaTeX[par],"\\"->"\\\\"]<>"\"   (* auto generated LaTeX name *)"];,
 PDG,
-Return[ToString[name]<>" -> "<>AutoPDG[par,getEntryField[par,name]/. a_Integer->{a}]<>If[existing===True,"   (* adjusted number of PDGs to number of generations  *)","   (* auto generated PDGs  *)"]];,
+SA`Doc`Return[ToString[name]<>" -> "<>AutoPDG[par,getEntryField[par,name]/. a_Integer->{a}]<>If[existing===True,"   (* adjusted number of PDGs to number of generations  *)","   (* auto generated PDGs  *)"]];,
 OutputName,
-Return[ToString[name]<>" -> \""<>AutoNameOutput[par]<>"\"   (* auto generated Output name *)"];,
+SA`Doc`Return[ToString[name]<>" -> \""<>AutoNameOutput[par]<>"\"   (* auto generated Output name *)"];,
 FeynArtsNr,
-Return[ToString[name]<>" -> "<>AutoFeynArts[par]<>"   (* auto generated FeynArts number *)"];,
+SA`Doc`Return[ToString[name]<>" -> "<>AutoFeynArts[par]<>"   (* auto generated FeynArts number *)"];,
 Mass,
-Return[ToString[name]<>" -> LesHouches"];,
+SA`Doc`Return[ToString[name]<>" -> LesHouches"];,
 Width,
-Return[ToString[name]<>" -> Automatic"];,
+SA`Doc`Return[ToString[name]<>" -> Automatic"];,
 Goldstone,
 If[existing==False,
-Return[ToString[name]<>" -> None  (* don't forget to put the correct Goldstone here!\t\t\t\t => CHECK! *)"];,
-Return[False];
+SA`Doc`Return[ToString[name]<>" -> None  (* don't forget to put the correct Goldstone here!\t\t\t\t => CHECK! *)"];,
+SA`Doc`Return[False];
 ];,
 ElectricCharge,
 If[(FreeQ[Particles[NameOfStates[[-1]]],par]===False ||FreeQ[diracSub[NameOfStates[[-1]]],par]===False) && ConsideredEig===NameOfStates[[-1]],
-Return[ToString[name]<>" -> 0 (* this is just a dummy value for the electric charge! \t\t\t\t => CHECK! *)"];,
-Return[False];
+SA`Doc`Return[ToString[name]<>" -> 0 (* this is just a dummy value for the electric charge! \t\t\t\t => CHECK! *)"];,
+SA`Doc`Return[False];
 ];,
 _,
 (* Return[ToString[name]<>" -> "<>"None"]; *)
-Return[False];
+SA`Doc`Return[False];
 ];
 ];
 ];
 
 AutoFeynArts[x_]:=Block[{val},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "AutoFeynArts";
+SA`Doc`Info = "Auto generates a proposal a FeynArts number of a new particle";
+SA`Doc`Input={"x"->"the consiered field"};
+SA`Doc`GenerateEntry[];
+
 val=Max[allFANr];
 allFANr=Join[allFANr,{val+1}];
-Return[ToString[val++]];
+SA`Doc`Return[ToString[val++]];
 ];
 AutoPDG[x_,existing_]:=Block[{max,i,val},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "AutoFeynArts";
+SA`Doc`Info = "Auto generates a proposal a PDG number of a new particle";
+SA`Doc`Input={"x"->"the considered field", "existing"->"Is it an already existing field?"};
+SA`Doc`GenerateEntry[];
+
 max=Max[allPDGs];
-If[getType[x]===G,Return["{0}"]];
+If[getType[x]===G,SA`Doc`Return["{0}"]];
 If[existing===None,
 val=Table[max+i,{i,1,getGen[x,ALL]}];,
 If[Length[existing]<getGen[x,ALL],
@@ -805,83 +938,103 @@ val=Take[Flatten[existing],{1,getGen[x,ALL]}];
 ];
 ];
 allPDGs=Join[allPDGs,val];
-Return[ToString[val]];
+SA`Doc`Return[ToString[val]];
 ];
 
 AutoLesHouches[x_]:=Block[{i,max},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "AutoFeynArts";
+SA`Doc`Info = "Auto generates a proposal a Les Houches block of a new parameter";
+SA`Doc`Input={"x"->"the consiered field"};
+SA`Doc`GenerateEntry[];
+
 If[getDimParameter[x]==={}||getDimParameter[x]==={1},
 max=Max[allMiscEntry];
 allMiscEntry=Join[allMiscEntry,{max+1}];
-Return["{"<>ToUpperCase[ModelName]<>","<>ToString[max]<>"}"];,
-Return[ToUpperCase[StringReplace[ToString[FullForm[x /. Mass->M]],{"["->"","]"->"","\\"->""}]]];
+SA`Doc`Return["{"<>ToUpperCase[ModelName]<>","<>ToString[max]<>"}"];,
+SA`Doc`Return[ToUpperCase[StringReplace[ToString[FullForm[x /. Mass->M]],{"["->"","]"->"","\\"->""}]]];
 ];
 ];
 
 AutoNameOutput[x_]:=Block[{temp},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "AutoFeynArts";
+SA`Doc`Info = "Auto generates a proposal an ouptut name of a new parameter";
+SA`Doc`Input={"x"->"the consiered field"};
+SA`Doc`GenerateEntry[];
+
+
 Switch[Head[x],
-T,Return["T"<>AutoNameOutput[x[[1]]]<>""];,
-B,Return["B"<>AutoNameOutput[x[[1]]]<>""];,
-L,Return["L"<>AutoNameOutput[x[[1]]]<>""];,
-Mass,Return["M"<>AutoNameOutput[x[[1]]]<>""];
+T,SA`Doc`Return["T"<>AutoNameOutput[x[[1]]]<>""];,
+B,SA`Doc`Return["B"<>AutoNameOutput[x[[1]]]<>""];,
+L,SA`Doc`Return["L"<>AutoNameOutput[x[[1]]]<>""];,
+Mass,SA`Doc`Return["M"<>AutoNameOutput[x[[1]]]<>""];
 ];
 temp=StringReplace[ToLowerCase[ToString[FullForm[x /. Mass->M]]],{"["->"","]"->"","\\"->"","alpha"->"al","beta"->"bet","gamma"->"ga","delta"->"del","epsilon"->"ep","rho"->"rh","sigma"->"sig","lambda"->"lam","omega"->"om","kappa"->"kap","bar"->"b"}];
 If[StringLength[temp]>8,temp=StringTake[temp,{1,7}];];
-Return[temp];
+
+SA`Doc`Return[temp];
 ];
 
 
 AutoNameLaTeX[x_]:=Block[{temp,i,basis,rest},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "AutoFeynArts";
+SA`Doc`Info = "Auto generates a proposal a LaTeX name of a new parameter";
+SA`Doc`Input={"x"->"the consiered field"};
+SA`Doc`GenerateEntry[];
+
 If[Head[x]=!=String,
 If[FreeQ[parameters,x]===False,
 Switch[Head[x],
-T,Return["T_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
-B,Return["B_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
-L,Return["L_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
-Mass,Return["M_{"<>AutoNameLaTeX[x[[1]]]<>"}"];
+T,SA`Doc`Return["T_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
+B,SA`Doc`Return["B_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
+L,SA`Doc`Return["L_{"<>AutoNameLaTeX[x[[1]]]<>"}"];,
+Mass,SA`Doc`Return["M_{"<>AutoNameLaTeX[x[[1]]]<>"}"];
 ];,
 basis=StringTake[ToString[x],{1}];
 rest=StringReplace[StringTake[ToString[x],{2,-1}],{"["->"","]"->"","\\"->""}];
 If[(FreeQ[SuperFields,x] && FreeQ[Extract[#,{1}]&/@Gauge,x]) || SupersymmetricModel===False,
 Switch[basis,
-"V",Return[AutoNameLaTeX[rest]];,
-"F",Return[AutoNameLaTeX[rest]];,
-"f",Return["\\tilde{"<>AutoNameLaTeX[rest]<>"}"];,
-"S",Return["\\tilde{"<>AutoNameLaTeX[rest]<>"}"];,
-"g",Return["\\eta_{"<>AutoNameLaTeX[rest]<>"}"];,
-_,Return[AutoNameLaTeX[ToLowerCase[StringReplace[ToString[FullForm[x]],{"["->"","]"->"","\\"->""}]]]];
+"V",SA`Doc`Return[AutoNameLaTeX[rest]];,
+"F",SA`Doc`Return[AutoNameLaTeX[rest]];,
+"f",SA`Doc`Return["\\tilde{"<>AutoNameLaTeX[rest]<>"}"];,
+"S",SA`Doc`Return["\\tilde{"<>AutoNameLaTeX[rest]<>"}"];,
+"g",SA`Doc`Return["\\eta_{"<>AutoNameLaTeX[rest]<>"}"];,
+_,SA`Doc`Return[AutoNameLaTeX[ToLowerCase[StringReplace[ToString[FullForm[x]],{"["->"","]"->"","\\"->""}]]]];
 ];,
-Return["\\hat{"<>AutoNameLaTeX[ToString[x]]<>"}"];
+SA`Doc`Return["\\hat{"<>AutoNameLaTeX[ToString[x]]<>"}"];
 ];
 ];
 temp=StringReplace[ToString[FullForm[x]],{"["->"","]"->"","\\"->""}];,
 temp=x;
 ];
 If[StringLength[temp]<2,
-Return[temp];
+SA`Doc`Return[temp];
 ];
 If[StringTake[temp,{1}]==="m" && StringTake[temp,{-1}]==="2",
-Return["m^2_{"<>AutoNameLaTeX[StringDrop[StringDrop[temp,{1}],{-1}]]<>"}"];
+SA`Doc`Return["m^2_{"<>AutoNameLaTeX[StringDrop[StringDrop[temp,{1}],{-1}]]<>"}"];
 ];
 
 If[StringPosition[temp,"bar"]=!={} || StringPosition[temp,"Bar"]=!={},
-Return["\\bar{"<>AutoNameLaTeX[StringReplace[temp,{"bar"->"","Bar"->""}]]<>"}"];
+SA`Doc`Return["\\bar{"<>AutoNameLaTeX[StringReplace[temp,{"bar"->"","Bar"->""}]]<>"}"];
 ];
 
 
 If[StringTake[temp,{-2,-1}]==="pp",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{++}"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{++}"]
 ];
 
 If[StringTake[temp,{-2,-1}]==="mm",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{--}"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{--}"]
 ];
 
 If[StringTake[temp,{-2,-1}]==="pm",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{\\pm}"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{\\pm}"]
 ];
 
 If[StringTake[temp,{-2,-1}]==="mp",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{\\mp}"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-2,-1}]]<>"}^{\\mp}"]
 ];
 
 (*
@@ -908,16 +1061,16 @@ Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^{*}"]
 *)
 
 If[StringTake[temp,{-1}]==="0",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^0"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}^0"]
 ];
 
 
 If[StringTake[temp,{-1}]==="L",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_L"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_L"]
 ];
 
 If[StringTake[temp,{-1}]==="R",
-Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_R"]
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,{-1}]]<>"}_R"]
 ];
 
 
@@ -938,37 +1091,43 @@ i++;
 ];
 If[found,
 If[pos[[1,1]]===1 && pos[[1,2]]===StringLength[temp],
-Return["\\"<>GreekSub[[i]]];
+SA`Doc`Return["\\"<>GreekSub[[i]]];
 ];
 
 If[pos[[1,1]]===1,
-Return["{\\"<>GreekSub[[i]]<>"}_{"<>AutoNameLaTeX[StringDrop[temp,pos[[1]]]]<>"}"];
+SA`Doc`Return["{\\"<>GreekSub[[i]]<>"}_{"<>AutoNameLaTeX[StringDrop[temp,pos[[1]]]]<>"}"];
 ];
 
 If[pos[[1,2]]===StringLength[temp],
-Return["{"<>AutoNameLaTeX[StringDrop[temp,pos[[1]]]]<>"}_{\\"<>GreekSub[[i]]<>"}"];
+SA`Doc`Return["{"<>AutoNameLaTeX[StringDrop[temp,pos[[1]]]]<>"}_{\\"<>GreekSub[[i]]<>"}"];
 ];
-Return["{"<>AutoNameLaTeX[StringTake[temp,{1,pos[[1,1]]-1}]]<>"}_{\\"<>GreekSub[[i]]<>"}^{"<>AutoNameLaTeX[StringTake[temp,{pos[[1,2]]+1,-1}]]<>"}"];
+SA`Doc`Return["{"<>AutoNameLaTeX[StringTake[temp,{1,pos[[1,1]]-1}]]<>"}_{\\"<>GreekSub[[i]]<>"}^{"<>AutoNameLaTeX[StringTake[temp,{pos[[1,2]]+1,-1}]]<>"}"];
 ];
 
 If[StringTake[temp,{1}]==="y",
-Return["Y_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
+SA`Doc`Return["Y_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
 ];
 
 If[StringTake[temp,{1}]==="g",
-Return["g_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
+SA`Doc`Return["g_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
 ];
 
 If[StringTake[temp,{1}]==="v",
-Return["v_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
+SA`Doc`Return["v_{"<>AutoNameLaTeX[StringDrop[temp,{1}]]<>"}"]
 ];
 
-Return[temp];
+SA`Doc`Return[temp];
 
 ];
 
 
 Get2to2scattering:=Block[{AllScalars,pairs,lag,ScatterMatrix},
+SA`Doc`File = "Package/more.nb";
+SA`Doc`Name = "Get2to2scattering";
+SA`Doc`Info = "Generates the scattering matrix for 2->2 involving external scalars in the s->infinity approximation.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 AllScalars=Transpose[Select[Particles[GaugeES],#[[4]]==S&]][[1]];
 AllScalars=Join[AllScalars,conj/@AllScalars];
 AllScalars=Select[AllScalars,FreeQ[getIndizes[#],color]&];
@@ -977,7 +1136,8 @@ AllScalars=Select[AllScalars,FreeQ[RemoveParticlesFromScattering,#]&];
 pairs=Intersection[Map[Sort[#]&,Tuples[AllScalars,{2}],{1}]];
 lag=LagSSSS[GaugeES];
 ScatterMatrix=Table[If[pairs[[i2,2]]===pairs[[i2,1]],1/Sqrt[2],1]If[pairs[[i1,2]]===pairs[[i1,1]],1/Sqrt[2],1]D[D[D[D[lag,pairs[[i1,1]]],pairs[[i1,2]]],pairs[[i2,1]]],pairs[[i2,2]]],{i1,1,Length[pairs]},{i2,1,Length[pairs]}]  /. Delta[a_Integer,b_Symbol]->1/. Delta[b_Integer,a_Symbol]->1;
-Return[ScatterMatrix];
+
+SA`Doc`Return[ScatterMatrix];
 ];
 
 

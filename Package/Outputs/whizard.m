@@ -27,11 +27,17 @@ MakeWHIZARD[opt___ ]:=MakeWHIZARDFunc[WOGauge/.{opt}/.Options[MakeWHIZARD],AutoG
 
 (* ::Input::Initialization:: *)
 MakeWHIZARDFunc[ChosenGauge_,AGauge_,Exclude_, WriteOmega_, WriteWHIZARD_,ReadLists_,WOVersion_,ModelNameInput_,maxNumber_]:=Block[{i,j,k,temp,res,pos,names,j1,j2,j3,j4,(* $Path={$sarahPackageDir}}, *) $Path={$sarahNonPublicDir},startedtime},
-(*
-Print["-------------------------------------"];
-Print[" Creating WHIZARD/Omega Model Files  "];
-Print["-------------------------------------"];
-*)
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "MakeWHIZARDFunc";
+SA`Doc`Info = "Main function to generate the WHIZARD output. The purpose of this function is to get and prepare all necessary information and to pass it to the WHIZARD/Omega interface created by Christian Speckner. The following steps are performed: \n
+1) The necessary directories are created \n
+2) The necessary lists for all parameters and particles are generated \n
+3) Substitution rules are defined to translate the SARAH syntax in a FeynRules-like Syntax. \n
+4) All vertices are expanded \n
+5) The information is passed to the main interface which writes the output";
+SA`Doc`Input={"ChosenGauge"->"The chosen gauge","AGauge"->"Automatic gauge in WHIZARD?","Exclude"->"Which generic classes of vertices shall be excluded","WriteOmega"->"Write the Omega files?","WriteWHIZARD"->"Write the WHIZARD file?","ReadLists"->"Shall vertices from a previous calculation be read?","WOVersion"->"What's the WHIZARD version the output is for?","ModelNameInput"->"What's the name of the model in the WHIZARD file?","maxNumber"->"What's the maximal number of vertices per Fortran file?"};
+SA`Doc`GenerateEntry[];
+
 
 Print[StyleForm["Generate WHIZARD/Omega model files","Section"]];
 
@@ -290,6 +296,8 @@ Print[""];
 Print["All Done. WHIZARD/OMEGA files generated in ",TimeUsed[]-startedtime, "s"];
 Print["Output is saved in ",StyleForm[$sarahCurrentWODir,"Section",FontSize->10]];
 
+SA`Doc`EndEntry[];
+
 (* ]; *)
 ];
 
@@ -302,6 +310,12 @@ Print["Output is saved in ",StyleForm[$sarahCurrentWODir,"Section",FontSize->10]
 
 (* ::Input::Initialization:: *)
 ExpandWHIZARD3[vlist_]:=Block[{i,j,gf1,gf2,gf3,start1,start2,start3,iter1,iter2,iter3,ff1,ff2,ff3,fstart1,fstart2,fstart3,fiter1,fiter2,fiter3,temp},
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "ExpandWHIZARD3";
+SA`Doc`Info = "Takes a list of 3-point vertices in which the fields carry generation indices and expands all vertices inserting the generations explicitly. ";
+SA`Doc`Input={"vlist"->"A list of vertices"};
+SA`Doc`GenerateEntry[];
+
 gf1=getGen[vlist[[1,1]] /. CC[a_]->a];
 gf2=getGen[vlist[[1,2]]/. CC[a_]->a];
 gf3=getGen[vlist[[1,3]]/. CC[a_]->a];
@@ -364,11 +378,17 @@ fiter2++;];
 iter2++;];
 fiter1++;];
 iter1++;];
-Return[temp /. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],act3->Index[Generation8,Ext[3]]}];
+SA`Doc`Return[temp /. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],act3->Index[Generation8,Ext[3]]}];
 ];
 
 
 ExpandWHIZARD4[vlist_]:=Block[{i,j,gf1,gf2,gf3,gf4,start1,start2,start3,start4,iter1,iter2,iter3,iter4,ff1,ff2,ff3,ff4,fstart1,fstart2,fstart3,fstart4,fiter1,fiter2,fiter3,fiter4,temp},
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "ExpandWHIZARD4";
+SA`Doc`Info = "Takes a list of 4-point vertices in which the fields carry generation indices and expands all vertices inserting the generations explicitly. ";
+SA`Doc`Input={"vlist"->"A list of vertices"};
+SA`Doc`GenerateEntry[];
+
 gf1=getGen[vlist[[1,1]]];
 gf2=getGen[vlist[[1,2]]];
 gf3=getGen[vlist[[1,3]]];
@@ -461,7 +481,7 @@ fiter2++;];
 iter2++;];
 fiter1++;];
 iter1++;];
-Return[temp/. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],act3->Index[Generation8,Ext[3]],act4->Index[Generation8,Ext[4]]}];
+SA`Doc`Return[temp/. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],act3->Index[Generation8,Ext[3]],act4->Index[Generation8,Ext[4]]}];
 ];
 
 
@@ -471,6 +491,12 @@ Return[temp/. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],a
 (* ::Input::Initialization:: *)
 CreateParamListWO:=Block[{i,temp,temp2, allDependences,j1,j2,j3,angles},
 Print["Creating parameter List"];
+
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "CreateParamListWO";
+SA`Doc`Info = "Creates lists of all parameters in the model in the format needed for Specki's interface. The list IParamList contains all internal parameters, i.e. those are calculated internally, while EParamList contains the external parameters which need to be given as input to WHIZARD.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 angles=Select[Intersection[DeleteCases[Flatten[{Cases[VertexListNonCC,x_Sin,99],Cases[VertexListNonCC,x_Cos,99],Cases[VertexListNonCC,x_Tan,99],Cases[VertexListNonCC,x_Sec,99],Cases[VertexListNonCC,x_Sec,99],Cases[VertexListNonCC,x_Cot,99],Cases[subNumDependences,x_Cot,99],Cases[subNumDependences,x_Cos,99],Cases[subNumDependences,x_Csc,99],Cases[subNumDependences,x_Sec,99],Cases[subNumDependences,x_Sin,99],Cases[subNumDependences,x_Tan,99],Cases[subAlways,x_Cot,99],Cases[subAlways,x_Cos,99],Cases[subAlways,x_Csc,99],Cases[subAlways,x_Sec,99],Cases[subAlways,x_Sin,99],Cases[subAlways,x_Tan,99]}] /. Sec[x_]->x /. Cos[x_]-> x /. Tan[x_]->x /. Cot[x_]->x /. Sin[x_]-> x /. Csc[x_]->x,_Integer,5]],(Head[#]==Symbol)&];
 
@@ -538,10 +564,16 @@ i++;];
 IParamList = WOForm/@(IParamList /. Mass[x_,b___]:>getMassW[x,b]);
 EParamList = WOForm/@(EParamList /. Mass[x_,b___]:>getMassW[x,b]);
 
+SA`Doc`EndEntry[];
 ];  
 
 
 CreatePartListWO:=Block[{i,j,k,temp,temp2,particle,depmass},
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "CreatePartListWO";
+SA`Doc`Info = "Creates a list with all particles in the format needed for Specki's interface.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Creating particle List"];
 depmass=Table[subNumDependencesMasses[[i,1]],{i,1,Length[subNumDependencesMasses]}] /. Mass[x_]->x;
@@ -594,6 +626,7 @@ PartListFR = PartListFR /. {Straight -> S,Sine -> W, ScalarDash->D, GhostDash->C
 MassListFR = Select[MassListFR,(FreeQ[#,0]==True)&] /. {LesHouches -> External, Mass ->External} /. External -> 100;
 WidthListFR = Select[WidthListFR,(FreeQ[#,0]==True)&] /. {Width ->External} /. External ->1;
 
+SA`Doc`EndEntry[];
 ];
 
 (* getColorRep[x_]:=Block[{},
@@ -607,8 +640,14 @@ Return[T];
 ]; *)
 
 getColorRep[x_]:=Block[{temp,pos,posC},
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "getColorRep";
+SA`Doc`Info = "Returns the colour representation (Singlet->S, Triplet->T,Sextet->Six, Octet->O) of a particle";
+SA`Doc`Input={"x"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 temp=getIndizesWI[getBlank[x]];
-If[FreeQ[temp,color],Return[S];];
+If[FreeQ[temp,color],SA`Doc`Return[S];];
 pos=Position[temp,color][[1,1]];
 (*
 If[FreeQ[Gauge,color]===False,
@@ -619,37 +658,43 @@ posC=Position[AuxGauge,color][[1,1]];
 Switch[temp[[pos,2]],
 3,
 	If[SA`DynL[getBlank[x],color]==={1,0},
-	Return[T];,
-	Return[-T];
+	SA`Doc`Return[T];,
+	SA`Doc`Return[-T];
 	];,
 6,
 	If[SA`DynL[getBlank[x],color]==={2,0},	
-	Return[Six];,
-	Return[-Six];
+	SA`Doc`Return[Six];,
+	SA`Doc`Return[-Six];
 	];,
-8,Return[O];
+8,SA`Doc`Return[O];
 ];
 ];
 
 
 CheckGoldstone[field_,gen_,fla___]:=Block[{pos,temp},
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "CheckGoldstone";
+SA`Doc`Info = "Checks if a field is a Goldstone boson";
+SA`Doc`Input={"field"->"name of the considered field","gen"->"considered generation index","fla"->"considered flavour index"};
+SA`Doc`GenerateEntry[];
+
 temp = field /. {bar[x_]->x, conj[x_]->x} /. A_[{a___}]->A;
-If[getType[temp]=!=S,Return[NoGS]];
+If[getType[temp]=!=S,SA`Doc`Return[NoGS]];
 If[getGen[temp]>1,
 If[FreeQ[GoldstoneGhost,temp[{gen}]],
-Return[NoGS];,
+SA`Doc`Return[NoGS];,
 pos=Position[GoldstoneGhost,temp[{gen}]][[1,1]];
 If[FreeQ[GoldstoneGhost[[pos]],conj[temp[{gen}]]],
-Return[getOutputName[GoldstoneGhost[[pos]][[1]],1]];,
-Return[getOutputNameAnti[GoldstoneGhost[[pos]][[1]],1]];
+SA`Doc`Return[getOutputName[GoldstoneGhost[[pos]][[1]],1]];,
+SA`Doc`Return[getOutputNameAnti[GoldstoneGhost[[pos]][[1]],1]];
 ];
 ];,
 If[FreeQ[GoldstoneGhost,temp],
-Return[NoGS];,
+SA`Doc`Return[NoGS];,
 pos=Position[GoldstoneGhost,temp][[1,1]];
 If[FreeQ[GoldstoneGhost[[pos]],conj[temp]],
-Return[getOutputName[GoldstoneGhost[[pos]][[1]],1]];,
-Return[getOutputNameAnti[GoldstoneGhost[[pos]][[1]],1]];
+SA`Doc`Return[getOutputName[GoldstoneGhost[[pos]][[1]],1]];,
+SA`Doc`Return[getOutputNameAnti[GoldstoneGhost[[pos]][[1]],1]];
 ];
 ];
 ];
@@ -669,6 +714,12 @@ getMassW[field_,gen_,fla_]:=getMassWidthOutputName[field,gen,fla,"M"];
 
 
 WriteWOexample[modelname_]:=Block[{},
+SA`Doc`File = "Package/Outputs/whizard.nb";
+SA`Doc`Name = "WriteWOexample";
+SA`Doc`Info = "Writes a very simple example for a Sindrin input file for WHIZARD.";
+SA`Doc`Input={"modelname"->"Name of the considered model in the WHIZARD files"};
+SA`Doc`GenerateEntry[];
+
 woEx=OpenWrite[ToFileName[$sarahCurrentWODir,"e+e-_mu+mu-Scatter.sin"]];
 WriteString[woEx,"model="<>modelname<>"\n \n"];
 
@@ -677,6 +728,8 @@ WriteString[woEx,"process eemumus="<>ToString[getOutputNameAnti[Electron,1]]<>",
 WriteString[woEx,"sqrts=0.2 TeV \n \n"];
 WriteString[woEx,"integrate (eemumu) {iterations=3:10000,6:20000} \n \n"];
 Close[woEx];
+
+SA`Doc`EndEntry[];
 ];
 
 

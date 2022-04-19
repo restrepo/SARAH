@@ -127,15 +127,16 @@ WriteString[spheno, "  outputFileName=trim(outputFileName)\n"];
 WriteString[spheno, "End if \n"];
 
 
-If[SupersymmetricModel===False,
+[SupersymmetricModel===False,
 WriteString[spheno,"g1SM = 0._dp \n"];
 WriteString[spheno,"g2SM = 0._dp \n"];
 WriteString[spheno,"g3SM = 0._dp \n"];
+WriteString[spheno,"vSM = 0._dp \n"];
+];
 WriteString[spheno,"YdSM = 0._dp \n"];
 WriteString[spheno,"YeSM = 0._dp \n"];
 WriteString[spheno,"YuSM = 0._dp \n"];
-WriteString[spheno,"vSM = 0._dp \n"];
-];
+
 
 WriteString[spheno,"Call Set_All_Parameters_0() \n \n"];
 

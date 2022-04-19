@@ -29,6 +29,12 @@ MakeTeX[opt___ ]:=MakeTeXOutput[effectiveOperators/.{opt}/.Options[MakeTeX],SixP
 
 
 MakeTeXOutput[effectiveOperators_,SixParticleInteractions_,FeynmanDiagrams_,Short_,WriteSARAH_, IncludeVert_]:=Block[{},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"MakeTeXOutput\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Main function to generate the LaTeX output of SARAH. It creates all necessary directories and calls the individual functions responsible for writing specific information to the tex files. ";
+SA`Doc`Input={"effectiveOperators"->"Include effective operators in vertex output?","SixParticleInteractions"->"Include vertices with 6 particles?" ,"FeynmanDiagrams"->"Draw Feynman diagrams for all vertices?","Short"->"Use a shorter layout in the vertex output","WriteSARAH"->"Write additional information concerning the SARAH implementation of the model?","IncludeVert"->"Include the vertices in the output?"};
+SA`Doc`GenerateEntry[];
 
 Print[StyleForm["Generate LaTeX files","Section"]];
 
@@ -100,6 +106,8 @@ Print["Done. Output is in ", $sarahCurrentTeXDir];
 Print["Use Script MakePDF.sh (Linux) or MakePDF.bat (Windows) to generate pdf file."];
 ];
 
+SA`Doc`EndEntry[];
+
 ];
 
 
@@ -110,6 +118,13 @@ TeXOutput2[x_]:=ToString[TeXForm[x /. conj[y_] y_ -> abs[y]]];
 TeXOutputRGEs[x_]:=TeXOutput[x];
 
 WriteRGEs :=Block[{},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteRGEs\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Generates the LaTeX files containing the one- and two-loop beta functions";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 RGEsFile=OpenWrite[ToFileName[$sarahCurrentTeXDir,"rges.tex"]];
 
 Print["Writing RGEs to TeX-File"]; 
@@ -273,9 +288,18 @@ WriteTeXBetaFunction[BetaVEVW];
 
 
 Close[RGEsFile];
+
+SA`Doc`EndEntry[];
 ];
 
 WriteTeXBetaFunction[list_]:=Block[{i,tempList},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteTeXBetaFunction\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes a list of beta-function to the tex files";
+SA`Doc`Input={"list"->"The considered list of beta-functions"};
+SA`Doc`GenerateEntry[];
+
 tempList = list;
 
 WriteString[RGEsFile,"{\\allowdisplaybreaks  \\begin{align} \n"];
@@ -291,9 +315,17 @@ WriteString[RGEsFile,TeXOutputRGEs[tempList[[i,3]]/. Kronecker[i1,i2]->UnitM /. 
 ];
 i++;];
 WriteString[RGEsFile,"\\end{align}} \n"];
+
+SA`Doc`EndEntry[];
 ];
 
 WriteTeXGammaFunction[list_]:=Block[{i,tempList},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteTeXGammaFunction\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Write a list of anomalous dimensions into rges.tex";
+SA`Doc`Input={"list"->"A list of anomalous dimensions"};
+SA`Doc`GenerateEntry[];
 
 tempList = list;
 
@@ -336,9 +368,18 @@ i++;];
 
 ];
  WriteString[RGEsFile,"\\end{align} } \n"];
+
+SA`Doc`EndEntry[];
 ];
 
 WriteVerticesTeX[effectiveOperators_,SixParticleInteractions_,Short_] :=Block[{i},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteVerticesTeX\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Main function to write all vertices into tex files. All generic type of vertices are written to individual files which are created here.";
+SA`Doc`Input={"effectiveOperators"->"Include effective operators in vertex output?","SixParticleInteractions"->"Include vertices with 6 particles?" ,"Short"->"Use a shorter layout in the vertex output"};
+SA`Doc`GenerateEntry[];
+
 Print["Writing Vertices to TeX-File"];
 
 diaNr=0;
@@ -440,10 +481,75 @@ WriteString[VertexGGS,"\\end{align} \n"];
 
 Close[VertexSSS]; Close[VertexSSV]; Close[VertexSVV];Close[VertexFFS]; Close[VertexFFV]; Close[VertexSSSS]; Close[VertexSSVV]; Close[VertexVVV]; Close[VertexVVVV]; Close[VertexGGV]; Close[VertexGGS];
 
+SA`Doc`EndEntry[];
+
 ];
 
 
 WriteCurrentVertexTeX[res_,Type_] :=Block[{i},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteCurrentVertexTeX\",\nInitializationCell->True]\)";
+SA`Doc`Info = "\!\(\*
+StyleBox[\"Writes\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"a\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"single\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"vertex\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"into\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"the\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"tex\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"files\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\".\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"It\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"also\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"'\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"draws\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"'\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"the\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"Feynman\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"diagrams\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"(\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"i\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\".\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"e\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\".\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"generates\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"feynmf\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"code\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\")\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"if\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"the\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"option\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"is\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"turned\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\" \",\nInitializationCell->True]\)\!\(\*
+StyleBox[\"on\",\nInitializationCell->True]\)\!\(\*
+StyleBox[\".\",\nInitializationCell->True]\)";
+SA`Doc`Input={"res"->"The considered vertex","Type"->"The generic type of the vertex"};
+SA`Doc`GenerateEntry[];
+
 Switch[Type,
 SSS, outputfile = VertexSSS;
 		TeXLineBreak=8;,
@@ -634,7 +740,7 @@ WriteString[outputfile,"\\hrule \n"];
 
 maxNumberSymbols=22;
 
-
+SA`Doc`EndEntry[];
 ]; 
 
 
@@ -642,6 +748,12 @@ maxNumberSymbols=22;
 
 
 WriteTeXBasis[WriteSARAH_,effectiveOperators_,SixParticleInteractions_]:=Block[{m},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteTeXBasis\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the main tex file, where all other files are included.";
+SA`Doc`Input={"effectiveOperators"->"Include effective operators in vertex output?","SixParticleInteractions"->"Include vertices with 6 particles?" ,"WriteSARAH"->"Write additional information concerning the SARAH implementation of the model?"};
+SA`Doc`GenerateEntry[];
 
 TeXFile=OpenWrite[ToFileName[$sarahCurrentTeXDir,ModelName<>"-"<>ToString[modelName]<>".tex"]];
 
@@ -806,10 +918,19 @@ Close[TeXFile];
 
 WriteMakeFile;
 
+SA`Doc`EndEntry[];
+
 ];
 
 
 WriteMakeFile:=Block[{},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteMakeFile\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Write scripts for Linux and Windows to compile the latex files together with all Feynman diagrams.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 makeFile=OpenWrite[ToFileName[$sarahCurrentTeXDir,"MakePDF.sh"]];
 WriteString[makeFile,"#!/bin/bash \n"];
 WriteString[makeFile,"pdflatex "<>ModelName <>"-"<>ToString[modelName]<>".tex \n"];
@@ -832,12 +953,20 @@ WriteString[makeFile,"cd .. \n"];
 WriteString[makeFile,"pdflatex "<>ModelName <>"-"<>ToString[modelName]<>".tex \n"];
 Close[makeFile];
 
+SA`Doc`EndEntry[];
+
 
 ];
 
 
 (* ::Input::Initialization:: *)
 WriteParticleList:=Block[{},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteParticleList\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Write a table with all particles (mass eigenstates) in the given model into a tex file.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Writing Particle Content to TeX-File"];
 ParticleFile=OpenWrite[ToFileName[$sarahCurrentTeXDir,"particles.tex"]];
@@ -883,10 +1012,19 @@ WriteString[ParticleFile,"\\end{longtable}\n "];
 WriteString[ParticleFile,"\\end{center}\n \n"];
 
 Close[ParticleFile];
+
+SA`Doc`EndEntry[];
 ];
 
 
 WriteSF:=Block[{i,j,k,sign,gf,temp},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteSF\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes a Table with all superfields (SUSY models) or gauge eigenstates (non-SUSY models) into a tex file. Also the superpotential (SUSY model) or potential (non-SUSY model) is written down. ";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 If[SupersymmetricModel==False,
 Print["Writing Fields and Lagrangian to TeX-File"];,
 Print["Writing Superfields and Superpotential to TeX-File"];
@@ -1063,10 +1201,19 @@ WriteString[SFFile, "\\end{enumerate} \n"];
 
 ];
 Close[SFFile];
+
+SA`Doc`EndEntry[];
 ];
 
 
 WriteVEVDecomp:=Block[{i,j,k,m,list,temp},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteVEVDecomp\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the decompositions of complex fields into CP eigenstates and a VEV (as defined in the model file)";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Write VEVs to TeX-File"];
 
 For[m=2,m<=Length[NameOfStates],
@@ -1094,9 +1241,17 @@ WriteString[vevFile,"\\end{align} \n"];
 Close[vevFile];
 m++;];
 
+SA`Doc`EndEntry[];
 ];
 
 WriteFlavorDecomp:=Block[{i,j,k,m,list,temp},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteFlavorDecomp\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes down the flavour decomposition as defined in the model file.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Write Flavor Decomposition to TeX-File"];
 
 For[m=1,m<=Length[NameOfStates],
@@ -1122,12 +1277,19 @@ WriteString[vevFile,"\\end{align} \n"];
 Close[vevFile];
 m++;];
 
+SA`Doc`EndEntry[];
 ];
 
 
 
 (* ::Input::Initialization:: *)
 WriteMatrices:=Block[{i,j,k,m,MMatrizes,mixings,mixedNames,rotG,sign,mixES,n1,n2},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteMatrices\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes all mass matrices to the tex files. Different files are created for mass matrices of scalars, fermions and vector bososn. Some efforts are done to get a nicely looking LaTeX code.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Writing Mass Matrices to TeX-File"];
 
@@ -1381,11 +1543,18 @@ Close[GaugeRot];
 m++;];
 
 
+SA`Doc`EndEntry[];
 
 
 ];
 
 WriteMatrixToTeX[mixIN_,mixedIN_,matIN_,RXiIN_]:=Block[{i,j,k,rxis},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteMatrixToTeX\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes a single matrix into the LaTeX files. Some replacements are done to get a shorter notation which looks nicer. ";
+SA`Doc`Input={"mixIN"->"The gauge eigenstates","mixedIN"->"the mass eigenstates","matIN"->"The mass matrix","RXiIN"->"The gauge dependent part of the mass matrix"};
+SA`Doc`GenerateEntry[];
 
 WriteString[outputfile,"\\begin{equation} \n"];
 If[getTypeOld[mixIN[[1,1]]]===F,
@@ -1513,11 +1682,19 @@ WriteMatrixToTeX[mixIN,mixedIN,D[matIN,rxis[[j]]]  //.RXi[_]->0,rxis[[j]]];
 j++;];
 
 
+SA`Doc`EndEntry[];
 ];
 
 
 
 WriteSelfEnergy:=Block[{i,j,k},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteSelfEnergy\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the one-loop self-energies and tadpoles into the tex files";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Writing One Loop Tadpoles to TeX-File"];
 
 SelfE=OpenWrite[ToFileName[$sarahCurrentTeXDir,"SelfEnergy1Loop.tex"]];
@@ -1589,9 +1766,17 @@ Close[SelfE];
 
 TeXLineBreak=3;
 
+SA`Doc`EndEntry[];
 ];
 
 WriteCG:=Block[{i,j},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteCG\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the Clebsch-Gordon-Coefficients needed in the given moel into tex files";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Write Clebsch-Gordan Coefficients"];
 cgtex=OpenWrite[ToFileName[$sarahCurrentTeXDir,"CG.tex"]];
 WriteString[cgtex,"\\section{Clebsch-Gordan Coefficients} \n"];
@@ -1618,9 +1803,17 @@ i++;];
 WriteString[cgtex,"\\end{itemize} \n"];
 ];
 Close[cgtex];
+
+SA`Doc`EndEntry[];
 ];
 
 WriteTadpoleEquations:=Block[{TadEqu,m,i,j},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteTadpoleEquations\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes the tadpole equations into the tex file";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Writing Tadpole Equations to TeX-File"];
 
@@ -1690,10 +1883,18 @@ j++;];
 
 Close[TFile];
 
+SA`Doc`EndEntry[];
 ];
 
 
 TeXforSARAH:=Block[{i,j,PARTF,PARTS,PARTV,PARTG},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"TeXforSARAH\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes additional information concerning the model implementation in SARAH to the tex file.";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
+
 Print["Write Implementation in SARAH to TeX file"];
 
 sarah=OpenWrite[ToFileName[$sarahCurrentTeXDir,"SARAH.tex"]];
@@ -1769,9 +1970,17 @@ WriteString[sarah,"\\hline \n"];
 WriteString[sarah,"\\end{longtable} \n"];
 WriteString[sarah,"\\end{center} \n"];
 Close[sarah];
+
+SA`Doc`EndEntry[];
 ];
 
 WriteParticleListSARAH[list_]:=Block[{j},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"WriteParticleListSARAH\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Writes a list of particles to the tex file";
+SA`Doc`Input={"list"->"The list of particles"};
+SA`Doc`GenerateEntry[];
 
 WriteString[sarah,"\\begin{center} \n"];
 WriteString[sarah,"\\begin{longtable}{|ccc|ccc|} \n"];
@@ -1795,27 +2004,50 @@ j++;];
 WriteString[sarah,"\\hline \n"];
 WriteString[sarah,"\\end{longtable} \n"];
 WriteString[sarah,"\\end{center} \n"];
+
+SA`Doc`EndEntry[];
 ];
 
 TeXName[part_]:=Block[{},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"TeXName\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Returns the LaTeX name of a particle";
+SA`Doc`Input={"part"->"The considered particle"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[TeXParticles,part]==False,
 pos = Position[TeXParticles,part,2,1][[1,1]];
-Return[Extract[TeXParticles,pos][[2]]];,
-Return[ToString[part]];
+SA`Doc`Return[Extract[TeXParticles,pos][[2]]];,
+SA`Doc`Return[ToString[part]];
 ];
 ];
 
 TeXNameP[part_]:=Block[{pos},
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"TeXNameP\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Returns the LateX name of a parameter";
+SA`Doc`Input={"part"->"The considered parameter"};
+SA`Doc`GenerateEntry[];
+
 If[FreeQ[TeXParameters,part]==False,
 pos = Position[TeXParameters,part,2,1][[1,1]];
-Return[Extract[TeXParameters,pos][[2]]];,
-Return[ToString[part]];
+SA`Doc`Return[Extract[TeXParameters,pos][[2]]];,
+SA`Doc`Return[ToString[part]];
 ];
 ];
 
 TeXSimplify[expr_]:=Block[{i,j,k,temp,atom,gaugec,supc,dterms,nodterms},
-If[AtomQ[expr],Return[expr];];
-If[Head[Expand[expr]]=!=Plus,Return[expr]];
+SA`Doc`File = "Package/Outputs/tex.nb";
+SA`Doc`Name = "\!\(\*
+StyleBox[\"TeXSimplify\",\nInitializationCell->True]\)";
+SA`Doc`Info = "Simplifies an expression to get a nicer LaTeX code";
+SA`Doc`Input={"expr"->"The considered expression"};
+SA`Doc`GenerateEntry[];
+
+If[AtomQ[expr],SA`Doc`Return[expr];];
+If[Head[Expand[expr]]=!=Plus,SA`Doc`Return[expr]];
 temp=List@@Expand[expr];
 atom=Select[temp,AtomQ[#]&,2];
 temp=Complement[temp,atom];
@@ -1824,7 +2056,8 @@ supc=Flatten[{WCouplingsTri,WCouplingsBi,WCouplingsLin,WCouplingsQuad}];
 dterms=Select[temp,(Length[Complement[gaugec,List@@(#) /. a_^x_ ->a]]=!=Length[gaugec])&];
 nodterms=Select[temp,(Length[Complement[gaugec,List@@(#) /. a_^x_ ->a]]===Length[gaugec])&];
 
-Return[Plus@@atom+(FullSimplify[Plus@@nodterms]//. a_ b_ + a_ c_ -> (c+b)a //. a_ b_ - a_ c_ -> (b-c)a)+(FullSimplify[Plus@@dterms]//. a_ b_ + a_ c_ -> (c+b)a//. a_ b_ - a_ c_ -> (b-c)a)];
+SA`Doc`Return[Plus@@atom+(FullSimplify[Plus@@nodterms]//. a_ b_ + a_ c_ -> (c+b)a //. a_ b_ - a_ c_ -> (b-c)a)+(FullSimplify[Plus@@dterms]//. a_ b_ + a_ c_ -> (c+b)a//. a_ b_ - a_ c_ -> (b-c)a)];
+
 ];
 
 

@@ -19,6 +19,7 @@
 
 
 
+(* ::Input::Initialization:: *)
 (* ---------- Calculate Tadpole Equations ------- *)
 
 (*
@@ -31,10 +32,10 @@ Print["Calculate Tadpole Equations"];
 
 TadpoleEquations = {};
 
-For[i=1,i<= Length[vevDef],
+For[i=1,i\[LessEqual] Length[vevDef],
 If[FreeQ[vevEx,vevDef[[i,2,1]]],
-(* TadpoleEquations = Join[TadpoleEquations, {Simplify[makeSumAll[CalcDelta[DPV[pot,vevDef[[i,2,1]],1,1]/.Map[vacHead,vacuum]/.Mom[_]->0 /.zero[a_]->0*a  ]/.sum[gt1,a___]->1]]}]; *)
-TadpoleEquations = Join[TadpoleEquations, {Simplify[makeSumAll[CalcDelta[DPTad[pot,vevDef[[i,2,1]],1]/.Map[vacHead,vacuum]/.Mom[_]->0 /.zero[a_]->0*a  ]/.sum[gt1,a___]->1]]}];
+(* TadpoleEquations = Join[TadpoleEquations, {Simplify[makeSumAll[CalcDelta[DPV[pot,vevDef[[i,2,1]],1,1]/.Map[vacHead,vacuum]/.Mom[_]\[Rule]0 /.zero[a_]\[Rule]0*a  ]/.sum[gt1,a___]\[Rule]1]]}]; *)
+TadpoleEquations = Join[TadpoleEquations, {Simplify[makeSumAll[CalcDelta[DPTad[pot,vevDef[[i,2,1]],1]/.Map[vacHead,vacuum]/.Mom[_]\[Rule]0 /.zero[a_]\[Rule]0*a  ]/.sum[gt1,a___]\[Rule]1]]}];
 vevEx = Join[vevEx,{vevDef[[i,2,1]]}];
 ];
 i++;];
@@ -44,6 +45,12 @@ Return[TadpoleEquations] /. subAlways;
 ]; *) 
 
 CalcTadpoleEquations[pot_,ES_]:=Block[{TadpoleEquations,vevEx={},temp,TadWF={}},
+SA`Doc`File = "Package/Lagrangian/tadpoles.nb";
+SA`Doc`Name = "CalcTadpoleEquations";
+SA`Doc`Info = "Calculates the tadpole equations for all CP even scalars appearing in DEFINITION[...][VEVs]. In the case of CP violation (because of the definition of a complex phase or a complex VEVs) also the tadpole equations with respect to the CP odd scalars are calculated. ";
+SA`Doc`Input={"potential"->"The potential in the Lagrangian", "ES"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 potSave=pot;
 potSaveTadpoleEquations=pot;
 savetad={};
@@ -75,6 +82,8 @@ i++;];
 ];
 
 SA`TadpoleEquationsWithField[ES]=TadWF;
+
+SA`Doc`EndEntry[];
 Return[TadpoleEquations /. subAlways];
 
 ];
@@ -90,6 +99,12 @@ Return[Plus@@Table[D[term,part /. subGC[i]] /. subIndFinal[i,t],{i,1,genMax}]];
 
 SolveTadpoleEquations[Eigenstates_,parameters_]:=Block[{i,j,k,off,i1,i2,temp={},vevs={},basis={},vevWithGen={},TEqu={},subReal = {},subPhases={},
 subSPhenoForm={},subSPhenoFormBack={},subGenParameters={},vcount=1},
+
+SA`Doc`File = "Package/Lagrangian/tadpoles.nb";
+SA`Doc`Name = "SolveTadpoleEquations";
+SA`Doc`Info = "Wrapper function to solve the tadpole equations analyticall with respect to a given set of parameters. Also one-loop tadpole equations are solved by adding a generic one-loop shift 'T_i -> T_i + delta t_i' to the expressions. The results are stored in 'resTree' and 'resLoop' ";
+SA`Doc`Input={"parameters"->"The parameters which should be obtained from the tadpole equations.", "Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 Print["Solve Tadpole equations for given parameters"];
 
@@ -184,42 +199,7 @@ Print[ParToSolve];
 resLoop=Solve[EquLoop,Flatten[(parameters /. subSPhenoForm /. subGenParameters)]] /. subSPhenoFormBack;
 resTree=Solve[EquTree,Flatten[(parameters /. subSPhenoForm /. subGenParameters)]]/. subSPhenoFormBack;
 
-
-(*
-NewParametersFromTadpoles={};
-SignumsTadpoles={};
-
-If[Length[resLoop]>1,
-SubSolutionsTadpolesLoop={};
-SubSolutionsTadpolesTree={};
-For[i=1,i<=Length[resLoop[[1]]],
-If[FreeQ[EquLoop,(resLoop[[1,i,1]]^2 /. subSPhenoForm)],
-SubSolutionsTadpolesLoop=Join[SubSolutionsTadpolesLoop,{resLoop[[1,i]]}];
-SubSolutionsTadpolesTree=Join[SubSolutionsTadpolesTree,{resTree[[1,i]]}];,
-absName = ToExpression["Abs2"<>SPhenoForm[resLoop[[1,i,1]]]];
-phaseName=ToExpression["Signum"<>SPhenoForm[resLoop[[1,i,1]]]];
-SignumsTadpoles = Join[SignumsTadpoles,{{resLoop[[1,i,1]], phaseName}}];
-SquaredParametersTadpoles=Join[SquaredParametersTadpoles,{{absName,resLoop[[1,i,1]],phaseName}}];
-NewParametersFromTadpoles=Join[NewParametersFromTadpoles,{absName}];
-SPhenoParameters = Join[SPhenoParameters,{{absName,{},{}}}];
-realVar=Join[realVar,{absName}];
-SubSolutionsTadpolesLoop=Join[SubSolutionsTadpolesLoop,{absName->resLoop[[1,i,2]]^2,resLoop[[1,i,1]]->phaseName*Sqrt[absName]}];
-SubSolutionsTadpolesTree=Join[SubSolutionsTadpolesTree,{absName->resTree[[1,i,2]]^2,resTree[[1,i,1]]->phaseName*Sqrt[absName]}];
-];
-i++;];,
-SubSolutionsTadpolesLoop=Flatten[resLoop] ;
-SubSolutionsTadpolesTree=Flatten[resTree]; 
-];
-
-If[SubSolutionsTadpolesLoop=={},
-Message[SPheno::Tadpoles];
-];
-
-Print["   Simplify solutions"];
-
-SubSolutionsTadpolesLoop=Simplify[Map[Expand,SubSolutionsTadpolesLoop,3] //. Power[a__, Rational[-1,2]]-> 1/sqrt[a] //. Sqrt[a_]->sqrt[a] //.  sqrt[a_] sqrt[b_]->sqrt[a b] //. sqrt[a_] / sqrt[b_] -> sqrt[a/b] //. sqrt ->Sqrt];
-SubSolutionsTadpolesTree=Simplify[Map[Expand,SubSolutionsTadpolesTree,3]//. Power[a__, Rational[-1,2]]-> 1/sqrt[a] //. Sqrt[a_]->sqrt[a] //.  sqrt[a_] sqrt[b_]->sqrt[a b] //. sqrt[a_] / sqrt[b_] -> sqrt[a/b] //. sqrt ->Sqrt]; 
-*)
+SA`Doc`EndEntry[];
 
 ];
 

@@ -20,6 +20,10 @@
 
 
 (* ::Input::Initialization:: *)
+SA`Doc`ToDo="This file is supposed to contain GLOBAL VARIABLES, especially lists which need to be initialised.  unfortunately, this was not enforced rigorously, i.e. quite some global variables might still be distributed among the other files.";
+
+
+
 
 (* ----------------------------------------- *)
 (* List with parameters for RGE calculation  *)
@@ -100,6 +104,12 @@ SA`ListAllFieldsInit={};
 
 (* ::Input::Initialization:: *)
 InitArrays:=Block[{},
+SA`Doc`File = "Package/variables.nb";
+SA`Doc`Name = "InitArrays";
+SA`Doc`Info = "Initialise all empty lists which are needed before model file gets loaded. \n
+In principle, this function is not really necessary but one could initialise these variables outside a function. The reason for this approach was the attempt to be able to run a second model without the need to quit the kernle in between. However, this is hopeless!";
+SA`Doc`Input={};
+SA`Doc`GenerateEntry[];
 
 Print["Preparing arrays"];
 
@@ -174,6 +184,8 @@ ParticleListOneGeneration[[i,1]][ParticleListOneGeneration[[i,2]]]=.;
 ];
 i++;];
 
+
+SA`Doc`EndEntry[];
 ];
 
 
@@ -251,6 +263,12 @@ LgravFFVV = 0;
 
 SA`listFIU1={};
 
+(* In order to get more output for debuggin *)
+(* You need to set 
+	
+WriteDebugInformation=True;
+ 
+before running the model. This will create an extended screen output as well as a log-file. *)
 PrintAll[x_]:=Block[{},Print[x]; If[WriteDebugInformation,Write[LogFile,x]; WriteString[LogFile,"\n"];];];
 PrintDebug[x_]:=Block[{},
 If[WriteDebugInformation,Write[LogFile,x]; WriteString[LogFile,"\n"];];

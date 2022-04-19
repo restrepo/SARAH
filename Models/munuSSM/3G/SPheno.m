@@ -20,6 +20,7 @@ EXTPAR = {
    {202, vL3Input}
    };
 
+DONOTSIMPLIFY=True;
 
 ParametersToSolveTadpoles = {mlHd2,mHd2,mHu2,mv2[1,1],mv2[2,2],mv2[3,3]};
 

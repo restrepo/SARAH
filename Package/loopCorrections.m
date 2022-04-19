@@ -26,6 +26,12 @@ Options[CalcLoopCorrections]={ReadLists->False, OnlyWith->{}};
 CalcLoopCorrections[Eigenstates_,opt___ ]:=CalcOneLoopCorrections[Eigenstates,ReadLists/.{opt}/.Options[CalcLoopCorrections],OnlyWith/.{opt}/.Options[CalcLoopCorrections]];
 
 CalcOneLoopCorrections[Eigenstates_, ReadLists_,OnlyWith_]:=Block[{i,j,temp,entryParticles},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "CalcOneLoopCorrections";
+SA`Doc`Info = "This is the main routine to perform the one-loop calculations for tadpoles and self-energies. It creates the necessary directories, generates a list with 'unroted' fields (i.e. the external gauge eigenstates), calls the different functions to perform the individual calculations, cleans up and stores the results.";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates","ReadLists"->"Shall previous results be read?", "OnlyWith"->"Calculate only loops concerning the given list of particles"};
+SA`Doc`GenerateEntry[];
+
 If[VerticesForEigenstates=!=Eigenstates,
 MakeVertexList[Eigenstates,VerticesForLoops->True];
 ];
@@ -173,11 +179,17 @@ Put[VerticesGaugeMassES,ToFileName[$sarahCurrentLoopDir,"NewVertices.m"]];
 
 CalculatedLoopCorrections=Eigenstates;
 
+SA`Doc`EndEntry[];
 ];
 
 
 (* ::Input::Initialization:: *)
  OneLoopNotMixed[particles_, Eigenstates_]:=Block[{i,j},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "OneLoopNotMixed";
+SA`Doc`Info = "This routine calculates the one-loop self-energies for fields which don't mix, i.e. which only show up in one generation. In this case the gauge and mass eigenstates of the external fields are identical.";
+SA`Doc`Input={"particles"->"The list of particles for which the one-loop self-energies shall be calculated","Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 CorrectionList = Table[0,{Length[particles]}];
 OneLoopProp = Table[0,{Length[particles]}];
@@ -239,10 +251,16 @@ i++;];
 LoopCorrectionUnmixed[Eigenstates]=CorrectionList;
 SelfEnergyUnmixed[Eigenstates]=OneLoopProp;
 
+SA`Doc`EndEntry[];
 ];
 
 
  OneLoopFieldMixing[particles_, Eigenstates_]:=Block[{i,j,subUF},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "OneLoopFieldMixing";
+SA`Doc`Info="This routine calculates the one-loop self-energies between two different, external particles.";
+SA`Doc`Input={"particles"->"The list of particles for which the one-loop self-energies shall be calculated","Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 CorrectionList = Table[0,{Length[particles]}];
 OneLoopProp = Table[0,{Length[particles]}];
@@ -284,10 +302,18 @@ i++;];
 LoopCorrectionUnmixed[Eigenstates]=CorrectionList;
 SelfEnergyUnmixed[Eigenstates]=OneLoopProp;
 
+SA`Doc`EndEntry[];
+
 ];
 
 
 OneLoopMassMatrices[Eigenstates_]:=Block[{i,j,i1,i2,i3,i4,temp,cbasis},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "OneLoopMassMatrices";
+SA`Doc`Info = "This routine calculates the one-loop self-energies for fields which mix, i.e. the corrections to the tree-level mass matrix. In this case the external particles are replaced by 'unrotated' fields, i.e. gauge eigenstates. The names of the unrotated fields start with 'U'. \n
+The results are stored in two ways: as sum over all contributions as well as list of all contributions. The necessary vertices involving unrotated fields are stored in the list 'VerticesGaugeMassES' which is for instance used later by MakeSPheno.";
+SA`Doc`Input ={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
  
 basis={};
 
@@ -388,10 +414,17 @@ i++;];
 SelfEnergies1Loop[Eigenstates]=CorrectedMassMatrices;
 LoopCorrectionMassMatrices[Eigenstates]=CorrectionList;
 
+SA`Doc`EndEntry[];
 ];
 
 
 OneLoopTadpoles[Eigenstates_]:=Block[{i,vevs,scalars,temp,vevNr,i1,i2, res,par1,basis,particlelist,temp3,pos,k},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "OneLoopTadpoles";
+SA`Doc`Info = "This routine calculates the one-loopt tadpoles. In this case the external particles are replaced by 'unrotated' fields, i.e. gauge eigenstates. The names of the unrotated fields start with 'U'. \n
+The results are stored in two ways: as sum over all contributions as well as list of all contributions. It's assumed that no new vertices are needed compared to the self-energy calculation, i.e.  'VerticesGaugeMassES' is not further extended here.";
+SA`Doc`Input ={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
 
 TEqu={};
 basis={};
@@ -490,21 +523,34 @@ Tadpoles1Loop[Eigenstates]={{}};
 LoopCorrectionTadpoles[Eigenstates]={{}};
 ];
 
+SA`Doc`EndEntry[];
 ];
 
 
 ScalarToVEV[x_, Eigenstates_]:=Block[{pos,i,s,basis},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "ScalarToVEV";
+SA`Doc`Info = "Takes the name of a scalar field and returns the associated VEV";
+SA`Doc`Input={"x"->"The considered scalar particle","Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 pos=Position[Transpose[Transpose[DEFINITION[Eigenstates][VEVs]/. {b__,{a_}}->{b}][[2]]][[1]],x][[1,1]];
 s=Transpose[Transpose[DEFINITION[Eigenstates][VEVs]/. {b__,{a_}}->{b}][[4]]][[1]][[pos]];
 If[FreeQ[DEFINITION[Eigenstates][MatterSector],s],
-Return[s];,
+SA`Doc`Return[s];,
 
 pos = Position[DEFINITION[Eigenstates][MatterSector],s][[1,1]];
-Return[DEFINITION[Eigenstates][MatterSector][[pos,2,1]]];
+SA`Doc`Return[DEFINITION[Eigenstates][MatterSector][[pos,2,1]]];
 ];
 ];
 
 ScalarToVEV[x_]:=Block[{pos,i5,s,basis,found=False},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "ScalarToVEV";
+SA`Doc`Info = "Takes the name of a scalar field and returns the associated VEV (looking through all possible eigenstates)";
+SA`Doc`Input={"x"->"The considered scalar particle"};
+SA`Doc`GenerateEntry[];
+
 For[i5=1,i5<=Length[NameOfStates],
 If[FreeQ[DEFINITION[NameOfStates[[i5]]][VEVs],x]==False,
 pos=Position[Transpose[Transpose[DEFINITION[NameOfStates[[i5]]][VEVs]/. {b__,{a_}}->{b}][[2]]][[1]],x][[1,1]];
@@ -519,12 +565,18 @@ res=DEFINITION[NameOfStates[[i5]]][MatterSector][[pos,2,1]];
 ];
 i5++;];
 If[found=!=True,
-Return[s];,
-Return[res];
+SA`Doc`Return[s];,
+SA`Doc`Return[res];
 ];
 ];
 
 AddLoop1[particle_,corrections_]:=Block[{temp,m1,m2,m0,i,vCur,vCur2},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "AddLoop1";
+SA`Doc`Info = "Generates the expression for an one-loop correction to a tadpole";
+SA`Doc`Input={"particle"->"The considered, external particle","corrections"->"A list contatining the particle in the loop as well as the vertex"};
+SA`Doc`GenerateEntry[];
+
 If[getGen[corrections[[1]]]>1,
 m1=Mass[corrections[[1]][{gI1}]]/. Mass->Mass2;
 m2=Mass[corrections[[1]][{gI1}]];,
@@ -540,8 +592,8 @@ F,amp = 2 A0[m1] m2 (vCur[PL]+vCur[PR]);,
 G, amp =  A0[m1] vCur;
 ];
 fac =2* corrections[[5]]*corrections[[6]];
-Return[fac*sum[gI1,1,getGen[corrections[[1]]],amp]];,
-Return[0];
+SA`Doc`Return[fac*sum[gI1,1,getGen[corrections[[1]]],amp]];,
+SA`Doc`Return[0];
 ];
 ];
 
@@ -549,25 +601,43 @@ Return[0];
 (* ::Input::Initialization:: *)
 
 OrderMasses[p1_,p2_,type_]:=Block[{m1,m2},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "OrderMasses";
+SA`Doc`Info = "Brings the two masses in the loop of a self-energy into a well defined order to match the generic expressions.";
+SA`Doc`Input={"p1"->"First particle","p2"->"Second particle","type"->"Generic type of the particle"};
+SA`Doc`GenerateEntry[];
+
 If[getType[p1]===type,
 If[getGen[p1]>1,m1 =Mass[p1[{gI1}]];,m1=Mass[p1];];
 If[getGen[p2]>1,m2 = Mass[p2[{gI2}]];,m2=Mass[p2];];,
 If[getGen[p2]>1,m1 =Mass[p2[{gI1}]];,m1=Mass[p2];];
 If[getGen[p1]>1,m2 = Mass[p1[{gI2}]];,m2=Mass[p1];];
 ];
-Return[{m1,m2}];
+SA`Doc`Return[{m1,m2}];
 ];
 
 AddLoop2[particle_,correction_]:=Block[{part},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "AddLoop2";
+SA`Doc`Info = "Generates the expression for an one-loop correction to a self-energy";
+SA`Doc`Input={"particle"->"The considered, external particle","corrections"->"A list contatining the particles in the loop as well as the vertices"};
+SA`Doc`GenerateEntry[];
+
 If[Length[particle]==2,part=particle[[1]];,part=particle];
 Switch[getTypeOld[part],
-S, Return[AddLoopScalar[part,correction]];,
-F, Return[AddLoopFermion[part,correction]];,
-V, Return[AddLoopVector[part,correction]];
+S, SA`Doc`Return[AddLoopScalar[part,correction]];,
+F, SA`Doc`Return[AddLoopFermion[part,correction]];,
+V, SA`Doc`Return[AddLoopVector[part,correction]];
 ];
 ];
 
 AddLoopScalar[particle_,corrections_]:=Block[{temp,m1,m2,m0,mS,mV,v,fac,m12,m22},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "AddLoopScalar";
+SA`Doc`Info = "Adds a self-energy correction to scalar fields";
+SA`Doc`Input={"particle"->"The considered, external particle","corrections"->"A list contatining the particles in the loop as well as the vertices"};
+SA`Doc`GenerateEntry[];
+
 If[corrections[[4]]===FFS,
 temp=OrderMasses[corrections[[1]],corrections[[2]],F];
 m12=temp[[1]]/. Mass->Mass2;
@@ -591,8 +661,8 @@ pi1LoopB=(coupL1*coupL2+coupR1*coupR2)*G0[p^2,m12,m22] ;
 pi1LoopA =pi1LoopA* corrections[[6]]*corrections[[5]];
 pi1LoopB =pi1LoopB* corrections[[6]]*corrections[[5]];
 If[AntiField[particle]===particle,
-Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],2 pi1LoopA]]+sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]], 2 pi1LoopB]]];,
-Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1LoopA]]+sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1LoopB]]];
+SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],2 pi1LoopA]]+sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]], 2 pi1LoopB]]];,
+SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1LoopA]]+sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1LoopB]]];
 ];,
 
 
@@ -615,7 +685,7 @@ Switch[corrections[[4]],
 		pi1Loop =2 pi1Loop* corrections[[6]]*corrections[[5]];,
 		pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
 		];
-		Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+		SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 
 	SSV,
 		pi1Loop = coup1*coup2*F0[p^2,m12,m22];
@@ -623,14 +693,14 @@ Switch[corrections[[4]],
 		pi1Loop =2 pi1Loop* corrections[[6]]*corrections[[5]];,
 		pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
 		];
-		Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+		SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 	SVV,
 		pi1Loop = 4 coup1*coup2*(B0[p^2,m12,m22]-1/2 rMS);
 		If[conj[particle]===particle,
 		pi1Loop =2 pi1Loop* corrections[[6]]*corrections[[5]];,
 		pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
 		];
-		Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+		SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 
 	GGS,
 		If[conj[particle]===particle,
@@ -640,14 +710,14 @@ Switch[corrections[[4]],
 		pi1Loop = - coup1*coup2*B0[p^2,m12,m22];
 		pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
 		];
-				Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+				SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 	
 	SSVV,
 	If[m12=!=0,
 		pi1Loop  = 4 coup1*(A0[m12]-1/2 rMS*m12);
 		pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]]  /. {gI2 ->gI1}/. Cp[a___,b_[{gO1,c1___}],c___,conj[d_[{gO1,c2___}]],e___]->Cp[a,b[{gO1,c1}],c,conj[d[{gO2,c2}]],e] /. Cp[a___,b_[{gO1,c1___}],c___,d_[{gO1,c2___}],e___]->Cp[a,b[{gO1,c1}],c,d[{gO2,c2}],e];
-		Return[sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];,
-		Return[0];
+		SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];,
+		SA`Doc`Return[0];
 	];,
 
 	SSSS,
@@ -655,16 +725,22 @@ Switch[corrections[[4]],
 		pi1Loop  = -coup1 A0[m12];
 		pi1Loop =pi1Loop* corrections[[6]]  /. {gI2 ->gI1} /. Cp[a___,b_[{gO1,c1___}],c___,conj[d_[{gO1,c2___}]],e___]->Cp[a,b[{gO1,c1}],c,conj[d[{gO2,c2}]],e] /. Cp[a___,b_[{gO1,c1___}],c___,d_[{gO1,c2___}],e___]->Cp[a,b[{gO1,c1}],c,d[{gO2,c2}],e];
 		If[corrections[[5]]<500, 
-		Return[corrections[[5]]  sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];,
-		Return[C  sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];
+		SA`Doc`Return[corrections[[5]]  sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];,
+		SA`Doc`Return[C  sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];
 		];,
-		Return[0];
+		SA`Doc`Return[0];
 	];
 	];
 ]; 
 ];
 
 AddLoopFermion[particle_,corrections_]:=Block[{temp,m1,m2,m0,mS,mV,v,fac,m11,m12,m21,m22},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "AddLoopFermion";
+SA`Doc`Info = "Adds a self-energy correction to fermion fields";
+SA`Doc`Input={"particle"->"The considered, external particle","corrections"->"A list contatining the particles in the loop as well as the vertices"};
+SA`Doc`GenerateEntry[];
+
 temp=OrderMasses[corrections[[1]], corrections[[2]], F];
 m11=temp[[1]]; m12=temp[[1]]/. Mass->Mass2; m21=temp[[2]]; m22=temp[[2]]/. Mass->Mass2;
 coupL1= corrections[[3]][PL];
@@ -695,8 +771,8 @@ Switch[corrections[[4]],
 
 (* If[FreeQ[MajoranaPart,particle]===False, *)
 	If[AntiField[particle/.diracSubBack1[ALL]/.diracSubBack2[ALL]]===(particle /.diracSubBack1[ALL]/.diracSubBack2[ALL]),
-	Return[{2 Sigma1LoopS,2 Sigma1LoopR,2 Sigma1LoopL}];,
-	Return[{Sigma1LoopS,Sigma1LoopR,Sigma1LoopL}];
+	SA`Doc`Return[{2 Sigma1LoopS,2 Sigma1LoopR,2 Sigma1LoopL}];,
+	SA`Doc`Return[{Sigma1LoopS,Sigma1LoopR,Sigma1LoopL}];
 	]; 
 (* Return[{2 Sigma1LoopS,2 Sigma1LoopR,2 Sigma1LoopL}]; *)
 ];
@@ -706,6 +782,12 @@ Switch[corrections[[4]],
 
 (* ::Input::Initialization:: *)
 AddLoopVector[particle_,corrections_]:=Block[{temp,m1,m2,m0,mS,mV,v,fac,m11,m12,m21,m22,ind1,ind2},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "AddLoopVector";
+SA`Doc`Info = "Adds a self-energy correction to vector fields";
+SA`Doc`Input={"particle"->"The considered, external particle","corrections"->"A list contatining the particles in the loop as well as the vertices"};
+SA`Doc`GenerateEntry[];
+
 (* If[corrections[[4]]===VVVV || corrections[[4]]===SSVV,Return[0];]; *)
 
 If[getType[corrections[[1]]]===F,
@@ -726,7 +808,7 @@ If[conj[particle]===particle,
 pi1Loop =2 pi1Loop* corrections[[6]]*corrections[[5]];,
 pi1Loop = pi1Loop* corrections[[6]]*corrections[[5]];
 ];
-Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 
 temp=OrderMasses[corrections[[1]], corrections[[2]], V];
 m11=temp[[1]]; m12=temp[[1]]/. Mass->Mass2; m21=temp[[2]]; m22=temp[[2]]/. Mass->Mass2;	
@@ -744,24 +826,24 @@ Switch[corrections[[4]],
 			pi1Loop  =  -4 B00[p^2,m12,m22];	
 			pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]]coup conj[coup];
 			If[conj[particle]===particle,
-			Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],2 pi1Loop]]];,
-			Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],2 pi1Loop]]];,
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];
 			];,
 	SVV,
 			pi1Loop  =coup conj[coup]B0[p^2,m12,m22];	
 			pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
 			If[conj[particle]===particle,pi1Loop = 2 pi1Loop]; 
-			Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 	VVV,
 			pi1Loop  =10 B00[p^2,m12,m22]+(m12+m22+4*p^2)*B0[p^2,m12,m22]+A0[m12]+A0[m22]-2 (m12+m22-1/3 p^2)*rMS;
 			pi1Loop =-pi1Loop* corrections[[6]]*corrections[[5]]coup conj[coup];
 			If[conj[particle]===particle,pi1Loop = 2 pi1Loop];
-			Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 	GGV, 
 			pi1Loop  =coup conj[coup]B00[p^2,m12,m22];	
 			pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
 			If[conj[particle]===particle,pi1Loop = 2 pi1Loop];
-			Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],sum[gI2,1,getGen[corrections[[2]]],pi1Loop]]];,
 
 	VVVV,
 			coup1= corrections[[3]][1];
@@ -769,11 +851,11 @@ Switch[corrections[[4]],
 			coup3= corrections[[3]][3];
 			pi1Loop  =2 *coup1*m12*rMS-(4*coup1+coup2+coup3)*A0[m12];
 			pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
-			Return[sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];,
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];,
 	SSVV,
 			pi1Loop  =coup*A0[m12];
 			pi1Loop =pi1Loop* corrections[[6]]*corrections[[5]];
-			Return[sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];
+			SA`Doc`Return[sum[gI1,1,getGen[corrections[[1]]],pi1Loop]];
 	];
 	];
 ];
@@ -781,6 +863,12 @@ Switch[corrections[[4]],
 
 (* ::Input::Initialization:: *)
 getUnmixedMasses[Eigenstates_]:=Block[{i,j,neededP,treeMass,massMatrixTemp},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "getUnmixedMasses";
+SA`Doc`Info = "Checks which particles don't mix, i.e. where corrections to the mass term not the mass matrix need to be calculated.";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 partListFSV=Join[PART[F],Join[PART[S],PART[V]]];
 For[i=1,i<=Length[partListFSV],
 If[FreeQ[listAddedMasses,partListFSV[[i,1]]]==True,
@@ -820,9 +908,16 @@ i++;];
 
 ListUnmixed[Eigenstates]=listNotMixedMasses;
 
+SA`Doc`EndEntry[];
 ];
 
 DeleteLightFieldContributions[list_,heavyfields_,listFields_]:=Block[{i,j,k,temp, heavyInv},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "DeleteLightFieldContributions";
+SA`Doc`Info = "Removes loop contributions involving only light fields. [Note sure, if this is still needed somewhere! (FS, 22/05/19)]";
+SA`Doc`Input={"list"->"List of all loop contributions","heavyFields"->"List of the fields which are heavy","listFields"->"List of all fields"};
+SA`Doc`GenerateEntry[];
+
 temp=Table[{},{Length[list]}];
 For[i=1,i<=Length[list],
 checkentry=False;
@@ -848,11 +943,17 @@ temp[[i]] = {};
 ];
 i++;];
 
-Return[temp];
+SA`Doc`Return[temp];
 
 ];
 
 DeleteLightFieldVertices[list_, heavyfields_]:=Block[{i,temp, heavyInv}, 
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "DeleteLightFieldVertices";
+SA`Doc`Info = "Removes the vertices involving only light fields. [Note sure, if this is still needed somewhere! (FS, 22/05/19)]";
+SA`Doc`Input={"list"->"List of all loop contributions","heavyFields"->"List of the fields which are heavy"};
+SA`Doc`GenerateEntry[];
+
 temp = {};
 For[i=1,i<=Length[list],
 heavyInv=False;
@@ -870,12 +971,18 @@ If[heavyInv==True,
 temp = Join[temp,{list[[i]]}];
 ];
 i++;];
-Return[temp];
+SA`Doc`Return[temp];
 ];
 
 
 (* ::Input::Initialization:: *)
 OneLoopDifferentExternal[Eigenstates_]:=Block[{i,j,k, particles,temp2},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "OneLoopDifferentExternal";
+SA`Doc`Info = "Calculates the one-loop corrections mixing either two vector-bosons or a vector-boson and a scalar.";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 CorrectionListVS ={};
 CorrectionListVV ={};
 
@@ -952,10 +1059,16 @@ i++;];
 CorrectionListVectorScalar[Eigenstates]=CorrectionListVS;
 CorrectionListVectorVector[Eigenstates]=CorrectionListVV;
 
-
+SA`Doc`EndEntry[];
 ];
 
 getUnmixedMassesDummy[Eigenstates_]:=Block[{i,j,k,basis},
+SA`Doc`File = "Package/loopCorrections.nb";
+SA`Doc`Name = "getUnmixedMassesDummy";
+SA`Doc`Info = "Creates a dummy list containing only zeros for the loop corrections. That's used in the SPheno output for intermediate regimes where tree-level masses are sufficient. ";
+SA`Doc`Input={"Eigenstates"->"The considered eigenstates"};
+SA`Doc`GenerateEntry[];
+
 listAddedMasses={};
 listNotMixedMasses={};
 CalculatedSelfEnergy={};
@@ -998,5 +1111,7 @@ unrotateMatrix={basis[[i,2,1,2]],basis[[i,2,2,2]]};
 listAddedMasses=Join[listAddedMasses,{particle}];
 i++;];
 getUnmixedMasses[Eigenstates];
+
+SA`Doc`EndEntry[];
 ];
 
