@@ -667,8 +667,10 @@ If[getGen[Gluino]===1 && SupersymmetricModel===True,
 WriteString[sphenoSugra, "If (GuessTwoLoopMatchingBSM) Then \n"];
 WriteString[sphenoSugra,"   Q2=GetRenormalizationScale() \n"];
 WriteString[sphenoSugra,"    mf_u_Q_SM(3)=mf_u_MS(3)*(1._dp-alpha3/(3._dp*pi)&\n"];
-WriteString[sphenoSugra,"               &-43._dp*alpha3**2/(144._dp*Pi2)- alphaQ/(9._dp*Pi))\n"];
-WriteString[sphenoSugra, "    SigQCD=SigQCD-10._dp*gSU3**4*oo16pi2*(log(Q2/"<>SPhenoForm[SPhenoMassSq[Gluino]]<>"))**2*MFu(3) \n"];
+   WriteString[sphenoSugra,"               &-43._dp*alpha3**2/(144._dp*Pi2)- alphaQ/(9._dp*Pi))\n"];
+   (* MARK: fixed bug 2021-02-17, thanks to Shoaib Munir for spotting it *)
+   (*WriteString[sphenoSugra, "    SigQCD=SigQCD-10._dp*gSU3**4*oo16pi2*(log(Q2/"<>SPhenoForm[SPhenoMassSq[Gluino]]<>"))**2*MFu(3) \n"];*)
+WriteString[sphenoSugra, "    SigQCD=-10._dp*gSU3**4*oo16pi2*(log(Q2/"<>SPhenoForm[SPhenoMassSq[Gluino]]<>"))**2*MFu(3) \n"];   
 WriteString[sphenoSugra,"    SigQCD=oo16pi2*SigQCD\n\n"];
 WriteString[sphenoSugra,"    mf_u_Q_SM(3)=mf_u_Q_SM(3)+SigQCD\n\n"];
 WriteString[sphenoSugra, "End if \n"];

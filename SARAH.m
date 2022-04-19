@@ -50,7 +50,7 @@ $sarahRGEsDir=ToFileName[{$sarahDir,"RGEs"}]
 $sarahInputDir=ToFileName[{$sarahDir,"Input"}]
 $sarahSusynoDir=ToFileName[{$sarahDir,"Susyno"}]
 
-SA`Version = "4.14.4";
+SA`Version = "4.14.5";
 
 
 
@@ -193,13 +193,15 @@ Modelname = model;
 If[StringFreeQ[model,"/"]==False,
 splitted=StringSplit[model,"/"];
 modelDir=splitted[[1]]; submodeldir=splitted[[2]];,
-modelDir = model;
+   modelDir = model;
 (*If[ValueQ[sub]=!=ValueQ[], WtF? newer versions of Mathematica return an error here. Edited MDG 2020-12-16*)
-If[ValueQ[sub]=!=False, 
+   (*If[ValueQ[sub]=!=False, *)
+If[sub=!=Null,  
 submodeldir=sub;,
 submodeldir=False;
 ];
 ];
+
 
 $sarahModelNameMain=modelDir;
 

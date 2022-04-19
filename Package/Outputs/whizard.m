@@ -20,7 +20,7 @@
 
 
 (* ::Input::Initialization:: *)
-Options[MakeWHIZARD]={WOGauge->WO`WOUnitarity,AutoGauge->True,Exclude->{SSSS},WriteOmega->True, WriteWHIZARD->True, ReadLists->False,Version->"2.2.0", WOModelName->Automatic, MaximalCouplingsPerFile->150};
+Options[MakeWHIZARD]={WOGauge->WO`WOUnitarity,AutoGauge->True,Exclude->{SSSS},WriteOmega->True, WriteWHIZARD->True, ReadLists->False,Version->"3.0.0", WOModelName->Automatic, MaximalCouplingsPerFile->150};
 
 MakeWHIZARD[opt___ ]:=MakeWHIZARDFunc[WOGauge/.{opt}/.Options[MakeWHIZARD],AutoGauge/.{opt}/.Options[MakeWHIZARD],Exclude/.{opt}/.Options[MakeWHIZARD],WriteOmega/.{opt}/.Options[MakeWHIZARD],WriteWHIZARD/.{opt}/.Options[MakeWHIZARD],ReadLists/.{opt}/.Options[MakeWHIZARD],Version/.{opt}/.Options[MakeWHIZARD],WOModelName/.{opt}/.Options[MakeWHIZARD],MaximalCouplingsPerFile/.{opt}/.Options[MakeWHIZARD]];
 
