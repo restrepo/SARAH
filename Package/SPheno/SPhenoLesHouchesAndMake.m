@@ -71,7 +71,7 @@ WriteString[filenames[[l]]," 2 "<>ToString[iminpar]<>"              # Boundary C
 WriteString[filenames[[l]]," 6 1               # Generation Mixing \n"];
 If[l==2,
 If[SupersymmetricModel===False,
-WriteString[filenames[[l]]," 12 173.5          # Renormalization scale \n"];,
+WriteString[filenames[[l]]," 12 172.89          # Renormalization scale \n"];,
 WriteString[filenames[[l]]," 12 1000.          # Renormalization scale \n"];
 ];
 ];
@@ -80,7 +80,7 @@ WriteString[filenames[[l]]," 2 1.166370E-05    # G_F,Fermi constant \n"];
 WriteString[filenames[[l]]," 3 1.187000E-01    # alpha_s(MZ) SM MSbar \n"];
 WriteString[filenames[[l]]," 4 9.118870E+01    # Z-boson pole mass \n"];
 WriteString[filenames[[l]]," 5 4.180000E+00    # m_b(mb) SM MSbar \n"];
-WriteString[filenames[[l]]," 6 1.735000E+02    # m_top(pole) \n"];
+WriteString[filenames[[l]]," 6 1.728900E+02    # m_top(pole) \n"];
 WriteString[filenames[[l]]," 7 1.776690E+00    # m_tau(pole) \n"];
 WriteString[filenames[[l]],"Block MINPAR      # Input parameters \n"];
 

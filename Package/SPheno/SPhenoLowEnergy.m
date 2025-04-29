@@ -2874,14 +2874,18 @@ WriteString[sphenoLow,"Real(dp) ::Qin,vev2,sinw2, mzsave, scalein, scale_save, g
 WriteString[sphenoLow, "Integer :: i1, i2, i3, gt1, gt2, gt3, gt4,iQTEST, iQFinal \n"];
 WriteString[sphenoLow, "Integer :: IndexArray4(99,4), IndexArray3(99,3), IndexArray2(99,2)   \n"];
 
-
+(* Add SM versions of everything for LFV *)
+(*If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",sphenoLow];];*)
+If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",sphenoLow,"SM"];];
 If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",sphenoLow];];
 If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",sphenoLow];];
 If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",sphenoLow];];
 If[Length[PreSARAHoperatorsLFV]>0,MakeVariableList[ToExpression[ToString[#]<>"check"]&/@Flatten[Transpose[PreSARAHoperatorsLFV][[3]]],"",sphenoLow];];
 If[Length[PreSARAHoperatorsQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"check"]&/@Flatten[Transpose[PreSARAHoperatorsQFV][[3]]],"",sphenoLow];];
 
-
+(* Add SM versions of everything for LFV *)
+(*If[Length[WrappersLFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[WrappersLFV][[3]]],"",sphenoLow];];*)
+If[Length[WrappersLFV]>0,MakeVariableList[Flatten[Transpose[WrappersLFV][[3]]],"",sphenoLow,"SM"];];
 If[Length[WrappersLFV]>0,MakeVariableList[Flatten[Transpose[WrappersLFV][[3]]],"",sphenoLow];];
 If[Length[WrappersQFV]>0,MakeVariableList[ToExpression[ToString[#]<>"SM"]&/@Flatten[Transpose[WrappersQFV][[3]]],"",sphenoLow];];
 If[Length[WrappersQFV]>0,MakeVariableList[Flatten[Transpose[WrappersQFV][[3]]],"",sphenoLow];];
@@ -2893,6 +2897,7 @@ WriteString[sphenoLow,"Write(*,*) \"Calculating low energy constraints\" \n"];
 For[i=1,i<=Length[PreSARAHoperatorsLFV],
 For[j=1,j<=Length[PreSARAHoperatorsLFV[[i,3]]],
 WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsLFV[[i,3,j]]] <>" = 0._dp \n"];
+WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsLFV[[i,3,j]]] <>"SM = 0._dp \n"];
 (* WriteString[sphenoLow,SPhenoForm[PreSARAHoperatorsLFV[[i,3,j]]] <>"SM = 0._dp \n"]; *)
 j++;];
 i++;];
@@ -3370,6 +3375,9 @@ indlist = Join[indlist,{gt3}];
 
 MakeCall["Calculate"<>ToString[PreSARAHoperatorsLFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsLFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsLFV[[i,1]]]}],Join[ToString/@indlist,{".False."}],Table[{ToString[PreSARAHoperatorsLFV[[i,3,k]]]<>indvector},{k,1,Length[PreSARAHoperatorsLFV[[i,3]]]}],sphenoLow];
 
+(* Add the call to the SM only part*)
+MakeCall["Calculate"<>ToString[PreSARAHoperatorsLFV[[i,1]]],Flatten[{NeededMassesAllSaved[PreSARAHoperatorsLFV[[i,1]]],NeededCouplingsAllSaved[PreSARAHoperatorsLFV[[i,1]]]}],Join[ToString/@indlist,{".True."}],Table[{ToString[PreSARAHoperatorsLFV[[i,3,k]]]<>"SM"<>indvector},{k,1,Length[PreSARAHoperatorsLFV[[i,3]]]}],sphenoLow];
+
 WriteString[sphenoLow,"End Do \n"];
 If[Length[PreSARAHoperatorsLFV[[i,2]]]===3 && FreeQ[NeededCombinations[PreSARAHoperatorsLFV[[i,1]]][[1]],ALL]==False,
 WriteString[sphenoLow," End Do \n"];
@@ -3397,6 +3405,10 @@ For[i=1,i<=Length[WrappersLFV],
 WriteString[sphenoLow,"\n ! ***** Combine operators for "<>ToString[WrappersLFV[[i,1]]]<>"\n"];
 For[j=1,j<=Length[SumContributionsOperators[WrappersLFV[[i,1]]]],
 WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,1]]]<>" = "<>ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,2]]]<>"\n"];
+If[Head[SumContributionsOperators[WrappersLFV[[i,1]]][[j,2]]]===Plus,
+WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,1]]]<>"SM = "<>ToString[Plus@@(ToExpression[ToString[#]<>"SM"]&/@(List@@SumContributionsOperators[WrappersLFV[[i,1]]][[j,2]]))]<>"\n"];,
+WriteString[sphenoLow,ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,1]]]<>"SM = "<>ToString[SumContributionsOperators[WrappersLFV[[i,1]]][[j,2]]]<>"SM \n"];
+];
 j++;];
 
 If[Head[NormalizationOperators[WrappersLFV[[i,1]]]]===List,
@@ -3452,6 +3464,22 @@ MakeCall["BrZLLp",Flatten[{NeededMassesZLLp,NeededCouplingsZLLp}],{"3","2"},{"GZ
 
 WriteString[sphenoLow,"\n! *****  G minus 2 ***** \n\n"];
 
+
+
+If[SkipFlavorKit=!=True && !FreeQ[PreSARAHoperatorsLFV,LeptonEDMgminus2],
+	
+	WriteString[sphenoLow,"ae = real(Lgminus2(1,1),dp)\n"];
+	WriteString[sphenoLow,"amu = real(Lgminus2(2,2),dp)\n"];
+	WriteString[sphenoLow,"atau = real(Lgminus2(3,3),dp)\n"];
+	
+	WriteString[sphenoLow,"\n! *****  Lepton EDM ***** \n\n"];
+	
+	WriteString[sphenoLow,"EDMe = aimag(Ledm(1,1))\n"];
+	WriteString[sphenoLow,"EDMmu = aimag(Ledm(2,2))\n"];
+	WriteString[sphenoLow,"EDMtau = aimag(Ledm(3,3))\n"];
+	
+,
+(* No FlavorKit or LeptonEDMgminus2 missing -> use the old routines *)
 pos=Position[LowEnergyConstraintsParameterList,Gminus2];
 masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
 couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
@@ -3471,6 +3499,57 @@ couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
 MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"1"},{"EDMe"},sphenoLow];
 MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"2"},{"EDMmu"},sphenoLow];
 MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"3"},{"EDMtau"},sphenoLow];
+
+]; (* end if SkipFlavorKit=!=True && !FreeQ[PreSARAHoperatorsLFV,"LeptonEDMgminus2"]*)
+
+
+
+
+(*    CODE FOR DEBUG PURPOSES
+
+pos=Position[LowEnergyConstraintsParameterList,Gminus2];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["Gminus2",Flatten[{masses,couplings}],{"1"},{"ae"},sphenoLow];
+MakeCall["Gminus2",Flatten[{masses,couplings}],{"2"},{"amu"},sphenoLow];
+MakeCall["Gminus2",Flatten[{masses,couplings}],{"3"},{"atau"},sphenoLow];
+
+(* Lepton EDM *)
+
+WriteString[sphenoLow,"\n! *****  Lepton EDM ***** \n\n"];
+
+pos=Position[LowEnergyConstraintsParameterList,LeptonEDM];
+masses = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[2]];
+couplings = Extract[LowEnergyConstraintsParameterList,pos[[1,1]]][[3]];
+
+MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"1"},{"EDMe"},sphenoLow];
+MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"2"},{"EDMmu"},sphenoLow];
+MakeCall["LeptonEDM",Flatten[{masses,couplings}],{"3"},{"EDMtau"},sphenoLow];
+
+
+
+If[SkipFlavorKit=!=True && !FreeQ[PreSARAHoperatorsLFV,LeptonEDMgminus2],
+
+	WriteString[sphenoLow,"write(*,*) \"DEBUG: naive ae,amu, atau: \",ae,amu,atau\n"];
+	WriteString[sphenoLow,"write(*,*) \"DEBUG: naive EDMe,EDMmu,EDMtau: \",EDMe,EDMmu,EDMtau\n"];
+
+	WriteString[sphenoLow,"ae = real(Lgminus2(1,1),dp)\n"];
+	WriteString[sphenoLow,"amu = real(Lgminus2(2,2),dp)\n"];
+	WriteString[sphenoLow,"atau = real(Lgminus2(3,3),dp)\n"];
+	WriteString[sphenoLow,"EDMe = aimag(Ledm(1,1))\n"];
+	WriteString[sphenoLow,"EDMmu = aimag(Ledm(2,2))\n"];
+	WriteString[sphenoLow,"EDMtau = aimag(Ledm(3,3))\n"];
+	
+	
+	
+		WriteString[sphenoLow,"write(*,*) \"DEBUG: FK ae,amu, atau: \",ae,amu,atau\n"];
+		WriteString[sphenoLow,"write(*,*) \"DEBUG: FK EDMe,EDMmu,EDMtau: \",EDMe,EDMmu,EDMtau\n"];
+	
+];
+
+*)
+
 
 
 (* Delta Rho *)

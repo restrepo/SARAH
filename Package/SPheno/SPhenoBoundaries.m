@@ -123,6 +123,10 @@ WriteString[sphenoSugra, "&, mf_l_Q_SM(3),mf_d_Q_SM(3),mf_u_Q_SM(3) & \n"];
 WriteString[sphenoSugra, "&, mf_l_MS_SM(3),mf_d_MS_SM(3),mf_u_MS_SM(3) \n"];
 WriteString[sphenoSugra, "Complex(dp),save::Yl_mZ(3,3),Yu_mZ(3,3),Yd_mZ(3,3),Yl_Q(3,3),Yu_Q(3,3),Yd_Q(3,3)\n"];
 WriteString[sphenoSugra, "Real(dp),Save::vevs_DR_save(2), vSM_save\n"];
+WriteString[sphenoSugra, "Real(dp),Save::rMS_save\n"];
+
+(* For new W mass computation *)
+WriteString[sphenoSugra, "real(dp) :: delta_rhomatch,delta_rwmatch,delta_emmatch,newWscale,MVWm_scale\n"];
 
 For[i=1,i<=Length[MatchingToModel],
 WriteString[sphenoSugra,"Real(dp),save :: gUpSave"<>ToString[i]<>"("<>ToString[sizeParsUVall[[i,3]]]<>")=0._dp, gDownSave"<>ToString[i]<>"("<>ToString[sizeParsUVall[[i,3]]]<>")=0._dp\n"];
@@ -1419,7 +1423,7 @@ WriteString[sphenoSugra,"End if\n \n "];
 WriteString[file,"! ----------------------- \n \n"];
 ];
 
-GenerateNewSugra:=Block[{i,j,NumberNewMasses},
+GenerateNewSugra:=Block[{i,j,NumberNewMasses,GoldstoneGhostForW},
 
 Print["  Write 'Match_and_Run'"];
 
@@ -1490,6 +1494,7 @@ WriteString[sphenoSugra,"CalculateOneLoopMasses = .false. \n"];
 
 
 WriteString[sphenoSugra,"Lambda_MZ = 0.1_dp \n"];
+WriteString[sphenoSugra,"rMS_save=rMS \n"];
 WriteString[sphenoSugra,"Do j=1,niter \n"];
 
 WriteString[sphenoSugra,"Write(*,*) \"  \", j,\".-iteration\" \n"];
@@ -1498,7 +1503,10 @@ WriteString[sphenoSugra,"Write(ErrCan,*) \"RGE Running \", j,\".-iteration\" \n"
 
 (* MakeCall["BoundarySM",{},{"j","lambda_SM"},{"delta0","g_SM","kont"},sphenoSugra]; *)
 
+WriteString[sphenoSugra,"rMS = 1._dp\n"];
+WriteString[sphenoSugra,"rMS_SM = 1._dp\n"];
 MakeCall["BoundarySM",{},{"j","Lambda_MZ"},{"delta0","g_SM","kont"},sphenoSugra];
+WriteString[sphenoSugra,"rMS = rMS_save\n"];
 WriteString[sphenoSugra,"g_SM_save = g_SM \n"];
 
 WriteString[sphenoSugra,"mudim=GetRenormalizationScale()\n"];
@@ -1775,6 +1783,11 @@ WriteString[sphenoSugra,"CalculateOneLoopMasses =  CalculateOneLoopMassesSave \n
 WriteString[sphenoSugra,"Write(*,*) \"Calculate loop corrected masses \" \n"];
 MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoSugra];
 
+
+
+
+
+(* *)
 If[getGen[HiggsBoson]>1,
 WriteString[sphenoSugra,"If (((Calculate_mh_within_SM).and.("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]+1] <>".gt.300._dp)).OR.(Force_mh_within_SM))Then\n"];,
 WriteString[sphenoSugra,"If (Calculate_mh_within_SM) Then\n"];
@@ -1784,6 +1797,42 @@ WriteString[sphenoSugra,"Call Get_mh_pole_SM(g_SM,mudim,delta0,"<>SPhenoMassSq[H
 WriteString[sphenoSugra,SPhenoMassSq[HiggsBoson,getGenStart[HiggsBoson]] <>" = mh_SM**2 \n"];
 WriteString[sphenoSugra,SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]] <>" = mh_SM \n"];
 WriteString[sphenoSugra,"End if\n"];
+
+
+
+(* New W boson mass calculation 2022/4/21*)
+WriteString[sphenoSugra,"If (MatchZWpoleMasses) newWscale=0._dp\n"];
+
+
+
+(*WriteString[sphenoSugra,"MVwm_scale=smmwfit("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]]<>","<>SPhenoMass[TopQuark,3]<>",alphas_MZ)*sqrt(1._dp+newWscale)\n"];*)
+WriteString[sphenoSugra,"MVwm_scale=smmwfit("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]]<>","<>SPhenoMass[TopQuark,3]<>",alphas_MZ)*(1._dp+0.5_dp*newWscale)\n"];
+
+
+If[!NumericQ[ToExpression[SA`Version]],
+	WriteString[sphenoSugra,"write(*,*) \"New W scale: \",newWscale\n"];
+	WriteString[sphenoSugra,"write(*,*) \"SM pole mass\",smmwfit("<>SPhenoMass[HiggsBoson,getGenStart[HiggsBoson]]<>","<>SPhenoMass[TopQuark,3]<>",alphas_MZ)\n"];
+	WriteString[sphenoSugra,"write(*,*) \"Flexible pole mass: \",MVwm_scale\n"];
+];
+WriteString[sphenoSugra,ToString[SPhenoMass[VectorW]]<>" = MVwm_scale\n"];
+WriteString[sphenoSugra,ToString[SPhenoMassSq[VectorW]]<>" = MVwm_scale**2\n"];
+WriteString[sphenoSugra,"mW = MVwm_scale\n"];
+WriteString[sphenoSugra,"mW2 = MVwm_scale**2\n"];
+
+
+(* now need to set the goldstones/ghost masses equal to the pole mass. go figure. This will be changed some day *)
+GoldstoneGhostForW=Select[GoldstoneGhost,!FreeQ[#,VectorW]&]; (* Changed to VectorW from Wboson which is not initialised in every case ... *)
+For[i=1,i<=Length[GoldstoneGhostForW],
+If[Head[GoldstoneGhostForW[[i,2]]]===Symbol,
+WriteString[sphenoSugra,SPhenoMass[GoldstoneGhostForW[[i,2]],1]<>"="<>SPhenoMass[GoldstoneGhostForW[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhostForW[[i,2]],1]<>"="<>SPhenoMassSq[GoldstoneGhostForW[[i,1]],i] <>"\n" ];,
+WriteString[sphenoSugra,SPhenoMass[GoldstoneGhostForW[[i,2,0]],GoldstoneGhostForW[[i,2,1,1]]]<>"="<>SPhenoMass[GoldstoneGhostForW[[i,1]],i] <>"\n" ];
+WriteString[sphenoSugra,SPhenoMassSq[GoldstoneGhostForW[[i,2,0]],GoldstoneGhostForW[[i,2,1,1]]]<>"="<>SPhenoMassSq[GoldstoneGhostForW[[i,1]],i] <>"\n" ];
+];
+i++;];
+
+(*WriteString[sphenoSugra,"end if !! (.not.MatchZWpoleMasses)\n"];*)
+
 
 WriteString[sphenoSugra,"If (SignOfMassChanged) Then\n"];
 WriteString[sphenoSugra,"  If (.Not.IgnoreNegativeMasses) Then\n"];

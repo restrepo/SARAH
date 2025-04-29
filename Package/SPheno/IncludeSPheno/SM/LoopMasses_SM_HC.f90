@@ -34,6 +34,26 @@ Real(dp) :: Pi2S_EffPot_SM(1,1)
 Real(dp) :: PiP2S_EffPot_SM(1,1)
 Contains 
 
+Real(dp) Function smmwfit(mh,mt,as)
+Implicit None
+Real(dp),Intent(in)::mh,mt,as
+Real(dp)::dbigH,dh,dt,das,da5
+!!!!! Fit function from Degrassi, Gambino and Giardino, "a new scrutiny" JHEP 05 (2015) 154
+real(dp), parameter:: w0=80.35714,w1=-0.06094,w2=-0.00971,w3=0.00028,w4=0.52655,w5=-0.00646,w6=-0.08199,w7=-0.50259
+
+!as=gs**2*oo4pi
+
+dbigH=real(log(mh/125.15),dp)
+dh=real((mh/125.15)**2-1._dp,dp)
+dt=real((mt/173.34)**2-1._dp,dp)
+das=real(as/0.1184-1._dp,dp)
+da5=0._dp
+
+!!!! Should be da5=real(dalpha5/0.02750-1._dp,dp) but we don't have it as an input
+
+smmwfit=w0+w1*dbigH+w2*dbigH**2 +w3*dh+ w4*dt+w5*dbigH*dt+w6*das+w7*da5
+
+End Function smmwfit  
 
 Subroutine Pi1Loop_Mh_SM(v,g1,g2,g3,Lam,Yu,Yd,Ye,Mu,mh_pole,pi_SM,kont)
 

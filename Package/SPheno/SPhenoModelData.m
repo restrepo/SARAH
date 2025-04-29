@@ -533,7 +533,10 @@ WriteString[ModelData, "Real(dp) :: BRHHHijk("<>ToString[getGenSPheno[HiggsBoson
 WriteString[ModelData, "Real(dp) :: BRAHHijk("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRAHAijk("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) ::  BRAAAijk("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]]<>","<>ToString[getGenSPheno[PseudoScalar]] <>")  = 0._dp \n "];
 WriteString[ModelData, "Real(dp) :: BRHHZ("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHAZ("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[PseudoScalar]]  <>")  = 0._dp \n "];
 WriteString[ModelData, "Real(dp) :: BRAHZ("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[HiggsBoson]] <>") =0._dp\n"];WriteString[ModelData, "Real(dp) :: BRAAZ("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[PseudoScalar]]  <>")  = 0._dp \n "];
+WriteString[ModelData, "Real(dp) :: BRAHpW("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[ChargedHiggs]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHHpW("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[ChargedHiggs]]  <>")  = 0._dp \n "];
+		     (*
 WriteString[ModelData, "Real(dp) :: BRAHpW("<>ToString[getGenSPheno[HiggsBoson]] <>","<>ToString[getGenSPheno[ChargedHiggs]] <>")=0._dp\n"];WriteString[ModelData, "Real(dp) :: BRHhpW("<>ToString[getGenSPheno[PseudoScalar]] <>","<>ToString[getGenSPheno[ChargedHiggs]]  <>")  = 0._dp \n "];
+*)
 WriteString[ModelData, "Real(dp) :: BRinvH("<>ToString[getGenSPheno[HiggsBoson]]<>"), BRinvA("<>ToString[getGenSPheno[PseudoScalar]]<>")  = 0._dp \n"];
 
 For[i=1,i<=Length[SMParticles],

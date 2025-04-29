@@ -23,6 +23,10 @@ EXTPAR = {
 DONOTSIMPLIFY=True;
 SetOptions[MakeSPheno, IncludeLoopDecays -> False];
 
+DONOTSIMPLIFY=True;
+
+
+
 ParametersToSolveTadpoles = {mlHd2,mHd2,mHu2,mv2[1,1],mv2[2,2],mv2[3,3]};
 
 AssumptionsTadpoleEquations = {Yv[a__]->Delta[a] Yv[a], T[Yv][a__]->Delta[a] T[Yv][a], conj[x_]->x};

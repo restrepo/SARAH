@@ -356,7 +356,10 @@ WriteString[sphenoLoopCoup,"\n"];
 WriteString[sphenoLoopCoup,"Integer::i1 \n"];
 WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 
-WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/(6._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];
+(* Fix Factor of 2 2022/04/22*)
+(*WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/(3._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];*)
+WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/(3._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];
+(* *)
 
 For[i=1,i<=Length[coupAlphaEWSB],
 If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,
@@ -375,6 +378,53 @@ WriteString[sphenoLoopCoup,"DeltaAlpha=-AlphaEW_in*DeltaAlpha/(2._dp*Pi) \n"];
 
 WriteString[sphenoLoopCoup,"AlphaEW_T=AlphaEW_in/(1._dp-DeltaAlpha) \n \n"];
 WriteString[sphenoLoopCoup,"End Function AlphaEW_T \n \n \n"];
+
+(********************************************************************)
+(* Strict shift only for W boson routine *)
+WriteString[sphenoLoopCoup,"Real(dp) Function DeltaAlphaEW_T(AlphaEW_In, Q,"];
+For[i=1,i<=Length[coupAlphaEWSB],
+WriteString[sphenoLoopCoup,SPhenoForm[SPhenoMass[coupAlphaEWSB[[i,1]]]]];
+If[i!= Length[coupAlphaEWSB],
+WriteString[sphenoLoopCoup,","];
+];
+i++;];
+WriteString[sphenoLoopCoup,") \n \n"];
+
+
+WriteString[sphenoLoopCoup,"Real(dp),Intent(in)::AlphaEW_In, Q,"];
+For[i=1,i<=Length[coupAlphaEWSB],
+WriteString[sphenoLoopCoup,SPhenoMass[coupAlphaEWSB[[i,1]],getGenSPheno[coupAlphaEWSB[[i,1]]]]];
+If[i!= Length[coupAlphaEWSB],
+WriteString[sphenoLoopCoup,","];
+];
+i++;];
+WriteString[sphenoLoopCoup,"\n"];
+WriteString[sphenoLoopCoup,"Integer::i1 \n"];
+WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
+
+(* Don't do conversion: always use same scheme for SM and High energy theory*)
+(*WriteString[sphenoLoopCoup,"DeltaAlpha=-1._dp/(3._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];*)
+WriteString[sphenoLoopCoup,"DeltaAlpha=0._dp\n"];
+For[i=1,i<=Length[coupAlphaEWSB],
+If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,(* NEED TO COUNT THE HIGGS IN THE SM*)
+If[SMQHiggs[coupAlphaEWSB[[i,1]]]=!=True,
+WriteString[sphenoLoopCoup, "Do i1="<> ToString[If[SMQHiggs[coupAlphaEWSB[[i,1]]],4,getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q) \n"];
+WriteString[sphenoLoopCoup,"End Do \n"];
+];,
+If[SMQHiggs[coupAlphaEWSB[[i,1]]]=!=True,
+WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q)\n"];
+];
+];
+i++;];
+
+WriteString[sphenoLoopCoup,"DeltaAlphaEW_T=-AlphaEW_in*DeltaAlpha/(2._dp*Pi) \n"];
+
+WriteString[sphenoLoopCoup,"End Function DeltaAlphaEW_T \n \n \n"];
+
+(********************************************************************)
+
+
 
 ];
 

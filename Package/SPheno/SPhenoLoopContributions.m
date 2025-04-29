@@ -160,7 +160,8 @@ WriteString[file,"If (("<>SPhenoIncludeLoop[getBlank[p1]]<>").and.("<>SPhenoIncl
 
 (* The loops in the Fortran code over all internal particles start here *)
 If[getGenSPheno[p1]>1 || start1>1 ,WriteString[file,"Do i1= "<>ToString[start1]<>","<> ToString[GetGenerationFlag[p1]]<>"\n"];];
-If[getGenSPheno[p2]>1 || start2 > 1,WriteString[file,"  Do i2= "<>ToString[start2]<>","<> ToString[GetGenerationFlag[p2]]<>"\n"];];
+(* MDG modified this line 2022-05-08 to catch cases when i3 is needed but i2 isn't. *)
+If[getGenSPheno[p2]>1 || start2 > 1,WriteString[file,"  Do i2= "<>ToString[start2]<>","<> ToString[GetGenerationFlag[p2]]<>"\n"];,WriteString[file,"  i2= 1\n"];];
 If[V3Needed ==True (* || getGenSPheno[p2]=!=getGenSPheno[p3] *),
 If[getGenSPheno[p3]>1 || start3 > 1,WriteString[file,"   Do i3= "<>ToString[start3]<>","<> ToString[GetGenerationFlag[p3]]<>"\n"];];,
 If[getGenSPheno[p3]>1 || start3 > 1,WriteString[file,"   i3 = i2\n"];];

@@ -50,7 +50,7 @@ $sarahRGEsDir=ToFileName[{$sarahDir,"RGEs"}]
 $sarahInputDir=ToFileName[{$sarahDir,"Input"}]
 $sarahSusynoDir=ToFileName[{$sarahDir,"Susyno"}]
 
-SA`Version = "4.14.5";
+SA`Version = "4.15.0";
 
 
 
