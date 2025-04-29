@@ -3366,7 +3366,11 @@ If[getType[particle]===F,
 WriteString[sphenoLoop, "mi = "<>ToString[SPhenoMass[particle]] <>" \n"];,
 If[getType[particle]===V,
  WriteString[sphenoLoop, "mi2 = "<>ToString[SPhenoMassSq[particle]/.Delta[a__]->0] <>" \n"]; ,
-WriteString[sphenoLoop, "mi2 = "<>SPhenoForm[TreeMass[particle,SA`CurrentStates ]/. Delta[a_,b_]->1] <>" \n"];
+
+   (* MDG 27-09-2022: this is bad if it contains a sum
+   WriteString[sphenoLoop, "mi2 = "<>SPhenoForm[TreeMass[particle,SA`CurrentStates ]/. Delta[a_,b_]->1] <>" \n"];
+      *)
+   MakeSPhenoCoupling[TreeMass[particle,SA`CurrentStates ]/.Delta[a__]->0, "mi2",sphenoLoop];
 ];
 ];
 
