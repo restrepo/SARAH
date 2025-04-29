@@ -333,7 +333,7 @@ WriteString[sphenoLoopCoup,"End Function AlphaSDR \n"];
 
 WriteAlphaThreshold:=Block[{i},
 
-Print["  Writing 'AlphaEW_Treshold'"];
+Print["  Writing 'AlphaEW_Threshold'"];
 
 WriteString[sphenoLoopCoup,"Real(dp) Function AlphaEW_T(AlphaEW_In, Q,"];
 For[i=1,i<=Length[coupAlphaEWSB],
@@ -361,6 +361,7 @@ WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/(3._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];
 (* *)
 
+(*
 For[i=1,i<=Length[coupAlphaEWSB],
 If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,
 If[SMQ[coupAlphaEWSB[[i,1]]]=!=True,
@@ -373,6 +374,23 @@ WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i
 ];
 ];
 i++;];
+*)
+For[i=1,i<=Length[coupAlphaEWSB],
+If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,(* NB Higgs isn't charged *)
+If[SMQ[coupAlphaEWSB[[i,1]]] =!= True || getGenSPheno[coupAlphaEWSB[[i,1]]] > 3,  (* 01/09/2023, see below *)
+WriteString[sphenoLoopCoup, "Do i1="<> ToString[If[SMQ[coupAlphaEWSB[[i,1]]],4,getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
+WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q) \n"];
+WriteString[sphenoLoopCoup,"End Do \n"];
+];
+
+,  (* single generation *)
+If[SMQHiggs[coupAlphaEWSB[[i,1]]]=!=True, (* BSM particles only; no charged Higgs if it only has one generation, because then it's the W goldstone! *)
+WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q)\n"];
+];
+]; (* end If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1*)
+i++;];
+
+
 
 WriteString[sphenoLoopCoup,"DeltaAlpha=-AlphaEW_in*DeltaAlpha/(2._dp*Pi) \n"];
 
@@ -405,18 +423,24 @@ WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
 (* Don't do conversion: always use same scheme for SM and High energy theory*)
 (*WriteString[sphenoLoopCoup,"DeltaAlpha=-1._dp/(3._dp)*(1._dp-rMS)! conversion to DRbar if necessary \n"];*)
 WriteString[sphenoLoopCoup,"DeltaAlpha=0._dp\n"];
+
+
 For[i=1,i<=Length[coupAlphaEWSB],
-If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,(* NEED TO COUNT THE HIGGS IN THE SM*)
-If[SMQHiggs[coupAlphaEWSB[[i,1]]]=!=True,
-WriteString[sphenoLoopCoup, "Do i1="<> ToString[If[SMQHiggs[coupAlphaEWSB[[i,1]]],4,getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
+If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,(* NB Higgs isn't charged *)
+If[SMQ[coupAlphaEWSB[[i,1]]] =!= True || getGenSPheno[coupAlphaEWSB[[i,1]]] > 3,  (* 01/09/2023, see below *)
+WriteString[sphenoLoopCoup, "Do i1="<> ToString[If[SMQ[coupAlphaEWSB[[i,1]]],4,getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
 WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q) \n"];
 WriteString[sphenoLoopCoup,"End Do \n"];
-];,
-If[SMQHiggs[coupAlphaEWSB[[i,1]]]=!=True,
+];
+
+,  (* single generation *)
+If[SMQHiggs[coupAlphaEWSB[[i,1]]]=!=True, (* BSM particles only; no charged Higgs if it only has one generation, because then it's the W goldstone! *)
 WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q)\n"];
 ];
-];
+]; (* end If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1*)
 i++;];
+
+
 
 WriteString[sphenoLoopCoup,"DeltaAlphaEW_T=-AlphaEW_in*DeltaAlpha/(2._dp*Pi) \n"];
 

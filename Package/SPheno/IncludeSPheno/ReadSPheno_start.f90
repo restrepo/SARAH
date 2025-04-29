@@ -533,7 +533,7 @@
       Else
         WriteEffHiggsCouplingRatios=.True.
       End If
-      If (OutputForMG) WriteEffHiggsCouplingRatios=.false.
+      !If (OutputForMG) WriteEffHiggsCouplingRatios=.false.  !! no longer a problem for newer versions of MG
 
      Case(521)
       If (wert.Ne.1._dp) Then

@@ -723,20 +723,28 @@ GenerateCalculateOneLoopWidths:=
 		 If[pos=!={},
 		    coups=getSPhenoCoupling[SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]][[1]];
 		    WriteString[outfile,"If (OSkinematics) Then \n"];
-		    masses=DeleteCases[Intersection[SPhenoMassOS/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
+		    (* MDG 2023-12-08 This is bad because SPhenoMassOS is not necessarily ordered in the same way as SPhenoMass!!! 
+		       masses=DeleteCases[Intersection[SPhenoMassOS/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
+		       *)
+		    masses=DeleteCases[Intersection[SPhenoMass/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
+		    massesOS=ToExpression[ToString[#] <> "OS"] &/@ masses;
+		    (* ----- *)
 		    WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
 		    WriteString[outfile," ! OS and no Z-factors \n"];
 		    name=SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],3]];
-		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
+		    (* -- changed masses to massesos --- *)
+		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,massesOS}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
 		    WriteString[outfile,"  Else \n"];
 		    coups=ToExpression["Z"<>ToString[#]]&/@coups;
 		    WriteString[outfile," ! OS and Z-factors \n"];
-		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
+		    (* -- changed masses to massesos --- *)
+		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,massesOS}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];
 		    WriteString[outfile,"  End if \n"];
 
 		    WriteString[outfile,"Else \n"];
 		    coups=getSPhenoCoupling[SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]][[1]];
-		    masses=DeleteCases[Intersection[SPhenoMass/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];
+		    (* -- redundant, already done above --- *)
+		    (*masses=DeleteCases[Intersection[SPhenoMass/@List@@SA`SavedInformationOneLoopDecaysReal[[pos[[1,1]],4,3]]],0.];*)
 		    WriteString[outfile," ! DR and no Z-factors \n"];
 		    WriteString[outfile,"  If (.not.ExternalZfactors) Then \n"];
 		    MakeCall["Gamma_Real_"<>ModelName<>"_"<>name,Flatten[{coups,masses}],{"MLambda","em","gs"},{"MRP"<>name,"MRG"<>name},outfile];

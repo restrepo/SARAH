@@ -20,16 +20,23 @@
 
 
 (* ::Input::Initialization:: *)
-Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}, IncludeEffectiveHiggsVertices->True,BSMcouplings->{}};
+Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}, IncludeEffectiveHiggsVertices->True,BSMcouplings->{},MustInclude->{}, ReadLists->False,Replacements->{},python2->False};
 
-MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeUFO],BSMcouplings/.{opt}/.Options[MakeUFO]];
+MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeUFO],BSMcouplings/.{opt}/.Options[MakeUFO],MustInclude/.{opt}/.Options[MakeUFO],ReadLists/.{opt}/.Options[MakeUFO],python2/.{opt}/.Options[MakeUFO], Replacements/.{opt}/.Options[MakeUFO]];
 
-GenerateUFO[Exclude_,effHiggsV_,bsmcoups_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor,startedtime},
+GenerateUFO[Exclude_,effHiggsV_,bsmcoups_,include_,readlists_,python2_,repls_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor,startedtime},
 SA`Doc`File = "Package/Outputs/madgraph.nb";
 SA`Doc`Name = "\!\(\*
 StyleBox[\"GenerateUFO\",\nInitializationCell->True]\)";
 SA`Doc`Info = "This is the main function to generate the UFO output. It creates the necessary directories, prepares all necessary information about parameters and particles in the model, expands the vertices and writes the output files.";
-SA`Doc`Input={"Exclude"->"List of generic vertices which shall be excluded in the output","effHiggsV"->"Shall effective Higgs couplings (diphoton/digluon) be included?","bsmcoups"->"A list of BSM couplings for which the 'Coupling Order' in Madgraph shall be available"};
+SA`Doc`Input={
+    "Exclude"->"List of generic vertices which shall be excluded in the output",
+    "effHiggsV"->"Shall effective Higgs couplings (diphoton/digluon) be included?",
+    "bsmcoups"->"A list of BSM couplings for which the 'Coupling Order' in Madgraph shall be available",
+    "include"->"List of particles which need to be present in each vertex",
+    "readlists"-> "Read vertex-lists from disk",
+    "repls"-> "Additional replacements to be applied before vertices/couplings are converted to UFO"
+};
 SA`Doc`GenerateEntry[];
 
 Print[StyleForm["Generate UFO model files","Section"]];
@@ -41,6 +48,7 @@ UFObsmCouplings=bsmcoups;
 SA`CurrentStates=CurrentEigenstates;
 
 SA`subEW={};
+
 
 For[i=1,i<=Length[parameters],
 If[parameters[[i,1]]=!=strongCoupling,
@@ -70,7 +78,7 @@ Message[ModelFile::NoVertices];,
 *)
 If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
 Print["Have to calculate the vertices first..."];
-ModelOutput[Last[NameOfStates]];
+ModelOutput[Last[NameOfStates], ReadLists->readlists];
 ];
 
 $sarahCurrentUfoDir=ToFileName[{$sarahCurrentOutputDir,"UFO"}];
@@ -88,26 +96,35 @@ CreateUfoForm;
 
 
 
-AddStandardFiles;
+AddStandardFiles[python2];
 
 CreatePartListUfo;
 CreateParamListWO;
 
+CreateTeXForm;
 
+UFOVertexList=SA`VertexList;
 WriteUfoParticles[CurrentEigenstates];
 
 Print["Expand generations "];
 For[i=1,i<=Length[ITypes],
 If[FreeQ[exclude,ITypes[[i,1]]],
+If[Length[include]>0,
+vlistt={};
+Do[
+    vlistt=Join[vlistt,Select[UFOVertexList[ITypes[[i,1]]],!FreeQ[#,field]&]];
+,{field,include}];
+UFOVertexList[ITypes[[i,1]]]=vlistt;
+];
 Print["    ... performed vertex type: ",ITypes[[i,1]]];
 If[ITypes[[i,1]]===SSV || ITypes[[i,1]]===FFV || ITypes[[i,1]]===VVV,factor = -1;,factor=1;]; 
 (* If[ITypes[[i,1]]===SSV || ITypes[[i,1]]===FFV,factor = -1;,factor=1;]; *)
 If[Length[ITypes[[i]]]==4,
-resUfo[ITypes[[i,1]]]=Flatten[ExpandUfo3[#,factor]&/@(SA`VertexList[ITypes[[i,1]]] //.subUfoColor),1];,
-resUfo[ITypes[[i,1]]]=Flatten[ExpandUfo4[#,factor]&/@(SA`VertexList[ITypes[[i,1]]] //.subUfoColor),1];
+resUfo[ITypes[[i,1]]]=Flatten[ExpandUfo3[#,factor]&/@(UFOVertexList[ITypes[[i,1]]] //.subUfoColor),1]//.repls//Chop//DeleteDuplicates;,
+resUfo[ITypes[[i,1]]]=Flatten[ExpandUfo4[#,factor]&/@(UFOVertexList[ITypes[[i,1]]] //.subUfoColor),1]//.repls//Chop//DeleteDuplicates;
 ];
  If[ITypes[[i,1]]===FFS,
-resUfo[FFS]=resUfo[FFS] //. {ProjM->ProjMS,ProjP->ProjPS} //. {ProjMS->ProjP, ProjPS->ProjM};
+resUfo[FFS]=resUfo[FFS] //. {ProjM->ProjMS,ProjP->ProjPS} //. {ProjMS->ProjP, ProjPS->ProjM}//.repls//Chop//DeleteDuplicates;
 ]; 
 ];
 i++;];
@@ -132,6 +149,16 @@ SA`Doc`EndEntry[];
 (* ]; *)
 ];
 
+UfoTeX[symbol_]:=Block[{res},
+    res = symbol;
+    If[Head[res]===TeXForm,
+        res = ToString[symbol];
+    ];
+    If[Head[res]=!=String,
+            res = ToString[TeXForm[symbol]];
+    ];
+    Return[StringReplace[res,{"\\"->"\\\\", "'"->"^{\\\\prime}"}]];
+];
 
 (* ::Input::Initialization:: *)
 ExtractColor[vertex_]:=Block[{i,j,temp={},temp2,res,CS,diffCol,coeff,current },
@@ -228,30 +255,30 @@ SA`Doc`GenerateEntry[];
 
 Print["Writing effective diphoton and digluon vertices"];
 If[getGen[HiggsBoson]<99,
-For[i=1,i<=getGen[HiggsBoson],
-WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"', \n"];
-WriteString[UfoVF,"\t particles = [P."<>getOutputName[VectorP]<>", P."<>getOutputName[VectorP]<>", P."<>getOutputName[HiggsBoson]<>If[getGen[HiggsBoson]>1,ToString[i],""]<>"], \n"];
-WriteString[UfoVF,"\t color = ['1'], \n"];
-WriteString[UfoVF,"\t lorentz = [L.VVS99], \n"];
-WriteString[UfoVF, "\t couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"}) \n \n \n"];
+For[i=getGenSPhenoStart[HiggsBoson],i<=getGen[HiggsBoson], (* MDG fixed 14-07-2023*)
+WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"',\n"];
+WriteString[UfoVF,"    particles = [P."<>getOutputName[VectorP]<>", P."<>getOutputName[VectorP]<>", P."<>getOutputName[HiggsBoson]<>If[getGen[HiggsBoson]>1,ToString[i],""]<>"],\n"];
+WriteString[UfoVF,"    color = ['1'],\n"];
+WriteString[UfoVF,"    lorentz = [L.VVS99],\n"];
+WriteString[UfoVF, "    couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"})\n\n\n"];
 
 WriteString[UfoCF,"GC_"<>ToString[SA`UfoCoupNr]<>"=Coupling(name='GC_"<>ToString[SA`UfoCoupNr]<>"',\n"];
-WriteString[UfoCF,"\t value='-(HPP"<>ToString[i]<>"*complex(0,1))', \n"];
-WriteString[UfoCF,"\t order={'HIW':1})\n\n"];
+WriteString[UfoCF,"    value='-(HPP"<>ToString[i]<>"*complex(0,1))',\n"];
+WriteString[UfoCF,"    order={'HIW':1})\n\n"];
 
 SA`UfoVertexNr++;
 SA`UfoCoupNr++;
 
 
-WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"', \n"];
-WriteString[UfoVF,"\t particles = [P."<>getOutputName[VectorG]<>", P."<>getOutputName[VectorG]<>", P."<>getOutputName[HiggsBoson]<>If[getGen[HiggsBoson]>1,ToString[i],""]<>"], \n"];
-WriteString[UfoVF,"\t color = ['Identity(1,2)'], \n"];
-WriteString[UfoVF,"\t lorentz = [L.VVS99], \n"];
-WriteString[UfoVF, "\t couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"}) \n \n \n"];
+WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"',\n"];
+WriteString[UfoVF,"    particles = [P."<>getOutputName[VectorG]<>", P."<>getOutputName[VectorG]<>", P."<>getOutputName[HiggsBoson]<>If[getGen[HiggsBoson]>1,ToString[i],""]<>"],\n"];
+WriteString[UfoVF,"    color = ['Identity(1,2)'],\n"];
+WriteString[UfoVF,"    lorentz = [L.VVS99],\n"];
+WriteString[UfoVF, "    couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"})\n\n\n"];
 
 WriteString[UfoCF,"GC_"<>ToString[SA`UfoCoupNr]<>"=Coupling(name='GC_"<>ToString[SA`UfoCoupNr]<>"',\n"];
-WriteString[UfoCF,"\t value='-(HGG"<>ToString[i]<>"*complex(0,1))', \n"];
-WriteString[UfoCF,"\t order={'HIG':1})\n\n"];
+WriteString[UfoCF,"    value='-(HGG"<>ToString[i]<>"*complex(0,1))',\n"];
+WriteString[UfoCF,"    order={'HIG':1})\n\n"];
 
 SA`UfoVertexNr++;
 SA`UfoCoupNr++;
@@ -260,29 +287,29 @@ i++;];
 
 If[getGen[PseudoScalar]<99,
 For[i=getGenSPhenoStart[PseudoScalar],i<=getGen[PseudoScalar],
-WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"', \n"];
-WriteString[UfoVF,"\t particles = [P."<>getOutputName[VectorP]<>", P."<>getOutputName[VectorP]<>", P."<>getOutputName[PseudoScalar]<>If[getGen[PseudoScalar]>1,ToString[i],""]<>"], \n"];
-WriteString[UfoVF,"\t color = ['1'], \n"];
-WriteString[UfoVF,"\t lorentz = [L.VVS99], \n"];
-WriteString[UfoVF, "\t couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"}) \n \n \n"];
+WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"',\n"];
+WriteString[UfoVF,"    particles = [P."<>getOutputName[VectorP]<>", P."<>getOutputName[VectorP]<>", P."<>getOutputName[PseudoScalar]<>If[getGen[PseudoScalar]>1,ToString[i],""]<>"],\n"];
+WriteString[UfoVF,"    color = ['1'],\n"];
+WriteString[UfoVF,"    lorentz = [L.VVS99p],\n"];
+WriteString[UfoVF, "    couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"})\n\n\n"];
 
 WriteString[UfoCF,"GC_"<>ToString[SA`UfoCoupNr]<>"=Coupling(name='GC_"<>ToString[SA`UfoCoupNr]<>"',\n"];
-WriteString[UfoCF,"\t value='-(APP"<>ToString[i]<>"*complex(0,1))', \n"];
-WriteString[UfoCF,"\t order={'HIW':1})\n\n"];
+WriteString[UfoCF,"    value='-(APP"<>ToString[i]<>"*complex(0,1))',\n"];
+WriteString[UfoCF,"    order={'HIW':1})\n\n"];
 
 SA`UfoVertexNr++;
 SA`UfoCoupNr++;
 
 
-WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"', \n"];
-WriteString[UfoVF,"\t particles = [P."<>getOutputName[VectorG]<>", P."<>getOutputName[VectorG]<>", P."<>getOutputName[PseudoScalar]<>If[getGen[PseudoScalar]>1,ToString[i],""]<>"], \n"];
-WriteString[UfoVF,"\t color = ['Identity(1,2)'], \n"];
-WriteString[UfoVF,"\t lorentz = [L.VVS99], \n"];
-WriteString[UfoVF, "\t couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"}) \n \n \n"];
+WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"',\n"];
+WriteString[UfoVF,"    particles = [P."<>getOutputName[VectorG]<>", P."<>getOutputName[VectorG]<>", P."<>getOutputName[PseudoScalar]<>If[getGen[PseudoScalar]>1,ToString[i],""]<>"],\n"];
+WriteString[UfoVF,"    color = ['Identity(1,2)'],\n"];
+WriteString[UfoVF,"    lorentz = [L.VVS99p],\n"];
+WriteString[UfoVF, "    couplings = {(0,0):C.GC_"<>ToString[SA`UfoCoupNr]<>"})\n\n\n"];
 
 WriteString[UfoCF,"GC_"<>ToString[SA`UfoCoupNr]<>"=Coupling(name='GC_"<>ToString[SA`UfoCoupNr]<>"',\n"];
-WriteString[UfoCF,"\t value='-(AGG"<>ToString[i]<>"*complex(0,1))', \n"];
-WriteString[UfoCF,"\t order={'HIG':1})\n\n"];
+WriteString[UfoCF,"    value='-(AGG"<>ToString[i]<>"*complex(0,1))',\n"];
+WriteString[UfoCF,"    order={'HIG':1})\n\n"];
 
 SA`UfoVertexNr++;
 SA`UfoCoupNr++;
@@ -307,12 +334,12 @@ Print["   ... Generic class: ",StyleForm[type,"Section",FontSize->10],". Writing
 For[i=1,i<=Length[list],
 progressNrUFO[type]=i;
 progressCoupUFO[type]=list[[i,1]];
-If[UfoLorentz[list[[i,2]],type]=!="",
-WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"', \n"];
-WriteString[UfoVF,"\t particles = ["<>UfoPartList[list[[i,1]]]<>"], \n"];
-WriteString[UfoVF,"\t color = [" <> UfoColor[list[[i,2]]]<>"], \n"];
-WriteString[UfoVF,"\t lorentz = ["<>UfoLorentz[list[[i,2]],type] <>"], \n"];
-WriteString[UfoVF, "\t couplings = {"<>UfoCouplings[list[[i,2]]]<>"}) \n \n \n"];
+If[UfoLorentz[list[[i,2]],type]=!=""&& UfoCouplings[list[[i,2]]]=!="",
+WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"',\n"];
+WriteString[UfoVF,"    particles = ["<>UfoPartList[list[[i,1]]]<>"],\n"];
+WriteString[UfoVF,"    color = [" <> UfoColor[list[[i,2]]]<>"],\n"];
+WriteString[UfoVF,"    lorentz = ["<>UfoLorentz[list[[i,2]],type] <>"],\n"];
+WriteString[UfoVF, "    couplings = {"<>UfoCouplings[list[[i,2]]]<>"})\n\n\n"];
 SA`UfoVertexNr++;
 For[j=1,j<=Length[list[[i,2]]],
 For[k=1,k<=Length[list[[i,2,j,1]]],
@@ -411,7 +438,7 @@ For[i=1,i<=Length[coup],
 pos = Position[SA`UfoLorentzTypes,coup[[i,2]] //.subUfoLorentz];
 If[Sum[Abs[coup[[i,1,j,2]]],{j,1,Length[coup[[i,1]]]}]=!=0,llist = Join[llist,{SA`UfoLorentzTypes[[pos[[1,1]],2]]}];];
 For[j=1,j<=Length[coup[[i,1]]],
-If[coup[[i,1,j,2]]=!=0,clist = Join[clist,{coup[[i,1,j,1]]}];];
+If[(coup[[i,1,j,2]])=!=0,clist = Join[clist,{coup[[i,1,j,1]]}];];
 j++;];
 i++;];
 
@@ -422,7 +449,7 @@ For[i=1,i<=Length[coup],
 For[j=1,j<=Length[coup[[i,1]]],
 pos = Position[SA`UfoLorentzTypes,coup[[i,2]] //.subUfoLorentz];
 cl = SA`UfoLorentzTypes[[pos[[1,1]],2]];
-If[coup[[i,1,j,2]]=!=0,
+If[(coup[[i,1,j,2]])=!=0,
 If[written==True, res=res<>",";,written=True];
 res = res <>"("<>ToString[Position[clist,coup[[i,1,j,1]]][[1,1]]-1]<>","<>ToString[Position[llist,cl][[1,1]]-1]<>"):";
 res = res <>"C.GC_"<>ToString[start];
@@ -447,8 +474,8 @@ SA`Doc`GenerateEntry[];
 
 WriteString[UfoCF,"GC_"<>ToString[SA`UfoCoupNr] <>" = Coupling("];
 WriteString[UfoCF, "name = 'GC_"<>ToString[SA`UfoCoupNr]<>"',\n"];
-WriteString[UfoCF,"\t value = '"<>UfoForm[coup]<>"', \n"];
-WriteString[UfoCF,"\t order = {"<>UfoCouplingOrder[coup,type]<>"} ) \n \n"];
+WriteString[UfoCF,"    value = '"<>UfoForm[coup]<>"',\n"];
+WriteString[UfoCF,"    order = {"<>UfoCouplingOrder[coup,type]<>"} )\n\n"];
 SA`UfoCoupNr++;
 
 SA`Doc`EndEntry[];
@@ -499,23 +526,23 @@ SA`Doc`Info = "Writes the header to the main UFO file";
 SA`Doc`Input={};
 SA`Doc`GenerateEntry[];
 
-WriteString[UfoVF,"# ------------------------------------------------------------------------------  \n"];
-WriteString[UfoVF,"# This model file was automatically created by SARAH version"<>SA`Version<>" \n"];
-WriteString[UfoVF,"# SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223   \n"];
-WriteString[UfoVF,"# (c) Florian Staub, 2013  \n"];
-WriteString[UfoVF,"# -------------------------------------------------------------------------------  \n"];
+WriteString[UfoVF,"# ------------------------------------------------------------------------------ \n"];
+WriteString[UfoVF,"# This model file was automatically created by SARAH version"<>SA`Version<>"\n"];
+WriteString[UfoVF,"# SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  \n"];
+WriteString[UfoVF,"# (c) Florian Staub, Mark Goodsell, Werner Porod and Martin Gabelmann 2023 \n"];
+WriteString[UfoVF,"# ------------------------------------------------------------------------------- \n"];
 Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
-WriteString[UfoVF,"# File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"   \n"];
-WriteString[UfoVF,"# ----------------------------------------------------------------------  \n \n \n"];
+WriteString[UfoVF,"# File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  \n"];
+WriteString[UfoVF,"# ---------------------------------------------------------------------- \n\n\n"];
 
-WriteString[UfoVF,"from object_library import all_vertices,Vertex \n"];
-WriteString[UfoVF,"import particles as P \n"];
-WriteString[UfoVF,"import couplings as C \n"];
-WriteString[UfoVF,"import lorentz as L \n \n \n"];
+WriteString[UfoVF,"from object_library import all_vertices,Vertex\n"];
+WriteString[UfoVF,"import particles as P\n"];
+WriteString[UfoVF,"import couplings as C\n"];
+WriteString[UfoVF,"import lorentz as L\n\n\n"];
 
-WriteString[UfoCF,"from object_library import all_couplings,Coupling \n"];
-WriteString[UfoCF,"from cmath import exp \n"];
-WriteString[UfoCF,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec \n \n \n"];
+WriteString[UfoCF,"from object_library import all_couplings,Coupling\n"];
+WriteString[UfoCF,"from cmath import exp\nimport math\n"];
+WriteString[UfoCF,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec\n\n\n"];
 
 SA`Doc`EndEntry[];
 ];
@@ -534,28 +561,28 @@ SA`UfoLorentzTypes = {};
 
 UfoLF = OpenWrite[ToFileName[$sarahCurrentUfoDir,"lorentz.py"]];
 
-WriteString[UfoLF,"# ----------------------------------------------------------------------  \n"];
-WriteString[UfoLF,"# This model file was automatically created by SARAH version"<>SA`Version<>" \n"];
-WriteString[UfoLF,"# SARAH References: arXiv:0806.0538, arXiv:0909.2863, arXiv:1002.0840    \n"];
-WriteString[UfoLF,"# (c) Florian Staub, 2011  \n"];
-WriteString[UfoLF,"# ----------------------------------------------------------------------  \n"];
-WriteString[UfoLF,"# File created at "<>ToString[Date[][[4]]]<>":"<>ToString[Date[][[5]]]<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"   \n"];
-WriteString[UfoLF,"# ----------------------------------------------------------------------  \n \n \n"];
+WriteString[UfoLF,"# ---------------------------------------------------------------------- \n"];
+WriteString[UfoLF,"# This model file was automatically created by SARAH version"<>SA`Version<>"\n"];
+WriteString[UfoLF,"# SARAH References: arXiv:0806.0538, arXiv:0909.2863, arXiv:1002.0840   \n"];
+WriteString[UfoLF,"# (c) Florian Staub, Mark Goodsell, Werner Porod and Martin Gabelmann 2023 \n"];
+WriteString[UfoLF,"# ---------------------------------------------------------------------- \n"];
+WriteString[UfoLF,"# File created at "<>ToString[Date[][[4]]]<>":"<>ToString[Date[][[5]]]<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  \n"];
+WriteString[UfoLF,"# ---------------------------------------------------------------------- \n\n\n"];
 
-WriteString[UfoLF,"from object_library import all_lorentz,Lorentz \n"];
-(* WriteString[UfoLF,"from function_library import conj \n \n \n"]; *)
-WriteString[UfoLF,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec \n \n \n"];
+WriteString[UfoLF,"from object_library import all_lorentz,Lorentz\n"];
+(* WriteString[UfoLF,"from function_library import conj\n\n\n"]; *)
+WriteString[UfoLF,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec\n\n\n"];
 
 For[i=1,i<=Length[ITypes],
 If[FreeQ[Exclude,ITypes[[i,1]]],
-If[Head[SA`VertexList[ITypes[[i,1]]]]===List &&SA`VertexList[ITypes[[i,1]]]=!={} && FreeQ[ITypes[[i]],A],
-(* temp = Intersection[Flatten[Table[Table[SA`VertexList[ITypes[[i,1]]][[j,k,2]],{k,2,Length[SA`VertexList[ITypes[[i,1]]][[j]]]}],{j,1,Length[SA`VertexList[ITypes[[i,1]]]]}]] //. subUfoLorentz]; *)
-temp = Intersection[Flatten[Table[Table[SA`VertexList[ITypes[[i,1]]][[j,k,2]]/. Flatten[Replace[SA`VertexList[ITypes[[i,1]]][[j,1]] , a_ :>{Mom[a,b_]->P[b,Position[SA`VertexList[ITypes[[i,1]]][[j,1]],a][[1,1]]]},{1}]],{k,2,Length[SA`VertexList[ITypes[[i,1]]][[j]]]}],{j,1,Length[SA`VertexList[ITypes[[i,1]]]]}]] //. subUfoLorentz];
+If[Head[UFOVertexList[ITypes[[i,1]]]]===List &&UFOVertexList[ITypes[[i,1]]]=!={} && FreeQ[ITypes[[i]],A],
+(* temp = Intersection[Flatten[Table[Table[UFOVertexList[ITypes[[i,1]]][[j,k,2]],{k,2,Length[UFOVertexList[ITypes[[i,1]]][[j]]]}],{j,1,Length[UFOVertexList[ITypes[[i,1]]]]}]] //. subUfoLorentz]; *)
+temp = Intersection[Flatten[Table[Table[UFOVertexList[ITypes[[i,1]]][[j,k,2]]/. Flatten[Replace[UFOVertexList[ITypes[[i,1]]][[j,1]] , a_ :>{Mom[a,b_]->P[b,Position[UFOVertexList[ITypes[[i,1]]][[j,1]],a][[1,1]]]},{1}]],{k,2,Length[UFOVertexList[ITypes[[i,1]]][[j]]]}],{j,1,Length[UFOVertexList[ITypes[[i,1]]]]}]] //. subUfoLorentz];
 temp = Reverse[temp];
 For[j=1,j<=Length[temp],
-WriteString[UfoLF,ToString[ITypes[[i,1]]]<>ToString[j]<>" = Lorentz(name = '"<>ToString[ITypes[[i,1]]]<>ToString[j]<>"', \n"];
-WriteString[UfoLF,"\t spins = ["<>StringReplace[ToString[Drop[ITypes[[i]],1] /. {S->1, F->2, V->3, G->-1}],{"{"->"","}"->""}]<>"],\n"];
-WriteString[UfoLF,"\t structure = '"<>UfoForm[Expand[temp[[j]]]]<>"' ) \n \n \n"];
+WriteString[UfoLF,ToString[ITypes[[i,1]]]<>ToString[j]<>" = Lorentz(name = '"<>ToString[ITypes[[i,1]]]<>ToString[j]<>"',\n"];
+WriteString[UfoLF,"    spins = ["<>StringReplace[ToString[Drop[ITypes[[i]],1] /. {S->1, F->2, V->3, G->-1}],{"{"->"","}"->""}]<>"],\n"];
+WriteString[UfoLF,"    structure = '"<>UfoForm[Expand[temp[[j]]]]<>"' )\n\n\n"];
 SA`UfoLorentzTypes  = Join[SA`UfoLorentzTypes ,{{temp[[j]],ToExpression[ToString[ITypes[[i,1]]]<>ToString[j]], ITypes[[i,1]]}}];
 j++;];
 ];
@@ -563,9 +590,13 @@ j++;];
 i++;];
 
 If[effHiggsV,
-WriteString[UfoLF,"VVS99 = Lorentz(name='VVSpp', \n"];
-WriteString[UfoLF,"spins=[3,3,1], \n"];
-WriteString[UfoLF,"structure='P(1,2)*P(2,1)-P(-1,1)*P(-1,2)*Metric(1,2)')\n"];
+WriteString[UfoLF,"VVS99 = Lorentz(name='VVSpp',\n"];
+WriteString[UfoLF,"spins=[3,3,1],\n"];
+WriteString[UfoLF,"structure='P(1,2)*P(2,1)-P(-1,1)*P(-1,2)*Metric(1,2)')\n\n"];
+
+WriteString[UfoLF,"VVS99p = Lorentz(name='VVSppDual',\n"];
+WriteString[UfoLF,"spins=[3,3,1],\n"];
+WriteString[UfoLF,"structure='P(-3,1)*P(-4,2)*Epsilon(1,2,-3,-4)')\n"];
 ];
 
 Close[UfoLF];
@@ -587,65 +618,51 @@ Print["Write particles files"];
 
 UfoPF = OpenWrite[ToFileName[$sarahCurrentUfoDir,"particles.py"]];
 
-WriteString[UfoPF,"# ----------------------------------------------------------------------  \n"];
-WriteString[UfoPF,"# This model file was automatically created by SARAH version"<>SA`Version<>" \n"];
-WriteString[UfoPF,"# SARAH References: arXiv:0806.0538, arXiv:0909.2863, arXiv:1002.0840    \n"];
-WriteString[UfoPF,"# (c) Florian Staub, 2011  \n"];
-WriteString[UfoPF,"# ----------------------------------------------------------------------  \n"];
-WriteString[UfoPF,"# File created at "<>ToString[Date[][[4]]]<>":"<>ToString[Date[][[5]]]<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"   \n"];
-WriteString[UfoPF,"# ----------------------------------------------------------------------  \n \n \n"];
+WriteString[UfoPF,"# ---------------------------------------------------------------------- \n"];
+WriteString[UfoPF,"# This model file was automatically created by SARAH version"<>SA`Version<>"\n"];
+WriteString[UfoPF,"# SARAH References: arXiv:0806.0538, arXiv:0909.2863, arXiv:1002.0840   \n"];
+WriteString[UfoPF,"# (c) Florian Staub, Mark Goodsell, Werner Porod and Martin Gabelmann 2023 \n"];
+WriteString[UfoPF,"# ---------------------------------------------------------------------- \n"];
+WriteString[UfoPF,"# File created at "<>ToString[Date[][[4]]]<>":"<>ToString[Date[][[5]]]<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  \n"];
+WriteString[UfoPF,"# ---------------------------------------------------------------------- \n\n\n"];
 
 
-WriteString[UfoPF,"from __future__ import division \n"];
-WriteString[UfoPF,"from object_library import all_particles,Particle \n"];
-WriteString[UfoPF,"import parameters as Param \n\n\n"];
+WriteString[UfoPF,"from __future__ import division\n"];
+WriteString[UfoPF,"from object_library import all_particles,Particle\n"];
+WriteString[UfoPF,"import parameters as Param\n\n\n"];
 
 For[i=1,i<=Length[PartListFR],
 For[j=1,j<=Length[PartListFR[[i,2]]],
 entry =PartListFR[[i,2,j]]; 
-WriteString[UfoPF,entry[[1]] <> " = Particle(pdg_code ="<>ToString[entry[[9]]] <>", \n"];
-WriteString[UfoPF,"\t name = '"<>entry[[1]] <>"' ,\n"];
-WriteString[UfoPF,"\t antiname = '"<>entry[[2]] <>"' ,\n"];
-WriteString[UfoPF,"\t spin = "<>ToString[entry[[3]] /. {S->1 , F->2 , V->3, G->-1}] <>" ,\n"];
- WriteString[UfoPF,"\t color = " <> ToString[entry[[7]] /. {S->1,T->3,Six->6,O->8}] <>" ,\n"]; 
-(* WriteString[UfoPF,"\t mass = '"<>ToString[entry[[5]]] <>"' ,\n"];
-WriteString[UfoPF,"\t width = '"<>ToString[entry[[6]]] <>"' ,\n"]; *)
+WriteString[UfoPF,entry[[1]] <> " = Particle(pdg_code ="<>ToString[entry[[9]]] <>",\n"];
+WriteString[UfoPF,"    name = '"<>entry[[1]] <>"' ,\n"];
+WriteString[UfoPF,"    antiname = '"<>entry[[2]] <>"' ,\n"];
+WriteString[UfoPF,"    spin = "<>ToString[entry[[3]] /. {S->1 , F->2 , V->3, G->-1}] <>" ,\n"];
+WriteString[UfoPF,"    color = " <> ToString[entry[[7]] /. {S->1,T->3,Six->6,O->8}] <>" ,\n"];
+WriteString[UfoPF,"    mass = Param."<>ToString[entry[[5]]] <>" ,\n"];
 If[entry[[13]]=!=NoGS,
-WriteString[UfoPF,"\t mass = Param.ZERO ,\n"];
-WriteString[UfoPF,"\t width = Param.ZERO ,\n"];,
-WriteString[UfoPF,"\t mass = Param."<>ToString[entry[[5]]] <>" ,\n"];
-WriteString[UfoPF,"\t width = Param."<>ToString[entry[[6]]] <>" ,\n"];
+WriteString[UfoPF,"    width = Param.ZERO,\n"];
+WriteString[UfoPF,"    goldstone = True ,\n"];
+,
+WriteString[UfoPF,"    width = Param."<>ToString[entry[[6]]] <>" ,\n"];
 ];
+
 If[entry[[3]]===G, 
-WriteString[UfoPF,"\t GhostNumber = 1, \n"];,
-WriteString[UfoPF,"\t GhostNumber = 0, \n"];
+WriteString[UfoPF,"    propagating = False,\n"];
 ];
 If[getRParity[entry[[15]]/. a_[b_Integer]->a,EWSB]===1,
-WriteString[UfoPF,"\t line = '"<>(entry[[4]] /. {S->"straight", D->"dashed", W->"wavy",C->"dotted"})<>"' ,\n"];,
+WriteString[UfoPF,"    line = '"<>(entry[[4]] /. {S->"straight", D->"dashed", W->"wavy",C->"dotted"})<>"' ,\n"];,
 If[(entry[[15]]/. a_[b_Integer]->a)===Gluino,
-WriteString[UfoPF,"\t line = '"<>(entry[[4]] /. {S->"scurly", D->"dashed", W->"wavy",C->"dotted"})<>"' ,\n"];,
-WriteString[UfoPF,"\t line = '"<>(entry[[4]] /. {S->"swavy", D->"dashed", W->"wavy",C->"dotted"})<>"' ,\n"];
+WriteString[UfoPF,"    line = '"<>(entry[[4]] /. {S->"scurly", D->"dashed", W->"wavy",C->"dotted"})<>"' ,\n"];,
+WriteString[UfoPF,"    line = '"<>(entry[[4]] /. {S->"swavy", D->"dashed", W->"wavy",C->"dotted"})<>"' ,\n"];
 ];
 ];
-WriteString[UfoPF,"\t charge = "<>ToString[InputForm[entry[[14]]/. ZERO->0]]<>" ,\n"]; 
-If[entry[[13]]=!=NoGS,
-WriteString[UfoPF,"\t GoldstoneBoson = True ,\n"];
-];
-
-(*
-WriteString[UfoPF,"\t texname = '"<>entry[[11]] <>"' ,\n"];
-WriteString[UfoPF,"\t antitexname = '"<>entry[[12]] <>"' ) \n \n"];
-
-*)
-
-
-WriteString[UfoPF,"\t texname = '"<>entry[[1]] <>"' ,\n"];
-WriteString[UfoPF,"\t antitexname = '"<>entry[[2]] <>"' ) \n \n"];
-
-
+WriteString[UfoPF,"    charge = "<>ToString[InputForm[entry[[14]]/. ZERO->0]]<>" ,\n"]; 
+WriteString[UfoPF,"    texname = '"<>UfoTeX[entry[[11]]] <>"' ,\n"];
+WriteString[UfoPF,"    antitexname = '"<>UfoTeX[entry[[12]]] <>"' )\n\n"];
 
 If[entry[[2]]!=entry[[1]],
-WriteString[UfoPF,entry[[2]] <> " = "<>entry[[1]]<>".anti() \n \n \n"];
+WriteString[UfoPF,entry[[2]] <> " = "<>entry[[1]]<>".anti()\n\n\n"];
 ];
 j++;];
 i++;];
@@ -655,7 +672,7 @@ Close[UfoPF];
 SA`Doc`EndEntry[];
 ];
 
-UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling->G /. subGreek/. Mass[A_[{b_,c___}]]:>getMassW[A,b] /. Mass[A_]:>getMassW[A]]],{"^"->"**","conj"->"complexconjugate"}]]; 
+UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling->G /. subGreek/. Mass[A_[{b_,c___}]]:>getMassW[A,b] /. Mass[A_]:>getMassW[A](*//TrigExpand//Simplify*)]],{"^"->"**","conj"->"complexconjugate","Sqrt"->"cmath.sqrt", "Power"-> "math.pow"}]]; 
 (* UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling\[Rule]G /. subGreek]],{"^"->"**"}]]; *)
 
 
@@ -948,6 +965,11 @@ lt1->1, lt2->2, lt3->3, lt4->4,
 A_Symbol[a1___Integer,a2_Symbol,a3___Integer] B_Symbol[b1___Integer,a2_Symbol,b3___] C___:>C A[a1,Min[{a1,a3,b1,b3}]-1 /. z_Integer:>-1 /; z>=0  ,a3]B[b1,Min[{a1,a3,b1,b3}]-1/. z_Integer:>-1 /; z>=0,b3] /; FreeQ[FullForm[C],LorP] 
 };
 
+getMassUfo[particle_,gen_,flav_]:=If[CheckGoldstone[particle,gen,flav]=!=NoGS,
+    Return[ToExpression["M"<>ToString[getOutputName[particle,gen,flav]](*<>ToString[gen]<>If[getFla[particle]==1,"",ToString[flav]]*)]]
+    ,
+    Return[getMassW[particle,gen,flav]]
+    ];
 
 CreatePartListUfo:=Block[{i,j,k,temp,temp2,particle,charge},
 SA`Doc`File = "Package/Outputs/madgraph.nb";
@@ -978,10 +1000,21 @@ If[getType[particles[[i]]]===S || getType[particles[[i]]]===V || getType[particl
 For[j=1,j<=getGen[particles[[i]]],
 For[k=1,k<=getFla[particles[[i]]],
 temp2=Join[temp2,{{
-ToString[getOutputName[particles[[i]],j,k]],ToString[getOutputNameAnti[particles[[i]],j,k]],getType[particles[[i]]],
-getPropagatorType[particles[[i]]],If[getType[particles[[i]]]===G,getMassW[getVectorBoson[particles[[i]]],j,k],getMassW[particles[[i]],j,k]],If[getType[particles[[i]]]===G,getWidthW[getVectorBoson[particles[[i]]],j,k],getWidthW[particles[[i]],j,k]],
-getColorRep[particles[[i]]],getOutputName[particles[[i]],j,k],getPDG[particles[[i]],j,k] /. 0:>DummyPDG++,
-getDescriptionField[particles[[i]],j,k],getLaTeXField[particles[[i]],j,k],getLaTeXField[AntiField[particles[[i]]],j,k],CheckGoldstone[particles[[i]],j,k],charge,
+ToString[getOutputName[particles[[i]],j,k]],
+ToString[getOutputNameAnti[particles[[i]],j,k]],
+getType[particles[[i]]],
+getPropagatorType[particles[[i]]],
+(*If[getType[particles[[i]]]===G,getMassW[getVectorBoson[particles[[i]]],j,k],getMassW[particles[[i]],j,k]],*)
+getMassUfo[particles[[i]],j,k],
+If[getType[particles[[i]]]===G,getWidthW[getVectorBoson[particles[[i]]],j,k],getWidthW[particles[[i]],j,k]],
+getColorRep[particles[[i]]],
+getOutputName[particles[[i]],j,k],
+getPDG[particles[[i]],j,k] /. 0:>DummyPDG++,
+getDescriptionField[particles[[i]],j,k],
+getLaTeXField[particles[[i]],j,k],
+getLaTeXField[AntiField[particles[[i]]],j,k],
+CheckGoldstone[particles[[i]],j,k],
+charge,
 If[getGen[particles[[i]]]==1,particles[[i]],particles[[i]][j]]
 }}];
 MassListFR = Join[MassListFR,{{{Abs[getPDG[particles[[i]],j,k]]},getMassW[particles[[i]],j,k],getMassNumerical[particles[[i]],j,k]}}] ;
@@ -1031,49 +1064,49 @@ UfoP = OpenWrite[ToFileName[$sarahCurrentUfoDir,"parameters.py"]];
 
 
 
-WriteString[UfoP,"# ----------------------------------------------------------------------  \n"];
-WriteString[UfoP,"# This model file was automatically created by SARAH version"<>SA`Version<>" \n"];
-WriteString[UfoP,"# SARAH References: arXiv:0806.0538, arXiv:0909.2863, arXiv:1002.0840    \n"];
-WriteString[UfoP,"# (c) Florian Staub, 2011  \n"];
-WriteString[UfoP,"# ----------------------------------------------------------------------  \n"];
-WriteString[UfoP,"# File created at "<>ToString[Date[][[4]]]<>":"<>ToString[Date[][[5]]]<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"   \n"];
-WriteString[UfoP,"# ----------------------------------------------------------------------  \n \n \n"];
+WriteString[UfoP,"# ----------------------------------------------------------------------\n"];
+WriteString[UfoP,"# This model file was automatically created by SARAH version"<>SA`Version<>"\n"];
+WriteString[UfoP,"# SARAH References: arXiv:0806.0538, arXiv:0909.2863, arXiv:1002.0840\n"];
+WriteString[UfoP,"# (c) Florian Staub, Mark Goodsell, Werner Porod and Martin Gabelmann 2023\n"];
+WriteString[UfoP,"# ----------------------------------------------------------------------\n"];
+WriteString[UfoP,"# File created at "<>ToString[Date[][[4]]]<>":"<>ToString[Date[][[5]]]<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"\n"];
+WriteString[UfoP,"# ----------------------------------------------------------------------\n\n"];
 
 
-WriteString[UfoP,"from object_library import all_parameters,Parameter \n \n"];
-WriteString[UfoP,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec \n \n"]; 
+WriteString[UfoP,"from object_library import all_parameters,Parameter\n\n"];
+WriteString[UfoP,"from function_library import complexconjugate,re,im,csc,sec,acsc,asec\n"]; 
 
 
-WriteString[UfoP,"ZERO=Parameter(name='ZERO', \n"];
-WriteString[UfoP,"                      nature='internal', \n"];
-WriteString[UfoP,"                      type='real', \n"];
-WriteString[UfoP,"                      value='0.0', \n"];
-WriteString[UfoP,"                      texname='0') \n \n"];
+WriteString[UfoP,"ZERO = Parameter(name='ZERO',\n"];
+WriteString[UfoP,"    nature='internal',\n"];
+WriteString[UfoP,"    type='real',\n"];
+WriteString[UfoP,"    value='0.0',\n"];
+WriteString[UfoP,"    texname='0')\n\n"];
 
 
-(* WriteString[UfoP,"from function_library import conj \n \n"]; *)
+(* WriteString[UfoP,"from function_library import conj\n\n"]; *)
 depmass=Table[subNumDependencesMasses[[i,1]],{i,1,Length[subNumDependencesMasses]}];
 For[i=1,i<=Length[PartListFR],
 For[j=1,j<=Length[PartListFR[[i,2]]],
 entry =PartListFR[[i,2,j]]; 
 If[entry[[5]]=!=ZERO && entry[[13]]===NoGS && entry[[3]] =!=G && FreeQ[depmass,Mass[entry[[15]]]],
-WriteString[UfoP, UfoForm[entry[[5]]]<>" = \t Parameter(name = '"<>UfoForm[entry[[5]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = "<>ToString[NumericalValue[Mass[entry[[15]]]] /. NaN->100.]<>", \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>UfoForm[entry[[5]]]<>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'MASS', \n"];
-WriteString[UfoP,"\t lhacode = ["<>ToString[Abs[entry[[9]]]]<>"]) \n \n"];
+WriteString[UfoP, UfoForm[entry[[5]]]<>" = Parameter(name = '"<>UfoForm[entry[[5]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = "<>ToString[NumericalValue[Mass[entry[[15]]]] /. NaN->100.]<>",\n"];
+WriteString[UfoP,"    texname = 'M_{"<>UfoTeX[entry[[11]]]<>"}',\n"];
+WriteString[UfoP,"    lhablock = 'MASS',\n"];
+WriteString[UfoP,"    lhacode = ["<>ToString[Abs[entry[[9]]]]<>"])\n\n"];
 ];
 
 If[entry[[6]]=!=ZERO && entry[[13]]===NoGS && entry[[3]] =!=G,
-WriteString[UfoP, UfoForm[entry[[6]]]<>" = \t Parameter(name = '"<>UfoForm[entry[[6]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = "<>ToString[NumericalValue[Width[entry[[15]]]] /. NaN->0.]<>", \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>UfoForm[entry[[6]]]<>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'DECAY', \n"];
-WriteString[UfoP,"\t lhacode = ["<>ToString[Abs[entry[[9]]]]<>"]) \n \n"];
+WriteString[UfoP, UfoForm[entry[[6]]]<>" = Parameter(name = '"<>UfoForm[entry[[6]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = "<>ToString[NumericalValue[Width[entry[[15]]]] /. NaN->0.]<>",\n"];
+WriteString[UfoP,"    texname = '\\\\Gamma_{"<>UfoTeX[entry[[11]]]<>"}',\n"];
+WriteString[UfoP,"    lhablock = 'DECAY',\n"];
+WriteString[UfoP,"    lhacode = ["<>ToString[Abs[entry[[9]]]]<>"])\n\n"];
 ];
 
 j++;];
@@ -1083,29 +1116,29 @@ i++;];
 For[i=1,i<=Length[EParamList],
 For[j=1,j<=Length[EParamList[[i,2]]],
 If[EParamList[[i,2,j,2,3]]==False,
-WriteString[UfoP, UfoForm[EParamList[[i,2,j,2,1]]]<>" = \t Parameter(name='"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = "<>UfoForm[EParamList[[i,2,j,2,2]]]<>", \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"}', \n"];
-WriteString[UfoP,"\t lhablock = '"<>EParamList[[i,1]]<>"', \n"];
-WriteString[UfoP,"\t lhacode = ["<>StringReplace[ToString[EParamList[[i,2,j,1]]],{"{"->"","}"->""}]<>"] ) \n \n"];,
+WriteString[UfoP, UfoForm[EParamList[[i,2,j,2,1]]]<>" = Parameter(name='"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = "<>UfoForm[EParamList[[i,2,j,2,2]]]<>",\n"];
+WriteString[UfoP,"    texname = '"<>UfoTeX[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    lhablock = '"<>EParamList[[i,1]]<>"',\n"];
+WriteString[UfoP,"    lhacode = ["<>StringReplace[ToString[EParamList[[i,2,j,1]]],{"{"->"","}"->""}]<>"] )\n\n"];,
 
-WriteString[UfoP, "r"<>UfoForm[EParamList[[i,2,j,2,1]]]<>" = \t Parameter(name='r"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = "<>UfoForm[EParamList[[i,2,j,2,2]]]<>", \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"}', \n"];
-WriteString[UfoP,"\t lhablock = '"<>EParamList[[i,1]]<>"', \n"];
-WriteString[UfoP,"\t lhacode = ["<>StringReplace[ToString[EParamList[[i,2,j,1]]],{"{"->"","}"->""}]<>"] ) \n \n"];
+WriteString[UfoP, "r"<>UfoForm[EParamList[[i,2,j,2,1]]]<>" = Parameter(name='r"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = "<>UfoForm[EParamList[[i,2,j,2,2]]]<>",\n"];
+WriteString[UfoP,"    texname = '"<>UfoTeX[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    lhablock = '"<>EParamList[[i,1]]<>"',\n"];
+WriteString[UfoP,"    lhacode = ["<>StringReplace[ToString[EParamList[[i,2,j,1]]],{"{"->"","}"->""}]<>"] )\n\n"];
 
-WriteString[UfoP, "i"<>UfoForm[EParamList[[i,2,j,2,1]]]<>" = \t Parameter(name='i"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = "<>UfoForm[EParamList[[i,2,j,2,2]] /. 1.->0.]<>", \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'IM"<>EParamList[[i,1]]<>"', \n"];
-WriteString[UfoP,"\t lhacode = ["<>StringReplace[ToString[EParamList[[i,2,j,1]]],{"{"->"","}"->""}]<>"] ) \n \n"];
+WriteString[UfoP, "i"<>UfoForm[EParamList[[i,2,j,2,1]]]<>" = Parameter(name='i"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = "<>UfoForm[EParamList[[i,2,j,2,2]] /. 1.->0.]<>",\n"];
+WriteString[UfoP,"    texname = '"<>UfoTeX[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    lhablock = 'IM"<>EParamList[[i,1]]<>"',\n"];
+WriteString[UfoP,"    lhacode = ["<>StringReplace[ToString[EParamList[[i,2,j,1]]],{"{"->"","}"->""}]<>"] )\n\n"];
 ];
 j++;];
 i++;];
@@ -1114,11 +1147,11 @@ For[i=1,i<=Length[EParamList],
 For[j=1,j<=Length[EParamList[[i,2]]],
 If[FreeQ[EParamList[[i,2]],sum]==True,
 If[EParamList[[i,2,j,2,3]]==True,
-WriteString[UfoP, UfoForm[EParamList[[i,2,j,2,1]]]<>" = \t Parameter(name='"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'internal', \n"];
-WriteString[UfoP,"\t type = 'complex', \n"];
-WriteString[UfoP,"\t value = 'r"<> UfoForm[EParamList[[i,2,j,2,1]]]<>" + complex(0,1)*i"<> UfoForm[EParamList[[i,2,j,2,1]]]<>"', \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"}' ) \n \n"];
+WriteString[UfoP, UfoForm[EParamList[[i,2,j,2,1]]]<>" = Parameter(name='"<>UfoForm[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'internal',\n"];
+WriteString[UfoP,"    type = 'complex',\n"];
+WriteString[UfoP,"    value = 'r"<> UfoForm[EParamList[[i,2,j,2,1]]]<>" + complex(0,1)*i"<> UfoForm[EParamList[[i,2,j,2,1]]]<>"',\n"];
+WriteString[UfoP,"    texname = '"<>UfoTeX[EParamList[[i,2,j,2,1]]]<>"' )\n\n"];
 ];
 ];
 j++;];
@@ -1126,69 +1159,89 @@ i++;];
 
 For[i=1,i<=Length[IParamList],
 If[FreeQ[IParamList[[i,2]],sum]==True,
-WriteString[UfoP, UfoForm[IParamList[[i,1]]]<>" = \t Parameter(name='"<>UfoForm[IParamList[[i,1]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'internal', \n"];
+WriteString[UfoP, UfoForm[IParamList[[i,1]]]<>" = Parameter(name='"<>UfoForm[IParamList[[i,1]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'internal',\n"];
 If[IParamList[[i,3]]==False,
-WriteString[UfoP,"\t type = 'real', \n"];,
-WriteString[UfoP,"\t type = 'complex', \n"];
+WriteString[UfoP,"    type = 'real',\n"];,
+WriteString[UfoP,"    type = 'complex',\n"];
 ];
-If[NumericQ[IParamList[[i,2]]],
-WriteString[UfoP,"\t value = '1.*("<>UfoForm[IParamList[[i,2]]]<>")', \n"];,
-WriteString[UfoP,"\t value = '"<>UfoForm[IParamList[[i,2]]]<>"', \n"];
-];
-WriteString[UfoP,"\t texname = '"<>UfoForm[IParamList[[i,1]]]<>"') \n \n"];
+(*If[NumberQ[IParamList[[i,2]]],
+WriteString[UfoP,"    value = "<>ToString[IParamList[[i,2]]]<>",\n"];,*)
+WriteString[UfoP,"    value = '"<>UfoForm[IParamList[[i,2]]]<>"',\n"];
+(*];*)
+WriteString[UfoP,"    texname = '"<>UfoTeX[IParamList[[i,1]]]<>"')\n\n"];
 ];
 i++;];
 
-RXiList=Intersection[Cases[SA`VertexList[GGS],x_RXi,99]];
-
-
-For[i=1,i<=Length[RXiList],
-WriteString[UfoP, UfoForm[RXiList[[i]]]<>" = \t Parameter(name='"<>UfoForm[RXiList[[i]]]<>"', \n"];
-WriteString[UfoP,"\t nature = 'internal', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = '1.', \n"];
-WriteString[UfoP,"\t texname = '"<>UfoForm[RXiList[[i]]]<>"') \n \n"];
-i++;];
+RXiList=Intersection[Cases[UFOVertexList[GGS],x_RXi,99]];
+For[i=1,i<=Length[RXiList],i++,
+WriteString[UfoP, UfoForm[RXiList[[i]]]<>" = Parameter(name='"<>UfoForm[RXiList[[i]]]<>"',\n"];
+WriteString[UfoP,"    nature = 'internal',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = '1.',\n"];
+WriteString[UfoP,"    texname = '"<>UfoTeX[RXiList[[i]]]<>"')\n\n"];
+(*write m=MV*RXi[V] for ghosts and goldstones*)
+For[k=1,k<=Length[PartListFR],k++,
+For[l=1,l<=Length[PartListFR[[k,2]]],l++,
+    entry=PartListFR[[k,2,l]];
+    If[entry[[5]]===ZERO, Continue[]];
+    If[entry[[13]]=!=NoGS && entry[[13]]===(RXiList[[i]]/.RXi[f_]:>f),
+        vectorbosonmass = PartListFR[[First[Select[Position[PartListFR, entry[[13]]], #[[2]] == 1 &][[1]]]]][[2, 1, 5]];
+        ,
+        If[entry[[3]]===G,
+            If[!MemberQ[ToExpression@Flatten[{getOutputName[getVectorBoson[entry[[15]]]]}],(RXiList[[i]]/.RXi[f_]:>f)], Continue[]];
+            vectorbosonmass = getMassW[getVectorBoson[entry[[15]]]];
+        ,
+            Continue[];
+        ];
+    ];
+    WriteString[UfoP, UfoForm[entry[[5]]]<>" = Parameter(name = '"<>UfoForm[entry[[5]]]<>"',\n"];
+    WriteString[UfoP,"    nature = 'internal',\n"];
+    WriteString[UfoP,"    type = 'real',\n"];
+    WriteString[UfoP,"    value = '"<>UfoForm[RXiList[[i]] * vectorbosonmass] <>"',\n"];
+    WriteString[UfoP,"    texname = 'M_{"<>UfoTeX[entry[[11]]]<>"}')\n\n"];
+];
+];
+];
 
 If[effHiggsV,
-If[getGen[HiggsBoson]<99,
-For[j=1,j<=getGen[HiggsBoson],
-WriteString[UfoP,"HPP"<>ToString[j] <>" = \t Parameter(name='"<>"HPP"<>ToString[j]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = 0., \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>"HPP"<>ToString[j] <>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'EFFHIGGSCOUPLINGS', \n"];
-WriteString[UfoP,"\t lhacode = ["<>ToString[getPDG[HiggsBoson,j]]<>","<>ToString[getPDG[VectorP,1]]<>","<>ToString[getPDG[VectorP,1]]<>"] ) \n \n"];
+If[getGen[HiggsBoson]<99,  
+For[j=getGenSPhenoStart[HiggsBoson],j<=getGen[HiggsBoson], (* MDG fixed 14-7-2023*)
+WriteString[UfoP,"HPP"<>ToString[j] <>" = Parameter(name='"<>"HPP"<>ToString[j]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = 0.,\n"];
+WriteString[UfoP,"    texname = '\\\\text{"<>"HPP"<>ToString[j] <>"}',\n"];
+WriteString[UfoP,"    lhablock = 'EFFHIGGSCOUPLINGS',\n"];
+WriteString[UfoP,"    lhacode = ["<>ToString[getPDG[HiggsBoson,j]]<>","<>ToString[getPDG[VectorP,1]]<>","<>ToString[getPDG[VectorP,1]]<>"] )\n\n"];
 
-WriteString[UfoP,"HGG"<>ToString[j] <>" = \t Parameter(name='"<>"HGG"<>ToString[j]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = 0., \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>"HGG"<>ToString[j] <>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'EFFHIGGSCOUPLINGS', \n"];
-WriteString[UfoP,"\t lhacode = ["<>ToString[getPDG[HiggsBoson,j]]<>","<>ToString[getPDG[VectorG,1]]<>","<>ToString[getPDG[VectorG,1]]<>"] ) \n \n"];
+WriteString[UfoP,"HGG"<>ToString[j] <>" = Parameter(name='"<>"HGG"<>ToString[j]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = 0.,\n"];
+WriteString[UfoP,"    texname = '\\\\text{"<>"HGG"<>ToString[j] <>"}',\n"];
+WriteString[UfoP,"    lhablock = 'EFFHIGGSCOUPLINGS',\n"];
+WriteString[UfoP,"    lhacode = ["<>ToString[getPDG[HiggsBoson,j]]<>","<>ToString[getPDG[VectorG,1]]<>","<>ToString[getPDG[VectorG,1]]<>"] )\n\n"];
 j++;];
 ];
 
 If[getGen[PseudoScalar]<99,
 For[j=getGenSPhenoStart[PseudoScalar],j<=getGen[PseudoScalar],
-WriteString[UfoP,"APP"<>ToString[j] <>" = \t Parameter(name='"<>"APP"<>ToString[j]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = 0., \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>"APP"<>ToString[j] <>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'EFFHIGGSCOUPLINGS', \n"];
-WriteString[UfoP,"\t lhacode = ["<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorP,1]]<>","<>ToString[getPDG[VectorP,1]]<>"] ) \n \n"];
+WriteString[UfoP,"APP"<>ToString[j] <>" = Parameter(name='"<>"APP"<>ToString[j]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = 0.,\n"];
+WriteString[UfoP,"    texname = '\\\\text{"<>"APP"<>ToString[j] <>"}',\n"];
+WriteString[UfoP,"    lhablock = 'EFFHIGGSCOUPLINGS',\n"];
+WriteString[UfoP,"    lhacode = ["<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorP,1]]<>","<>ToString[getPDG[VectorP,1]]<>"] )\n\n"];
 
-WriteString[UfoP,"AGG"<>ToString[j] <>" = \t Parameter(name='"<>"AGG"<>ToString[j]<>"', \n"];
-WriteString[UfoP,"\t nature = 'external', \n"];
-WriteString[UfoP,"\t type = 'real', \n"];
-WriteString[UfoP,"\t value = 0., \n"];
-WriteString[UfoP,"\t texname = '\\\\text{"<>"AGG"<>ToString[j] <>"}', \n"];
-WriteString[UfoP,"\t lhablock = 'EFFHIGGSCOUPLINGS', \n"];
-WriteString[UfoP,"\t lhacode = ["<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorG,1]]<>","<>ToString[getPDG[VectorG,1]]<>"] ) \n \n"];
+WriteString[UfoP,"AGG"<>ToString[j] <>" = Parameter(name='"<>"AGG"<>ToString[j]<>"',\n"];
+WriteString[UfoP,"    nature = 'external',\n"];
+WriteString[UfoP,"    type = 'real',\n"];
+WriteString[UfoP,"    value = 0.,\n"];
+WriteString[UfoP,"    texname = '\\\\text{"<>"AGG"<>ToString[j] <>"}',\n"];
+WriteString[UfoP,"    lhablock = 'EFFHIGGSCOUPLINGS',\n"];
+WriteString[UfoP,"    lhacode = ["<>ToString[getPDG[PseudoScalar,j]]<>","<>ToString[getPDG[VectorG,1]]<>","<>ToString[getPDG[VectorG,1]]<>"] )\n\n"];
 j++;];
 ];
 ];
@@ -1199,14 +1252,35 @@ SA`Doc`EndEntry[];
 ];
 
 
-AddStandardFiles :=Block[{},
+AddStandardFiles[python2_:False] :=Block[{filestocopy,sourcepath,ff,file},
 SA`Doc`File = "Package/Outputs/madgraph.nb";
 SA`Doc`Name = "\!\(\*
 StyleBox[\"AddStandardFiles\",\nInitializationCell->True]\)";
 SA`Doc`Info = "Copies all files to the UFO output directory which are not model dependent and directly delivered with SARAH";
 SA`Doc`Input={};
 SA`Doc`GenerateEntry[];
+If[python2===True,
+sourcepath=FileNameJoin[{$sarahSPhenoPackageDir,"IncludeSPheno","UFOpy2"}];
+,
+sourcepath=FileNameJoin[{$sarahSPhenoPackageDir,"IncludeSPheno","UFOpy3"}];
+];
 
+
+					 
+filestocopy={"function_library.py","__init__.py","object_library.py","write_param_card.py","coupling_orders.py"};
+For[ff=1,ff<=Length[filestocopy],ff++,
+CopyFile[FileNameJoin[{sourcepath,filestocopy[[ff]]}],FileNameJoin[{$sarahCurrentUfoDir,filestocopy[[ff]]}],OverwriteTarget->True];
+
+   ];
+
+(* Now append some info to the __init__.py file *)
+
+file=OpenAppend[FileNameJoin[{$sarahCurrentUfoDir,"__init__.py"}]];
+WriteString[file,"__author__ = \"SARAH version "<>ToString[SA`Version]<>"\"\n"];
+WriteString[file,"__date__ = \""<>DateString["ISODate"]<>"\"\n"];					 
+Close[file];
+					 
+(*
 file = OpenWrite[ToFileName[$sarahCurrentUfoDir,"function_library.py"]];
 AppendSourceCode["function_library.py",file];
 Close[file];
@@ -1226,9 +1300,10 @@ Close[file];
 file = OpenWrite[ToFileName[$sarahCurrentUfoDir,"coupling_orders.py"]];
 AppendSourceCode["coupling_orders.py",file];
 Close[file];
-
+*)
 SA`Doc`EndEntry[];
 ];
+					 
 
 K6[a_,ct3,ct1]:=K6[a,ct1,ct3];
 K6[a_,ct3,ct2]:=K6[a,ct2,ct3];

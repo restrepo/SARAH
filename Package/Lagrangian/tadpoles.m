@@ -130,6 +130,7 @@ j++;];
 i++;];
 
 (* to match calculated correction to the right vev *)
+(* MDG 2023-05-30: I have not changed this yet, but it throws warnings if a particle that gets a vev doesn't appear in 'basis', i.e. if it doesn't mix. Also: it seems to rely on the fact that only the real part of the field is relevant for the mixing/vev and that this should appear at position 4 in DEFINITIONS[EWSB][VEVS] *)
 vevTemp=Map[Sort[#,(Position[basis,vevs[[Position[vevs,#][[1,1]]]][[4,1]]][[1,3]]<Position[basis,vevs[[Position[vevs,#2][[1,1]]]][[4,1]]][[1,3]])&]&,listVEVseparated];
 subTadpoleNumber={};
 For[i=1,i<=Length[ScalarsForTadpoles],

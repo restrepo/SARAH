@@ -14,7 +14,7 @@ MINPAR={
         {24, MS2input}
 };
 
-
+ExtraOddParticles={QM,Sing};
 ParametersToSolveTadpoles = {mu2};
 
 DEFINITION[MatchingConditions]= {

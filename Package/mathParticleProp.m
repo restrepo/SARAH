@@ -2181,7 +2181,7 @@ If[Head[temp]===String,
 If[Head[y]===bar,
 SA`Doc`Return["\\bar{"<>temp<>"}"];,
 If[Head[y]===conj,
-SA`Doc`Return[temp<>"^*"];,
+SA`Doc`Return["{"<>temp<>"}^*"];,
 SA`Doc`Return[temp];
 ];
 ];,

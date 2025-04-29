@@ -1095,10 +1095,29 @@ i++;];
 
 
 (* ::Input::Initialization:: *)
-GenerateMixedLHBlock:=Block[{i,temp,ParticlePhasesTEMP},
+GenerateMixedLHBlock:=Block[{i,temp,ParticlePhasesTEMP,relevantpars,par,dim},
+
+(* 
+	This routine creates a "CombindedBlock" containing blocks of parameters relevant for input in the model.
+	To these it adds a block called "MixedBlock" which it dumps phases into in the form exp(i eta). 
+	The problem is that this "MixedBlock" is not used by the CalcHEP/MadGraph routines! 
+
+ *)
+
 CombindedBlock={};
 NewLHoutputBlocks={};
 MixedBlockNr=1;
+
+(* ListAllInputParameters generated earlier in SPhenoInOut.m 
+
+First we add vevs and phases to it. 
+
+E.g. in MSSM-CPV we have ParticlePhases 
+{{SHup, Exp[I eta]}, {SHu0, Exp[I eta]}, {fG, PhaseGlu}, {Glu, PhaseGlu}}
+
+We need to catch the *eta* here as well as PhaseGlu etc. 
+
+*)
 
 ListAllInputParametersTEMP = ListAllInputParameters;
 
@@ -1114,20 +1133,31 @@ i++;];
 
 ListAllInputParametersTEMP=Join[ListAllInputParametersTEMP,Table[{AdditionalParametersLagrange[[i]],getDimSPheno[AdditionalParametersLagrange[[i]]],AdditionalParametersLagrange[[i]],conj[AdditionalParametersLagrange[[i]]]===AdditionalParametersLagrange[[i]]},{i,1,Length[AdditionalParametersLagrange]}]];
 
+
+
+
+
+
+
 For[i=1,i<=Length[ListAllInputParametersTEMP],
-If[Length[ListAllInputParametersTEMP[[i,2]]]==0,
+If[Length[ListAllInputParametersTEMP[[i,2]]]==0, (* Only relevant for 1-D parameters *)
 pos = Position[Transpose[ParameterDefinitions][[1]],ListAllInputParametersTEMP[[i,1]]];
 
 If[pos=!={},
 BlockName=ToExpression[LHBlockName[ListAllInputParametersTEMP[[i,1]]]];
 If[BlockName =!=NONE,
-If[BlockName===LesHouches || BlockName ===None,
+If[BlockName===LesHouches || BlockName ===None,  
+(* If the block name for the parameter has not been defined, add it to the mixed block. Since we are
+only doing this for 1D parameters this is fine!
+*)
 pos2=Position[CombindedBlock,MixedBlock];
 If[pos2=!={},
 CombindedBlock[[pos2[[1,1]]]] = Join[CombindedBlock[[pos2[[1,1]]]],{{ListAllInputParametersTEMP[[i,1]],MixedBlockNr}}];,
 CombindedBlock = Join[CombindedBlock,{{MixedBlock,{ListAllInputParametersTEMP[[i,1]],MixedBlockNr}}}];
 ];
-MixedBlockNr++;,
+MixedBlockNr++;, (* BlockName != LesHouches && BlockName !=None *)
+
+(* If the parameter is one dimensional we add *)
 BlockNameNr = LHPos[ListAllInputParametersTEMP[[i,1]]];
 pos2=Position[CombindedBlock,BlockName];
 If[pos2=!={},
@@ -1135,16 +1165,63 @@ CombindedBlock[[pos2[[1,1]]]] = Join[CombindedBlock[[pos2[[1,1]]]],{{ListAllInpu
 CombindedBlock = Join[CombindedBlock,{{BlockName,{ListAllInputParametersTEMP[[i,1]],BlockNameNr}}}];
 ];
 ];
-];,
+];(* end if BlockName =!=NONE*), 
+
+(* pos == {}: put it in the MixedBlock because it is not a member of the ParameterDefinitions -> e.g. it's a phase like Exp[i eta]. In principle it could be 'mixed', involving more than one parameter. But this can't be read in! We can't assign a value in the code to a function! We still need to write out the 'relevant parameters'. 
+
+ *)
+
 pos2=Position[CombindedBlock,MixedBlock];
 If[pos2=!={},
 CombindedBlock[[pos2[[1,1]]]] = Join[CombindedBlock[[pos2[[1,1]]]],{{ListAllInputParametersTEMP[[i,1]],MixedBlockNr}}];,
 CombindedBlock = Join[CombindedBlock,{{MixedBlock,{ListAllInputParametersTEMP[[i,1]],MixedBlockNr}}}];
 ];
 MixedBlockNr++;
+
+(* Here we write the relevant pars: MDG new code 13-07-2023
+    14-06-2023: supeseded by instead harmonising with the UFO writing routines: 
+	I will look at extra parameters picked up by SA`parNeed, done above
+	*)
+(*
+
+relevantpars = Complement[Select[Transpose[ParameterDefinitions][[1]], !FreeQ[ListAllInputParametersTEMP[[i,1]], #] &], ListAllInputParametersTEMP[[;;,1]]];
+
+If[relevantpars =!= {},
+ Do[
+  (* only do this for 1D parameters; it is probably overkill *)
+  dim = getDimParameters[par];
+  If[Length[dim] =!= 0, Continue[]]; 
+  BlockName = ToExpression[LHBlockName[par]];
+  If[BlockName === NONE, Continue[]];
+  BlockNameNr = LHPos[par];
+  pos2 = Position[CombindedBlock, BlockName];
+  	If[pos2 =!= {}, 
+   CombindedBlock[[pos2[[1, 1]]]] = Join[CombindedBlock[[pos2[[1, 1]]]], {{par, BlockNameNr}}];, 
+   CombindedBlock = Join[CombindedBlock, {{BlockName, {par, BlockNameNr}}}];
+   ];
+  , {par, relevantpars}]
+ ];
+*)
+
+
 ];
 ];
 i++;];
+
+(* MDG 14-06-2023: pick up extra parameters from SA`parNeed, like required in the UFO routines *)
+
+relevantpars=Select[SA`ParNeed, (FreeQ[subDependencesSPheno, #]) && (FreeQ[UnfixedCharges, #]) && ((Length[getDimParameters[#]] == 0 || getDimParameter[#] == {1}) && !MemberQ[ListAllInputParametersTEMP[[;;,1]], #]) &];
+Do[
+	BlockName = ToExpression[LHBlockName[par]];
+  	If[BlockName === NONE, Continue[]];
+  	BlockNameNr = LHPos[par];
+  	pos2 = Position[CombindedBlock, BlockName];
+  	If[pos2 =!= {}, 
+   		CombindedBlock[[pos2[[1, 1]]]] = Join[CombindedBlock[[pos2[[1, 1]]]], {{par, BlockNameNr}}];, 
+   		CombindedBlock = Join[CombindedBlock, {{BlockName, {par, BlockNameNr}}}];
+   ];
+ , {par, relevantpars}];
+
 
 For[i=1,i<=Length[UnfixedCharges],
 pos2=Position[CombindedBlock,LHBlockName[UnfixedCharges[[i]]]];
@@ -1176,6 +1253,9 @@ subNumAdd = Join[subNumAdd,{subDependencesSPheno[[i]]}];
 ];
 i++;];
 
+
+
+(* Now sort the entries and add tadpoles *)
  temp={};
 
 For[i=1,i<=Length[CombindedBlock],
@@ -1536,7 +1616,13 @@ WriteString[sphenoInOut,"&+i_errors(10)+i_errors(12)+Sum(i_errors(14:19))).Gt.0)
 WriteString[sphenoInOut,"& Write(io_L,100)&\n"];
 WriteString[sphenoInOut,"& \"     3               # potential numerical problem, check file Messages.out\"\n"];
 *)
+
+WriteString[sphenoInOut,"if (OutputForMG) then ! if MG output we rename the MODSEL block because it messes with pythia \n"]; (* MDG 11/7/2023 *)
+WriteString[sphenoInOut,"Write(io_L,100) \"Block MODSELIN  # Input parameters\"\n"];
+WriteString[sphenoInOut,"else  \n"];
 WriteString[sphenoInOut,"Write(io_L,100) \"Block MODSEL  # Input parameters\"\n"];
+WriteString[sphenoInOut,"end if \n"];
+
 If[OnlyLowEnergySPheno=!=True,
 WriteString[sphenoInOut,"If (HighScaleModel.Eq.\"LOW\") Then \n "];
 WriteString[sphenoInOut,"Write(io_L,110)  1,0, \" "<> StringScaleOut <>" input\"\n"];
@@ -1550,6 +1636,8 @@ If[SLHA1Possible==True, WriteString[sphenoInOut, "If (.not.WriteSLHA1) Then \n"]
 WriteString[sphenoInOut,"If (GenerationMixing) Write(io_L,110) &\n"];
 WriteString[sphenoInOut,"&     6,1, \" switching on flavour violation\" \n"];
 If[SLHA1Possible,WriteString[sphenoInOut,"End if \n"];];
+
+
 ];
 
 WriteInOutParameters:=Block[{i,i1,i2,i3,i4,kk,k, stringrep,tempMa,pos,sign,p1,p2,p3, t1, t2, pt1, pt2,suffix,ntot,pdgs},

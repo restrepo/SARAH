@@ -67,7 +67,8 @@ DEFINITION[GaugeES][DiracSpinors]={
   Fu2 -> {0, FuR},
   Fe1 -> {FeL, 0},
   Fe2 -> {0, FeR},
-  Fv -> {FvL, conj[FvL]}
+    (*Fv -> {FvL, conj[FvL]}*)
+    Fv -> {FvL, 0}
 };
 
 

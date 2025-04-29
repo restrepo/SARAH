@@ -3260,11 +3260,11 @@ WriteString[sphenoLow, "mzsave  = sqrt(mz2) \n"];
 If[OnlyLowEnergySPheno=!=True,
 If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLow,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge]<>"\n"];];
 If[AddOHDM=!=True,
-If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False,
-WriteString[sphenoLow,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
+If[FreeQ[parameters,VEVSM1]===False && FreeQ[parameters,VEVSM2]===False, (* MDG 2023-12-18 added <> to end of these two lines below *)
+WriteString[sphenoLow,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("<> 
 SPhenoForm[VEVSM1]<>"**2 + "<>SPhenoForm[VEVSM2]<>"**2) \n"];
 ];,
-WriteString[sphenoLow,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
+WriteString[sphenoLow,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("<>
 SPhenoForm[VEVSM]<>"**2) \n"];
 ];
 WriteString[sphenoLow,"mZ = sqrt(mZ2) \n"];
@@ -3617,11 +3617,12 @@ MakeCall["STUparameter",Flatten[{masses,couplings}],{"vSM","g1SM","g2SM","g3SM",
 If[FreeQ[massless,Neutrino],
 WriteTadpoleSolution[sphenoLow];
 WriteString[sphenoLow,"CalculateOneLoopMassesSave = CalculateOneLoopMasses \n"];
-WriteString[sphenoLow,"CalculateOneLoopMasses = .true. \n"];
+
 WriteString[sphenoLow,"If (MatchingOrder.gt.-1) Then \n"];
+WriteString[sphenoLow,"CalculateOneLoopMasses = .true. \n"]; (* MDG moved 19/9/23 *)
 MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoLow];
 WriteString[sphenoLow,"CalculateOneLoopMasses = CalculateOneLoopMassesSave \n"];
-WriteString[sphenoLow,"nuMasses = "<>SPhenoForm[SPhenoMass[Neutrino]]<>" \n"];
+(*WriteString[sphenoLow,"nuMasses = "<>SPhenoForm[SPhenoMass[Neutrino]]<>" \n"]; MDG 19/9/23 *)
 If[SPhenoForm[NeutrinoMM]=!="Delta",WriteString[sphenoLow,"nuMixing = "<>SPhenoForm[NeutrinoMM]<>" \n"];];
 WriteString[sphenoLow,"End if \n"];
 SetPoleMasses[sphenoLow];

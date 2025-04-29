@@ -481,7 +481,10 @@ WriteString[spheno,"End If \n \n "];
 
 If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
 
-WriteString[spheno,"If (CalculateLowEnergy) then \n"];
+   WriteString[spheno,"If (CalculateLowEnergy) then \n"];
+   If[FreeQ[massless,Neutrino] && SA`NeutrinoPresent ==True, (* MDG 2023-12-18 added this, otherwise get error when numasses not needed *)
+   		WriteString[spheno,"nuMasses = "<>SPhenoForm[SPhenoMass[Neutrino]]<>" \n"];
+   ];
 MakeCall["CalculateLowEnergyConstraints",Join[Join[listAllParameters,listVEVs],Transpose[ListOfLowEnergyNames][[1]]],{},{},spheno]; 
 WriteString[spheno, SPhenoForm[SPhenoMass[VectorZ]]<>" = mz \n"];
 WriteString[spheno, SPhenoForm[SPhenoMassSq[VectorZ]]<>" = mz2 \n"];

@@ -266,7 +266,12 @@ Habfunc[a_,b_]:=((Yijk[pA,pB,a]Conj[Yijk[pB,pC,b]]+Yijk[pA,pB,b]Conj[Yijk[pB,pC,
 LamSfunc[a_,b_]:=Sum[ (SA`CasimirRGE[a,nr]Bij[a,b]+SA`CasimirRGE[b,nr]Bij[a,b]),{nr,1,Length[Gauge]}];
 (* LamYfunc[a_,b_]:=1/2(Yijk[pA,pB,a] Conj[Yijk[pB,pA,pC]]+Conj[Yijk[pA,pB,a]]Yijk[pB,pA,pC])Bij[pC,b]+1/2(Yijk[pA,pB,b] Conj[Yijk[pB,pA,pC]]+Conj[Yijk[pA,pB,b]] Yijk[pB,pA,pC])Bij[pC,a]; *)
 (* LamYfunc[a_,b_]:=(Yijk[pA,pB,a] Conj[Yijk[pB,pA,pC]]Bij[pC,b]+Yijk[pA,pB,b] Conj[Yijk[pB,pA,pC]]Bij[pC,a]); *)
-LamYfunc[a_,b_]:=Y2S[a,a]Bij[a,b]+Y2S[b,b] Bij[a,b];
+
+(* WTF???? THIS ISNT RIGHT! Corrected MDG 2023-5-12, thanks Pedro Ferreira *)
+(*LamYfunc[a_,b_]:=Y2S[a,a]Bij[a,b]+Y2S[b,b] Bij[a,b];*)
+LamYfunc[a_,b_]:=(Y2S[a,pC]Bij[pC,b]+ Y2S[b,pC]Bij[pC,a]);
+
+
 
 (* LamYfunc[a_,b_]:=(Y2S[a,pC]Bij[pC,b]+ Y2S[b,pC]Bij[pC,a]); *)
 

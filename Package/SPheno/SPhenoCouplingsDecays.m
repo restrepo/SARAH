@@ -333,11 +333,11 @@ WriteString[sphenoCoup, "cplHiggsZZvirt = " <>ToString[getSPhenoCoupling[C[Higgs
 ];
 ];
 
-If[( particle===PseudoScalar),
+If[( particle===PseudoScalar) && (suffix ==="2B"), (* MDG: added the check for suffix 2023-05-30, otherwise we compute the ratio twice and then it won't compile for 3B *)
 WriteHiggsBoundsRatiosPseudoScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 ];
 
-If[(particle===HiggsBoson),
+If[(particle===HiggsBoson)  && (suffix ==="2B"), (* MDG: added the check for suffix 2023-05-30, otherwise we compute the ratio twice and then it won't compile for 3B *)
 WriteHiggsBoundsRatiosScalar[sphenoCoup, SA`CurrentStates, Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}]];
 ];
 
