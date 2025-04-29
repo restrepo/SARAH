@@ -59,8 +59,9 @@ LagNoHC = -(mu2 conj[H].H  + 1/2 MT trip.trip  + 1/2 LT  Delta[lef1b,lef2] Delta
  + KHT conj[H].trip.H + 1/2 LH conj[H].H.conj[H].H + 1/2 LHT conj[H].H.trip.trip);
 
 LagHC = - (Yd conj[H].d.q + Ye conj[H].e.l - Yu H.u.q);
-			  		  
-ContractionRGE[LT]=Delta[lef1,lef2] Delta[lef3, lef4];
+
+(* Fix by MDG 24-05-2024, Thanks Pietro Slavich *)
+ContractionRGE[LT]=(1/2) * Delta[lef1,lef2] Delta[lef3, lef4];
 			  		  
 (* Gauge Sector *)
 

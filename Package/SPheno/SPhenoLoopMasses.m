@@ -3365,12 +3365,24 @@ WriteString[sphenoLoop, "NameOfUnit(Iname) = '"<>"OneLoop"<> Name<>"'\n \n"];
 If[getType[particle]===F,
 WriteString[sphenoLoop, "mi = "<>ToString[SPhenoMass[particle]] <>" \n"];,
 If[getType[particle]===V,
- WriteString[sphenoLoop, "mi2 = "<>ToString[SPhenoMassSq[particle]/.Delta[a__]->0] <>" \n"]; ,
+(* Original line
+ WriteString[sphenoLoop, "mi2 = "<>ToString[SPhenoMassSq[particle]/.Delta[a__]->0] <>" \n"];
+
+24-05-2024
+ surely Delta[a__] -> 1??!!! But there shouldn't even be a delta function here.
+ *)
+ WriteString[sphenoLoop, "mi2 = "<>ToString[SPhenoMassSq[particle]/.Delta[a__]->1] <>" \n"];
+ ,
 
    (* MDG 27-09-2022: this is bad if it contains a sum
    WriteString[sphenoLoop, "mi2 = "<>SPhenoForm[TreeMass[particle,SA`CurrentStates ]/. Delta[a_,b_]->1] <>" \n"];
-      *)
+    ....
+    this doesn't work:
    MakeSPhenoCoupling[TreeMass[particle,SA`CurrentStates ]/.Delta[a__]->0, "mi2",sphenoLoop];
+   *)
+   
+   (* Fix 24-05-2024. Not really sure why we don't use the tree-level masses provided. To revisit! *)
+   MakeSPhenoCoupling[TreeMass[particle,SA`CurrentStates ]/.Delta[a__]->1, "mi2",sphenoLoop];
 ];
 ];
 
