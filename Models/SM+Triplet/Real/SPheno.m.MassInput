@@ -27,8 +27,8 @@ BoundaryLowScaleInput={
   {vT, vTInput},
   {KHT, (2 mHpinput^2 vTInput)/(v^2 + 2 vTInput^2)},
   {LH, ((mh1input^2 + mh2input^2 tanAlpha^2)/((1 + tanAlpha^2) v^2))},
-  {LHT, -(-(( Sqrt[2] mh1input^2 tanAlpha)/(1 + tanAlpha^2)) + (Sqrt[2] mh2input^2 tanAlpha)/(1 + tanAlpha^2) - (2 mHpinput^2 v vTinput)/(v^2 + 2 vTinput^2))/(v vTinput)},
-  {LT, -(mHpinput^2 (1 + tanAlpha^2) v^2 - mh2input^2 (v^2 + 2 vTinput^2) - mh1input^2 tanAlpha^2 (v^2 + 2 vTinput^2))/((1 + tanAlpha^2) vTinput^2 (v^2 +   2 vTinput^2))}
+  {LHT, -(-(( Sqrt[2] mh1input^2 tanAlpha)/(1 + tanAlpha^2)) + (Sqrt[2] mh2input^2 tanAlpha)/(1 + tanAlpha^2) - (2 mHpinput^2 v vTInput)/(v^2 + 2 vTInput^2))/(v vTInput)},
+  {LT, -(mHpinput^2 (1 + tanAlpha^2) v^2 - mh2input^2 (v^2 + 2 vTInput^2) - mh1input^2 tanAlpha^2 (v^2 + 2 vTInput^2))/((1 + tanAlpha^2) vTInput^2 (v^2 +   2 vTInput^2))}
 };
 
 

@@ -34,6 +34,9 @@ sphenoCS=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"HiggsCS_"<>ModelName<>".f9
 
 WriteCopyRight[sphenoCS];
 
+
+
+				  
 WriteString[sphenoCS, "Module HiggsCS_"<>ModelName<>" \n \n"];
 WriteString[sphenoCS, "Use Control \n"];
 WriteString[sphenoCS, "Use Settings \n"];
@@ -50,20 +53,46 @@ Close[sphenoCS];
 WriteSPhenoHiggsCS[ES_]:=Block[{i,j,temp, genH,genHS},
 genH=getGen[HiggsBoson];
 genHS=ToString[genH];
-MakeSubroutineTitle["HiggsCrossSections",{},{"mh","ratGG","ratPP","ratWW","ratZZ","ratTT","CS","kont"},{},sphenoCS];
+
+
+(* UPDATE 24/02/2025 MDG + WP: need to use coupling ratios squared!  *)			       
+(*MakeSubroutineTitle["HiggsCrossSections",{},{"mh","ratGG","ratPP","ratWW","ratZZ","ratTT","CS","kont"},{},sphenoCS];*)
+MakeSubroutineTitle["HiggsCrossSections",{},{"mh","HTratGG","HTratPP","HTratWW","HTratZZ","HTratTT","CS","kont"},{},sphenoCS];			       
 
 WriteString[sphenoCS,"Implicit None \n"];
 WriteString[sphenoCS,"Real(dp), Intent(in) :: mh(:)  \n"];
+
+(*			       
 WriteString[sphenoCS,"Complex(dp), Intent(in) :: ratPP(:), ratGG(:)  \n"];
 WriteString[sphenoCS,"Real(dp), Intent(in) :: ratZZ(:), ratWW(:), ratTT(:)  \n"];
+   *)
+
+			       
+WriteString[sphenoCS,"Complex(dp), Intent(in) :: HTratPP(:), HTratGG(:)  \n"];
+WriteString[sphenoCS,"Real(dp), Intent(in) :: HTratZZ(:), HTratWW(:), HTratTT(:)  \n"];
+			       
 WriteString[sphenoCS,"Real(dp), Intent(Out) :: CS(:,:,:)  \n"];
 WriteString[sphenoCS,"Integer, Intent(inout) :: kont \n"];
 WriteString[sphenoCS, "Real(dp) :: x, res \n"];
 WriteString[sphenoCS, "Integer :: i1 \n"];
 WriteString[sphenoCS, "Integer :: nG \n"];
+WriteString[sphenoCS,"Complex(dp),allocatable :: ratPP(:), ratGG(:)  \n"];
+WriteString[sphenoCS,"Real(dp),allocatable :: ratZZ(:), ratWW(:), ratTT(:)  \n"];
 
 WriteString[sphenoCS, "nG = Size(mh) \n"];
-
+			       
+WriteString[sphenoCS,"allocate(ratPP(nG))\n"];
+WriteString[sphenoCS,"allocate(ratGG(nG))\n"];
+WriteString[sphenoCS,"allocate(ratZZ(nG))\n"];
+WriteString[sphenoCS,"allocate(ratWW(nG))\n"];
+WriteString[sphenoCS,"allocate(ratTT(nG))\n"];
+			       
+WriteString[sphenoCS,"ratPP(:) = HTratPP(:)**2 \n"];
+WriteString[sphenoCS,"ratGG(:) = HTratGG(:)**2 \n"];			       
+WriteString[sphenoCS,"ratZZ(:) = HTratZZ(:)**2 \n"];
+WriteString[sphenoCS,"ratWW(:) = HTratWW(:)**2 \n"];
+WriteString[sphenoCS,"ratTT(:) = HTratTT(:)**2 \n"];			       
+			       
 WriteString[sphenoCS,"!-------------------- \n"];
 WriteString[sphenoCS,"! LHC 7 \n"];
 WriteString[sphenoCS,"!-------------------- \n"];

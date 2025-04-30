@@ -1165,7 +1165,13 @@ Format[x_Real, FortranForm]:=Format[ToString[NumberForm[x,ExponentFunction->(Nul
 Format[Sqrt[x_Integer], FortranForm]:=Format["sqrt("<>ToString[1.*x]<>"_dp)",OutputForm]/;SARAHFortran==True;
 Format[Exp[x_], FortranForm]:=Format["exp("<>ToString[FortranForm[x]]<>")",OutputForm]/;SARAHFortran==True;
 Format[1/Sqrt[x_Integer], FortranForm]:=Format["1._dp/sqrt("<>ToString[1.*x]<>"_dp)",OutputForm]/;SARAHFortran==True;
-Format[x_Rational,FortranForm] :=Format[ToString[FortranForm[Numerator[x]]]<>"._dp/"<> ToString[FortranForm[Denominator[x]]]<>"._dp",OutputForm]/;SARAHFortran==True;
+
+(* 24/02/2025 MDG fix for mathematica 14. Let us hope that for a rational number the fortran form is the same as ToString*)
+(* Format[x_Rational,FortranForm] :=Format[ToString[FortranForm[Numerator[x]]]<>"._dp/"<> ToString[FortranForm[Denominator[x]]]<>"._dp",OutputForm]/;SARAHFortran==True;*)
+Format[x_Rational,FortranForm] :=Format[ToString[Numerator[x]]<>"._dp/"<> ToString[Denominator[x]]<>"._dp",OutputForm]/;SARAHFortran==True;
+
+
+
 Format[Times[x_Integer,y_],FortranForm]:=Format[ToString[FortranForm[N[x]]]<>"*"<>ToString[FortranForm[y]],OutputForm] /; (Depth[y]<2 && SARAHFortran==True);
 Format[Times[x_Integer,y_],FortranForm]:=Format[ToString[FortranForm[N[x]]]<>"*("<>ToString[FortranForm[y]]<>")",OutputForm] /; (Depth[y]<2 && SARAHFortran==True);
 Protect[Real,Complex,Rational, Integer, Times,Power,ArcCos,ArcSin,Complex,Exp];
